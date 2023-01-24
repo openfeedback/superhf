@@ -42,12 +42,12 @@ A longer description of your project goes here...
 Installation
 ============
 
-1. Create environment with `conda env create -f environment.yml`
-2. Activate environment with `conda activate superhf`
+1. Create environment with :code:`conda env create -f environment.yml`
+2. Activate environment with :code:`conda activate superhf`
 
 Whenever you install a package:
 
-1. Save environment with `conda env export > environment.yml`
+1. Save environment with :code:`conda env export > environment.yml`
 
 
 .. _pyscaffold-notes:
