@@ -52,3 +52,6 @@ MANIFEST
 .venv*/
 .conda*/
 .python-version
+
+# Notebook Checkpoints
+**/.ipynb_checkpoints
