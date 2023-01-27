@@ -47,7 +47,7 @@ Installation
 
 Whenever you install a package:
 
-1. Save environment with :code:`conda env export > environment.yml`
+1. Save environment with :code:`conda env export --no-builds > environment.yml`. We use the :code:'--no-builds' option in order to support different operating systems.
 
 
 .. _pyscaffold-notes:
