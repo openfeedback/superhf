@@ -147,6 +147,7 @@ dependencies:
     - pre-commit==3.0.0
     - pyarrow==10.0.1
     - pyproject-api==1.5.0
+    - pytorch == 1.13.1
     - regex==2022.10.31
     - responses==0.18.0
     - superhf==0.0.post1.dev7+g5e8220b
