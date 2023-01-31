@@ -6,7 +6,8 @@ function Usage {
     Write-Output "Usage: ./devtools.ps1 [command]"
     Write-Output "Commands:"
     Write-Output "  activate: Activate the conda environment or create it if it doesn't exist"
-    Write-Output "  upgrade: Upgrade the conda environment and pip dependencies"
+    Write-Output "  upgradegpu: Upgrade the dependencies and install PyTorch (GPU)"
+    Write-Output "  upgradecpu: Upgrade the dependencies and install PyTorch (CPU)"
     Write-Output "  installgpu: Install pip dependencies and PyTorch (GPU)"
     Write-Output "  installcpu: Install pip dependencies and PyTorch (CPU)"
 }

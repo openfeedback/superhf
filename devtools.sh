@@ -6,7 +6,8 @@ function usage {
     echo "Usage: ./devtools.sh [command]"
     echo "Commands:"
     echo "  activate: Activate the conda environment or create it if it doesn't exist"
-    echo "  upgrade: Upgrade the conda environment and pip dependencies"
+    echo "  upgradegpu: Upgrade the dependencies and install PyTorch (GPU)"
+    echo "  upgradecpu: Upgrade the dependencies and install PyTorch (CPU)"
     echo "  installgpu: Install pip dependencies and PyTorch (GPU)"
     echo "  installcpu: Install pip dependencies and PyTorch (CPU)"
 }
