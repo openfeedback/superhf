@@ -16,7 +16,7 @@ repos:
   hooks:
     - id: pylint
       name: pylint
-      entry: conda activate superhf && pylint
+      entry: echo hello && conda activate superhf && pylint
       language: system
       types: [python]
       args:
