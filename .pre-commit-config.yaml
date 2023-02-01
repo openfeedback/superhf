@@ -23,6 +23,6 @@ repos:
         "run",
         "--name",
         "superhf",
-        "python",
+        "pylint",
         "--version"
         ]
