@@ -16,13 +16,9 @@ repos:
   hooks:
     - id: pylint
       name: pylint
-      entry: conda
-      language: system
+      entry: pylint
+      language: conda
       types: [python]
       args: [
-        "run",
-        "--name",
-        "superhf",
-        "pylint",
         "--version"
         ]
