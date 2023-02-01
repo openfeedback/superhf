@@ -21,7 +21,6 @@ repos:
       types: [python]
       args: [
         "run",
-        "-wombo",
         "combo",
         "--name",
         "superhf",
