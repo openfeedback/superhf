@@ -21,7 +21,7 @@ repos:
       types: [python]
       args: [
         "run",
-        "combo",
         "--name",
+        "combo",
         "superhf",
         "pylint"]
