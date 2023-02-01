@@ -16,6 +16,11 @@ repos:
   hooks:
     - id: pylint
       name: pylint
-      entry: conda run -n superhf pylint
+      entry: conda
       language: system
       types: [python]
+      args: [
+        "run",
+        "-n",
+        "superhf",
+        "pylint"]
