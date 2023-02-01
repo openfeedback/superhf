@@ -16,7 +16,7 @@ repos:
   hooks:
     - id: pylint
       name: pylint
-      entry: /Users/peterchatain/miniconda3/envs/superhf/bin/pylint
+      entry: pylint
       language: system
       types: [python]
       args:
