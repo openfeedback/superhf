@@ -16,6 +16,6 @@ repos:
   hooks:
     - id: pylint
       name: pylint
-      entry: conda activate superhf && pylint -rn -sn
+      entry: conda run -n superhf pylint
       language: system
       types: [python]
