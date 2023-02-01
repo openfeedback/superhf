@@ -19,6 +19,3 @@ repos:
       entry: pylint
       language: conda
       types: [python]
-      args: [
-        "--version"
-        ]
