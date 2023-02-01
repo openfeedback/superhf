@@ -21,6 +21,6 @@ repos:
       types: [python]
       args: [
         "run",
-        "-n",
+        "--n",
         "superhf",
         "pylint"]
