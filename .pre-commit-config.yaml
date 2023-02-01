@@ -22,6 +22,6 @@ repos:
       args: [
         "run",
         "--name",
-        "combo",
         "superhf",
+        "combo",
         "pylint"]
