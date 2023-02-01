@@ -42,15 +42,14 @@ A longer description of your project goes here...
 Installation
 ============
 
-1. Create environment with :code:`conda env create -f environment.yml`
-2. Activate environment with :code:`conda activate superhf`
+.. todo:: Add updated installation instructions here once we've made this a package.*
 
-Whenever you install a package:
+.. code-block:: console
 
-1. Save environment with :code:`conda env export --no-builds > environment.yml`. We use the :code:'--no-builds' option in order to support different operating systems.
+    $ pip install superhf
 
 
-.. _pyscaffold-notes:
+For development installation instructions, see :ref:`Install the development environment <Install the development environment>`.
 
 Note
 ====
