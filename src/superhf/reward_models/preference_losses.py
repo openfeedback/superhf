@@ -39,3 +39,4 @@ class PreferenceHingeLoss(nn.Module):
             return loss.mean()
         else:
             return loss.sum()
+        
