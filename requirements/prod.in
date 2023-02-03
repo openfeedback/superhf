@@ -1,2 +1,4 @@
 # Production requirements
 numpy
+datasets
+transformers

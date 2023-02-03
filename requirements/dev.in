@@ -6,3 +6,6 @@ pylint
 mypy
 sphinx
 esbonio
+ipykernel
+ipython
+ipywidgets
