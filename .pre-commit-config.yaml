@@ -12,13 +12,14 @@ repos:
     rev: 22.10.0
     hooks:
     -   id: black
-- repo: local
-  hooks:
-    - id: pylint
-      name: pylint
-      entry: pylint
-      language: conda
-      types: [python]
-      args: ["-p",
-      "./requirements.txt"
-      ]
+# - repo: local # TODO (Peter or Gabe): make this work for not just command line
+#   hooks:
+#     - id: pylint
+#       name: pylint
+#       entry: pylint
+#       language: conda
+#       types: [python]
+#       args: [
+#         "-p",
+#         "./requirements.txt"
+#       ]
