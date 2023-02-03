@@ -119,21 +119,6 @@ Before you work on any non-trivial code contribution it's best to first create
 a report in the `issue tracker`_ to start a discussion on the subject.
 This often provides additional considerations and avoids unnecessary work.
 
-Create an environment
----------------------
-
-Before you start coding, we recommend creating an isolated `virtual
-environment`_ to avoid any problems with your installed Python packages.
-This can easily be done via either |virtualenv|_::
-
-    virtualenv <PATH TO VENV>
-    source <PATH TO VENV>/bin/activate
-
-or Miniconda_::
-
-    conda create -n superhf python=3 six virtualenv pytest pytest-cov
-    conda activate superhf
-
 Clone the repository
 --------------------
 
@@ -145,21 +130,84 @@ Clone the repository
     git clone git@github.com:YourLogin/superhf.git
     cd superhf
 
-#. You should run::
+Install the development environment
+-----------------------------------
 
-    pip install -U pip setuptools -e .
+Use either our :code:`installgpu` or :code:`installcpu` command to get everything setup depending on your platform and GPU availability:
 
-   to be able to import the package under development in the Python REPL.
+   Unix:
 
-   .. todo:: if you are not using pre-commit, please remove the following item:
+      .. code-block:: bash
 
-#. Install |pre-commit|_::
+         ./devtools.sh installgpu
 
-    pip install pre-commit
-    pre-commit install
 
-   ``superhf`` comes with a lot of hooks configured to automatically help the
-   developer to check the code being written.
+      .. code-block:: bash
+
+         ./devtools.sh installcpu
+
+   Windows:
+
+      .. code-block:: ps1
+
+         ./devtools.ps1 installgpu
+
+      .. code-block:: ps1
+
+         ./devtools.ps1 installcpu
+
+We use a minimal Anaconda environment with separate production and development requirements compiled using pip-tools. You can learn more about this workflow in https://nvie.com/posts/better-package-management/ and https://towardsdatascience.com/setting-up-an-environment-for-machine-learning-with-conda-pip-tools-9e163cb13b92
+
+Upgrade the requirements (optional)
+-----------------------------------
+
+If you want to add more requirements or upgrade the frozen requirement versions, make sure :download:`dev.in <./requirements/dev>.in` and :download:`prod.in <requirements/prod.in>` specify the correct high-level packages, then use the :code:`upgradegpu` or :code:`upgradecpu` command:
+
+   Unix:
+
+      .. code-block:: bash
+
+         ./devtools.sh upgradegpu
+
+
+      .. code-block:: bash
+
+         ./devtools.sh upgradecpu
+
+   Windows:
+
+      .. code-block:: ps1
+
+         ./devtools.ps1 upgradegpu
+
+      .. code-block:: ps1
+
+         ./devtools.ps1 upgradecpu
+
+
+Activate the environment (optional)
+----------------------------------
+When returning to the project, make sure to activate the environment:
+
+      .. code-block:: bash
+
+         conda activate superhf
+
+Or with our :code:`activate` command:
+
+   Unix:
+
+      .. code-block:: bash
+
+         ./devtools.sh activate
+
+
+   Windows
+
+      .. code-block:: ps1
+
+         ./devtools.ps1 activate
+
 
 Implement your changes
 ----------------------
