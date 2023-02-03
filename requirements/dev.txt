@@ -10,7 +10,7 @@ appdirs==1.4.4
     # via esbonio
 babel==2.11.0
     # via sphinx
-black==22.12.0
+black==23.1.0
     # via -r requirements/dev.in
 certifi==2022.12.7
     # via requests
@@ -42,19 +42,25 @@ jinja2==3.1.2
     # via sphinx
 markupsafe==2.1.2
     # via jinja2
+mypy==0.991
+    # via -r requirements/dev.in
 mypy-extensions==0.4.3
-    # via black
+    # via
+    #   black
+    #   mypy
 nodeenv==1.7.0
     # via pre-commit
 packaging==23.0
-    # via sphinx
+    # via
+    #   black
+    #   sphinx
 pathspec==0.11.0
     # via black
 platformdirs==2.6.2
     # via
     #   black
     #   virtualenv
-pre-commit==3.0.2
+pre-commit==3.0.3
     # via -r requirements/dev.in
 pydantic==1.10.4
     # via pygls
@@ -80,7 +86,7 @@ sphinxcontrib-applehelp==1.0.4
     # via sphinx
 sphinxcontrib-devhelp==1.0.2
     # via sphinx
-sphinxcontrib-htmlhelp==2.0.0
+sphinxcontrib-htmlhelp==2.0.1
     # via sphinx
 sphinxcontrib-jsmath==1.0.1
     # via sphinx
@@ -89,12 +95,15 @@ sphinxcontrib-qthelp==1.0.3
 sphinxcontrib-serializinghtml==1.1.5
     # via sphinx
 tomli==2.0.1
-    # via black
+    # via
+    #   black
+    #   mypy
 typeguard==2.13.3
     # via pygls
 typing-extensions==4.4.0
     # via
     #   esbonio
+    #   mypy
     #   pydantic
 urllib3==1.26.14
     # via requests

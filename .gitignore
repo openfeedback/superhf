@@ -54,3 +54,6 @@ MANIFEST
 
 # Notebook Checkpoints
 **/.ipynb_checkpoints
+
+# SuperHF Edits
+.mypy_cache
