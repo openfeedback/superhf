@@ -139,7 +139,7 @@ Use either our :code:`installgpu` or :code:`installcpu` command to get everythin
 
       .. code-block:: bash
 
-   source devtools.sh installgpu
+         source devtools.sh installgpu
 
 
       .. code-block:: bash
