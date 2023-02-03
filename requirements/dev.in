@@ -1,0 +1,6 @@
+# Development requirements
+-c prod.txt
+pre-commit
+black
+sphinx
+esbonio
