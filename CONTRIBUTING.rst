@@ -139,22 +139,22 @@ Use either our :code:`installgpu` or :code:`installcpu` command to get everythin
 
       .. code-block:: bash
 
-         ./devtools.sh installgpu
+         source devtools.sh installgpu
 
 
       .. code-block:: bash
 
-         ./devtools.sh installcpu
+         source devtools.sh installcpu
 
    Windows:
 
       .. code-block:: ps1
 
-         ./devtools.ps1 installgpu
+         source devtools.ps1 installgpu
 
       .. code-block:: ps1
 
-         ./devtools.ps1 installcpu
+         source devtools.ps1 installcpu
 
 We use a minimal Anaconda environment with separate production and development requirements compiled using pip-tools. You can learn more about this workflow in https://nvie.com/posts/better-package-management/ and https://towardsdatascience.com/setting-up-an-environment-for-machine-learning-with-conda-pip-tools-9e163cb13b92
 
@@ -167,22 +167,22 @@ If you want to add more requirements or upgrade the frozen requirement versions,
 
       .. code-block:: bash
 
-         ./devtools.sh upgradegpu
+         source devtools.sh upgradegpu
 
 
       .. code-block:: bash
 
-         ./devtools.sh upgradecpu
+         source devtools.sh upgradecpu
 
    Windows:
 
       .. code-block:: ps1
 
-         ./devtools.ps1 upgradegpu
+         source devtools.ps1 upgradegpu
 
       .. code-block:: ps1
 
-         ./devtools.ps1 upgradecpu
+         source devtools.ps1 upgradecpu
 
 
 Activate the environment (optional)
@@ -199,7 +199,7 @@ Or with our :code:`activate` command:
 
       .. code-block:: bash
 
-         ./devtools.sh activate
+         source devtools.sh activate
 
 
    Windows

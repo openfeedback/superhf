@@ -6,7 +6,7 @@
 #
 --find-links https://download.pytorch.org/whl/torch_stable.html
 
-torch==1.13.1+cpu
+torch==1.13.1
     # via -r requirements/torchcpu.in
 typing-extensions==4.4.0
     # via torch

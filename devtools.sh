@@ -3,7 +3,7 @@ CONDA_ENV="superhf"
 
 # Hint for how to use this script
 function usage {
-    echo "Usage: ./devtools.sh [command]"
+    echo "Usage: source devtools.sh [command]"
     echo "Commands:"
     echo "  activate: Activate the conda environment or create it if it doesn't exist"
     echo "  upgradegpu: Upgrade the dependencies and install PyTorch (GPU)"
@@ -21,6 +21,7 @@ function activate {
         echo "Conda environment '$CONDA_ENV' does not exist. Creating it now..."
         conda env create -f environment.yml
     fi
+    echo "Activating conda environment '$CONDA_ENV'..."
     conda activate "$CONDA_ENV"
 }
 
