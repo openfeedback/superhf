@@ -13,6 +13,7 @@ def main() -> None:
 
 def function_with_types(number: int) -> int:
     """Function with types."""
+    number -= 1
     return number + 5
 
 
