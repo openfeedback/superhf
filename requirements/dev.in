@@ -4,3 +4,7 @@ pre-commit
 black
 sphinx
 esbonio
+ipykernel
+ipython
+ipywidgets
+seaborn
