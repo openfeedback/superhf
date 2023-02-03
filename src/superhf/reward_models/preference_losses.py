@@ -1,9 +1,9 @@
 """
 This file implements the loss function for our reward model.
 """
-
-import torch
-from torch import nn
+import torch 
+import torch.nn as nn
+import torch.nn.functional as F
 
 
 class PreferenceLoss(nn.Module):
@@ -20,18 +20,14 @@ class PreferenceLoss(nn.Module):
         Return: mean or summed NLL loss.
     """
 
-    def __init__(self, weight=None, reduction="mean"):
+    def __init__(self, reduction="mean"):
         super().__init__()
-        self.weight = weight  # could be useful for quality feedback
         self.reduction = reduction
 
     def forward(self, winner, loser):
-        weighted_probabilities = nn.Sigmoid(winner - loser)
-        if self.weight is not None:
-            weighted_probabilities *= self.weight
-
-        loss = -torch.log(weighted_probabilities)
+        loss = -F.logsigmoid(winner - loser)
         if self.reduction == "mean":
             return loss.mean()
 
         return loss.sum()
+
