@@ -10,6 +10,7 @@ function Usage {
     Write-Output "  upgradecpu: Upgrade the dependencies and install PyTorch (CPU)"
     Write-Output "  installgpu: Install pip dependencies and PyTorch (GPU)"
     Write-Output "  installcpu: Install pip dependencies and PyTorch (CPU)"
+    Write-Output "  mergemain: Pull main and merge into this branch (no fast-forward)"
 }
 
 # Activate the conda environment or create it if it doesn't exist
@@ -54,6 +55,15 @@ function Install-CPU {
     Invoke-Expression "pre-commit install"
 }
 
+# Pull main and merge into this branch (no fast-forward)
+function Merge-Into-Current-Branch {
+    $currentBranch = git rev-parse --abbrev-ref HEAD
+    git checkout main
+    git pull
+    git checkout $currentBranch
+    git merge --no-ff main
+}
+
 # Workflows
 switch ($args[0]) {
     activate {
@@ -72,6 +82,9 @@ switch ($args[0]) {
     }
     installcpu {
         Install-CPU
+    }
+    merge {
+        Merge-Into-Current-Branch
     }
     default {
         Usage
