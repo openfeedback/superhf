@@ -8,15 +8,21 @@ import torch.nn.functional as F
 from transformers import Trainer, AutoTokenizer, AutoModelForSequenceClassification
 
 
-# NOTE ON DATSETS
-# I'm assuming that we will build a dataset formed as a:
-#     torch.utils.data.Dataset({features: ['winner', 'loser']})
-# So when drawing a batch `inputs`, we can do inputs['winner'] to get
+# NOTE ON DATASETS
+# I'm assuming that we will build a dataset formed as a 
+# torch.utils.data.Dataset().
+# When drawing a batch `inputs`, we can do inputs['winner'] to get
 # the tokenized winning input sequences, ready for model(**inputs['winner']),
 # and likewise for 'loser'.
-#
+
 # OpenAssistant achieved something equivalent using a few different datasets
 # which they must have massaged into this form.
+#
+# I think we can do this by being careful with the trainer's 
+# train_dataset and data_collator arguments. The data_collator returns
+# a dictionary representing a batch:
+#     {'winner' : tokenized winning input seqs,
+#      'loser' : tokenized losing input seqs}
 
 
 class PreferenceLoss(nn.Module):
