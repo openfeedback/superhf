@@ -1,10 +1,22 @@
 """
-This file implements the loss function for our reward model.
+This file implements our reward model.
 """
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from transformers import Trainer, AutoTokenizer, AutoModelForSequenceClassification
+
+
+# NOTE ON DATSETS
+# I'm assuming that we will build a dataset formed as a:
+#     torch.utils.data.Dataset({features: ['winner', 'loser']})
+# So when drawing a batch `inputs`, we can do inputs['winner'] to get
+# the tokenized winning input sequences, ready for model(**inputs['winner']),
+# and likewise for 'loser'.
+#
+# OpenAssistant achieved something equivalent using a few different datasets
+# which they must have massaged into this form.
 
 
 class PreferenceLoss(nn.Module):
@@ -23,7 +35,6 @@ class PreferenceLoss(nn.Module):
 
     def forward(self, winner_scores: torch.Tensor, loser_scores):
         loss = -F.logsigmoid(winner_scores - loser_scores)
-
         return loss.mean()
 
 
@@ -48,7 +59,7 @@ class RewardModelTrainer(Trainer):
         """
         model : RewardModel for computing loss
         inputs :
-            input batch with features ['winner', 'loser'] to pass to model.
+            tokenized input batch with features ['winner', 'loser'].
         Returns
         -------
         loss: model's loss over inputs, computed by the PreferenceLoss class.
@@ -57,20 +68,19 @@ class RewardModelTrainer(Trainer):
 
         """
 
-        winner_scores = model(inputs["winner"])
-        loser_scores = model(inputs["loser"])
+        winner_scores = model(**inputs["winner"])
+        loser_scores = model(**inputs["loser"])
 
         loss_fct = PreferenceLoss()
         loss = loss_fct(winner_scores, loser_scores)
         reward_scores = torch.stack([winner_scores, loser_scores], 1)
-
         return (loss, reward_scores) if return_outputs else loss
 
     def prediction_step(model, inputs, prediction_loss_only, ignore_keys=None):
         """
         model : RewardModel for computing loss
         inputs :
-            input batch with features ['winner', 'loser'] to pass to model.
+            tokenized input batch with features ['winner', 'loser'].
         Returns
         -------
         loss: model's loss over inputs, computed by the PreferenceLoss class.
@@ -86,8 +96,8 @@ class RewardModel(nn.Module):
     The reward model to be trained from a pretrained language model.
     """
 
-    def __init__(self, model_name, frozen_layers=()):
+    def __init__(self, model_name, frozen_prefixes=()):
         self.model = AutoModelForSequenceClassification(model_name, num_labels=1)
         for name, param in self.model.base_model.named_parameters():
-            if name in frozen_layers:
+            if any(name.startswith(p) for p in frozen_prefixes):
                 param.requires_grad = False
