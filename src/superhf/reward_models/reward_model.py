@@ -2,27 +2,11 @@
 This file implements our reward model.
 """
 
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from transformers import Trainer, AutoTokenizer, AutoModelForSequenceClassification
-
-
-# NOTE ON DATASETS
-# I'm assuming that we will build a dataset formed as a 
-# torch.utils.data.Dataset().
-# When drawing a batch `inputs`, we can do inputs['winner'] to get
-# the tokenized winning input sequences, ready for model(**inputs['winner']),
-# and likewise for 'loser'.
-
-# OpenAssistant achieved something equivalent using a few different datasets
-# which they must have massaged into this form.
-#
-# I think we can do this by being careful with the trainer's 
-# train_dataset and data_collator arguments. The data_collator returns
-# a dictionary representing a batch:
-#     {'winner' : tokenized winning input seqs,
-#      'loser' : tokenized losing input seqs}
 
 
 class PreferenceLoss(nn.Module):
@@ -82,7 +66,7 @@ class RewardModelTrainer(Trainer):
         reward_scores = torch.stack([winner_scores, loser_scores], 1)
         return (loss, reward_scores) if return_outputs else loss
 
-    def prediction_step(model, inputs, prediction_loss_only, ignore_keys=None):
+    def prediction_step(self, model, inputs, prediction_loss_only):
         """
         model : RewardModel for computing loss
         inputs :
@@ -107,3 +91,7 @@ class RewardModel(nn.Module):
         for name, param in self.model.base_model.named_parameters():
             if any(name.startswith(p) for p in frozen_prefixes):
                 param.requires_grad = False
+
+
+if __name__ == "__main__":
+    pass
