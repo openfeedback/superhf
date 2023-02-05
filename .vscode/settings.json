@@ -1,11 +1,11 @@
 {
     // Formatter
     "python.formatting.provider": "black",
-    // Get the local black path without going though conda run for speed
-    "python.formatting.blackPath": "~/anaconda3/envs/superhf/Scripts/black",
     "editor.formatOnSave": true,
     // Linter
     "python.linting.enabled": true,
     "python.linting.mypyEnabled": true,
     "python.linting.pylintEnabled": true,
+    "python.linting.pylintPath": "~/anaconda3/envs/superhf/Scripts/pylint",
+    "python.linting.mypyPath": "~/anaconda3/envs/superhf/Scripts/mypy",
 }
