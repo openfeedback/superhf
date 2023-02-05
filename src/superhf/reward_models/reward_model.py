@@ -6,7 +6,13 @@ This file implements our reward model.
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from transformers import Trainer, AutoTokenizer, AutoModelForSequenceClassification
+from transformers import (
+    Trainer,
+    TrainingArguments,
+    AutoTokenizer,
+    AutoModelForSequenceClassification,
+)
+from reward_model_datasets import PreferenceDataCollator, AnthropicHelpfulHarmless
 
 
 class PreferenceLoss(nn.Module):
@@ -58,8 +64,8 @@ class RewardModelTrainer(Trainer):
 
         """
 
-        winner_scores = model(**inputs["winner"])
-        loser_scores = model(**inputs["loser"])
+        winner_scores = model(inputs["winner"]).logits
+        loser_scores = model(inputs["loser"]).logits
 
         loss_fct = PreferenceLoss()
         loss = loss_fct(winner_scores, loser_scores)
@@ -87,11 +93,46 @@ class RewardModel(nn.Module):
     """
 
     def __init__(self, model_name, frozen_prefixes=()):
-        self.model = AutoModelForSequenceClassification(model_name, num_labels=1)
+        super().__init__()
+        self.model = AutoModelForSequenceClassification.from_pretrained(
+            model_name, num_labels=1
+        )
         for name, param in self.model.base_model.named_parameters():
             if any(name.startswith(p) for p in frozen_prefixes):
                 param.requires_grad = False
 
+    def forward(self, inputs):
+        return self.model(**inputs)
+
 
 if __name__ == "__main__":
-    pass
+    model_name = "distilbert-base-uncased"
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    model = RewardModel(model_name)
+
+    arguments = TrainingArguments(
+        output_dir=f"{model_name}_finetuned",
+        per_device_train_batch_size=16,
+        per_device_eval_batch_size=16,
+        num_train_epochs=3,
+        evaluation_strategy="epoch",
+        save_strategy="epoch",
+        learning_rate=2e-5,
+        weight_decay=0.01,
+        load_best_model_at_end=True,
+        seed=420,
+    )
+
+    train_dataset = AnthropicHelpfulHarmless("train")
+    eval_dataset = AnthropicHelpfulHarmless("test")
+
+    trainer = RewardModelTrainer(
+        model=model,
+        args=arguments,
+        data_collator=PreferenceDataCollator(tokenizer),
+        train_dataset=train_dataset,
+        eval_dataset=eval_dataset,
+        compute_metrics=compute_metrics,
+    )
+
+    trainer.train()
