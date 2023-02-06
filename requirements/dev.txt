@@ -8,10 +8,8 @@ alabaster==0.7.13
     # via sphinx
 appdirs==1.4.4
     # via esbonio
-appnope==0.1.3
-    # via
-    #   ipykernel
-    #   ipython
+astroid==2.14.1
+    # via pylint
 asttokens==2.2.1
     # via stack-data
 babel==2.11.0
@@ -21,19 +19,34 @@ backcall==0.2.0
 black==23.1.0
     # via -r requirements/dev.in
 certifi==2022.12.7
-    # via requests
+    # via
+    #   -c requirements\prod.txt
+    #   requests
 cfgv==3.3.1
     # via pre-commit
-charset-normalizer==3.0.1
-    # via requests
+charset-normalizer==2.1.1
+    # via
+    #   -c requirements\prod.txt
+    #   requests
 click==8.1.3
     # via black
+colorama==0.4.6
+    # via
+    #   -c requirements\prod.txt
+    #   click
+    #   ipython
+    #   pylint
+    #   sphinx
 comm==0.1.2
     # via ipykernel
 debugpy==1.6.6
     # via ipykernel
 decorator==5.1.1
     # via ipython
+dill==0.3.6
+    # via
+    #   -c requirements\prod.txt
+    #   pylint
 distlib==0.3.6
     # via virtualenv
 docutils==0.19
@@ -43,19 +56,30 @@ esbonio==0.15.0
 executing==1.2.0
     # via stack-data
 filelock==3.9.0
-    # via virtualenv
+    # via
+    #   -c requirements\prod.txt
+    #   virtualenv
 identify==2.5.17
     # via pre-commit
 idna==3.4
-    # via requests
+    # via
+    #   -c requirements\prod.txt
+    #   requests
 imagesize==1.4.1
     # via sphinx
 ipykernel==6.21.1
-    # via -r requirements/dev.in
+    # via
+    #   -r requirements/dev.in
+    #   ipywidgets
 ipython==8.9.0
     # via
     #   -r requirements/dev.in
     #   ipykernel
+    #   ipywidgets
+ipywidgets==8.0.4
+    # via -r requirements/dev.in
+isort==5.12.0
+    # via pylint
 jedi==0.18.2
     # via ipython
 jinja2==3.1.2
@@ -66,20 +90,31 @@ jupyter-core==5.2.0
     # via
     #   ipykernel
     #   jupyter-client
+jupyterlab-widgets==3.0.5
+    # via ipywidgets
+lazy-object-proxy==1.9.0
+    # via astroid
 markupsafe==2.1.2
     # via jinja2
 matplotlib-inline==0.1.6
     # via
     #   ipykernel
     #   ipython
+mccabe==0.7.0
+    # via pylint
+mypy==0.991
+    # via -r requirements/dev.in
 mypy-extensions==0.4.3
-    # via black
+    # via
+    #   black
+    #   mypy
 nest-asyncio==1.5.6
     # via ipykernel
 nodeenv==1.7.0
     # via pre-commit
 packaging==23.0
     # via
+    #   -c requirements\prod.txt
     #   black
     #   ipykernel
     #   sphinx
@@ -87,14 +122,13 @@ parso==0.8.3
     # via jedi
 pathspec==0.11.0
     # via black
-pexpect==4.8.0
-    # via ipython
 pickleshare==0.7.5
     # via ipython
 platformdirs==2.6.2
     # via
     #   black
     #   jupyter-core
+    #   pylint
     #   virtualenv
 pre-commit==3.0.3
     # via -r requirements/dev.in
@@ -102,8 +136,6 @@ prompt-toolkit==3.0.36
     # via ipython
 psutil==5.9.4
     # via ipykernel
-ptyprocess==0.7.0
-    # via pexpect
 pure-eval==0.2.2
     # via stack-data
 pydantic==1.10.4
@@ -114,22 +146,35 @@ pygments==2.14.0
     # via
     #   ipython
     #   sphinx
+pylint==2.16.1
+    # via -r requirements/dev.in
 pyspellchecker==0.7.1
     # via esbonio
 python-dateutil==2.8.2
-    # via jupyter-client
+    # via
+    #   -c requirements\prod.txt
+    #   jupyter-client
 pytz==2022.7.1
-    # via babel
+    # via
+    #   -c requirements\prod.txt
+    #   babel
+pywin32==305
+    # via jupyter-core
 pyyaml==6.0
-    # via pre-commit
+    # via
+    #   -c requirements\prod.txt
+    #   pre-commit
 pyzmq==25.0.0
     # via
     #   ipykernel
     #   jupyter-client
 requests==2.28.2
-    # via sphinx
+    # via
+    #   -c requirements\prod.txt
+    #   sphinx
 six==1.16.0
     # via
+    #   -c requirements\prod.txt
     #   asttokens
     #   python-dateutil
 snowballstemmer==2.2.0
@@ -153,7 +198,12 @@ sphinxcontrib-serializinghtml==1.1.5
 stack-data==0.6.2
     # via ipython
 tomli==2.0.1
-    # via black
+    # via
+    #   black
+    #   mypy
+    #   pylint
+tomlkit==0.11.6
+    # via pylint
 tornado==6.2
     # via
     #   ipykernel
@@ -163,6 +213,7 @@ traitlets==5.9.0
     #   comm
     #   ipykernel
     #   ipython
+    #   ipywidgets
     #   jupyter-client
     #   jupyter-core
     #   matplotlib-inline
@@ -170,14 +221,23 @@ typeguard==2.13.3
     # via pygls
 typing-extensions==4.4.0
     # via
+    #   -c requirements\prod.txt
+    #   astroid
     #   esbonio
+    #   mypy
     #   pydantic
 urllib3==1.26.14
-    # via requests
+    # via
+    #   -c requirements\prod.txt
+    #   requests
 virtualenv==20.17.1
     # via pre-commit
 wcwidth==0.2.6
     # via prompt-toolkit
+widgetsnbextension==4.0.5
+    # via ipywidgets
+wrapt==1.14.1
+    # via astroid
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools

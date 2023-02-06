@@ -1,0 +1,9 @@
+{
+    // Formatter
+    "python.formatting.provider": "black",
+    "editor.formatOnSave": true,
+    // Linter
+    "python.linting.enabled": true,
+    "python.linting.mypyEnabled": true,
+    "python.linting.pylintEnabled": true,
+}

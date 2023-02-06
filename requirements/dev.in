@@ -2,6 +2,8 @@
 -c prod.txt
 pre-commit
 black
+pylint
+mypy
 sphinx
 esbonio
 ipykernel
