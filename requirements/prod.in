@@ -1,4 +1,7 @@
 # Production requirements
 numpy
-datasets
 transformers
+datasets
+accelerate
+torch>=1.13.1
+torchtyping
