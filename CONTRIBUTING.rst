@@ -319,6 +319,15 @@ package:
    running ``tox -- -k <NAME OF THE FALLING TEST> --pdb``).
    You can also setup breakpoints manually instead of using the ``--pdb`` option.
 
+#. If ``black`` is slow to format your code in VS Code, you may need to specify the local `black`` path to not go though ``conda run`` which is slow. In your VS Code user settings (not this project's settings), add a valid path to black, such as one of:
+
+      .. code-block:: json
+
+         "python.formatting.blackPath": "~/anaconda3/Scripts/black"
+         "python.formatting.blackPath": "~/miniconda3/Scripts/black"
+         "python.formatting.blackPath": "~/anaconda3/envs/superhf/Scripts/black"
+         "python.formatting.blackPath": "~/miniconda3/envs/superhf/Scripts/black"
+
 
 Maintainer tasks
 ================

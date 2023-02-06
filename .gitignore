@@ -20,7 +20,6 @@ __pycache__/*
 .pydevproject
 .settings
 .idea
-.vscode
 tags
 
 # Package files
@@ -55,3 +54,6 @@ MANIFEST
 
 # Notebook Checkpoints
 **/.ipynb_checkpoints
+
+# SuperHF Edits
+.mypy_cache
