@@ -72,7 +72,7 @@ class RewardModelTrainer(Trainer):
         reward_scores = torch.stack([winner_scores, loser_scores], 1)
         return (loss, reward_scores) if return_outputs else loss
 
-    def prediction_step(self, model, inputs, prediction_loss_only):
+    def prediction_step(self, model, inputs, prediction_loss_only, ignore_keys=None):
         """
         model : RewardModel for computing loss
         inputs :
