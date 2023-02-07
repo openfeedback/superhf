@@ -6,11 +6,12 @@ from a reward model without the use of reinforcement learning).
 import os
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import List, Optional
+from typing import List, Dict, Union, Any, Optional
 
 import torch
 from torch import nn
-import numpy as np
+
+# import numpy as np
 from tqdm import tqdm
 from transformers import (
     # Trainer,
@@ -89,7 +90,6 @@ class SinglePassBestOfNTrainer(SuperHFTrainer):
         test_prompts: List[str],
         temperature: float = 0.7,
         completions_per_prompt: int = 4,
-        completion_batch_size: int = 8,
         output_dir: str = "output",
         run_name: str = "UNDEFINED",
     ) -> None:
@@ -103,16 +103,19 @@ class SinglePassBestOfNTrainer(SuperHFTrainer):
         )
         self.temperature = temperature
         self.completions_per_prompt = completions_per_prompt
-        self.completion_batch_size = completion_batch_size
         self.output_dir = output_dir
         self.run_name = run_name
+        # Make output dir if it doesn't exist
+        self.output_folder = os.path.join(self.output_dir, self.run_name)
+        if not os.path.exists(self.output_folder):
+            os.makedirs(self.output_folder)
 
     def train(self) -> None:
         """
         Main training and evaluation loop.
         """
 
-    def generate_completions(self, max_new_tokens: int) -> None:
+    def generate_completions(self, batch_size: int, max_new_tokens: int) -> None:
         """
         Use $M$ to generate $n$ completions for each of $d$ training dataset prompts.
         """
@@ -130,7 +133,7 @@ class SinglePassBestOfNTrainer(SuperHFTrainer):
         dataset = Dataset.from_dict({"prompt": prompts})
 
         # Use $M$ to generate $n$ completions for each of $d$ training dataset prompts
-        # ($d*completions_per_prompt$ total). Iterate in groups of completion_batch_size.
+        # ($d*completions_per_prompt$ total). Iterate in groups of batch_size.
         pipe = pipeline(
             "text-generation",
             model=self.language_model,
@@ -145,7 +148,7 @@ class SinglePassBestOfNTrainer(SuperHFTrainer):
         for out in tqdm(
             pipe(
                 KeyDataset(dataset, "prompt"),
-                batch_size=self.completion_batch_size,
+                batch_size=batch_size,
                 max_new_tokens=max_new_tokens,
                 temperature=self.temperature,
                 pad_token_id=self.language_tokenizer.pad_token_id,
@@ -161,35 +164,44 @@ class SinglePassBestOfNTrainer(SuperHFTrainer):
             completion = "\n\nAssistant:".join(completion.split("\n\nAssistant:")[:2])
             completions.append(completion)
 
-        # Make output dir if it doesn't exist
-        output_folder = os.path.join(self.output_dir, self.run_name)
-        if not os.path.exists(output_folder):
-            os.makedirs(output_folder)
-
         # Save it to a file, writing raw string outputs (e.g. keeping '\n' in plaintext)
-        torch.save(completions, os.path.join(output_folder, "completions.pt"))
+        torch.save(completions, os.path.join(self.output_folder, "completions.pt"))
 
-    def filter_completions(self) -> None:
+    def score_completions(self, batch_size: int) -> None:
         """
-        Use $R$ to select the top 1 of the $n$ completions for each prompt ($d$ total).
+        Use $R$ to evaluate each completion.
         """
-        completions = torch.load(
+
+        completions: List[str] = torch.load(
             os.path.join(self.output_dir, self.run_name, "completions.pt")
         )
-        print(f"Loaded {len(completions)} completions")
-        # for completion in completions[:3]:
-        #     print(completion)
-        #     print("####################")
 
-        # Group the completions for the same prompt together into a list of lists.
-        # E.g. ['a1', 'b1', 'c1', 'a2', 'b2', 'c2'] -> [['a1', 'a2'], ['b1', 'b2'], ['c1', 'c2']]
-        num_prompts = len(self.train_prompts)
-        grouped_completions: List[List[str]] = [[] for _ in range(num_prompts)]
+        num_prompts: int = len(self.train_prompts)
+        # Debug: only use a subset of the completions
+        # completions = [
+        #     completion
+        #     for i, completion in enumerate(completions)
+        #     if i % num_prompts < 1024
+        # ]
+
+        # OOM Fix: Filter completions in a set longer than 1000 characters
+        bad_indices = []
         for i, completion in enumerate(completions):
-            grouped_completions[i % num_prompts].append(completion)
-        # for completion in grouped_completions[0]:
-        #     print("####################")
-        #     print(completion)
+            if len(completion) > 1000:
+                bad_indices.append(i % num_prompts)
+
+        old_size = len(completions)
+        completions = [
+            completion
+            for i, completion in enumerate(completions)
+            if i % num_prompts not in bad_indices
+        ]
+        new_size = len(completions)
+        print(
+            f"Loaded {new_size} completions (filtered {old_size - new_size} from {old_size} total)."
+        )
+
+        dataset = Dataset.from_dict({"completion": completions})
 
         # Use $R$ to select the top 1 of the $n$ completions for each prompt ($d$ total).
         pipe = pipeline(
@@ -198,15 +210,49 @@ class SinglePassBestOfNTrainer(SuperHFTrainer):
             tokenizer=self.reward_tokenizer,
             device=self.reward_model.device,
         )
-        filtered_completions = []
-        for completions in tqdm(grouped_completions):
-            rewards = [row["score"] for row in pipe(completions)]
-            best_completion = completions[np.argmax(rewards)]
-            filtered_completions.append(best_completion)
+        scored_completions: List[Dict[str, Union[str, float]]] = []
+        print("Scoring completions...")
+        for row, completion in zip(
+            tqdm(
+                pipe(KeyDataset(dataset, "completion"), batch_size=batch_size),
+                total=len(dataset),
+            ),
+            completions,
+        ):
+            scored_completions.append({"score": row["score"], "completion": completion})
+
+        torch.save(
+            scored_completions,
+            os.path.join(self.output_folder, "scored_completions.pt"),
+        )
+
+    def filter_completions(self) -> Any:
+        """
+        Select the top 1 of the $n$ completions for each prompt ($d$ total)
+        """
+        scored_completions = torch.load(
+            os.path.join(self.output_folder, "scored_completions.pt")
+        )
+        num_prompts: int = len(scored_completions) // self.completions_per_prompt
+
+        # Group the completions for the same prompt together into a list of lists.
+        # E.g. ['a1', 'b1', 'c1', 'a2', 'b2', 'c2'] -> [['a1', 'a2'], ['b1', 'b2'], ['c1', 'c2']]
+        grouped_scored_completions: List[List[Dict[str, Union[str, float]]]] = [
+            [] for _ in range(num_prompts)
+        ]
+        for i, scored_completion in enumerate(scored_completions):
+            grouped_scored_completions[i % num_prompts].append(scored_completion)
+
+        # Filter for the best completion for each group
+        filtered_completions: List[Dict[str, Union[str, float]]] = []
+        for group in grouped_scored_completions:
+            filtered_completions.append(max(group, key=lambda x: x["score"]))
+
         torch.save(
             filtered_completions,
             os.path.join(self.output_dir, self.run_name, "filtered_completions.pt"),
         )
+        return scored_completions, filtered_completions
 
     def tune_model(self) -> None:
         """
@@ -217,6 +263,10 @@ class SinglePassBestOfNTrainer(SuperHFTrainer):
             os.path.join(self.output_dir, self.run_name, "filtered_completions.pt")
         )
         print(f"Loaded {len(filtered_completions)} filtered completions")
+        for completion in filtered_completions[:2]:
+            print(
+                f'Score: {completion["score"]}, Completion: {completion["completion"]}'
+            )
 
 
 # class IterativeBestOfNTrainer(SuperHFTrainer):
