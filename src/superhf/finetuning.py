@@ -91,7 +91,6 @@ class SinglePassBestOfNTrainer(SuperHFTrainer):
         temperature: float = 0.7,
         completions_per_prompt: int = 4,
         output_dir: str = "output",
-        run_name: str = "UNDEFINED",
     ) -> None:
         super().__init__(
             language_model,
@@ -104,11 +103,9 @@ class SinglePassBestOfNTrainer(SuperHFTrainer):
         self.temperature = temperature
         self.completions_per_prompt = completions_per_prompt
         self.output_dir = output_dir
-        self.run_name = run_name
         # Make output dir if it doesn't exist
-        self.output_folder = os.path.join(self.output_dir, self.run_name)
-        if not os.path.exists(self.output_folder):
-            os.makedirs(self.output_folder)
+        if not os.path.exists(self.output_dir):
+            os.makedirs(self.output_dir)
 
     def train(self) -> None:
         """
@@ -122,6 +119,9 @@ class SinglePassBestOfNTrainer(SuperHFTrainer):
         # Set up tokenizer
         if self.language_tokenizer.pad_token is None:
             self.language_tokenizer.pad_token = self.language_tokenizer.eos_token
+
+        # Switch to eval mode
+        self.language_model.eval()
 
         # Debug: only use a subset of the prompts
         # self.train_prompts = self.train_prompts[:8]
@@ -165,7 +165,7 @@ class SinglePassBestOfNTrainer(SuperHFTrainer):
             completions.append(completion)
 
         # Save it to a file, writing raw string outputs (e.g. keeping '\n' in plaintext)
-        torch.save(completions, os.path.join(self.output_folder, "completions.pt"))
+        torch.save(completions, os.path.join(self.output_dir, "completions.pt"))
 
     def score_completions(self, batch_size: int) -> None:
         """
@@ -173,7 +173,7 @@ class SinglePassBestOfNTrainer(SuperHFTrainer):
         """
 
         completions: List[str] = torch.load(
-            os.path.join(self.output_dir, self.run_name, "completions.pt")
+            os.path.join(self.output_dir, "completions.pt")
         )
 
         num_prompts: int = len(self.train_prompts)
@@ -223,7 +223,7 @@ class SinglePassBestOfNTrainer(SuperHFTrainer):
 
         torch.save(
             scored_completions,
-            os.path.join(self.output_folder, "scored_completions.pt"),
+            os.path.join(self.output_dir, "scored_completions.pt"),
         )
 
     def filter_completions(self) -> Any:
@@ -231,7 +231,7 @@ class SinglePassBestOfNTrainer(SuperHFTrainer):
         Select the top 1 of the $n$ completions for each prompt ($d$ total)
         """
         scored_completions = torch.load(
-            os.path.join(self.output_folder, "scored_completions.pt")
+            os.path.join(self.output_dir, "scored_completions.pt")
         )
         num_prompts: int = len(scored_completions) // self.completions_per_prompt
 
@@ -250,7 +250,7 @@ class SinglePassBestOfNTrainer(SuperHFTrainer):
 
         torch.save(
             filtered_completions,
-            os.path.join(self.output_dir, self.run_name, "filtered_completions.pt"),
+            os.path.join(self.output_dir, "filtered_completions.pt"),
         )
         return scored_completions, filtered_completions
 
@@ -260,7 +260,7 @@ class SinglePassBestOfNTrainer(SuperHFTrainer):
         Evaluate the loss and average reward during training.
         """
         filtered_completions = torch.load(
-            os.path.join(self.output_dir, self.run_name, "filtered_completions.pt")
+            os.path.join(self.output_dir, "filtered_completions.pt")
         )
         print(f"Loaded {len(filtered_completions)} filtered completions")
         for completion in filtered_completions[:2]:
