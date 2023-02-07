@@ -58,3 +58,4 @@ MANIFEST
 # SuperHF Edits
 .mypy_cache
 # experiments/**/output
+wandb
