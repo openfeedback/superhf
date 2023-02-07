@@ -10,8 +10,7 @@ from typing import List, Dict, Union, Any, Optional
 
 import torch
 from torch import nn
-
-# import numpy as np
+import numpy as np
 from tqdm import tqdm
 from transformers import (
     # Trainer,
@@ -178,11 +177,11 @@ class SinglePassBestOfNTrainer(SuperHFTrainer):
 
         num_prompts: int = len(self.train_prompts)
         # Debug: only use a subset of the completions
-        # completions = [
-        #     completion
-        #     for i, completion in enumerate(completions)
-        #     if i % num_prompts < 1024
-        # ]
+        completions = [
+            completion
+            for i, completion in enumerate(completions)
+            if i % num_prompts < 1024
+        ]
 
         # OOM Fix: Filter completions in a set longer than 1000 characters
         bad_indices = []
@@ -214,12 +213,20 @@ class SinglePassBestOfNTrainer(SuperHFTrainer):
         print("Scoring completions...")
         for row, completion in zip(
             tqdm(
-                pipe(KeyDataset(dataset, "completion"), batch_size=batch_size),
+                pipe(
+                    KeyDataset(dataset, "completion"),
+                    batch_size=batch_size,
+                    max_length=512,
+                ),
                 total=len(dataset),
             ),
             completions,
         ):
             scored_completions.append({"score": row["score"], "completion": completion})
+
+        print(
+            f'Average reward: {np.mean([float(row["score"]) for row in scored_completions])}'
+        )
 
         torch.save(
             scored_completions,
