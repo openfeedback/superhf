@@ -177,18 +177,17 @@ class SinglePassBestOfNTrainer(SuperHFTrainer):
 
         num_prompts: int = len(self.train_prompts)
         # Debug: only use a subset of the completions
-        completions = [
-            completion
-            for i, completion in enumerate(completions)
-            if i % num_prompts < 1024
-        ]
+        # completions = [
+        #     completion
+        #     for i, completion in enumerate(completions)
+        #     if i % num_prompts < 1024
+        # ]
 
         # OOM Fix: Filter completions in a set longer than 1000 characters
         bad_indices = []
         for i, completion in enumerate(completions):
             if len(completion) > 1000:
                 bad_indices.append(i % num_prompts)
-
         old_size = len(completions)
         completions = [
             completion
