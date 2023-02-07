@@ -1,18 +1,18 @@
 """
 This file creates a dataset of human preference data.
 
-Datasets are torch.utils.data.Dataset objects that can be indexed to return 
+Datasets are torch.utils.data.Dataset objects that can be indexed to return
 a datum as a Tuple[str, str] in the form (winner_response, loser_response).
 
 The PreferenceDataCollator, passed to the RewardModelTrainer, forms batches
-by taking as input a list of tuples (winner_response, loser_response) and 
-returning a dict {"winner": winner_tokenized, "loser": loser_tokenized}. 
+by taking as input a list of tuples (winner_response, loser_response) and
+returning a dict {"winner": winner_tokenized, "loser": loser_tokenized}.
 
 RewardModelTrainer.compute_loss(model, inputs) accepts this dict as the
 `inputs` argument.
 """
 
-
+import torch
 from torch.utils.data import Dataset
 from datasets import load_dataset
 
@@ -23,12 +23,14 @@ class PreferenceDataCollator:
     are of the same type as the elements of train_dataset and eval_dataset.
     """
 
-    def __init__(self, tokenizer, padding=True, max_length=None):
+    def __init__(self, tokenizer, device="cpu", padding=True, max_length=None):
         self.tokenizer = tokenizer
         self.padding = padding
         self.max_length = max_length
+        self.device = device
 
     def __call__(self, batch):
+
         winner_responses = []
         loser_responses = []
         for winner, loser in batch:
@@ -41,14 +43,15 @@ class PreferenceDataCollator:
             padding=self.padding,
             max_length=self.max_length,
             truncation=True,
-        )
+        ).to(self.device)
+
         loser_tokenized = self.tokenizer(
             loser_responses,
             return_tensors="pt",
             padding=self.padding,
             max_length=self.max_length,
             truncation=True,
-        )
+        ).to(self.device)
 
         return {"winner": winner_tokenized, "loser": loser_tokenized}
 

@@ -106,9 +106,11 @@ class RewardModel(nn.Module):
 
 
 if __name__ == "__main__":
+    device = "cuda:0" if torch.cuda.is_available() else "cpu"
+
     model_name = "distilbert-base-uncased"
     tokenizer = AutoTokenizer.from_pretrained(model_name)
-    model = RewardModel(model_name)
+    model = RewardModel(model_name).to(device)
 
     arguments = TrainingArguments(
         output_dir=f"{model_name}_finetuned",
@@ -129,10 +131,9 @@ if __name__ == "__main__":
     trainer = RewardModelTrainer(
         model=model,
         args=arguments,
-        data_collator=PreferenceDataCollator(tokenizer),
+        data_collator=PreferenceDataCollator(tokenizer, device),
         train_dataset=train_dataset,
         eval_dataset=eval_dataset,
         compute_metrics=compute_metrics,
     )
-
     trainer.train()
