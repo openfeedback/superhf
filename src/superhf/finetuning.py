@@ -315,6 +315,9 @@ class SinglePassBestOfNTrainer(SuperHFTrainer):
         )
         trainer.train()
 
+        eval_results = trainer.evaluate()
+        print(eval_results)
+
     def compute_metrics(self, _: EvalPrediction) -> Dict[str, float]:
         """
         Compute the average reward of new completions on the test prompts.
@@ -359,9 +362,6 @@ class SinglePassBestOfNTrainer(SuperHFTrainer):
                 f"{previous_size} total to prevent OOM."
             )
 
-        # Print an example completion
-        print(f"Example completion: {completions[0]}")
-
         # Now evaluate the completions with the reward model
         completions_dataset = Dataset.from_dict({"completion": completions})
 
@@ -373,7 +373,6 @@ class SinglePassBestOfNTrainer(SuperHFTrainer):
             device=self.reward_model.device,
         )
         scores: List[float] = []
-        print("Scoring completions...")
         for row, completion in zip(
             pipe(
                 KeyDataset(completions_dataset, "completion"),
@@ -383,6 +382,10 @@ class SinglePassBestOfNTrainer(SuperHFTrainer):
             completions,
         ):
             scores.append(row["score"])
+
+        # Print an example completion
+        print(f"Example completion: {completions[0]}")
+        print(f"Example score: {scores[0]}")
 
         average_reward = float(np.mean(scores))
         return {"average_reward": average_reward}
