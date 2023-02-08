@@ -365,7 +365,6 @@ class SinglePassBestOfNTrainer(SuperHFTrainer):
         # Now evaluate the completions with the reward model
         completions_dataset = Dataset.from_dict({"completion": completions})
 
-        # Use $R$ to select the top 1 of the $n$ completions for each prompt ($d$ total).
         pipe = pipeline(
             "text-classification",
             model=self.reward_model,
@@ -388,7 +387,13 @@ class SinglePassBestOfNTrainer(SuperHFTrainer):
         print(f"Example score: {scores[0]}")
 
         average_reward = float(np.mean(scores))
-        return {"average_reward": average_reward}
+        average_completion_length = float(
+            np.mean([len(completion) for completion in completions])
+        )
+        return {
+            "average_reward": average_reward,
+            "average_completion_length": average_completion_length,
+        }
 
 
 # class IterativeBestOfNTrainer(SuperHFTrainer):
