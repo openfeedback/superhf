@@ -59,3 +59,4 @@ MANIFEST
 .mypy_cache
 # experiments/**/output
 wandb
+checkpoints

@@ -303,6 +303,7 @@ class SinglePassBestOfNTrainer(SuperHFTrainer):
         data_collator = DataCollatorForLanguageModeling(
             tokenizer=self.language_tokenizer, mlm=False
         )
+        self.compute_metrics(EvalPrediction(predictions=[], label_ids=[]))
         self.language_model.train()
         trainer = Trainer(
             model=self.language_model,
@@ -335,9 +336,9 @@ class SinglePassBestOfNTrainer(SuperHFTrainer):
             batch_size=self.training_args.eval_batch_size,
             max_new_tokens=256,
             # temperature=self.temperature,
+            do_sample=False,
             pad_token_id=self.language_tokenizer.pad_token_id,
             early_stopping=True,
-            do_sample=False,
         ):
             completion = out[0]["generated_text"]
             # Filter out everything including and after the second "\n\nHuman:"
@@ -345,6 +346,21 @@ class SinglePassBestOfNTrainer(SuperHFTrainer):
             completion = "\n\nHuman:".join(completion.split("\n\nHuman:")[:2])
             completion = "\n\nAssistant:".join(completion.split("\n\nAssistant:")[:2])
             completions.append(completion)
+
+        # OOM Fix: Filter completions in a set longer than 1000 characters
+        previous_size = len(completions)
+        completions = [
+            completion for completion in completions if len(completion) < 1000
+        ]
+        new_size = len(completions)
+        if new_size < previous_size:
+            print(
+                f"Filtered {previous_size - new_size} completions from "
+                f"{previous_size} total to prevent OOM."
+            )
+
+        # Print an example completion
+        print(f"Example completion: {completions[0]}")
 
         # Now evaluate the completions with the reward model
         completions_dataset = Dataset.from_dict({"completion": completions})
