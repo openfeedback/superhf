@@ -60,3 +60,7 @@ MANIFEST
 # experiments/**/output
 wandb
 checkpoints
+
+# AWS VM connection
+.vscode/sftp.json
+*.pem
