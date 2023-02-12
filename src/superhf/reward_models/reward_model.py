@@ -107,15 +107,16 @@ class RewardModel(nn.Module):
 
 if __name__ == "__main__":
     device = "cuda:0" if torch.cuda.is_available() else "cpu"
+    # device = 'cpu'
 
     model_name = "distilbert-base-uncased"
-    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    tokenizer = AutoTokenizer.from_pretrained(model_name, max_length=256)
     model = RewardModel(model_name).to(device)
 
     arguments = TrainingArguments(
         output_dir=f"{model_name}_finetuned",
-        per_device_train_batch_size=16,
-        per_device_eval_batch_size=16,
+        per_device_train_batch_size=1,
+        per_device_eval_batch_size=1,
         num_train_epochs=3,
         evaluation_strategy="epoch",
         save_strategy="epoch",
@@ -124,6 +125,7 @@ if __name__ == "__main__":
         load_best_model_at_end=True,
         seed=420,
     )
+    # breakpoint()
 
     train_dataset = AnthropicHelpfulHarmless("train")
     eval_dataset = AnthropicHelpfulHarmless("test")

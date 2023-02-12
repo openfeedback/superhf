@@ -43,7 +43,8 @@ class PreferenceDataCollator:
             padding=self.padding,
             max_length=self.max_length,
             truncation=True,
-        ).to(self.device)
+        )
+        # ).to(self.device)
 
         loser_tokenized = self.tokenizer(
             loser_responses,
@@ -51,7 +52,8 @@ class PreferenceDataCollator:
             padding=self.padding,
             max_length=self.max_length,
             truncation=True,
-        ).to(self.device)
+        )
+        # ).to(self.device)
 
         return {"winner": winner_tokenized, "loser": loser_tokenized}
 
