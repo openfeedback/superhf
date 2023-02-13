@@ -84,7 +84,11 @@ class RewardModelTrainer(Trainer):
             with winner_scores in first column and loser_scores in second.
         """
         loss, reward_scores = self.compute_loss(model, inputs, True)
-        return (loss, None) if prediction_loss_only else (loss, reward_scores)
+        loss = loss.detach()
+        reward_scores = reward_scores.detach()
+        return (
+            (loss, None, None) if prediction_loss_only else (loss, reward_scores, None)
+        )
 
 
 class RewardModel(nn.Module):
