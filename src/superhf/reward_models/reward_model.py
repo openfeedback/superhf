@@ -87,7 +87,10 @@ class RewardModelTrainer(Trainer):
         loss = loss.detach()
         reward_scores = reward_scores.detach()
         return (
-            (loss, None, None) if prediction_loss_only else (loss, reward_scores, None)
+            (loss, None, None)
+            if prediction_loss_only
+            else (loss, reward_scores, None)
+            # returns length 3 tuple as HF expects (loss, logits, labels)
         )
 
 
@@ -118,7 +121,7 @@ if __name__ == "__main__":
     model = RewardModel(model_name).to(device)
 
     arguments = TrainingArguments(
-        output_dir=f"{model_name}_finetuned",
+        output_dir=f"{model_name}_reward_model_HH",
         per_device_train_batch_size=1,
         per_device_eval_batch_size=1,
         num_train_epochs=3,
