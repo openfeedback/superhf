@@ -26,6 +26,7 @@ NUM_TEST_EXAMPLES = 100
 TUNING_INTERVAL = 100
 RANDOM_SEED = 66
 OUTPUT_DIR = "v2.00"
+SMALL_DEBUGGING_SAMPLE = 1000  # Set to None to use the full dataset
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 assert torch.cuda.is_available(), "Must be using a GPU."
@@ -47,7 +48,7 @@ language_tokenizer = AutoTokenizer.from_pretrained(
 reward_tokenizer = AutoTokenizer.from_pretrained(REWARD_MODEL_NAME)
 
 # Load a list of prompts
-dataset = get_superhf_prompts(DATASET_NAME)
+dataset = get_superhf_prompts(DATASET_NAME)[:SMALL_DEBUGGING_SAMPLE]
 
 # Plot a histogram of the word counts
 plt.hist([len(example.split()) for example in dataset], bins=50, log=True)
