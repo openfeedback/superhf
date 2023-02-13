@@ -7,36 +7,45 @@
 alabaster==0.7.13
     # via sphinx
 appdirs==1.4.4
-    # via esbonio
-astroid==2.14.1
+    # via
+    #   esbonio
+    #   wandb
+appnope==0.1.3
+    # via
+    #   ipykernel
+    #   ipython
+astroid==2.14.2
     # via pylint
 asttokens==2.2.1
     # via stack-data
+attrs==22.2.0
+    # via
+    #   -c requirements/prod.txt
+    #   cattrs
+    #   lsprotocol
 babel==2.11.0
     # via sphinx
 backcall==0.2.0
     # via ipython
 black==23.1.0
     # via -r requirements/dev.in
+cattrs==22.2.0
+    # via lsprotocol
 certifi==2022.12.7
     # via
-    #   -c requirements\prod.txt
+    #   -c requirements/prod.txt
     #   requests
+    #   sentry-sdk
 cfgv==3.3.1
     # via pre-commit
-charset-normalizer==2.1.1
+charset-normalizer==3.0.1
     # via
-    #   -c requirements\prod.txt
+    #   -c requirements/prod.txt
     #   requests
 click==8.1.3
-    # via black
-colorama==0.4.6
     # via
-    #   -c requirements\prod.txt
-    #   click
-    #   ipython
-    #   pylint
-    #   sphinx
+    #   black
+    #   wandb
 comm==0.1.2
     # via ipykernel
 debugpy==1.6.6
@@ -45,33 +54,41 @@ decorator==5.1.1
     # via ipython
 dill==0.3.6
     # via
-    #   -c requirements\prod.txt
+    #   -c requirements/prod.txt
     #   pylint
 distlib==0.3.6
     # via virtualenv
+docker-pycreds==0.4.0
+    # via wandb
 docutils==0.19
     # via sphinx
-esbonio==0.15.0
+esbonio==0.16.0
     # via -r requirements/dev.in
+exceptiongroup==1.1.0
+    # via cattrs
 executing==1.2.0
     # via stack-data
 filelock==3.9.0
     # via
-    #   -c requirements\prod.txt
+    #   -c requirements/prod.txt
     #   virtualenv
-identify==2.5.17
+gitdb==4.0.10
+    # via gitpython
+gitpython==3.1.30
+    # via wandb
+identify==2.5.18
     # via pre-commit
 idna==3.4
     # via
-    #   -c requirements\prod.txt
+    #   -c requirements/prod.txt
     #   requests
 imagesize==1.4.1
     # via sphinx
-ipykernel==6.21.1
+ipykernel==6.21.2
     # via
     #   -r requirements/dev.in
     #   ipywidgets
-ipython==8.9.0
+ipython==8.10.0
     # via
     #   -r requirements/dev.in
     #   ipykernel
@@ -94,6 +111,8 @@ jupyterlab-widgets==3.0.5
     # via ipywidgets
 lazy-object-proxy==1.9.0
     # via astroid
+lsprotocol==2022.0.0a10
+    # via pygls
 markupsafe==2.1.2
     # via jinja2
 matplotlib-inline==0.1.6
@@ -102,9 +121,9 @@ matplotlib-inline==0.1.6
     #   ipython
 mccabe==0.7.0
     # via pylint
-mypy==0.991
+mypy==1.0.0
     # via -r requirements/dev.in
-mypy-extensions==0.4.3
+mypy-extensions==1.0.0
     # via
     #   black
     #   mypy
@@ -114,7 +133,7 @@ nodeenv==1.7.0
     # via pre-commit
 packaging==23.0
     # via
-    #   -c requirements\prod.txt
+    #   -c requirements/prod.txt
     #   black
     #   ipykernel
     #   sphinx
@@ -122,61 +141,77 @@ parso==0.8.3
     # via jedi
 pathspec==0.11.0
     # via black
+pathtools==0.1.2
+    # via wandb
+pexpect==4.8.0
+    # via ipython
 pickleshare==0.7.5
     # via ipython
-platformdirs==2.6.2
+platformdirs==3.0.0
     # via
     #   black
     #   jupyter-core
     #   pylint
     #   virtualenv
-pre-commit==3.0.3
+pre-commit==3.0.4
     # via -r requirements/dev.in
 prompt-toolkit==3.0.36
     # via ipython
+protobuf==4.21.12
+    # via wandb
 psutil==5.9.4
-    # via ipykernel
+    # via
+    #   -c requirements/prod.txt
+    #   ipykernel
+    #   wandb
+ptyprocess==0.7.0
+    # via pexpect
 pure-eval==0.2.2
     # via stack-data
-pydantic==1.10.4
-    # via pygls
-pygls==0.13.1
+pygls==1.0.0
     # via esbonio
 pygments==2.14.0
     # via
     #   ipython
     #   sphinx
-pylint==2.16.1
+pylint==2.16.2
     # via -r requirements/dev.in
 pyspellchecker==0.7.1
     # via esbonio
 python-dateutil==2.8.2
     # via
-    #   -c requirements\prod.txt
+    #   -c requirements/prod.txt
     #   jupyter-client
 pytz==2022.7.1
     # via
-    #   -c requirements\prod.txt
+    #   -c requirements/prod.txt
     #   babel
-pywin32==305
-    # via jupyter-core
 pyyaml==6.0
     # via
-    #   -c requirements\prod.txt
+    #   -c requirements/prod.txt
     #   pre-commit
+    #   wandb
 pyzmq==25.0.0
     # via
     #   ipykernel
     #   jupyter-client
 requests==2.28.2
     # via
-    #   -c requirements\prod.txt
+    #   -c requirements/prod.txt
     #   sphinx
+    #   wandb
+sentry-sdk==1.15.0
+    # via wandb
+setproctitle==1.3.2
+    # via wandb
 six==1.16.0
     # via
-    #   -c requirements\prod.txt
+    #   -c requirements/prod.txt
     #   asttokens
+    #   docker-pycreds
     #   python-dateutil
+smmap==5.0.0
+    # via gitdb
 snowballstemmer==2.2.0
     # via sphinx
 sphinx==6.1.3
@@ -218,20 +253,25 @@ traitlets==5.9.0
     #   jupyter-core
     #   matplotlib-inline
 typeguard==2.13.3
-    # via pygls
+    # via
+    #   -c requirements/prod.txt
+    #   pygls
+types-tqdm==4.64.7.12
+    # via -r requirements/dev.in
 typing-extensions==4.4.0
     # via
-    #   -c requirements\prod.txt
+    #   -c requirements/prod.txt
     #   astroid
-    #   esbonio
     #   mypy
-    #   pydantic
 urllib3==1.26.14
     # via
-    #   -c requirements\prod.txt
+    #   -c requirements/prod.txt
     #   requests
-virtualenv==20.17.1
+    #   sentry-sdk
+virtualenv==20.19.0
     # via pre-commit
+wandb==0.13.10
+    # via -r requirements/dev.in
 wcwidth==0.2.6
     # via prompt-toolkit
 widgetsnbextension==4.0.5
