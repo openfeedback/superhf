@@ -73,5 +73,5 @@ class AnthropicHelpfulHarmless(Dataset):
         return self.winner_responses[idx], self.loser_responses[idx]
 
     def __len__(self):
-        return 10
+        return 3
         return len(self.winner_responses)

@@ -40,8 +40,10 @@ def compute_metrics(eval_prediction):
     """
 
     reward_scores = eval_prediction.prediction
-    correct_predictions = (reward_scores[:, 0] - reward_scores[:, 1]) > 0
-    return correct_predictions.sum() / correct_predictions.size[0]
+    total = reward_scores.size[0]
+    num_correct = ((reward_scores[:, 0] - reward_scores[:, 1]) > 0).sum()
+    accuracy = num_correct / total
+    return accuracy
 
 
 class RewardModelTrainer(Trainer):
