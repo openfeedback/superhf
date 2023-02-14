@@ -1,18 +1,19 @@
 """
-This file implements our reward model.
+This file implements the training of a reward model.
 """
 
 
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torch.utils.data import Dataset
 from transformers import (
     Trainer,
     TrainingArguments,
     AutoTokenizer,
     AutoModelForSequenceClassification,
 )
-from reward_model_datasets import PreferenceDataCollator, AnthropicHelpfulHarmless
+from reward_model_datasets import AnthropicHelpfulHarmless
 
 
 class PreferenceLoss(nn.Module):
@@ -112,6 +113,45 @@ class RewardModel(nn.Module):
 
     def forward(self, inputs):
         return self.model(**inputs)
+
+
+class PreferenceDataCollator:
+    """
+    Forms a batch by using a list of dataset elements as input. These elements
+    are of the same type as the elements of train_dataset and eval_dataset.
+    """
+
+    def __init__(self, tokenizer, device="cpu", padding=True, max_length=None):
+        self.tokenizer = tokenizer
+        self.padding = padding
+        self.max_length = max_length
+        self.device = device
+
+    def __call__(self, batch):
+
+        winner_responses = []
+        loser_responses = []
+        for winner, loser in batch:
+            winner_responses.append(winner)
+            loser_responses.append(loser)
+
+        winner_tokenized = self.tokenizer(
+            winner_responses,
+            return_tensors="pt",
+            padding=self.padding,
+            max_length=self.max_length,
+            truncation=True,
+        ).to(self.device)
+
+        loser_tokenized = self.tokenizer(
+            loser_responses,
+            return_tensors="pt",
+            padding=self.padding,
+            max_length=self.max_length,
+            truncation=True,
+        ).to(self.device)
+
+        return {"winner": winner_tokenized, "loser": loser_tokenized}
 
 
 if __name__ == "__main__":
