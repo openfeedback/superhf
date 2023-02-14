@@ -116,7 +116,7 @@ class RewardModel(nn.Module):
 
 if __name__ == "__main__":
     device = "cuda:0" if torch.cuda.is_available() else "cpu"
-    # device = 'cpu'
+    dataloader_pin_memory = not torch.cuda.is_available()
 
     model_name = "distilbert-base-uncased"
     tokenizer = AutoTokenizer.from_pretrained(model_name, max_length=256)
@@ -133,6 +133,7 @@ if __name__ == "__main__":
         weight_decay=0.01,
         load_best_model_at_end=True,
         seed=420,
+        dataloader_pin_memory=dataloader_pin_memory,
     )
     # breakpoint()
 
