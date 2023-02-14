@@ -2,7 +2,8 @@
 numpy
 transformers
 datasets
-accelerate
-torch>=1.13.1
-torchtyping
 matplotlib
+# The below have a bug due to requiring torch
+# torch>=1.13.1
+# accelerate
+# torchtyping
