@@ -7,6 +7,7 @@ import os
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import List, Dict, Union, Any, Optional
+import random
 
 import torch
 from torch import nn
@@ -299,11 +300,11 @@ class SinglePassBestOfNTrainer(SuperHFTrainer):
             batched=True,
         )
 
-        print("Beginning training...")
         data_collator = DataCollatorForLanguageModeling(
             tokenizer=self.language_tokenizer, mlm=False
         )
-        self.compute_metrics(EvalPrediction(predictions=[], label_ids=[]))
+        # self.compute_metrics(EvalPrediction(predictions=[], label_ids=[]))
+        print("Beginning training...")
         self.language_model.train()
         trainer = Trainer(
             model=self.language_model,
@@ -326,6 +327,7 @@ class SinglePassBestOfNTrainer(SuperHFTrainer):
         completions for the test prompts, which is not possible with the
         Trainer API.
         """
+        print("Computing metrics...")
         pipe = pipeline(
             "text-generation",
             model=self.language_model,
@@ -334,14 +336,17 @@ class SinglePassBestOfNTrainer(SuperHFTrainer):
         )
 
         completions: List[str] = []
-        for out in pipe(
-            KeyDataset(self.eval_dataset, "prompt"),
-            batch_size=self.training_args.eval_batch_size,
-            max_new_tokens=256,
-            # temperature=self.temperature,
-            do_sample=False,
-            pad_token_id=self.language_tokenizer.pad_token_id,
-            early_stopping=True,
+        for out in tqdm(
+            pipe(
+                KeyDataset(self.eval_dataset, "prompt"),
+                batch_size=self.training_args.eval_batch_size,
+                max_new_tokens=256,
+                # temperature=self.temperature,
+                do_sample=False,
+                pad_token_id=self.language_tokenizer.pad_token_id,
+                early_stopping=True,
+            ),
+            total=len(self.eval_dataset),
         ):
             completion = out[0]["generated_text"]
             # Filter out everything including and after the second "\n\nHuman:"
@@ -350,7 +355,7 @@ class SinglePassBestOfNTrainer(SuperHFTrainer):
             completion = "\n\nAssistant:".join(completion.split("\n\nAssistant:")[:2])
             completions.append(completion)
 
-        # OOM Fix: Filter completions in a set longer than 1000 characters
+        # RM OOM Fix: Filter completions in a set longer than 1000 characters
         previous_size = len(completions)
         completions = [
             completion for completion in completions if len(completion) < 1000
@@ -373,18 +378,22 @@ class SinglePassBestOfNTrainer(SuperHFTrainer):
         )
         scores: List[float] = []
         for row, completion in zip(
-            pipe(
-                KeyDataset(completions_dataset, "completion"),
-                batch_size=self.training_args.eval_batch_size,
-                max_length=512,
+            tqdm(
+                pipe(
+                    KeyDataset(completions_dataset, "completion"),
+                    batch_size=self.training_args.eval_batch_size,
+                    max_length=512,
+                ),
+                total=len(completions_dataset),
             ),
             completions,
         ):
             scores.append(row["score"])
 
-        # Print an example completion
-        print(f"Example completion: {completions[0]}")
-        print(f"Example score: {scores[0]}")
+        # Print a random example completion
+        index = random.randint(0, len(completions) - 1)
+        print(f"Example completion: {completions[index]}")
+        print(f"Example score: {scores[index]}")
 
         average_reward = float(np.mean(scores))
         average_completion_length = float(
