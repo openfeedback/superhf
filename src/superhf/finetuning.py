@@ -6,7 +6,7 @@ from a reward model without the use of reinforcement learning).
 import os
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import List, Dict, Union, Any, Optional
+from typing import List, Dict, Union, Any, Optional, Tuple
 
 import torch
 from torch import nn
@@ -20,12 +20,13 @@ from transformers import (
     PreTrainedTokenizerBase,
     pipeline,
     EvalPrediction,
-)
+)  # type: ignore
 from transformers.pipelines.pt_utils import KeyDataset
 from datasets.arrow_dataset import Dataset
 from datasets.utils import logging
 
 # from torchtyping import TensorType
+logger = logging.get_logger(__name__)
 
 
 @dataclass
@@ -144,7 +145,7 @@ class SinglePassBestOfNTrainer(SuperHFTrainer):
             device=self.language_model.device,
         )
 
-        print("Generating completions...")
+        logger.info("Generating completions...")
         completions: List[str] = []
 
         # for out in pipe(KeyDataset(train_dataset, "prompt")):
@@ -199,8 +200,12 @@ class SinglePassBestOfNTrainer(SuperHFTrainer):
             if i % num_prompts not in bad_indices
         ]
         new_size = len(completions)
-        print(
-            f"Loaded {new_size} completions (filtered {old_size - new_size} from {old_size} total)."
+        logger.info(
+            "Loaded %d%% (%d completions) (filtered %d%% from %d total)",
+            int(new_size / old_size * 100),
+            new_size,
+            int(100 - new_size / old_size * 100),
+            old_size,
         )
 
         train_dataset = Dataset.from_dict({"completion": completions})
@@ -236,11 +241,13 @@ class SinglePassBestOfNTrainer(SuperHFTrainer):
             os.path.join(self.output_dir, "scored_completions.pt"),
         )
 
-    def filter_completions(self) -> Any:
+    def filter_completions(
+        self,
+    ) -> Tuple[Any, List[Dict[str, Union[str, float]]]]:
         """
         Select the top 1 of the $n$ completions for each prompt ($d$ total)
         """
-        scored_completions = torch.load(
+        scored_completions: List[Dict[str, Union[str, float]]] = torch.load(
             os.path.join(self.output_dir, "scored_completions.pt")
         )
         num_prompts: int = len(scored_completions) // self.completions_per_prompt
@@ -357,9 +364,11 @@ class SinglePassBestOfNTrainer(SuperHFTrainer):
         ]
         new_size = len(completions)
         if new_size < previous_size:
-            print(
-                f"Filtered {previous_size - new_size} completions from "
-                f"{previous_size} total to prevent OOM."
+            logger.info(
+                "Filtered %d completions (%.2f%% of %d total) to prevent OOM.",
+                previous_size - new_size,
+                100 * (previous_size - new_size) / previous_size,
+                previous_size,
             )
 
         # Now evaluate the completions with the reward model
