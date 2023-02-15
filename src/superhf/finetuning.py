@@ -218,6 +218,7 @@ class SinglePassBestOfNTrainer(SuperHFTrainer):
             device=self.reward_model.device,
         )
         scored_completions: List[Dict[str, Union[str, float]]] = []
+        print(f"There are {len(train_dataset)} completions to score.")
         print("Scoring completions...")
         for row, completion in zip(
             tqdm(

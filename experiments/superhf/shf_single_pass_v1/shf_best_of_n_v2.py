@@ -11,6 +11,7 @@ Example Usage:
 """
 
 import os
+import platform
 import random
 import sys
 import argparse
@@ -36,7 +37,6 @@ NUM_TRAIN_EXAMPLES = 8000
 NUM_TEST_EXAMPLES = 100
 RANDOM_SEED = 66
 OUTPUT_DIR = "v2"
-SMALL_DEBUGGING_SAMPLE = 1000  # Set to None to use the full dataset
 SHUTDOWN_AFTER_RUN = True
 MAX_EXAMPLE_LENGTH = 36
 
@@ -55,6 +55,13 @@ def parse_args() -> argparse.Namespace:
         "--generate",
         action="store_true",
         help="Specify this flag to generate completions instead of finetuning the assistant.",
+    )
+    parser.add_argument(
+        "-d",
+        "--debug",
+        action="store_true",
+        help="Specify this flag to run the experiment in debug mode. In this mode we use"
+        " 1,000 prompts for training, and only load",
     )
     return parser.parse_args()
 
@@ -117,8 +124,9 @@ def split_dataset(dataset: list[str]) -> tuple[list[str], list[str]]:
 def print_statistics(
     all_completions: List[Dict[str, Union[str, float]]],
     filtered_completions: List[Dict[str, Union[str, float]]],
+    output_dir: str,
 ) -> None:
-    """Print some statistics"""
+    """Print some statistics and plot a histogram of the scores of the completions."""
     scores_all = [completion["score"] for completion in all_completions]
     scores_filtered = [completion["score"] for completion in filtered_completions]
     mean_score_all, std_score_all = (
@@ -134,69 +142,6 @@ def print_statistics(
     print(
         f"Mean score of filtered completions: {mean_score_filtered:.3f} ± {std_score_filtered:.3f}"
     )
-
-
-def main() -> None:
-    """
-    Main function that runs the experiment.
-    """
-    args = parse_args()
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-    wandb.login()
-
-    # Initialize random seeds for everything
-    random.seed(RANDOM_SEED)
-    torch.manual_seed(RANDOM_SEED)
-    torch.cuda.manual_seed(RANDOM_SEED)
-    transformers.enable_full_determinism(RANDOM_SEED)
-
-    language_model = AutoModelForCausalLM.from_pretrained(LANGUAGE_MODEL_NAME).to(
-        device
-    )
-    reward_model = AutoModelForSequenceClassification.from_pretrained(
-        REWARD_MODEL_NAME
-    ).to(device)
-
-    language_tokenizer = AutoTokenizer.from_pretrained(
-        LANGUAGE_MODEL_NAME, padding_side="left"
-    )
-    reward_tokenizer = AutoTokenizer.from_pretrained(REWARD_MODEL_NAME)
-
-    # Load a list of prompts
-    dataset = get_superhf_prompts(DATASET_NAME)[
-        :SMALL_DEBUGGING_SAMPLE
-    ]  # if none uses full dataset
-
-    plot_word_counts(dataset)
-
-    dataset = prepare_completions_dataset(
-        dataset, max_example_length=MAX_EXAMPLE_LENGTH
-    )
-
-    train_dataset, test_dataset = split_dataset(dataset)
-
-    trainer = SinglePassBestOfNTrainer(
-        language_model,
-        reward_model,
-        language_tokenizer,
-        reward_tokenizer,
-        train_dataset,
-        test_dataset,
-        output_dir=OUTPUT_DIR,
-    )
-
-    if args.generate:
-        print("Generating completions...")
-        generate_completions(trainer)
-        print("Done generating completions, so we exit the script.")
-        sys.exit(0)
-
-    trainer.score_completions(batch_size=8)
-
-    all_completions, filtered_completions = trainer.filter_completions()
-
-    print_statistics(all_completions, filtered_completions)
 
     # Graph a plot of the scores of the all and filtered completions
     plt.hist(
@@ -220,18 +165,91 @@ def main() -> None:
     plt.xlabel("Completion score")
     plt.ylabel("Frequency (log scale)")
     plt.legend()
-    plt.savefig(os.path.join(trainer.output_dir, "completion_scores.png"))
+    plt.savefig(os.path.join(output_dir, "completion_scores.png"))
 
-    # del trainer
-    # trainer = SinglePassBestOfNTrainer(
-    #     language_model,
-    #     reward_model,
-    #     language_tokenizer,
-    #     reward_tokenizer,
-    #     train_dataset,
-    #     test_dataset,
-    #     output_dir=OUTPUT_DIR,
-    # )
+
+def check_node() -> None:
+    """
+    Print what node we are running on and what scratch directories are available.
+    """
+    # print machine name
+    machine_name = platform.node().split(".")[0]
+    print("We are running on node: ", machine_name)
+
+    # print available scratch directories
+    print(" ".join(os.listdir(f"/{machine_name}")))
+
+
+def main() -> None:
+    """
+    Main function that runs the experiment.
+    """
+    args = parse_args()
+    print(args)
+
+    check_node()
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+    wandb.login()
+
+    # Initialize random seeds for everything
+    random.seed(RANDOM_SEED)
+    torch.manual_seed(RANDOM_SEED)
+    torch.cuda.manual_seed(RANDOM_SEED)
+    transformers.enable_full_determinism(RANDOM_SEED)
+
+    language_model = AutoModelForCausalLM.from_pretrained(LANGUAGE_MODEL_NAME).to(
+        device
+    )
+    reward_model = AutoModelForSequenceClassification.from_pretrained(
+        REWARD_MODEL_NAME
+    ).to(device)
+
+    language_tokenizer = AutoTokenizer.from_pretrained(
+        LANGUAGE_MODEL_NAME, padding_side="left"
+    )
+    reward_tokenizer = AutoTokenizer.from_pretrained(REWARD_MODEL_NAME)
+
+    # Load a list of prompts
+    dataset = get_superhf_prompts(DATASET_NAME)
+    if args.debug:
+        dataset = dataset[:1000]
+        print(
+            "Running in debug mode, and now the length of the dataset is: ",
+            len(dataset),
+        )
+
+    plot_word_counts(dataset)
+
+    dataset = prepare_completions_dataset(
+        dataset, max_example_length=MAX_EXAMPLE_LENGTH
+    )
+
+    train_dataset, test_dataset = split_dataset(dataset)
+
+    trainer = SinglePassBestOfNTrainer(
+        language_model,
+        reward_model,
+        language_tokenizer,
+        reward_tokenizer,
+        train_dataset,
+        test_dataset,
+        output_dir=OUTPUT_DIR,
+    )
+
+    if args.generate:
+        print("Generating completions...")
+        generate_completions(trainer)
+        print("Done generating completions, so we exit the script.")
+        trainer.score_completions(batch_size=8)
+        sys.exit(0)
+    else:
+        print("Not generating completions, so we continue with the training code.")
+
+    all_completions, filtered_completions = trainer.filter_completions()
+
+    print_statistics(all_completions, filtered_completions, trainer.output_dir)
+
     config = {
         "language_model_name": LANGUAGE_MODEL_NAME,
         "reward_model_name": REWARD_MODEL_NAME,
