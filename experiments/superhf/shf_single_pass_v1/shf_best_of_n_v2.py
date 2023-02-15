@@ -232,7 +232,7 @@ def main() -> None:
         "language_tokenizer": language_tokenizer,
         "reward_tokenizer": reward_tokenizer,
     }
-    data = {"train_dataset": train_dataset, "test_dataset": test_dataset}
+    data = {"train_prompts": train_dataset, "test_prompts": test_dataset}
 
     trainer = SinglePassBestOfNTrainer(
         models,
@@ -241,26 +241,26 @@ def main() -> None:
         output_dir=args.version,
         debug=args.debug,
     )
-
-    if args.generate:
-        # Load a list of prompts
-        dataset = get_superhf_prompts(DATASET_NAME)
-        if args.debug:
-            dataset = dataset[:1000]
-            print(
-                "Running in debug mode, and now the length of the dataset is: ",
-                len(dataset),
-            )
-
-        plot_word_counts(dataset, args.version)
-
-        dataset = prepare_completions_dataset(
-            dataset, max_example_length=MAX_EXAMPLE_LENGTH
+    # Load a list of prompts
+    dataset = get_superhf_prompts(DATASET_NAME)
+    if args.debug:
+        dataset = dataset[:1000]
+        print(
+            "Running in debug mode, and now the length of the dataset is: ",
+            len(dataset),
         )
 
-        train_dataset, test_dataset = split_dataset(dataset)
+    plot_word_counts(dataset, args.version)
+
+    dataset = prepare_completions_dataset(
+        dataset, max_example_length=MAX_EXAMPLE_LENGTH
+    )
+
+    train_dataset, test_dataset = split_dataset(dataset)
+    trainer.test_prompts = test_dataset
+
+    if args.generate:
         trainer.train_prompts = train_dataset
-        trainer.test_prompts = test_dataset
         print("Generating completions...")
         generate_completions(trainer)
         print("Done generating completions, so we exit the script.")

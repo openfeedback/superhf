@@ -285,6 +285,11 @@ class SinglePassBestOfNTrainer(SuperHFTrainer):
         Evaluate the loss and average reward during training.
         """
         self.training_args = training_args
+        assert (
+            self.output_dir is not None
+        ), "Must specify output_dir both for loading completions and saving the model"
+        assert self.test_prompts is not None, "Must specify test_prompts"
+
         filtered_completions = torch.load(
             os.path.join(self.output_dir, "filtered_completions.pt")
         )
@@ -298,7 +303,7 @@ class SinglePassBestOfNTrainer(SuperHFTrainer):
                 "Debug: only using a subset of the completions, len=",
                 len(filtered_completions),
             )
-
+        print(type(filtered_completions))
         train_dataset = Dataset.from_dict({"completion": filtered_completions})
         eval_dataset = Dataset.from_dict({"prompt": self.test_prompts})
         self.eval_dataset = eval_dataset
