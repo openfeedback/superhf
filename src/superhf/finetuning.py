@@ -314,24 +314,40 @@ class SinglePassBestOfNTrainer(SuperHFTrainer):
         if self.language_tokenizer.pad_token is None:
             self.language_tokenizer.pad_token = self.language_tokenizer.eos_token
 
-        train_dataset_processed = train_dataset.map(
-            lambda examples: self.language_tokenizer(
-                [example["completion"] for example in examples["completion"]],
-                truncation=True,
-            ),
-            batched=True,
-        )
+        train_dataset_processed = []
+        for i in tqdm(range(len(train_dataset))):
+            train_dataset_processed.append(
+                self.language_tokenizer(
+                    train_dataset[i]["completion"]["completion"],
+                    truncation=True,
+                )
+            )
+        # train_dataset_processed = train_dataset.map(
+        #     lambda examples: self.language_tokenizer(
+        #         [example["completion"] for example in examples["completion"]],
+        #         truncation=True,
+        #     ),
+        #     batched=True,
+        # )
         print(
             "We passed the train dataset, it has a length of: ",
             len(train_dataset_processed),
         )
-        test_dataset_processed = eval_dataset.map(
-            lambda examples: self.language_tokenizer(
-                list(examples["prompt"]),
-                truncation=True,
-            ),
-            batched=True,
-        )
+        test_dataset_processed = []
+        for i in tqdm(range(len(eval_dataset))):
+            test_dataset_processed.append(
+                self.language_tokenizer(
+                    eval_dataset[i]["prompt"],
+                    truncation=True,
+                )
+            )
+        # test_dataset_processed = eval_dataset.map(
+        #     lambda examples: self.language_tokenizer(
+        #         list(examples["prompt"]),
+        #         truncation=True,
+        #     ),
+        #     batched=True,
+        # )
         print(
             "We passed the test dataset, it has a length of: ",
             len(test_dataset_processed),

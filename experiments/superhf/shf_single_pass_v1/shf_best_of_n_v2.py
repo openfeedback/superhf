@@ -7,7 +7,7 @@ to evaluate the completions. The other mode uses the completions to finetune the
 the best of n completions as scored by the reward model.
 
 Example Usage:
-
+    python shf_best_of_n_v2.py -v v2 -d --model_name eleutherai/gpt-neo-1.3B
 """
 
 import os
