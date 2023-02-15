@@ -36,7 +36,6 @@ DATASET_NAME = "anthropic-red-team"
 NUM_TRAIN_EXAMPLES = 8000
 NUM_TEST_EXAMPLES = 100
 RANDOM_SEED = 66
-OUTPUT_DIR = "v2"
 SHUTDOWN_AFTER_RUN = True
 MAX_EXAMPLE_LENGTH = 36
 
@@ -64,7 +63,7 @@ def parse_args() -> argparse.Namespace:
         " 1,000 prompts for training, and only load",
     )
     parser.add_argument(
-        "--model_name",
+        "--language_model_name",
         type=str,
         default=LANGUAGE_MODEL_NAME,
         help="The name of the language model to finetune.",
@@ -88,7 +87,7 @@ def generate_completions(trainer: SinglePassBestOfNTrainer) -> None:
     )
 
 
-def plot_word_counts(dataset: list[str]) -> None:
+def plot_word_counts(dataset: list[str], output_dir) -> None:
     """
     Plot a histogram of the word counts.
     """
@@ -96,7 +95,7 @@ def plot_word_counts(dataset: list[str]) -> None:
     plt.title("Histogram of word counts")
     plt.xlabel("Word count")
     plt.ylabel("Frequency (log scale)")
-    plt.savefig(os.path.join(OUTPUT_DIR, "word_counts.png"))
+    plt.savefig(os.path.join(output_dir, "word_counts.png"))
 
 
 def prepare_completions_dataset(
@@ -194,6 +193,8 @@ def check_node() -> None:
     print(" ".join(os.listdir(f"/{machine_name}")))
 
 
+# pylint: disable=too-many-locals
+# pylint: disable=too-many-statements
 def main() -> None:
     """
     Main function that runs the experiment.
@@ -212,64 +213,71 @@ def main() -> None:
     torch.cuda.manual_seed(RANDOM_SEED)
     transformers.enable_full_determinism(RANDOM_SEED)
 
-    language_model = AutoModelForCausalLM.from_pretrained(LANGUAGE_MODEL_NAME).to(
+    language_model = AutoModelForCausalLM.from_pretrained(args.language_model_name).to(
         device
     )
     reward_model = AutoModelForSequenceClassification.from_pretrained(
-        REWARD_MODEL_NAME
+        args.reward_model_name
     ).to(device)
 
     language_tokenizer = AutoTokenizer.from_pretrained(
-        LANGUAGE_MODEL_NAME, padding_side="left"
+        args.language_model_name, padding_side="left"
     )
-    reward_tokenizer = AutoTokenizer.from_pretrained(REWARD_MODEL_NAME)
+    reward_tokenizer = AutoTokenizer.from_pretrained(args.reward_model_name)
 
-    # Load a list of prompts
-    dataset = get_superhf_prompts(DATASET_NAME)
-    if args.debug:
-        dataset = dataset[:1000]
-        print(
-            "Running in debug mode, and now the length of the dataset is: ",
-            len(dataset),
-        )
+    train_dataset, test_dataset = None, None
 
-    plot_word_counts(dataset)
-
-    dataset = prepare_completions_dataset(
-        dataset, max_example_length=MAX_EXAMPLE_LENGTH
-    )
-
-    train_dataset, test_dataset = split_dataset(dataset)
+    models = {"language_model": language_model, "reward_model": reward_model}
+    tokenizers = {
+        "language_tokenizer": language_tokenizer,
+        "reward_tokenizer": reward_tokenizer,
+    }
+    data = {"train_dataset": train_dataset, "test_dataset": test_dataset}
 
     trainer = SinglePassBestOfNTrainer(
-        language_model,
-        reward_model,
-        language_tokenizer,
-        reward_tokenizer,
-        train_dataset,
-        test_dataset,
-        output_dir=OUTPUT_DIR,
+        models,
+        tokenizers,
+        data,
+        output_dir=args.version,
+        debug=args.debug,
     )
 
     if args.generate:
+        # Load a list of prompts
+        dataset = get_superhf_prompts(DATASET_NAME)
+        if args.debug:
+            dataset = dataset[:1000]
+            print(
+                "Running in debug mode, and now the length of the dataset is: ",
+                len(dataset),
+            )
+
+        plot_word_counts(dataset, args.version)
+
+        dataset = prepare_completions_dataset(
+            dataset, max_example_length=MAX_EXAMPLE_LENGTH
+        )
+
+        train_dataset, test_dataset = split_dataset(dataset)
+        trainer.train_prompts = train_dataset
+        trainer.test_prompts = test_dataset
         print("Generating completions...")
         generate_completions(trainer)
         print("Done generating completions, so we exit the script.")
         trainer.score_completions(batch_size=8)
+        all_completions, filtered_completions = trainer.filter_completions()
+
+        print_statistics(all_completions, filtered_completions, trainer.output_dir)
         sys.exit(0)
     else:
         print("Not generating completions, so we continue with the training code.")
 
-    all_completions, filtered_completions = trainer.filter_completions()
-
-    print_statistics(all_completions, filtered_completions, trainer.output_dir)
-
     config = {
-        "language_model_name": LANGUAGE_MODEL_NAME,
-        "reward_model_name": REWARD_MODEL_NAME,
+        "language_model_name": args.language_model_name,
+        "reward_model_name": args.reward_model_name,
         "dataset_name": DATASET_NAME,
-        "num_train_examples": len(train_dataset),
-        "num_test_examples": len(test_dataset),
+        "num_train_examples": -1 if not train_dataset else len(train_dataset),
+        "num_test_examples": -1 if not test_dataset else len(test_dataset),
         "num_train_epochs": 2,
         "lr": 1.0e-7,
         "lr_scheduler_type": "constant",

@@ -38,6 +38,7 @@ class SuperHFTrainingArguments(TrainingArguments):
     reward_model: Optional[nn.Module] = None
 
 
+# pylint: disable=too-few-public-methods
 class SuperHFTrainer(ABC):
     """
     Base class for SuperHF trainers.
@@ -45,6 +46,7 @@ class SuperHFTrainer(ABC):
     Fine-tuned a language model to maximize the scores from a reward model.
     """
 
+    # pylint: disable=too-many-arguments
     def __init__(
         self,
         language_model: PreTrainedModel,
@@ -69,6 +71,7 @@ class SuperHFTrainer(ABC):
         raise NotImplementedError
 
 
+# pylint: disable=too-many-instance-attributes
 class SinglePassBestOfNTrainer(SuperHFTrainer):
     """
     The most basic form of Super HF: filtering completions by the reward model
@@ -82,31 +85,31 @@ class SinglePassBestOfNTrainer(SuperHFTrainer):
         4. Evaluate the loss and average reward during training.
     """
 
+    # pylint: disable=too-many-arguments
     def __init__(
         self,
-        language_model: PreTrainedModel,
-        reward_model: PreTrainedModel,
-        language_tokenizer: PreTrainedTokenizerBase,
-        reward_tokenizer: PreTrainedTokenizerBase,
-        train_prompts: List[str],
-        test_prompts: List[str],
+        models: Dict[str, PreTrainedModel],
+        tokenizers: Dict[str, PreTrainedTokenizerBase],
+        data: Dict[str, List[str]],
         temperature: float = 0.7,
         completions_per_prompt: int = 4,
         output_dir: str = "output",
+        debug: bool = False,
     ) -> None:
         super().__init__(
-            language_model,
-            reward_model,
-            language_tokenizer,
-            reward_tokenizer,
-            train_prompts,
-            test_prompts,
+            models["language_model"],
+            models["reward_model"],
+            tokenizers["language_tokenizer"],
+            tokenizers["reward_tokenizer"],
+            data["train_prompts"],
+            data["test_prompts"],
         )
         self.temperature = temperature
         self.completions_per_prompt = completions_per_prompt
         self.output_dir = output_dir
         self.training_args: Any = None
         self.eval_dataset: Any = None
+        self.debug = debug
         # Make output dir if it doesn't exist
         if not os.path.exists(self.output_dir):
             os.makedirs(self.output_dir)
@@ -266,6 +269,10 @@ class SinglePassBestOfNTrainer(SuperHFTrainer):
         for group in grouped_scored_completions:
             filtered_completions.append(max(group, key=lambda x: x["score"]))
 
+        print(
+            f"Saving {len(filtered_completions)} filtered completions to"
+            f" {os.path.join(self.output_dir, 'filtered_completions.pt')}"
+        )
         torch.save(
             filtered_completions,
             os.path.join(self.output_dir, "filtered_completions.pt"),
@@ -281,29 +288,49 @@ class SinglePassBestOfNTrainer(SuperHFTrainer):
         filtered_completions = torch.load(
             os.path.join(self.output_dir, "filtered_completions.pt")
         )
-        print(f"Loaded {len(filtered_completions)} filtered completions")
+        print(
+            f"Loaded {len(filtered_completions)} filtered completions from "
+            f"{os.path.join(self.output_dir, 'filtered_completions.pt')}"
+        )
+        if self.debug:
+            filtered_completions = filtered_completions[:1024]
+            print(
+                "Debug: only using a subset of the completions, len=",
+                len(filtered_completions),
+            )
 
         train_dataset = Dataset.from_dict({"completion": filtered_completions})
         eval_dataset = Dataset.from_dict({"prompt": self.test_prompts})
         self.eval_dataset = eval_dataset
 
         print("Pre-processing datasets...")
-        if isinstance(train_dataset, torch.utils.data.Dataset):
-            print("train_dataset is a PyTorch dataset")
-        else:
-            print("train_dataset is not a PyTorch dataset")
-            print(type(train_dataset))
+        print(type(train_dataset))
         logging.enable_progress_bar()
         if self.language_tokenizer.pad_token is None:
             self.language_tokenizer.pad_token = self.language_tokenizer.eos_token
 
-        def tokenize_function(examples):
-            return self.language_tokenizer(
-                examples["completion"], truncation=True, padding="max_length"
-            )
-
-        train_dataset_processed = train_dataset.with_transform(tokenize_function)
-        test_dataset_processed = eval_dataset.with_transform(tokenize_function)
+        train_dataset_processed = train_dataset.map(
+            lambda examples: self.language_tokenizer(
+                [example["completion"] for example in examples["completion"]],
+                truncation=True,
+            ),
+            batched=True,
+        )
+        print(
+            "We passed the train dataset, it has a length of: ",
+            len(train_dataset_processed),
+        )
+        test_dataset_processed = eval_dataset.map(
+            lambda examples: self.language_tokenizer(
+                list(examples["prompt"]),
+                truncation=True,
+            ),
+            batched=True,
+        )
+        print(
+            "We passed the test dataset, it has a length of: ",
+            len(test_dataset_processed),
+        )
 
         print("Beginning training...")
         data_collator = DataCollatorForLanguageModeling(
