@@ -292,18 +292,14 @@ class SinglePassBestOfNTrainer(SuperHFTrainer):
         if self.language_tokenizer.pad_token is None:
             self.language_tokenizer.pad_token = self.language_tokenizer.eos_token
 
-        train_dataset_processed = train_dataset.with_transform(
-            lambda examples: self.language_tokenizer(
-                [example["completion"] for example in examples["completion"]],
-                truncation=True,
-            ),
-        )
-        test_dataset_processed = eval_dataset.with_transform(
-            lambda examples: self.language_tokenizer(
-                list(examples["prompt"]),
-                truncation=True,
+        def tokenize_function(examples):
+            print("wooo")
+            return self.language_tokenizer(
+                examples["completion"], truncation=True, padding="max_length"
             )
-        )
+
+        train_dataset_processed = train_dataset.with_transform(tokenize_function)
+        test_dataset_processed = eval_dataset.with_transform(tokenize_function)
 
         print("Beginning training...")
         data_collator = DataCollatorForLanguageModeling(
