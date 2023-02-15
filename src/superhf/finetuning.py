@@ -288,12 +288,16 @@ class SinglePassBestOfNTrainer(SuperHFTrainer):
         self.eval_dataset = eval_dataset
 
         print("Pre-processing datasets...")
+        if isinstance(train_dataset, torch.utils.data.Dataset):
+            print("train_dataset is a PyTorch dataset")
+        else:
+            print("train_dataset is not a PyTorch dataset")
+            print(type(train_dataset))
         logging.enable_progress_bar()
         if self.language_tokenizer.pad_token is None:
             self.language_tokenizer.pad_token = self.language_tokenizer.eos_token
 
         def tokenize_function(examples):
-            print("wooo")
             return self.language_tokenizer(
                 examples["completion"], truncation=True, padding="max_length"
             )
