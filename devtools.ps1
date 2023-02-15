@@ -6,10 +6,8 @@ function Usage {
     Write-Output "Usage: ./devtools.ps1 [command]"
     Write-Output "Commands:"
     Write-Output "  activate: Activate the conda environment or create it if it doesn't exist"
-    Write-Output "  upgradegpu: Upgrade the dependencies and install PyTorch (GPU)"
-    Write-Output "  upgradecpu: Upgrade the dependencies and install PyTorch (CPU)"
-    Write-Output "  installgpu: Install pip dependencies and PyTorch (GPU)"
-    Write-Output "  installcpu: Install pip dependencies and PyTorch (CPU)"
+    Write-Output "  upgrade: Upgrade the dependencies and install PyTorch"
+    Write-Output "  install: Install pip dependencies and PyTorch"
     Write-Output "  mergemain: Pull main and merge into this branch (no fast-forward)"
 }
 
@@ -35,22 +33,14 @@ function Upgrade-Requirements {
     # Update the pip dependencies
     Invoke-Expression "pip-compile --upgrade -v requirements/prod.in"
     Invoke-Expression "pip-compile --upgrade -v requirements/dev.in"
-    Invoke-Expression "pip-compile --upgrade -v requirements/torchgpu.in"
-    Invoke-Expression "pip-compile --upgrade -v requirements/torchcpu.in"
 }
 
-# Install frozen pip packages and PyTorch (GPU)
-function Install-GPU {
+# Install frozen pip packages and PyTorch
+function Install {
     Activate
-    Invoke-Expression "pip-sync requirements/prod.txt requirements/dev.txt requirements/torchgpu.txt"
-    Invoke-Expression "pip install -e ."
-    Invoke-Expression "pre-commit install"
-}
-
-# Install frozen pip packages and PyTorch (CPU)
-function Install-CPU {
-    Activate
-    Invoke-Expression "pip-sync requirements/prod.txt requirements/dev.txt requirements/torchcpu.txt"
+    Invoke-Expression "pip-sync requirements/dev.txt"
+    # Force upgrade to CUDA version of PyTorch
+    Invoke-Expression "pip install --upgrade torch --extra-index-url https://download.pytorch.org/whl/cu117"
     Invoke-Expression "pip install -e ."
     Invoke-Expression "pre-commit install"
 }
@@ -69,19 +59,12 @@ switch ($args[0]) {
     activate {
         Activate
     }
-    upgradegpu {
+    upgrade {
         Upgrade-Requirements
-        Install-GPU
+        Install
     }
-    upgradecpu {
-        Upgrade-Requirements
-        Install-CPU
-    }
-    installgpu {
-        Install-GPU
-    }
-    installcpu {
-        Install-CPU
+    install {
+        Install
     }
     merge {
         Merge-Into-Current-Branch
