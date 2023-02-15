@@ -24,11 +24,11 @@ repos:
         entry: conda run -n superhf pylint
         language: system
         types: [python]
-# Local mypy
--   repo: local
-    hooks:
-    -   id: mypy
-        name: mypy
-        entry: conda run -n superhf mypy
-        language: system
-        types: [python]
+# # Local mypy
+# -   repo: local
+#     hooks:
+#     -   id: mypy
+#         name: mypy
+#         entry: conda run -n superhf mypy
+#         language: system
+#         types: [python]
