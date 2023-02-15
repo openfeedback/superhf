@@ -63,6 +63,18 @@ def parse_args() -> argparse.Namespace:
         help="Specify this flag to run the experiment in debug mode. In this mode we use"
         " 1,000 prompts for training, and only load",
     )
+    parser.add_argument(
+        "--model_name",
+        type=str,
+        default=LANGUAGE_MODEL_NAME,
+        help="The name of the language model to finetune.",
+    )
+    parser.add_argument(
+        "--reward_model_name",
+        type=str,
+        default=REWARD_MODEL_NAME,
+        help="The name of the reward model to use for scoring completions.",
+    )
     return parser.parse_args()
 
 
@@ -172,6 +184,8 @@ def check_node() -> None:
     """
     Print what node we are running on and what scratch directories are available.
     """
+    if not torch.cuda.is_available():
+        return
     # print machine name
     machine_name = platform.node().split(".")[0]
     print("We are running on node: ", machine_name)
