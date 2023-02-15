@@ -4,7 +4,9 @@
 #
 #    pip-compile requirements/prod.in
 #
-aiohttp==3.8.3
+accelerate==0.16.0
+    # via -r requirements/prod.in
+aiohttp==3.8.4
     # via
     #   datasets
     #   fsspec
@@ -16,7 +18,7 @@ attrs==22.2.0
     # via aiohttp
 certifi==2022.12.7
     # via requests
-charset-normalizer==2.1.1
+charset-normalizer==3.0.1
     # via
     #   aiohttp
     #   requests
@@ -52,20 +54,24 @@ multidict==6.0.4
     #   yarl
 multiprocess==0.70.14
     # via datasets
-numpy==1.24.1
+numpy==1.24.2
     # via
     #   -r requirements/prod.in
+    #   accelerate
     #   datasets
     #   pandas
     #   pyarrow
     #   transformers
 packaging==23.0
     # via
+    #   accelerate
     #   datasets
     #   huggingface-hub
     #   transformers
 pandas==1.5.3
     # via datasets
+psutil==5.9.4
+    # via accelerate
 pyarrow==11.0.0
     # via datasets
 python-dateutil==2.8.2
@@ -74,6 +80,7 @@ pytz==2022.7.1
     # via pandas
 pyyaml==6.0
     # via
+    #   accelerate
     #   datasets
     #   huggingface-hub
     #   transformers
@@ -92,15 +99,21 @@ six==1.16.0
     # via python-dateutil
 tokenizers==0.13.2
     # via transformers
+torch==1.13.1
+    # via
+    #   -r requirements/prod.in
+    #   accelerate
 tqdm==4.64.1
     # via
     #   datasets
     #   huggingface-hub
     #   transformers
-transformers==4.26.0
+transformers==4.26.1
     # via -r requirements/prod.in
-typing-extensions==4.4.0
-    # via huggingface-hub
+typing-extensions==4.5.0
+    # via
+    #   huggingface-hub
+    #   torch
 urllib3==1.26.14
     # via
     #   requests
