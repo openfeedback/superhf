@@ -44,23 +44,32 @@ def parse_args() -> argparse.Namespace:
     """Parse command line arguments."""
     parser = argparse.ArgumentParser()
     parser.add_argument(
+        "-m",
+        "--mode",
+        type=str,
+        default="plot",
+        help=(
+            "The mode to run the experiment in. Can be one of 'finetune', 'plot', or"
+            " 'generate'. generate is used to generate completions for the finetuning"
+            " mode. Plot is used to plot some statistics on the generated completions."
+            " Finetune is used to finetune the assistant on the best of n completions"
+            " as scored by the reward model."
+        ),
+    )
+    parser.add_argument(
         "-v",
         "--version",
         type=str,
         help="The version of the experiment. Used to create the output directory.",
     )
     parser.add_argument(
-        "-g",
-        "--generate",
-        action="store_true",
-        help="Specify this flag to generate completions instead of finetuning the assistant.",
-    )
-    parser.add_argument(
         "-d",
         "--debug",
         action="store_true",
-        help="Specify this flag to run the experiment in debug mode. In this mode we use"
-        " 1,000 prompts for training, and only load 124 prompts for completing.",
+        help=(
+            "Specify this flag to run the experiment in debug mode. In this mode we use"
+            " 1,000 prompts for training, and only load 124 prompts for completing."
+        ),
     )
     parser.add_argument(
         "--language_model_name",
@@ -90,9 +99,11 @@ def parse_args() -> argparse.Namespace:
         "-c",
         "--checkpoint_dir",
         type=str,
-        help="Leave blank if not on SC to use the output dir. If on SC, this is the directory"
-        " to save checkpoints to underneath scr*/. Should use a"
-        " unique name that won't clash with other people.",
+        help=(
+            "Leave blank if not on SC to use the output dir. If on SC, this is the"
+            " directory to save checkpoints to underneath scr*/. Should use a unique"
+            " name that won't clash with other people."
+        ),
     )
     parser.add_argument(
         "--score_batch_size",
@@ -137,7 +148,8 @@ def split_dataset(dataset: list[str]) -> tuple[list[str], list[str]]:
     train_dataset = dataset[NUM_TEST_EXAMPLES:]
     test_dataset = dataset[:NUM_TEST_EXAMPLES]
     print(
-        f"Loaded {len(train_dataset)} training examples and {len(test_dataset)} test examples."
+        f"Loaded {len(train_dataset)} training examples and {len(test_dataset)} test"
+        " examples."
     )
 
     # Print some examples
@@ -170,7 +182,8 @@ def print_statistics(
 
     print(f"Mean score of all completions: {mean_score_all:.3f} ± {std_score_all:.3f}")
     print(
-        f"Mean score of filtered completions: {mean_score_filtered:.3f} ± {std_score_filtered:.3f}"
+        f"Mean score of filtered completions: {mean_score_filtered:.3f} ±"
+        f" {std_score_filtered:.3f}"
     )
 
     # Graph a plot of the scores of the all and filtered completions
@@ -285,7 +298,7 @@ def main() -> None:
     train_dataset, test_dataset = split_dataset(dataset)
     trainer.test_prompts = test_dataset
 
-    if args.generate:
+    if args.mode == "generate":
         trainer.train_prompts = train_dataset
         print("Generating completions...")
         trainer.generate_completions(
@@ -303,8 +316,17 @@ def main() -> None:
 
         print_statistics(all_completions, filtered_completions, trainer.output_dir)
         sys.exit(0)
-    else:
+    elif args.mode == "plot":
+        all_completions, filtered_completions = trainer.filter_completions()
+        print_statistics(all_completions, filtered_completions, trainer.output_dir)
+    elif args.mode == "finetune":
         print("Not generating completions, so we continue with the training code.")
+        # TODO: move the finetune code into it's own function separate from main.
+    else:
+        raise ValueError(
+            f"Unknown mode to run the script in: {args.mode}. Please use one of"
+            " 'generate', 'plot', or 'finetune'."
+        )
 
     config = {
         "language_model_name": args.language_model_name,
@@ -350,7 +372,8 @@ def main() -> None:
         )
     else:
         print(
-            f"No checkpoint directory specified, so we use the default: {checkpoint_dir}"
+            "No checkpoint directory specified, so we use the default:"
+            f" {checkpoint_dir}"
         )
 
     print("Checkpoint directory: ", checkpoint_dir)
