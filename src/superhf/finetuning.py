@@ -130,8 +130,8 @@ class SinglePassBestOfNTrainer(SuperHFTrainer):
         # Switch to eval mode
         self.language_model.eval()
 
-        # Debug: only use a subset of the prompts
-        # self.train_prompts = self.train_prompts[:8]
+        if self.debug:
+            self.train_prompts = self.train_prompts[:124]
 
         # Duplicate each of the prompts $n$ times.
         prompts = self.train_prompts * self.completions_per_prompt
@@ -149,9 +149,9 @@ class SinglePassBestOfNTrainer(SuperHFTrainer):
         )
 
         logger.info("Generating completions...")
+        print("Generating completions...")
         completions: List[str] = []
 
-        # for out in pipe(KeyDataset(train_dataset, "prompt")):
         for out in tqdm(
             pipe(
                 KeyDataset(train_dataset, "prompt"),
@@ -185,11 +185,12 @@ class SinglePassBestOfNTrainer(SuperHFTrainer):
 
         num_prompts: int = len(self.train_prompts)
         # Debug: only use a subset of the completions
-        # completions = [
-        #     completion
-        #     for i, completion in enumerate(completions)
-        #     if i % num_prompts < 1024
-        # ]
+        # if self.debug:
+        #     completions = [
+        #         completion
+        #         for i, completion in enumerate(completions)
+        #         if i % num_prompts < 1024
+        #     ]
 
         # OOM Fix: Filter completions in a set longer than 1000 characters
         bad_indices = []
@@ -203,12 +204,12 @@ class SinglePassBestOfNTrainer(SuperHFTrainer):
             if i % num_prompts not in bad_indices
         ]
         new_size = len(completions)
-        logger.info(
-            "Loaded %d%% (%d completions) (filtered %d%% from %d total)",
-            int(new_size / old_size * 100),
-            new_size,
-            int(100 - new_size / old_size * 100),
-            old_size,
+        print(
+            (
+                f"Loaded {int(new_size / old_size * 100)}% ({new_size} completions)"
+                f" (filtered {int(100 - new_size / old_size * 100)}% from"
+                f" {old_size} total)"
+            ),
         )
 
         train_dataset = Dataset.from_dict({"completion": completions})
@@ -237,7 +238,8 @@ class SinglePassBestOfNTrainer(SuperHFTrainer):
             scored_completions.append({"score": row["score"], "completion": completion})
 
         print(
-            f'Average reward: {np.mean([float(row["score"]) for row in scored_completions])}'
+            "Average reward:"
+            f" {np.mean([float(row['score']) for row in scored_completions])}"
         )
 
         torch.save(
@@ -249,7 +251,7 @@ class SinglePassBestOfNTrainer(SuperHFTrainer):
         self,
     ) -> Tuple[Any, List[Dict[str, Union[str, float]]]]:
         """
-        Select the top 1 of the $n$ completions for each prompt ($d$ total)
+        Select the top 1 of the $n$ completions for each prompt ($d$ total).
         """
         scored_completions: List[Dict[str, Union[str, float]]] = torch.load(
             os.path.join(self.output_dir, "scored_completions.pt")

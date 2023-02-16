@@ -60,7 +60,7 @@ def parse_args() -> argparse.Namespace:
         "--debug",
         action="store_true",
         help="Specify this flag to run the experiment in debug mode. In this mode we use"
-        " 1,000 prompts for training, and only load",
+        " 1,000 prompts for training, and only load 124 prompts for completing.",
     )
     parser.add_argument(
         "--language_model_name",
@@ -90,34 +90,17 @@ def parse_args() -> argparse.Namespace:
         "-c",
         "--checkpoint_dir",
         type=str,
-        required=True,
         help="Leave blank if not on SC to use the output dir. If on SC, this is the directory"
         " to save checkpoints to underneath scr*/. Should use a"
         " unique name that won't clash with other people.",
     )
-    return parser.parse_args()
-
-
-def generate_completions(
-    trainer: SinglePassBestOfNTrainer,
-    max_new_tokens: int,
-    batch_size: int,
-    language_model_name: str,
-) -> None:
-    """Generate completions and save them to a file. Starts a wandb session and alerts when done.
-
-    Args:
-        trainer: The trainer to use for generating completions.
-        max_new_tokens: The maximum number of new tokens to generate for each completion.
-        batch_size: The batch size to use when generating completions.
-        language_model_name: The name of the language model used to generate completions.
-    """
-    trainer.generate_completions(batch_size=batch_size, max_new_tokens=max_new_tokens)
-    wandb.init()
-    wandb.alert(
-        title=f"Done generating completions for {language_model_name}",
-        text="Done generating completions.",
+    parser.add_argument(
+        "--score_batch_size",
+        type=int,
+        default=8,
+        help="The batch size to use when scoring completions with the reward model.",
     )
+    return parser.parse_args()
 
 
 def plot_word_counts(dataset: list[str], output_dir) -> None:
@@ -305,14 +288,17 @@ def main() -> None:
     if args.generate:
         trainer.train_prompts = train_dataset
         print("Generating completions...")
-        generate_completions(
-            trainer,
-            args.max_completion_new_tokens,
-            args.completion_batch_size,
-            args.language_model_name,
+        trainer.generate_completions(
+            batch_size=args.completion_batch_size,
+            max_new_tokens=args.max_completion_new_tokens,
+        )
+        wandb.init()
+        wandb.alert(
+            title=f"Done generating completions for {args.language_model_name}",
+            text="Done generating completions.",
         )
         print("Done generating completions, so we exit the script.")
-        trainer.score_completions(batch_size=8)
+        trainer.score_completions(batch_size=args.score_batch_size)
         all_completions, filtered_completions = trainer.filter_completions()
 
         print_statistics(all_completions, filtered_completions, trainer.output_dir)
@@ -350,20 +336,22 @@ def main() -> None:
     wandb.define_metric("average_completion_length", summary="last")
     wandb.alert(title="Experiment Status", text="Beginning run...")
 
-    checkpoint_dir = (
-        os.path.join(
-            scratch_dir,
-            args.checkpoint_dir,
-            "checkpoints",
-            wandb.config.version,
-        )
-        if args.checkpoint_dir
-        else os.path.join(
+    checkpoint_dir = os.path.join(
+        scratch_dir,
+        args.checkpoint_dir,
+        "checkpoints",
+        wandb.config.version,
+    )
+    if args.checkpoint_dir:
+        checkpoint_dir = os.path.join(
             args.output_dir,
             "checkpoints",
             wandb.config.version,
         )
-    )
+    else:
+        print(
+            f"No checkpoint directory specified, so we use the default: {checkpoint_dir}"
+        )
 
     print("Checkpoint directory: ", checkpoint_dir)
     training_args = TrainingArguments(
