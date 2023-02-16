@@ -359,14 +359,14 @@ def main() -> None:
     wandb.alert(title="Experiment Status", text="Beginning run...")
 
     checkpoint_dir = os.path.join(
-        scratch_dir,
-        args.checkpoint_dir,
+        trainer.output_dir,
         "checkpoints",
         wandb.config.version,
     )
     if args.checkpoint_dir:
         checkpoint_dir = os.path.join(
-            args.output_dir,
+            scratch_dir,
+            args.checkpoint_dir,
             "checkpoints",
             wandb.config.version,
         )
