@@ -2,7 +2,7 @@
     // Formatter
     "python.formatting.provider": "black",
     "python.formatting.blackArgs": [
-        "preview"
+        "--preview"
     ],
     "editor.formatOnSave": true,
     // Linter
