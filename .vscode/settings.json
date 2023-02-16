@@ -1,6 +1,9 @@
 {
     // Formatter
     "python.formatting.provider": "black",
+    "python.formatting.blackArgs": [
+        "preview"
+    ],
     "editor.formatOnSave": true,
     // Linter
     "python.linting.enabled": true,
