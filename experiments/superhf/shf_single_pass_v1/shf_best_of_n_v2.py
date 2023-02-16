@@ -74,15 +74,48 @@ def parse_args() -> argparse.Namespace:
         default=REWARD_MODEL_NAME,
         help="The name of the reward model to use for scoring completions.",
     )
+    parser.add_argument(
+        "--max_completion_new_tokens",
+        type=int,
+        default=64,
+        help="The maximum number of new tokens to generate for each completion.",
+    )
+    parser.add_argument(
+        "--completion_batch_size",
+        type=int,
+        default=8,
+        help="The batch size to use when generating completions.",
+    )
+    parser.add_argument(
+        "-c",
+        "--checkpoint_dir",
+        type=str,
+        required=True,
+        help="Leave blank if not on SC to use the output dir. If on SC, this is the directory"
+        " to save checkpoints to underneath scr*/. Should use a"
+        " unique name that won't clash with other people.",
+    )
     return parser.parse_args()
 
 
-def generate_completions(trainer: SinglePassBestOfNTrainer) -> None:
-    """Generate completions and save them to a file."""
-    trainer.generate_completions(batch_size=8, max_new_tokens=64)
+def generate_completions(
+    trainer: SinglePassBestOfNTrainer,
+    max_new_tokens: int,
+    batch_size: int,
+    language_model_name: str,
+) -> None:
+    """Generate completions and save them to a file.
+
+    Args:
+        trainer: The trainer to use for generating completions.
+        max_new_tokens: The maximum number of new tokens to generate for each completion.
+        batch_size: The batch size to use when generating completions.
+        language_model_name: The name of the language model used to generate completions.
+    """
+    trainer.generate_completions(batch_size=batch_size, max_new_tokens=max_new_tokens)
     wandb.init()
     wandb.alert(
-        title=f"Done generating completions for {LANGUAGE_MODEL_NAME}",
+        title=f"Done generating completions for {language_model_name}",
         text="Done generating completions.",
     )
 
@@ -179,18 +212,25 @@ def print_statistics(
     plt.savefig(os.path.join(output_dir, "completion_scores.png"))
 
 
-def check_node() -> None:
+def check_node() -> str:
     """
-    Print what node we are running on and what scratch directories are available.
+    Check if we are on the sail compute cluster. If so, return a scratch directory to
+    write checkpoints to and logs for wandb. If not, return None.
     """
-    if not torch.cuda.is_available():
-        return
+    if not os.path.exists("/sailhome"):
+        print("Not on sail compute cluster.")
+        return ""
     # print machine name
     machine_name = platform.node().split(".")[0]
     print("We are running on node: ", machine_name)
 
     # print available scratch directories
     print(" ".join(os.listdir(f"/{machine_name}")))
+
+    # get a random scratch directory
+    scratch_dir = random.choice(os.listdir(f"/{machine_name}"))
+    print("Using scratch directory: ", scratch_dir)
+    return scratch_dir
 
 
 # pylint: disable=too-many-locals
@@ -202,7 +242,7 @@ def main() -> None:
     args = parse_args()
     print(args)
 
-    check_node()
+    scratch_dir = check_node()
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     wandb.login()
@@ -262,7 +302,12 @@ def main() -> None:
     if args.generate:
         trainer.train_prompts = train_dataset
         print("Generating completions...")
-        generate_completions(trainer)
+        generate_completions(
+            trainer,
+            args.max_completion_new_tokens,
+            args.completion_batch_size,
+            args.language_model_name,
+        )
         print("Done generating completions, so we exit the script.")
         trainer.score_completions(batch_size=8)
         all_completions, filtered_completions = trainer.filter_completions()
@@ -302,10 +347,24 @@ def main() -> None:
     wandb.define_metric("average_completion_length", summary="last")
     wandb.alert(title="Experiment Status", text="Beginning run...")
 
+    checkpoint_dir = (
+        os.path.join(
+            scratch_dir,
+            args.checkpoint_dir,
+            "checkpoints",
+            wandb.config.version,
+        )
+        if args.checkpoint_dir
+        else os.path.join(
+            args.output_dir,
+            "checkpoints",
+            wandb.config.version,
+        )
+    )
+
+    print("Checkpoint directory: ", checkpoint_dir)
     training_args = TrainingArguments(
-        output_dir=os.path.join(
-            trainer.output_dir, "checkpoints", wandb.config.version
-        ),
+        output_dir=checkpoint_dir,
         overwrite_output_dir=True,
         num_train_epochs=wandb.config.num_train_epochs,
         per_device_train_batch_size=wandb.config.train_batch_size,

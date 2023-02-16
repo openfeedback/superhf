@@ -353,12 +353,13 @@ class SinglePassBestOfNTrainer(SuperHFTrainer):
             len(test_dataset_processed),
         )
 
-        print("Beginning training...")
+        print("Setting up training...")
         data_collator = DataCollatorForLanguageModeling(
             tokenizer=self.language_tokenizer, mlm=False
         )
         self.compute_metrics(EvalPrediction(predictions=[], label_ids=[]))
         self.language_model.train()
+        print("Starting training...s")
         trainer = Trainer(
             model=self.language_model,
             data_collator=data_collator,
@@ -380,6 +381,7 @@ class SinglePassBestOfNTrainer(SuperHFTrainer):
         completions for the test prompts, which is not possible with the
         Trainer API.
         """
+        print("Computing metrics...")
         pipe = pipeline(
             "text-generation",
             model=self.language_model,
@@ -411,7 +413,7 @@ class SinglePassBestOfNTrainer(SuperHFTrainer):
         ]
         new_size = len(completions)
         if new_size < previous_size:
-            logger.info(
+            print(
                 "Filtered %d completions (%.2f%% of %d total) to prevent OOM.",
                 previous_size - new_size,
                 100 * (previous_size - new_size) / previous_size,
