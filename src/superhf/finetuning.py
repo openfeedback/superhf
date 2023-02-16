@@ -359,7 +359,7 @@ class SinglePassBestOfNTrainer(SuperHFTrainer):
         )
         self.compute_metrics(EvalPrediction(predictions=[], label_ids=[]))
         self.language_model.train()
-        print("Starting training...s")
+        print("Starting training...")
         trainer = Trainer(
             model=self.language_model,
             data_collator=data_collator,
@@ -390,14 +390,16 @@ class SinglePassBestOfNTrainer(SuperHFTrainer):
         )
 
         completions: List[str] = []
-        for out in pipe(
-            KeyDataset(self.eval_dataset, "prompt"),
-            batch_size=self.training_args.eval_batch_size,
-            max_new_tokens=256,
-            # temperature=self.temperature,
-            do_sample=False,
-            pad_token_id=self.language_tokenizer.pad_token_id,
-            early_stopping=True,
+        for out in tqdm(
+            pipe(
+                KeyDataset(self.eval_dataset, "prompt"),
+                batch_size=self.training_args.eval_batch_size,
+                max_new_tokens=256,
+                # temperature=self.temperature,
+                do_sample=False,
+                pad_token_id=self.language_tokenizer.pad_token_id,
+                early_stopping=True,
+            )
         ):
             completion = out[0]["generated_text"]
             # Filter out everything including and after the second "\n\nHuman:"
@@ -430,13 +432,15 @@ class SinglePassBestOfNTrainer(SuperHFTrainer):
             device=self.reward_model.device,
         )
         scores: List[float] = []
-        for row, completion in zip(
-            pipe(
-                KeyDataset(completions_dataset, "completion"),
-                batch_size=self.training_args.eval_batch_size,
-                max_length=512,
-            ),
-            completions,
+        for row, completion in tqdm(
+            zip(
+                pipe(
+                    KeyDataset(completions_dataset, "completion"),
+                    batch_size=self.training_args.eval_batch_size,
+                    max_length=512,
+                ),
+                completions,
+            )
         ):
             scores.append(row["score"])
 
