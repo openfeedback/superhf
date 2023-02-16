@@ -228,7 +228,9 @@ def check_node() -> str:
     print(" ".join(os.listdir(f"/{machine_name}")))
 
     # get a random scratch directory
-    scratch_dir = random.choice(os.listdir(f"/{machine_name}"))
+    scratch_dir = random.choice(
+        [dir for dir in os.listdir(f"/{machine_name}") if "scr" in dir]
+    )
     print("Using scratch directory: ", scratch_dir)
     return scratch_dir
 
