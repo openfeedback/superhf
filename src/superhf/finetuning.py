@@ -389,6 +389,10 @@ class SinglePassBestOfNTrainer(SuperHFTrainer):
             device=self.language_model.device,
         )
 
+        print(
+            "Generating completions on device in order to evaluate them: ",
+            self.language_model.device,
+        )
         completions: List[str] = []
         for out in tqdm(
             pipe(
@@ -430,6 +434,11 @@ class SinglePassBestOfNTrainer(SuperHFTrainer):
             model=self.reward_model,
             tokenizer=self.reward_tokenizer,
             device=self.reward_model.device,
+        )
+
+        print(
+            "Evaluating the completions on the reward model on device: ",
+            self.reward_model.device,
         )
         scores: List[float] = []
         for row, completion in tqdm(

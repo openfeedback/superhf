@@ -104,7 +104,7 @@ def generate_completions(
     batch_size: int,
     language_model_name: str,
 ) -> None:
-    """Generate completions and save them to a file.
+    """Generate completions and save them to a file. Starts a wandb session and alerts when done.
 
     Args:
         trainer: The trainer to use for generating completions.
@@ -173,6 +173,9 @@ def print_statistics(
     """Print some statistics and plot a histogram of the scores of the completions."""
     scores_all = [completion["score"] for completion in all_completions]
     scores_filtered = [completion["score"] for completion in filtered_completions]
+    print(f"Number of completions: {len(all_completions)}")
+    print(f"Number of filtered completions: {len(filtered_completions)}")
+
     mean_score_all, std_score_all = (
         torch.tensor(scores_all).mean(),
         torch.tensor(scores_all).std(),
