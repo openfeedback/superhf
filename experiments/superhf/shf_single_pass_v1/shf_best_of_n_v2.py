@@ -114,6 +114,12 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Specify this flag to use fp16 training.",
     )
+    parser.add_argument(
+        "--gradient_checkpointing",
+        default=False,
+        action="store_true",
+        help="Specify this flag to use gradient checkpointing.",
+    )
 
     # generating configuration
     parser.add_argument(
