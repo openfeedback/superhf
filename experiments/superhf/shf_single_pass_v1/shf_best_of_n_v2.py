@@ -370,6 +370,7 @@ def main() -> None:
         "eval_batch_size": args.eval_batch_size,
         "prepare_completions_dataset_max_example_length": MAX_EXAMPLE_LENGTH,
         "gradient_accumulation_steps": args.gradient_accumulation_steps,
+        "gradient_checkpointing": args.gradient_checkpointing,
         "fp16": args.fp16,
     }
 
