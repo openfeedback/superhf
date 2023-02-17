@@ -1,5 +1,12 @@
 """
 This file implements the training of a reward model.
+
+The PreferenceDataCollator, passed to the RewardModelTrainer, forms batches
+by taking as input a list of tuples (winner_response, loser_response) and
+returning a dict {"winner": winner_tokenized, "loser": loser_tokenized}.
+
+RewardModelTrainer.compute_loss(model, inputs) accepts this dict as the
+`inputs` argument.
 """
 
 
@@ -13,7 +20,7 @@ from transformers import (
     AutoTokenizer,
     AutoModelForSequenceClassification,
 )
-from reward_model_datasets import AnthropicHelpfulHarmless
+from preference_datasets import AnthropicHelpfulHarmless
 
 
 class PreferenceLoss(nn.Module):
@@ -162,18 +169,25 @@ if __name__ == "__main__":
     tokenizer = AutoTokenizer.from_pretrained(model_name, max_length=256)
     model = RewardModel(model_name).to(device)
 
+    model_output_dir = "reward_model_HH"
+
     arguments = TrainingArguments(
-        output_dir=f"{model_name}_reward_model_HH",
+        output_dir=model_output_dir,
+        logging_steps=10,
         per_device_train_batch_size=1,
         per_device_eval_batch_size=1,
         num_train_epochs=3,
-        evaluation_strategy="epoch",
-        save_strategy="epoch",
+        evaluation_strategy="steps",
+        eval_steps=100,
+        save_strategy="steps",
+        save_steps=100,
         learning_rate=2e-5,
         weight_decay=0.01,
         load_best_model_at_end=True,
         seed=420,
         dataloader_pin_memory=dataloader_pin_memory,
+        report_to="tensorboard",
+        log_level="debug",
     )
     # breakpoint()
 

@@ -4,12 +4,6 @@ This file creates a dataset of human preference data.
 Datasets are torch.utils.data.Dataset objects that can be indexed to return
 a datum as a Tuple[str, str] in the form (winner_response, loser_response).
 
-The PreferenceDataCollator, passed to the RewardModelTrainer, forms batches
-by taking as input a list of tuples (winner_response, loser_response) and
-returning a dict {"winner": winner_tokenized, "loser": loser_tokenized}.
-
-RewardModelTrainer.compute_loss(model, inputs) accepts this dict as the
-`inputs` argument.
 """
 
 import torch
@@ -33,3 +27,7 @@ class AnthropicHelpfulHarmless(Dataset):
 
     def __len__(self):
         return len(self.winner_responses)
+
+
+ahh = AnthropicHelpfulHarmless()
+print(max(len(ahh[i][1].split()) for i in range(len(ahh))))
