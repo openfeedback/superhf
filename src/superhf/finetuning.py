@@ -10,6 +10,7 @@ from typing import List, Dict, Union, Any, Optional, Tuple
 
 import torch
 from torch import nn
+from torch.utils.data.dataloader import DataLoader
 import numpy as np
 from tqdm import tqdm
 from transformers import (
@@ -22,11 +23,23 @@ from transformers import (
     EvalPrediction,
 )  # type: ignore
 from transformers.pipelines.pt_utils import KeyDataset
+from accelerate import Accelerator
+from pynvml import nvmlInit, nvmlDeviceGetHandleByIndex, nvmlDeviceGetMemoryInfo
 from datasets.arrow_dataset import Dataset
 from datasets.utils import logging
 
 # from torchtyping import TensorType
 logger = logging.get_logger(__name__)
+
+
+def print_gpu_utilization() -> None:
+    """
+    Print the GPU memory occupied using nvidia-smi.
+    """
+    nvmlInit()
+    handle = nvmlDeviceGetHandleByIndex(0)
+    info = nvmlDeviceGetMemoryInfo(handle)
+    print(f"GPU memory occupied: {info.used//1024**2} MB.")
 
 
 @dataclass
@@ -281,6 +294,20 @@ class SinglePassBestOfNTrainer(SuperHFTrainer):
         )
         return scored_completions, filtered_completions
 
+    def load_filtered_completions(
+        self,
+    ) -> Tuple[List[Dict[str, Union[str, float]]], List[Dict[str, Union[str, float]]]]:
+        """
+        Read the filtered completions and scored completions from disk.
+        """
+        filtered_completions: List[Dict[str, Union[str, float]]] = torch.load(
+            os.path.join(self.output_dir, "filtered_completions.pt")
+        )
+        scored_completions: List[Dict[str, Union[str, float]]] = torch.load(
+            os.path.join(self.output_dir, "scored_completions.pt")
+        )
+        return scored_completions, filtered_completions
+
     def tune_model(self, training_args: TrainingArguments) -> None:
         """
         Fine-tune $M$ on the $d$ best-of-$n$ completions.
@@ -291,14 +318,15 @@ class SinglePassBestOfNTrainer(SuperHFTrainer):
             self.output_dir is not None
         ), "Must specify output_dir both for loading completions and saving the model"
         assert self.test_prompts is not None, "Must specify test_prompts"
-
-        filtered_completions = torch.load(
+        print_gpu_utilization()
+        filtered_completions: List[Dict[str, Union[str, float]]] = torch.load(
             os.path.join(self.output_dir, "filtered_completions.pt")
         )
         print(
             f"Loaded {len(filtered_completions)} filtered completions from "
             f"{os.path.join(self.output_dir, 'filtered_completions.pt')}"
         )
+        print_gpu_utilization()
         if self.debug:
             filtered_completions = filtered_completions[:1024]
             print(
@@ -306,24 +334,33 @@ class SinglePassBestOfNTrainer(SuperHFTrainer):
                 len(filtered_completions),
             )
         print(type(filtered_completions))
-        train_dataset = Dataset.from_dict({"completion": filtered_completions})
-        eval_dataset = Dataset.from_dict({"prompt": self.test_prompts})
-        self.eval_dataset = eval_dataset
+        print(type(self.test_prompts))
+        # train_dataset = Dataset.from_dict({"completion": filtered_completions})
+        # eval_dataset = Dataset.from_dict({"prompt": self.test_prompts})
 
-        print("Pre-processing datasets...")
-        print(type(train_dataset))
+        train_dataloader = DataLoader(
+            filtered_completions, batch_size=training_args.per_device_train_batch_size
+        )
+        eval_dataloader = DataLoader(
+            self.test_prompts, batch_size=training_args.per_device_eval_batch_size
+        )
+        self.eval_dataset = eval_dataloader
+
+        # print("Pre-processing datasets...")
+        print(type(train_dataloader))
         logging.enable_progress_bar()
         if self.language_tokenizer.pad_token is None:
             self.language_tokenizer.pad_token = self.language_tokenizer.eos_token
 
-        train_dataset_processed = []
-        for i in tqdm(range(len(train_dataset))):
-            train_dataset_processed.append(
-                self.language_tokenizer(
-                    train_dataset[i]["completion"]["completion"],
-                    truncation=True,
-                )
-            )
+        # train_dataset_processed = []
+        # for i in tqdm(range(len(train_dataloader))):
+        #     train_dataset_processed.append(
+        #         self.language_tokenizer(
+        #             train_dataloader[i]["completion"]["completion"],
+        #             truncation=True,
+        #         )
+        #     )
+        print_gpu_utilization()
         # train_dataset_processed = train_dataset.map(
         #     lambda examples: self.language_tokenizer(
         #         [example["completion"] for example in examples["completion"]],
@@ -331,18 +368,18 @@ class SinglePassBestOfNTrainer(SuperHFTrainer):
         #     ),
         #     batched=True,
         # )
-        print(
-            "We passed the train dataset, it has a length of: ",
-            len(train_dataset_processed),
-        )
-        test_dataset_processed = []
-        for i in tqdm(range(len(eval_dataset))):
-            test_dataset_processed.append(
-                self.language_tokenizer(
-                    eval_dataset[i]["prompt"],
-                    truncation=True,
-                )
-            )
+        # print(
+        #     "We passed the train dataset, it has a length of: ",
+        #     len(train_dataset_processed),
+        # )
+        # test_dataset_processed = []
+        # for i in tqdm(range(len(eval_dataloader))):
+        #     test_dataset_processed.append(
+        #         self.language_tokenizer(
+        #             eval_dataloader[i]["prompt"],
+        #             truncation=True,
+        #         )
+        #     )
         # test_dataset_processed = eval_dataset.map(
         #     lambda examples: self.language_tokenizer(
         #         list(examples["prompt"]),
@@ -350,11 +387,11 @@ class SinglePassBestOfNTrainer(SuperHFTrainer):
         #     ),
         #     batched=True,
         # )
-        print(
-            "We passed the test dataset, it has a length of: ",
-            len(test_dataset_processed),
-        )
-
+        # print(
+        #     "We passed the test dataset, it has a length of: ",
+        #     len(test_dataset_processed),
+        # )
+        print_gpu_utilization()
         print("Setting up training...")
         data_collator = DataCollatorForLanguageModeling(
             tokenizer=self.language_tokenizer, mlm=False
@@ -362,15 +399,32 @@ class SinglePassBestOfNTrainer(SuperHFTrainer):
         self.compute_metrics(EvalPrediction(predictions=[], label_ids=[]))
         self.language_model.train()
         print("Starting training...")
+
         trainer = Trainer(
             model=self.language_model,
             data_collator=data_collator,
             args=training_args,
-            train_dataset=train_dataset_processed,
-            eval_dataset=test_dataset_processed,
+            train_dataset=train_dataloader,
+            eval_dataset=eval_dataloader,
             compute_metrics=self.compute_metrics,
         )
-        trainer.train()
+
+        if training_args.gradient_checkpointing:
+            trainer.model.gradient_checkpointing_enable()
+
+        accelerator = Accelerator(mixed_precision=training_args.fp16)
+        model, optimizer, train_dataloader = accelerator.prepare(
+            trainer.model, torch.optim.AdamW, train_dataloader
+        )
+
+        model.train()
+        for step, batch in enumerate(train_dataloader, start=1):
+            loss = model(**batch).loss
+            loss = loss / training_args.gradient_accumulation_steps
+            accelerator.backward(loss)
+            if step % training_args.gradient_accumulation_steps == 0:
+                optimizer.step()
+                optimizer.zero_grad()
 
         eval_results = trainer.evaluate()
         print(eval_results)

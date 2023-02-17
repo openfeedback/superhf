@@ -83,12 +83,39 @@ def parse_args() -> argparse.Namespace:
         default=REWARD_MODEL_NAME,
         help="The name of the reward model to use for scoring completions.",
     )
+
+    # Finetuning configuration
     parser.add_argument(
         "--max_completion_new_tokens",
         type=int,
         default=64,
         help="The maximum number of new tokens to generate for each completion.",
     )
+    parser.add_argument(
+        "--gradient_accumulation_steps",
+        type=int,
+        default=1,
+        help="The number of gradient accumulation steps to use.",
+    )
+    parser.add_argument(
+        "--train_batch_size",
+        type=int,
+        default=2,
+        help="The batch size to use when training the assistant.",
+    )
+    parser.add_argument(
+        "--eval_batch_size",
+        type=int,
+        default=4,
+        help="The batch size to use when evaluating the assistant.",
+    )
+    parser.add_argument(
+        "--fp16",
+        action="store_true",
+        help="Specify this flag to use fp16 training.",
+    )
+
+    # generating configuration
     parser.add_argument(
         "--completion_batch_size",
         type=int,
@@ -317,7 +344,7 @@ def main() -> None:
         print_statistics(all_completions, filtered_completions, trainer.output_dir)
         sys.exit(0)
     elif args.mode == "plot":
-        all_completions, filtered_completions = trainer.filter_completions()
+        all_completions, filtered_completions = trainer.load_filtered_completions()
         print_statistics(all_completions, filtered_completions, trainer.output_dir)
     elif args.mode == "finetune":
         print("Not generating completions, so we continue with the training code.")
@@ -339,9 +366,11 @@ def main() -> None:
         "lr_scheduler_type": "constant",
         "warmup_steps": 1024,
         "weight_decay": 0.01,
-        "train_batch_size": 2,
-        "eval_batch_size": 4,
+        "train_batch_size": args.train_batch_size,
+        "eval_batch_size": args.eval_batch_size,
         "prepare_completions_dataset_max_example_length": MAX_EXAMPLE_LENGTH,
+        "gradient_accumulation_steps": args.gradient_accumulation_steps,
+        "fp16": args.fp16,
     }
 
     wandb.init(
@@ -383,11 +412,13 @@ def main() -> None:
         num_train_epochs=wandb.config.num_train_epochs,
         per_device_train_batch_size=wandb.config.train_batch_size,
         per_device_eval_batch_size=wandb.config.eval_batch_size,
+        gradient_accumulation_steps=wandb.config.gradient_accumulation_steps,
+        gradient_checkpointing=wandb.config.gradient_checkpointing,
         evaluation_strategy="steps",
         eval_steps=2048,
         logging_steps=2048,
         save_steps=2048,
-        # fp16=True,
+        fp16=wandb.config.fp16,
         load_best_model_at_end=True,
         report_to="wandb",
         disable_tqdm=False,
