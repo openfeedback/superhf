@@ -10,7 +10,16 @@
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Python: SHF Iter (Mock)",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/experiments/superhf/shf_iterative_v1/run_shf_iterative.py",
+            "console": "integratedTerminal",
+            "args": [],
             "justMyCode": false
-        }
+        },
     ]
 }

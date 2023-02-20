@@ -10,3 +10,4 @@ ipykernel
 ipython
 ipywidgets
 types-tqdm
+wandb

@@ -4,8 +4,8 @@ from a reward model with expert iteration using supervised learning).
 """
 
 # import os
-from dataclasses import dataclass
-from typing import List, Any
+from dataclasses import dataclass, field
+from typing import List, Any, Optional, Callable
 
 # import random
 
@@ -37,14 +37,29 @@ class SuperHFTrainingArguments:
 
     # pylint: disable=too-many-instance-attributes
 
+    # Models
     language_model: Any = None
     reward_model: Any = None
     language_tokenizer: Any = None
     reward_tokenizer: Any = None
-    train_prompts: List[str] = []
-    test_prompts: List[str] = []
+
+    # Data
+    prompts: List[str] = field(default_factory=list)
+
+    # Generation
     temperature: float = 1.0
     completions_per_prompt: int = 2
+
+    # Filtering
+    filter_function: Optional[Callable[[List[float]], List[bool]]] = None
+
+    # Metrics
+    report_to: Optional[List[str]] = field(
+        default=None,
+        metadata={
+            "help": "The list of integrations to report the results and logs to."
+        },
+    )
 
 
 class SuperHFTrainer:
