@@ -39,7 +39,7 @@ function upgrade_requirements {
 # Install frozen pip packages
 function install {
     activate
-    pip-sync requirements/dev.txt
+    pip-sync requirements/prod.txt requirements/dev.txt
     pip install -e .
     pre-commit install
 }

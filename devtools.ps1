@@ -31,6 +31,7 @@ function Upgrade-Requirements {
     "conda env update --prune"
 
     # Update the pip dependencies
+    # TODO use --resolver=backtracking once https://github.com/jazzband/pip-tools/pull/1808 is merged
     Invoke-Expression "pip-compile --upgrade -v requirements/prod.in"
     Invoke-Expression "pip-compile --upgrade -v requirements/dev.in"
 }
@@ -38,9 +39,9 @@ function Upgrade-Requirements {
 # Install frozen pip packages and PyTorch
 function Install {
     Activate
-    Invoke-Expression "pip-sync requirements/dev.txt"
+    Invoke-Expression "pip-sync requirements/prod.txt requirements/dev.txt"
     # Force upgrade to CUDA version of PyTorch
-    Invoke-Expression "pip install --upgrade torch --extra-index-url https://download.pytorch.org/whl/cu117"
+    Invoke-Expression "pip install --upgrade torch --extra-index-url https://download.pytorch.org/whl/cu117 --user"
     Invoke-Expression "pip install -e ."
     Invoke-Expression "pre-commit install"
 }
