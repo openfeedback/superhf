@@ -58,7 +58,7 @@ distlib==0.3.6
     # via virtualenv
 docutils==0.19
     # via sphinx
-esbonio==0.16.0
+esbonio==0.16.1
     # via -r requirements/dev.in
 exceptiongroup==1.1.0
     # via cattrs
@@ -93,7 +93,7 @@ jedi==0.18.2
     # via ipython
 jinja2==3.1.2
     # via sphinx
-jupyter-client==8.0.2
+jupyter-client==8.0.3
     # via ipykernel
 jupyter-core==5.2.0
     # via
@@ -113,7 +113,7 @@ matplotlib-inline==0.1.6
     #   ipython
 mccabe==0.7.0
     # via pylint
-mypy==1.0.0
+mypy==1.0.1
     # via -r requirements/dev.in
 mypy-extensions==1.0.0
     # via
@@ -151,7 +151,7 @@ psutil==5.9.4
     #   ipykernel
 pure-eval==0.2.2
     # via stack-data
-pygls==1.0.0
+pygls==1.0.1
     # via esbonio
 pygments==2.14.0
     # via
