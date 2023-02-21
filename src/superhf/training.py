@@ -64,14 +64,14 @@ class SuperHFTrainer:
     and fine-tuning the language model on the filtered completions.
 
     Iteratively, in a loop, we:
-        1. Sample a megabatch of prompts from the training set without replacement.
+        1. Sample a superbatch of prompts from the training set without replacement.
         2. Use the language model to generate a completion for each prompt.
         3. Use the reward model to score the completions.
         4. Use some filter function to filter the top completions.
         5. Fine-tune the language model on the top completions.
         6. Optionally report metrics.
 
-    Note that the model is updated for each megabatch, so its sampling
+    Note that the model is updated for each superbatch, so its sampling
     distribution changes over time. This is a form of curriculum learning or
     expert iteration.
     """
@@ -108,12 +108,12 @@ class SuperHFTrainer:
             ListDataset(prompts), batch_size=self.training_args.superbatch_size
         )
 
-        # Then, iterate over the prompts in megabatches
-        for megabatch_index, megabatch_prompts in tqdm(
+        # Then, iterate over the prompts in superbatches
+        for superbatch_index, superbatch_prompts in tqdm(
             enumerate(prompts_dataloader), total=len(prompts_dataloader)
         ):
-            # Generate completions for each prompt in the megabatch
-            completions_encoded = self.generate_completions(megabatch_prompts)
+            # Generate completions for each prompt in the superbatch
+            completions_encoded = self.generate_completions(superbatch_prompts)
 
             # Score the completions
             completions, scores = self.score_completions(completions_encoded)
@@ -128,7 +128,7 @@ class SuperHFTrainer:
 
             # Optionally report metrics
             self.report_metrics(
-                megabatch_index,
+                superbatch_index,
                 completions,
                 filtered_completions,
                 scores,
@@ -152,11 +152,11 @@ class SuperHFTrainer:
         )
 
     def generate_completions(
-        self, megabatch_prompts: list[str]
+        self, superbatch_prompts: list[str]
     ) -> list[TensorType["batch", "seq_len"]]:
-        """Generate completions for the prompts in the megabatch."""
+        """Generate completions for the prompts in the superbatch."""
         completion_dataloader = DataLoader(
-            ListDataset(megabatch_prompts),
+            ListDataset(superbatch_prompts),
             batch_size=self.training_args.minibatch_size_initial,
             collate_fn=self.collate_fn_lm,
         )
@@ -255,7 +255,7 @@ class SuperHFTrainer:
 
     def report_metrics(
         self,
-        megabatch_index: int,
+        superbatch_index: int,
         completions: list[str],
         filtered_completions: list[str],
         scores: list[float],
@@ -275,7 +275,7 @@ class SuperHFTrainer:
         average_filtered_score = np.mean(filtered_scores)
         if "print" in self.training_args.report_to:
             print(
-                f"Megabatch {megabatch_index}: {len(completions)} completions, "
+                f"Superbatch {superbatch_index}: {len(completions)} completions, "
                 f"{len(filtered_completions)} filtered completions, average completion length "
                 f"{average_completion_length}, average filtered completion length "
                 f"{average_filtered_completion_length}, average score {average_score}, average "
