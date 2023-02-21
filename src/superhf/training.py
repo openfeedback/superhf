@@ -3,32 +3,18 @@ Trainers for finetuning models according to SuperHF (maximizing the scores
 from a reward model with expert iteration using supervised learning).
 """
 
-# import os
 from dataclasses import dataclass, field
 from typing import Any, Optional, Callable
 
-# import random
-# import torch
-# from torch import nn
+import torch
 from torch.utils.data import DataLoader
-
-# import numpy as np
-# from tqdm import tqdm
+import numpy as np
+from tqdm import tqdm
 from transformers import (
-    # Trainer,
-    # DataCollatorForLanguageModeling,
-    # PreTrainedModel,
     PreTrainedTokenizerBase,
     BatchEncoding,
-    # pipeline,
-    # EvalPrediction,
 )
-
-# from transformers.pipelines.pt_utils import KeyDataset
-# from datasets.arrow_dataset import Dataset
-# from datasets.utils import logging
-
-# from torchtyping import TensorType
+from torchtyping import TensorType  # type: ignore
 
 from superhf.data import ListDataset
 
@@ -64,8 +50,8 @@ class SuperHFTrainingArguments:
     filter_function: Optional[Callable[[list[float]], list[bool]]] = None
 
     # Metrics
-    report_to: Optional[list[str]] = field(
-        default=None,
+    report_to: list[str] = field(
+        default_factory=lambda: [],
         metadata={
             "help": "The list of integrations to report the results and logs to."
         },
@@ -123,43 +109,39 @@ class SuperHFTrainer:
         )
 
         # Then, iterate over the prompts in megabatches
-        for megabatch in prompts_dataloader:
+        for megabatch_index, megabatch_prompts in tqdm(
+            enumerate(prompts_dataloader), total=len(prompts_dataloader)
+        ):
             # Generate completions for each prompt in the megabatch
-            completions: list[str] = []
-            completion_dataloader = DataLoader(
-                ListDataset(megabatch),
-                batch_size=self.training_args.minibatch_size_initial,
-                collate_fn=self.collate_fn,
-            )
-            for minibatch in completion_dataloader:
-                completions.extend(
-                    self.language_model.generate(
-                        minibatch,
-                        max_length=self.training_args.max_length_lm,
-                        temperature=self.training_args.temperature,
-                        top_p=self.training_args.top_p,
-                        do_sample=True,
-                        num_return_sequences=1,
-                    )
-                )
+            completions_encoded = self.generate_completions(megabatch_prompts)
 
             # Score the completions
-            scores = self.reward_model(completions)
+            completions, scores = self.score_completions(completions_encoded)
 
             # Filter the completions
-            filtered_completions = self.filter_completions(completions, scores)
+            filtered_completions, filtered_scores = self.filter_completions(
+                completions, scores
+            )
 
             # Fine-tune the language model on the filtered completions
-            self.finetune_language_model(filtered_completions)
+            average_loss = self.finetune_language_model(filtered_completions)
 
             # Optionally report metrics
-            self.report_metrics()
+            self.report_metrics(
+                megabatch_index,
+                completions,
+                filtered_completions,
+                scores,
+                filtered_scores,
+                average_loss,
+            )
 
             # Optionally, save the model
+            # self.save_model()
 
-    def collate_fn(self, batch: list[str]) -> BatchEncoding:
+    def collate_fn_lm(self, batch: list[str]) -> BatchEncoding:
         """
-        Collate function for the DataLoader.
+        Collate function for the language model DataLoader.
         """
         return self.language_tokenizer(
             batch,
@@ -169,30 +151,139 @@ class SuperHFTrainer:
             max_length=self.training_args.max_length_rm,
         )
 
+    def generate_completions(
+        self, megabatch_prompts: list[str]
+    ) -> list[TensorType["batch", "seq_len"]]:
+        """Generate completions for the prompts in the megabatch."""
+        completion_dataloader = DataLoader(
+            ListDataset(megabatch_prompts),
+            batch_size=self.training_args.minibatch_size_initial,
+            collate_fn=self.collate_fn_lm,
+        )
+        completions: list[str] = []
+        for minibatch in completion_dataloader:
+            encodings = minibatch
+            completions.extend(
+                self.language_model.generate(
+                    encodings,
+                    max_length=self.training_args.max_length_lm,
+                    temperature=self.training_args.temperature,
+                    top_p=self.training_args.top_p,
+                    do_sample=True,
+                    num_return_sequences=1,
+                )
+            )
+        return completions
+
+    def collate_fn_rm(
+        self, batch: list[TensorType["batch", "seq_len"]]
+    ) -> tuple[list[str], list[TensorType["batch", "seq_len"]]]:
+        """
+        Collate function for the reward model's dataloader.
+
+        Takes encoded completions from the language model, decodes them, encodes them for the
+        reward model, and returns both the decoded completion text and re-encoded completions.
+        """
+        completions = self.language_tokenizer.batch_decode(
+            batch, skip_special_tokens=True
+        )
+        return (
+            completions,
+            self.reward_tokenizer(
+                completions,
+                return_tensors="pt",
+                padding=True,
+                truncation=True,
+                max_length=self.training_args.max_length_rm,
+            ),
+        )
+
+    def score_completions(
+        self, completions_encoded: list[TensorType["batch", "seq_len"]]
+    ) -> tuple[list[str], list[TensorType[1]]]:
+        """
+        Score the completions.
+
+        Returns a tuple of the decoded completions and the scores.
+        """
+        all_completions: list[str] = []
+        all_scores: list[TensorType[1]] = []
+
+        score_dataloader = DataLoader(
+            ListDataset(completions_encoded),
+            batch_size=self.training_args.minibatch_size_initial,
+            collate_fn=self.collate_fn_rm,
+        )
+
+        for minibatch in score_dataloader:
+            completions, completion_encodings = minibatch
+            scores = self.reward_model(**completion_encodings)
+            all_completions.extend(completions)
+            all_scores.extend(scores)
+        return all_completions, all_scores
+
     def filter_completions(
         self, completions: list[str], scores: list[float]
-    ) -> list[str]:
+    ) -> tuple[list[str], list[float]]:
         """
         Filter the completions by the scores.
+
+        Returns both the completions and the scores.
         """
         if self.training_args.filter_function is None:
-            return completions
-        return [
-            completion
-            for completion, keep in zip(
-                completions, self.training_args.filter_function(scores)
-            )
-            if keep
-        ]
+            return completions, scores
+        raise NotImplementedError
 
-    def finetune_language_model(self, completions: list[str]) -> None:
+    def finetune_language_model(
+        self, filtered_completions: list[BatchEncoding]
+    ) -> TensorType[1]:
         """
         Fine-tune the language model on the completions.
         """
-        raise NotImplementedError
+        finetuning_dataloader = DataLoader(
+            ListDataset(filtered_completions),
+            batch_size=self.training_args.minibatch_size_initial,
+            collate_fn=self.collate_fn_lm,
+        )
+        self.language_model.train()
+        for minibatch in finetuning_dataloader:
+            encodings = minibatch
+            self.language_model(**encodings)
+            # TODO loss and optimizer
+        average_loss = torch.rand(1) * 10
+        return average_loss
 
-    def report_metrics(self) -> None:
+    def report_metrics(
+        self,
+        megabatch_index: int,
+        completions: list[str],
+        filtered_completions: list[str],
+        scores: list[float],
+        filtered_scores: list[float],
+        average_loss: TensorType[1],
+    ) -> None:
         """
         Report metrics.
+        """
+        # if self.training_args.report_metrics:
+        #     raise NotImplementedError
+        average_completion_length = np.mean([len(c) for c in completions])
+        average_filtered_completion_length = np.mean(
+            [len(c) for c in filtered_completions]
+        )
+        average_score = np.mean(scores)
+        average_filtered_score = np.mean(filtered_scores)
+        if "print" in self.training_args.report_to:
+            print(
+                f"Megabatch {megabatch_index}: {len(completions)} completions, "
+                f"{len(filtered_completions)} filtered completions, average completion length "
+                f"{average_completion_length}, average filtered completion length "
+                f"{average_filtered_completion_length}, average score {average_score}, average "
+                f"filtered score {average_filtered_score}, average loss {average_loss}."
+            )
+
+    def save_model(self) -> None:
+        """
+        Save the model.
         """
         raise NotImplementedError

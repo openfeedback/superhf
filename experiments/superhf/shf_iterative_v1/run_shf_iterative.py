@@ -19,7 +19,7 @@ from superhf.mocking import MockLanguageModel, MockRewardModel
 
 LANGUAGE_MODEL_NAME = "eleutherai/gpt-neo-1.3B"
 REWARD_MODEL_NAME = "OpenAssistant/reward-model-deberta-v3-base"
-DEBUG_MAX_PROMPTS = 1000
+DEBUG_MAX_PROMPTS = 0
 MAX_PROMPT_CHAR_LENGTH = 1024
 
 
