@@ -7,4 +7,5 @@
     "python.linting.mypyEnabled": true,
     "python.linting.pylintEnabled": true,
     "jupyter.debugJustMyCode": false,
+    "esbonio.sphinx.confDir": "",
 }
