@@ -7,6 +7,7 @@ from transformers import (
     AutoTokenizer,
     # AutoModelForCausalLM,
     # AutoModelForSequenceClassification,
+    # GPTNeoForCausalLM,
 )
 
 # import wandb
@@ -14,6 +15,7 @@ from transformers import (
 from superhf.data import get_superhf_prompts
 from superhf.training import SuperHFTrainingArguments, SuperHFTrainer
 from superhf.utils import set_seed
+from superhf.mocking import MockLanguageModel, MockRewardModel
 
 LANGUAGE_MODEL_NAME = "eleutherai/gpt-neo-1.3B"
 REWARD_MODEL_NAME = "OpenAssistant/reward-model-deberta-v3-base"
@@ -49,8 +51,8 @@ def main() -> None:
     print(f"Loaded {len(prompts)} prompts.")
 
     # Instantiate our language and reward models and tokenizers
-    language_model = None
-    reward_model = None
+    language_model = MockLanguageModel()
+    reward_model = MockRewardModel()
     language_tokenizer = AutoTokenizer.from_pretrained(
         LANGUAGE_MODEL_NAME, padding_side="left"
     )
