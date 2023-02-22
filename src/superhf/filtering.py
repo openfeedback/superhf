@@ -50,4 +50,4 @@ class CompletionFilterTopK(CompletionFilterBase):
         filtered_completions = sorted_completions[: self.top_k]
 
         # Return the filtered completions and their scores
-        return zip(*filtered_completions)
+        return tuple(zip(*filtered_completions))
