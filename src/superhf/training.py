@@ -180,7 +180,7 @@ class SuperHFTrainer:
 
     def collate_fn_rm(
         self, batch: list[TensorType["batch", "seq_len"]]
-    ) -> tuple[list[str], list[TensorType["batch", "seq_len"]]]:
+    ) -> tuple[list[str], BatchEncoding]:
         """
         Collate function for the reward model's dataloader.
 
@@ -225,9 +225,7 @@ class SuperHFTrainer:
             all_scores.extend(scores)
         return all_completions, all_scores
 
-    def finetune_language_model(
-        self, filtered_completions: list[BatchEncoding]
-    ) -> TensorType[1]:
+    def finetune_language_model(self, filtered_completions: list[str]) -> TensorType[1]:
         """
         Fine-tune the language model on the completions.
         """
