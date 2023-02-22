@@ -230,6 +230,8 @@ traitlets==5.9.0
     #   matplotlib-inline
 typeguard==2.13.3
     # via pygls
+types-tqdm==4.64.7.12
+    # via -r requirements/dev.in
 typing-extensions==4.5.0
     # via
     #   -c requirements\prod.txt

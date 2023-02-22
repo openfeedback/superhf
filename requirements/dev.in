@@ -9,3 +9,4 @@ esbonio
 ipykernel
 ipython
 ipywidgets
+types-tqdm
