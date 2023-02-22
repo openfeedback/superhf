@@ -8,17 +8,17 @@ from typing import Optional, Callable
 
 import torch
 from torch.utils.data import DataLoader
-import numpy as np
 from tqdm import tqdm
 from transformers import (
     PreTrainedTokenizerBase,
     BatchEncoding,
     PreTrainedModel,
 )
-from torchtyping import TensorType  # type: ignore
+from torchtyping import TensorType
 
 from superhf.data import ListDataset
 from superhf.filtering import CompletionFilterBase
+from superhf.metrics import SuperHFMetrics, report_metrics_print
 
 
 @dataclass
@@ -86,6 +86,7 @@ class SuperHFTrainer:
         reward_tokenizer: PreTrainedTokenizerBase,
         completion_filter: CompletionFilterBase,
         training_args: SuperHFTrainingArguments,
+        report_metrics: Optional[list[Callable[[SuperHFMetrics], None]]] = None,
     ) -> None:
         self.language_model = language_model
         self.reward_model = reward_model
@@ -93,6 +94,9 @@ class SuperHFTrainer:
         self.reward_tokenizer = reward_tokenizer
         self.completion_filter = completion_filter
         self.training_args = training_args
+        if report_metrics is None:
+            report_metrics = [report_metrics_print]
+        self.report_metrics = report_metrics
 
         # Add padding tokens if they are not already there
         if self.language_tokenizer.pad_token is None:
@@ -134,14 +138,17 @@ class SuperHFTrainer:
             average_loss = self.finetune_language_model(filtered_completions)
 
             # Optionally report metrics
-            self.report_metrics(
-                superbatch_index,
+            metrics = SuperHFMetrics(
+                superbatch_index + 1,
+                len(prompts_dataloader),
                 completions,
                 filtered_completions,
                 scores,
                 filtered_scores,
                 average_loss,
             )
+            for report_metrics_function in self.report_metrics:
+                report_metrics_function(metrics)
 
             # Optionally, save the model
             # self.save_model()
@@ -229,9 +236,11 @@ class SuperHFTrainer:
             all_scores.extend(scores)
         return all_completions, all_scores
 
-    def finetune_language_model(self, filtered_completions: list[str]) -> TensorType[1]:
+    def finetune_language_model(self, filtered_completions: list[str]) -> float:
         """
         Fine-tune the language model on the completions.
+
+        Returns the average loss for metrics.
         """
         finetuning_dataloader = DataLoader(
             ListDataset(filtered_completions),
@@ -244,36 +253,7 @@ class SuperHFTrainer:
             self.language_model(**encodings)
             # TODO loss and optimizer
         average_loss = torch.rand(1) * 10
-        return average_loss
-
-    def report_metrics(
-        self,
-        superbatch_index: int,
-        completions: list[str],
-        filtered_completions: list[str],
-        scores: list[float],
-        filtered_scores: list[float],
-        average_loss: TensorType[1],
-    ) -> None:
-        """
-        Report metrics.
-        """
-        # if self.training_args.report_metrics:
-        #     raise NotImplementedError
-        average_completion_length = np.mean([len(c) for c in completions])
-        average_filtered_completion_length = np.mean(
-            [len(c) for c in filtered_completions]
-        )
-        average_score = np.mean(scores)
-        average_filtered_score = np.mean(filtered_scores)
-        if "print" in self.training_args.report_to:
-            print(
-                f"Superbatch {superbatch_index}: {len(completions)} completions, "
-                f"{len(filtered_completions)} filtered completions, average completion length "
-                f"{average_completion_length}, average filtered completion length "
-                f"{average_filtered_completion_length}, average score {average_score}, average "
-                f"filtered score {average_filtered_score}, average loss {average_loss}."
-            )
+        return average_loss.item()
 
     def save_model(self) -> None:
         """
