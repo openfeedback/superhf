@@ -4,7 +4,7 @@ from a reward model with expert iteration using supervised learning).
 """
 
 from dataclasses import dataclass, field
-from typing import Any, Optional, Callable
+from typing import Optional, Callable
 
 import torch
 from torch.utils.data import DataLoader
@@ -13,6 +13,7 @@ from tqdm import tqdm
 from transformers import (
     PreTrainedTokenizerBase,
     BatchEncoding,
+    PreTrainedModel,
 )
 from torchtyping import TensorType  # type: ignore
 
@@ -79,8 +80,8 @@ class SuperHFTrainer:
 
     def __init__(
         self,
-        language_model: Any,
-        reward_model: Any,
+        language_model: PreTrainedModel,
+        reward_model: PreTrainedModel,
         language_tokenizer: PreTrainedTokenizerBase,
         reward_tokenizer: PreTrainedTokenizerBase,
         completion_filter: CompletionFilterBase,
