@@ -101,6 +101,9 @@ class SuperHFTrainer:
             self.reward_tokenizer.pad_token = self.reward_tokenizer.eos_token
             print("Added pad token to reward tokenizer.")
 
+        # Reward model is always in eval mode
+        self.reward_model.eval()
+
     def train(self, prompts: list[str]) -> None:
         """
         Main training and evaluation loop.
