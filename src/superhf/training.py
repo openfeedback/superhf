@@ -17,6 +17,7 @@ from transformers import (
 from torchtyping import TensorType  # type: ignore
 
 from superhf.data import ListDataset
+from superhf.filtering import CompletionFilterBase
 
 
 @dataclass
@@ -82,12 +83,14 @@ class SuperHFTrainer:
         reward_model: Any,
         language_tokenizer: PreTrainedTokenizerBase,
         reward_tokenizer: PreTrainedTokenizerBase,
+        completion_filter: CompletionFilterBase,
         training_args: SuperHFTrainingArguments,
     ) -> None:
         self.language_model = language_model
         self.reward_model = reward_model
         self.language_tokenizer = language_tokenizer
         self.reward_tokenizer = reward_tokenizer
+        self.completion_filter = completion_filter
         self.training_args = training_args
 
         # Add padding tokens if they are not already there
@@ -119,7 +122,7 @@ class SuperHFTrainer:
             completions, scores = self.score_completions(completions_encoded)
 
             # Filter the completions
-            filtered_completions, filtered_scores = self.filter_completions(
+            filtered_completions, filtered_scores = self.completion_filter.filter(
                 completions, scores
             )
 
@@ -221,18 +224,6 @@ class SuperHFTrainer:
             all_completions.extend(completions)
             all_scores.extend(scores)
         return all_completions, all_scores
-
-    def filter_completions(
-        self, completions: list[str], scores: list[float]
-    ) -> tuple[list[str], list[float]]:
-        """
-        Filter the completions by the scores.
-
-        Returns both the completions and the scores.
-        """
-        if self.training_args.filter_function is None:
-            return completions, scores
-        raise NotImplementedError
 
     def finetune_language_model(
         self, filtered_completions: list[BatchEncoding]

@@ -16,6 +16,7 @@ from superhf.data import get_superhf_prompts
 from superhf.training import SuperHFTrainingArguments, SuperHFTrainer
 from superhf.utils import set_seed
 from superhf.mocking import MockLanguageModel, MockRewardModel
+from superhf.filtering import CompletionFilterTopK
 
 LANGUAGE_MODEL_NAME = "eleutherai/gpt-neo-1.3B"
 REWARD_MODEL_NAME = "OpenAssistant/reward-model-deberta-v3-base"
@@ -60,6 +61,8 @@ def main() -> None:
 
     # Set our training arguments
     training_args = SuperHFTrainingArguments()
+    completion_filter_top_k = 8
+    completion_filter = CompletionFilterTopK(completion_filter_top_k)
 
     # Instantiate our trainer
     trainer = SuperHFTrainer(
@@ -67,6 +70,7 @@ def main() -> None:
         reward_model=reward_model,
         language_tokenizer=language_tokenizer,
         reward_tokenizer=reward_tokenizer,
+        completion_filter=completion_filter,
         training_args=training_args,
     )
 
