@@ -103,6 +103,9 @@ torch==1.13.1
     # via
     #   -r requirements/prod.in
     #   accelerate
+    #   torchtyping
+torchtyping==0.1.4
+    # via -r requirements/prod.in
 tqdm==4.64.1
     # via
     #   datasets
@@ -110,6 +113,8 @@ tqdm==4.64.1
     #   transformers
 transformers==4.26.1
     # via -r requirements/prod.in
+typeguard==2.13.3
+    # via torchtyping
 typing-extensions==4.5.0
     # via
     #   huggingface-hub
