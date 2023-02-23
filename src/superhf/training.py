@@ -4,7 +4,7 @@ from a reward model with expert iteration using supervised learning).
 """
 
 from dataclasses import dataclass, field
-from typing import Optional, Callable
+from typing import Callable, Optional, Union
 
 import torch
 from torch.utils.data import DataLoader
@@ -86,7 +86,12 @@ class SuperHFTrainer:
         reward_tokenizer: PreTrainedTokenizerBase,
         completion_filter: CompletionFilterBase,
         training_args: SuperHFTrainingArguments,
-        report_metrics: Optional[list[Callable[[SuperHFMetrics], None]]] = None,
+        # TODO try getting rid of first None in these
+        report_metrics: Optional[
+            Union[
+                Callable[[SuperHFMetrics], None], list[Callable[[SuperHFMetrics], None]]
+            ]
+        ] = None,
     ) -> None:
         self.language_model = language_model
         self.reward_model = reward_model
@@ -96,6 +101,8 @@ class SuperHFTrainer:
         self.training_args = training_args
         if report_metrics is None:
             report_metrics = [report_metrics_print]
+        elif not isinstance(report_metrics, list):
+            report_metrics = [report_metrics]
         self.report_metrics = report_metrics
 
         # Add padding tokens if they are not already there
@@ -139,16 +146,18 @@ class SuperHFTrainer:
 
             # Optionally report metrics
             metrics = SuperHFMetrics(
-                superbatch_index + 1,
-                len(prompts_dataloader),
-                completions,
-                filtered_completions,
-                scores,
-                filtered_scores,
-                average_loss,
+                superbatch_index=superbatch_index,
+                superbatch_count=len(prompts_dataloader),
+                completions=completions,
+                filtered_completions=filtered_completions,
+                scores=scores,
+                filtered_scores=filtered_scores,
+                average_loss=average_loss,
+                scheduler_lr=5e-5,  # TODO get this from the scheduler
             )
-            for report_metrics_function in self.report_metrics:
-                report_metrics_function(metrics)
+            if self.report_metrics is not None:
+                for report_metrics_function in self.report_metrics:
+                    report_metrics_function(metrics)
 
             # Optionally, save the model
             # self.save_model()

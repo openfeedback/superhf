@@ -2,25 +2,32 @@
 Client code showing how to call the training loop for the iterative version of the SuperHF model.
 """
 
+import random
+from typing import Any
 
 from transformers import (
     AutoTokenizer,
     # AutoModelForCausalLM,
     # AutoModelForSequenceClassification,
-    # GPTNeoForCausalLM,
 )
+import wandb
 
 from superhf.data import get_superhf_prompts
+from superhf.filtering import CompletionFilterTopK
+from superhf.metrics import (
+    initialize_metrics_wandb,
+    report_metrics_wandb,
+    report_metrics_print,
+)
+from superhf.mocking import MockLanguageModel, MockRewardModel
 from superhf.training import SuperHFTrainingArguments, SuperHFTrainer
 from superhf.utils import set_seed
-from superhf.mocking import MockLanguageModel, MockRewardModel
-from superhf.filtering import CompletionFilterTopK
 
 
 # TODO use argparse and wandb config for these instead
 LANGUAGE_MODEL_NAME = "eleutherai/gpt-neo-1.3B"
 REWARD_MODEL_NAME = "OpenAssistant/reward-model-deberta-v3-base"
-DEBUG_MAX_PROMPTS = 0
+DEBUG_MAX_PROMPTS = 0  # 1000
 MAX_PROMPT_CHAR_LENGTH = 1024
 
 
@@ -37,6 +44,7 @@ def main() -> None:
 
     # Get the prompt dataset
     prompts = get_superhf_prompts("anthropic-red-team")
+    random.shuffle(prompts)
 
     # Filter out prompts that are too long
     old_prompt_count = len(prompts)
@@ -76,16 +84,23 @@ def main() -> None:
         reward_tokenizer=reward_tokenizer,
         completion_filter=completion_filter,
         training_args=training_args,
+        report_metrics=[report_metrics_wandb, report_metrics_print],
     )
 
     # Begin our experiment
-    # wandb.init(project="superhf", entity="superhf", config=training_args)
+    config: dict[str, Any] = {}
+    wandb.init(
+        project="shf-iterative-v1",
+        notes="First test run",
+        config=config,
+        save_code=True,
+    )
+    initialize_metrics_wandb()  # Defines the run metrics
+    # wandb.watch(language_model, log="all")
 
     # Run training
+    wandb.alert(title="Beginning SuperHF run", text="Beginning SuperHF run...")
     trainer.train(prompts)
-
-    # Finish the experiment
-    # wandb.finish()
 
 
 if __name__ == "__main__":
