@@ -2,16 +2,17 @@
 Client code showing how to call the training loop for the iterative version of the SuperHF model.
 """
 
+import argparse
 import random
-from typing import Any
+import os
 
 from transformers import (
     AutoTokenizer,
     AutoModelForCausalLM,
     # AutoModelForSequenceClassification,
 )
-import wandb
 import torch
+import wandb
 
 from superhf.data import get_superhf_prompts
 from superhf.filtering import CompletionFilterTopK
@@ -25,23 +26,41 @@ from superhf.training import SuperHFTrainingArguments, SuperHFTrainer
 from superhf.utils import set_seed, print_gpu_utilization
 
 
-# TODO use argparse and wandb config for these instead
-LANGUAGE_MODEL_NAME = "eleutherai/gpt-neo-1.3B"
-REWARD_MODEL_NAME = "OpenAssistant/reward-model-deberta-v3-base"
-DEBUG_MAX_PROMPTS = 1000
-MAX_PROMPT_CHAR_LENGTH = 1024
-
-
 def main() -> None:
     """
     Instantiate and train the SuperHF model.
     """
 
+    # Parse arguments
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--config",
+        type=str,
+        # Get file path relative to this file
+        default=os.path.join(os.path.dirname(__file__), "configs", "gpt-neo-1.3B.yaml"),
+        help="The name of the Weights and Biases config to use.",
+    )
+    parser.add_argument(
+        "--notes",
+        type=str,
+        default="",
+        help="Notes to add to the Weights and Biases run.",
+    )
+    args = parser.parse_args()
+
+    # Configure device and seed
     device = torch.device(
         torch.cuda.current_device() if torch.cuda.is_available() else "cpu"
     )
-
     set_seed(66)
+
+    # Initialize Weights and Biases run
+    wandb.init(
+        project="shf-iterative-v1",
+        notes=args.notes,
+        save_code=True,
+        config=args.config,
+    )
 
     # Get the prompt dataset
     prompts = get_superhf_prompts("anthropic-red-team")
@@ -49,28 +68,33 @@ def main() -> None:
 
     # Filter out prompts that are too long
     old_prompt_count = len(prompts)
-    prompts = [prompt for prompt in prompts if len(prompt) < MAX_PROMPT_CHAR_LENGTH]
+    prompts = [
+        prompt
+        for prompt in prompts
+        if len(prompt) < wandb.config.max_prompt_char_length
+    ]
     print(
-        f"Filtered {old_prompt_count - len(prompts)} prompts over {MAX_PROMPT_CHAR_LENGTH} chars."
+        f"Filtered {old_prompt_count - len(prompts)} prompts over "
+        f"{wandb.config.max_prompt_char_length} chars."
     )
 
     # Testing: only load the first section of prompts
-    if DEBUG_MAX_PROMPTS != 0:
-        prompts = prompts[:DEBUG_MAX_PROMPTS]
+    if wandb.config.DEBUG_MAX_PROMPTS != 0:
+        prompts = prompts[: wandb.config.DEBUG_MAX_PROMPTS]
 
     print(f"Loaded {len(prompts)} prompts.")
 
     # Instantiate our language and reward models and tokenizers
-    language_model = AutoModelForCausalLM.from_pretrained(LANGUAGE_MODEL_NAME).to(
-        device
-    )
+    language_model = AutoModelForCausalLM.from_pretrained(
+        wandb.config.LANGUAGE_MODEL_NAME
+    ).to(device)
     reward_model = (
         MockRewardModel()
     )  # AutoModelForSequenceClassification.from_pretrained(REWARD_MODEL_NAME)
     language_tokenizer = AutoTokenizer.from_pretrained(
-        LANGUAGE_MODEL_NAME, padding_side="left"
+        wandb.config.LANGUAGE_MODEL_NAME, padding_side="left"
     )
-    reward_tokenizer = AutoTokenizer.from_pretrained(REWARD_MODEL_NAME)
+    reward_tokenizer = AutoTokenizer.from_pretrained(wandb.config.REWARD_MODEL_NAME)
     print_gpu_utilization()
 
     # Set our training arguments
@@ -89,14 +113,7 @@ def main() -> None:
         report_metrics=[report_metrics_wandb, report_metrics_print],
     )
 
-    # Begin our experiment
-    config: dict[str, Any] = {}
-    wandb.init(
-        project="shf-iterative-v1",
-        notes="First test run",
-        config=config,
-        save_code=True,
-    )
+    # Initialize metrics
     initialize_metrics_wandb()  # Defines the run metrics
     # wandb.watch(language_model, log="all")
 

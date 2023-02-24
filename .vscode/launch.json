@@ -18,7 +18,10 @@
             "request": "launch",
             "program": "${workspaceFolder}/experiments/superhf/shf_iterative_v1/run_shf_iterative.py",
             "console": "integratedTerminal",
-            "args": [],
+            "args": [
+                // "--config",
+                // "${workspaceFolder}/experiments/superhf/shf_iterative_v1/config-defaults.yaml",
+            ],
             "justMyCode": false
         },
     ]
