@@ -7,7 +7,7 @@ from typing import Any
 
 from transformers import (
     AutoTokenizer,
-    # AutoModelForCausalLM,
+    AutoModelForCausalLM,
     # AutoModelForSequenceClassification,
 )
 import wandb
@@ -19,7 +19,7 @@ from superhf.metrics import (
     report_metrics_wandb,
     report_metrics_print,
 )
-from superhf.mocking import MockLanguageModel, MockRewardModel
+from superhf.mocking import MockRewardModel
 from superhf.training import SuperHFTrainingArguments, SuperHFTrainer
 from superhf.utils import set_seed
 
@@ -60,9 +60,7 @@ def main() -> None:
     print(f"Loaded {len(prompts)} prompts.")
 
     # Instantiate our language and reward models and tokenizers
-    language_model = (
-        MockLanguageModel()
-    )  # AutoModelForCausalLM.from_pretrained(LANGUAGE_MODEL_NAME)
+    language_model = AutoModelForCausalLM.from_pretrained(LANGUAGE_MODEL_NAME)
     reward_model = (
         MockRewardModel()
     )  # AutoModelForSequenceClassification.from_pretrained(REWARD_MODEL_NAME)
