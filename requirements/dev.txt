@@ -154,7 +154,7 @@ platformdirs==3.0.0
     #   jupyter-core
     #   pylint
     #   virtualenv
-pre-commit==3.0.4
+pre-commit==3.1.0
     # via -r requirements/dev.in
 prompt-toolkit==3.0.37
     # via ipython
