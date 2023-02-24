@@ -22,9 +22,7 @@ charset-normalizer==3.0.1
     # via
     #   aiohttp
     #   requests
-colorama==0.4.6
-    # via tqdm
-datasets==2.9.0
+datasets==2.10.0
     # via -r requirements/prod.in
 dill==0.3.6
     # via

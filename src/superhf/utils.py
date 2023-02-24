@@ -9,7 +9,7 @@ import torch
 from pynvml import nvmlInit, nvmlDeviceGetHandleByIndex, nvmlDeviceGetMemoryInfo
 
 
-def set_seed(seed):
+def set_seed(seed: int) -> None:
     """Set the seed for all random number generators."""
     random.seed(seed)
     np.random.seed(seed)
@@ -19,8 +19,10 @@ def set_seed(seed):
 
 def print_gpu_utilization() -> None:
     """
-    Print the GPU memory occupied using nvidia-smi.
+    Print the GPU memory occupied using nvidia-smi. If no GPU is available, do nothing.
     """
+    if not torch.cuda.is_available():
+        return
     nvmlInit()
     handle = nvmlDeviceGetHandleByIndex(0)
     info = nvmlDeviceGetMemoryInfo(handle)

@@ -10,8 +10,9 @@ from transformers import (
     AutoModelForCausalLM,
     # AutoModelForSequenceClassification,
 )
-import wandb
 import torch
+import wandb
+
 
 from superhf.data import get_superhf_prompts
 from superhf.filtering import CompletionFilterTopK
@@ -26,7 +27,7 @@ from superhf.utils import set_seed, print_gpu_utilization
 
 
 # TODO use argparse and wandb config for these instead
-LANGUAGE_MODEL_NAME = "eleutherai/gpt-neo-1.3B"
+LANGUAGE_MODEL_NAME = "eleutherai/gpt-neo-125M"  # "eleutherai/gpt-neo-1.3B"
 REWARD_MODEL_NAME = "OpenAssistant/reward-model-deberta-v3-base"
 DEBUG_MAX_PROMPTS = 1000
 MAX_PROMPT_CHAR_LENGTH = 1024
