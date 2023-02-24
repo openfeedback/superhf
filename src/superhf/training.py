@@ -183,6 +183,7 @@ class SuperHFTrainer:
                     top_p=self.training_args.top_p,
                     do_sample=True,
                     num_return_sequences=1,
+                    pad_token_id=self.language_tokenizer.pad_token_id,
                 )
             )
         return completions
@@ -199,6 +200,9 @@ class SuperHFTrainer:
         completions = self.language_tokenizer.batch_decode(
             batch, skip_special_tokens=True
         )
+
+        # TODO remove completions after any extra "\n\nHuman:", "\n\nA:", "\n\nH:", or similar.
+
         return (
             completions,
             self.reward_tokenizer(
@@ -223,7 +227,7 @@ class SuperHFTrainer:
 
         score_dataloader = DataLoader(
             ListDataset(completions_encoded),
-            batch_size=self.training_args.minibatch_size_initial,
+            batch_size=1,  # self.training_args.minibatch_size_initial,
             collate_fn=self.collate_fn_rm,
         )
 
@@ -231,7 +235,7 @@ class SuperHFTrainer:
             completions, completion_encodings = minibatch
             scores = self.reward_model(**completion_encodings)
             all_completions.extend(completions)
-            all_scores.extend(scores)
+            all_scores.extend(scores.logits.tolist())
         return all_completions, all_scores
 
     def finetune_language_model(self, filtered_completions: list[str]) -> float:
