@@ -48,17 +48,6 @@ class SuperHFTrainingArguments:
         metadata={"help": "Size of minibatches for not running out of memory."},
     )
 
-    # Filtering
-    filter_function: Optional[Callable[[list[float]], list[bool]]] = None
-
-    # Metrics
-    report_to: list[str] = field(
-        default_factory=lambda: [],
-        metadata={
-            "help": "The list of integrations to report the results and logs to."
-        },
-    )
-
 
 class SuperHFTrainer:
     """

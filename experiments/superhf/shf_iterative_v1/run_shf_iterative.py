@@ -9,7 +9,7 @@ import os
 from transformers import (
     AutoTokenizer,
     AutoModelForCausalLM,
-    # AutoModelForSequenceClassification,
+    AutoModelForSequenceClassification,
 )
 import torch
 import wandb
@@ -21,7 +21,7 @@ from superhf.metrics import (
     report_metrics_wandb,
     report_metrics_print,
 )
-from superhf.mocking import MockRewardModel
+from superhf.mocking import MockLanguageModel, MockRewardModel
 from superhf.training import SuperHFTrainingArguments, SuperHFTrainer
 from superhf.utils import set_seed, print_gpu_utilization
 
@@ -30,6 +30,7 @@ def main() -> None:
     """
     Instantiate and train the SuperHF model.
     """
+    # pylint: disable=too-many-locals
 
     # Parse arguments
     parser = argparse.ArgumentParser()
@@ -79,27 +80,52 @@ def main() -> None:
     )
 
     # Testing: only load the first section of prompts
-    if wandb.config.DEBUG_MAX_PROMPTS != 0:
-        prompts = prompts[: wandb.config.DEBUG_MAX_PROMPTS]
+    if wandb.config.debug_max_prompts != 0:
+        prompts = prompts[: wandb.config.debug_max_prompts]
 
     print(f"Loaded {len(prompts)} prompts.")
 
     # Instantiate our language and reward models and tokenizers
-    language_model = AutoModelForCausalLM.from_pretrained(
-        wandb.config.LANGUAGE_MODEL_NAME
-    ).to(device)
+    language_model_name = wandb.config.language_model_name
+    language_model = (
+        MockLanguageModel()
+        if language_model_name == "mock"
+        else AutoModelForCausalLM.from_pretrained(language_model_name).to(device)
+    )
+    reward_model_name = wandb.config.reward_model_name
     reward_model = (
         MockRewardModel()
-    )  # AutoModelForSequenceClassification.from_pretrained(REWARD_MODEL_NAME)
-    language_tokenizer = AutoTokenizer.from_pretrained(
-        wandb.config.LANGUAGE_MODEL_NAME, padding_side="left"
+        if reward_model_name == "mock"
+        else AutoModelForSequenceClassification.from_pretrained(reward_model_name).to(
+            device
+        )
     )
-    reward_tokenizer = AutoTokenizer.from_pretrained(wandb.config.REWARD_MODEL_NAME)
+    language_tokenizer_name = (
+        "gpt2"
+        if wandb.config.language_model_name == "mock"
+        else wandb.config.language_model_name
+    )
+    language_tokenizer = AutoTokenizer.from_pretrained(
+        language_tokenizer_name, padding_side="left"
+    )
+    reward_tokenizer_name = (
+        "gpt2"
+        if wandb.config.reward_model_name == "mock"
+        else wandb.config.reward_model_name
+    )
+    reward_tokenizer = AutoTokenizer.from_pretrained(reward_tokenizer_name)
     print_gpu_utilization()
 
     # Set our training arguments
-    training_args = SuperHFTrainingArguments()
-    completion_filter_top_k = 8
+    training_args = SuperHFTrainingArguments(
+        temperature=wandb.config.temperature,
+        top_p=wandb.config.top_p,
+        superbatch_size=wandb.config.superbatch_size,
+        max_length_lm=wandb.config.max_length_lm,
+        max_length_rm=wandb.config.max_length_rm,
+        minibatch_size_initial=wandb.config.minibatch_size_initial,
+    )
+    completion_filter_top_k = wandb.config.completion_filter_top_k
     completion_filter = CompletionFilterTopK(completion_filter_top_k)
 
     # Instantiate our trainer

@@ -1,12 +1,12 @@
 language_model_name:
   desc: HuggingFace language model to use, or "mock" for testing
-  value: "EleutherAI/gpt-neo-1.3B"
+  value: "EleutherAI/gpt-neo-125M"
 reward_model_name:
   desc: HuggingFace reward model to use, or "mock" for testing
   value: "OpenAssistant/reward-model-deberta-v3-base"
 debug_max_prompts:
   desc: Maximum number of prompts to use, or 0 for unlimited
-  value: 0
+  value: 1000
 max_prompt_char_length:
   desc: Maximum number of characters to truncate prompts to
   value: 1024
