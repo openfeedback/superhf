@@ -117,7 +117,9 @@ class SuperHFTrainer:
 
         # Then, iterate over the prompts in superbatches
         for superbatch_index, superbatch_prompts in tqdm(
-            enumerate(prompts_dataloader), total=len(prompts_dataloader)
+            enumerate(prompts_dataloader),
+            total=len(prompts_dataloader),
+            desc="Superbatch",
         ):
             # Generate completions for each prompt in the superbatch
             completions_encoded = self.generate_completions(superbatch_prompts)
@@ -173,7 +175,7 @@ class SuperHFTrainer:
             collate_fn=self.collate_fn_lm,
         )
         completions: list[str] = []
-        for minibatch in tqdm(completion_dataloader):
+        for minibatch in tqdm(completion_dataloader, desc="Generation"):
             encodings = minibatch
             completions.extend(
                 self.language_model.generate(
@@ -184,7 +186,7 @@ class SuperHFTrainer:
                     do_sample=True,
                     num_return_sequences=1,
                     pad_token_id=self.language_tokenizer.pad_token_id,
-                )
+                ).to("cpu")
             )
         return completions
 
@@ -227,15 +229,16 @@ class SuperHFTrainer:
 
         score_dataloader = DataLoader(
             ListDataset(completions_encoded),
-            batch_size=1,  # self.training_args.minibatch_size_initial,
+            batch_size=self.training_args.minibatch_size_initial,
             collate_fn=self.collate_fn_rm,
         )
 
-        for minibatch in score_dataloader:
-            completions, completion_encodings = minibatch
-            scores = self.reward_model(**completion_encodings)
-            all_completions.extend(completions)
-            all_scores.extend(scores.logits.tolist())
+        with torch.no_grad():
+            for minibatch in score_dataloader:
+                completions, completion_encodings = minibatch
+                scores = self.reward_model(**completion_encodings)
+                all_completions.extend(completions)
+                all_scores.extend(scores.logits.flatten().tolist())
         return all_completions, all_scores
 
     def finetune_language_model(self, filtered_completions: list[str]) -> float:
