@@ -161,7 +161,7 @@ class SuperHFTrainer:
             padding=True,
             truncation=True,
             max_length=self.training_args.max_length_rm,
-        )
+        ).to(self.language_model.device)
 
     def generate_completions(
         self, superbatch_prompts: list[str]
@@ -207,7 +207,7 @@ class SuperHFTrainer:
                 padding=True,
                 truncation=True,
                 max_length=self.training_args.max_length_rm,
-            ),
+            ).to(self.reward_model.device),
         )
 
     def score_completions(

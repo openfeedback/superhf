@@ -27,7 +27,7 @@ max_length_lm:
   value: 256
 max_length_rm:
   desc: Maximum token length of reward model input.
-  value: 1024
+  value: 512
 minibatch_size_initial:
   desc: Initial size of minibatches for balancing speed and memory.
-  value: 64
+  value: 8
