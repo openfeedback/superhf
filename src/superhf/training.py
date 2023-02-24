@@ -184,11 +184,11 @@ class SuperHFTrainer:
             collate_fn=self.collate_fn_lm,
         )
         completions: list[str] = []
-        for minibatch in completion_dataloader:
+        for minibatch in tqdm(completion_dataloader):
             encodings = minibatch
             completions.extend(
                 self.language_model.generate(
-                    encodings,
+                    **encodings,
                     max_length=self.training_args.max_length_lm,
                     temperature=self.training_args.temperature,
                     top_p=self.training_args.top_p,

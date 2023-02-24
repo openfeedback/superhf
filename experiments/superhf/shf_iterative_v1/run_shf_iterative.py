@@ -11,6 +11,7 @@ from transformers import (
     # AutoModelForSequenceClassification,
 )
 import wandb
+import torch
 
 from superhf.data import get_superhf_prompts
 from superhf.filtering import CompletionFilterTopK
@@ -21,13 +22,13 @@ from superhf.metrics import (
 )
 from superhf.mocking import MockRewardModel
 from superhf.training import SuperHFTrainingArguments, SuperHFTrainer
-from superhf.utils import set_seed
+from superhf.utils import set_seed, print_gpu_utilization
 
 
 # TODO use argparse and wandb config for these instead
 LANGUAGE_MODEL_NAME = "eleutherai/gpt-neo-1.3B"
 REWARD_MODEL_NAME = "OpenAssistant/reward-model-deberta-v3-base"
-DEBUG_MAX_PROMPTS = 0  # 1000
+DEBUG_MAX_PROMPTS = 1000
 MAX_PROMPT_CHAR_LENGTH = 1024
 
 
@@ -36,9 +37,9 @@ def main() -> None:
     Instantiate and train the SuperHF model.
     """
 
-    # device = torch.device(
-    #     torch.cuda.current_device() if torch.cuda.is_available() else "cpu"
-    # )
+    device = torch.device(
+        torch.cuda.current_device() if torch.cuda.is_available() else "cpu"
+    )
 
     set_seed(66)
 
@@ -60,7 +61,9 @@ def main() -> None:
     print(f"Loaded {len(prompts)} prompts.")
 
     # Instantiate our language and reward models and tokenizers
-    language_model = AutoModelForCausalLM.from_pretrained(LANGUAGE_MODEL_NAME)
+    language_model = AutoModelForCausalLM.from_pretrained(LANGUAGE_MODEL_NAME).to(
+        device
+    )
     reward_model = (
         MockRewardModel()
     )  # AutoModelForSequenceClassification.from_pretrained(REWARD_MODEL_NAME)
@@ -68,6 +71,7 @@ def main() -> None:
         LANGUAGE_MODEL_NAME, padding_side="left"
     )
     reward_tokenizer = AutoTokenizer.from_pretrained(REWARD_MODEL_NAME)
+    print_gpu_utilization()
 
     # Set our training arguments
     training_args = SuperHFTrainingArguments()
