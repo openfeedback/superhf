@@ -8,7 +8,7 @@ from typing import Callable, Optional, Union
 
 import torch
 from torch.utils.data import DataLoader
-from accelerate import Accelerator
+from accelerate import Accelerator, find_executable_batch_size
 from tqdm import tqdm
 from transformers import (
     PreTrainedTokenizerBase,
@@ -143,7 +143,10 @@ class SuperHFTrainer:
             )
 
             # Fine-tune the language model on the filtered completions
-            average_loss = self.finetune_language_model(filtered_completions, optimizer)
+            average_loss = find_executable_batch_size(
+                self.finetune_language_model,
+                self.training_args.minibatch_size_initial,
+            )(filtered_completions, optimizer)
 
             # Optionally report metrics
             metrics = SuperHFMetrics(
@@ -252,7 +255,10 @@ class SuperHFTrainer:
         return all_completions, all_scores
 
     def finetune_language_model(
-        self, filtered_completions: list[str], optimizer: torch.optim.Optimizer
+        self,
+        minibatch_size: int,
+        filtered_completions: list[str],
+        optimizer: torch.optim.Optimizer,
     ) -> float:
         """
         Fine-tune the language model on the completions.
@@ -263,7 +269,7 @@ class SuperHFTrainer:
 
         finetuning_dataloader = DataLoader(
             ListDataset(filtered_completions),
-            batch_size=self.training_args.minibatch_size_initial,
+            batch_size=minibatch_size,
             collate_fn=self.collate_fn_lm,
         )
         # print(f"Optimizer is {type(optimizer)}")
