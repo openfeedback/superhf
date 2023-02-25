@@ -278,16 +278,29 @@ class SuperHFTrainer:
         average_loss = 0
         self.language_model.train()
         for minibatch in tqdm(finetuning_dataloader, desc="Fine-tuning"):
-            encodings = minibatch
-            print(f"Encodings are {type(encodings)}")
-            print(f"Encodings have shape {encodings.shape}")
+            encodings = minibatch  # Encodings have keys dict_keys(['input_ids', 'attention_mask'])
+            # input_ids have shape [completion_filter_top_k, seq_len]
+            print(f"[batch, seq_len] = {encodings['input_ids'].shape}")
+            targets_flat = encodings["input_ids"].view(-1)
+            print(
+                f"Targets_flat have shape {targets_flat.shape}"
+            )  # [completion_filter_top_k * seq_len]
             outputs = self.language_model(**encodings)
-            print(f"Outpurs are {type(outputs)}")
-            print(f"Outputs are shape {outputs.shape}")
-            print(f"Outputs have keys {outputs.keys()}")
-            loss = loss_function(
-                outputs.logits.view(-1, outputs.logits.shape[-1]), encodings.view(-1)
-            )
+            logits_flat = outputs.logits.view(
+                -1, outputs.logits.shape[-1]
+            )  # [completion_filter_top_k * seq_len, |V|]
+            print(f"Logits have shape {logits_flat.shape}")
+            # outputs contains odict_keys(['logits', 'past_key_values'])
+            # outputs.logits have shape [completion_filter_top_k, seq_len, |V|]
+
+            # Mask out positions with padding
+            padding_mask_flat = encodings["attention_mask"].view(-1)
+            targets_flat = targets_flat[padding_mask_flat]
+            logits_flat = logits_flat[padding_mask_flat]
+            print(f"Targets_flat have shape {targets_flat.shape}")
+            print(f"Logits have shape {logits_flat.shape}")
+
+            loss = loss_function(logits_flat, targets_flat)
             average_loss += loss
             # TODO loss and optimizer
         return average_loss / len(finetuning_dataloader)
