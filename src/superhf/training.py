@@ -300,13 +300,15 @@ class SuperHFTrainer:
             # print(f"Targets_flat have shape {targets_flat.shape}")
             # print(f"Logits have shape {logits_flat.shape}")
 
-            loss = loss_function(logits_flat, targets_flat)
+            loss = loss_function(logits_flat, targets_flat)  # is a scalar on gpu device
             average_loss += loss
-            loss.backward()
+            accelerator.backward(loss)
             optimizer.step()
             optimizer.zero_grad()
 
-        return average_loss / len(finetuning_dataloader)
+        return average_loss / len(
+            finetuning_dataloader
+        )  # TODO: Figure out the correct denominator
 
     def save_model(self) -> None:
         """
