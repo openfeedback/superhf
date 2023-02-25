@@ -6,7 +6,7 @@ reward_model_name:
   value: "OpenAssistant/reward-model-deberta-v3-base"
 debug_max_prompts:
   desc: Maximum number of prompts to use, or 0 for unlimited
-  value: 1000
+  value: 10
 max_prompt_char_length:
   desc: Maximum number of characters to truncate prompts to
   value: 1024

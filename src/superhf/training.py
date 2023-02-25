@@ -115,9 +115,6 @@ class SuperHFTrainer:
         """
         Main training and evaluation loop.
         """
-        # Initialize the accelerator
-        accelerator = Accelerator()
-
         # Initialize the optimizer
         optimizer = torch.optim.AdamW(
             self.language_model.parameters(), lr=self.training_args.learning_rate
@@ -126,10 +123,6 @@ class SuperHFTrainer:
         # First, put all the prompts into a Dataset and DataLoader
         prompts_dataloader = DataLoader(
             ListDataset(prompts), batch_size=self.training_args.superbatch_size
-        )
-
-        self.language_model, optimizer, prompts_dataloader = accelerator.prepare(
-            self.language_model, optimizer, prompts_dataloader
         )
 
         # Then, iterate over the prompts in superbatches
@@ -266,21 +259,36 @@ class SuperHFTrainer:
 
         Returns the average loss for metrics.
         """
+        loss_function = torch.nn.CrossEntropyLoss()
+
         finetuning_dataloader = DataLoader(
             ListDataset(filtered_completions),
             batch_size=self.training_args.minibatch_size_initial,
             collate_fn=self.collate_fn_lm,
         )
         print(f"Optimizer is {type(optimizer)}")
+
+        # Initialize the accelerator
+        accelerator = Accelerator()
+        print(f"type of acceleartor is {type(accelerator)}")
+
+        # self.language_model, optimizer, finetuning_dataloader = (
+        #     accelerator.prepare(self.language_model, optimizer, finetuning_dataloader)
+        # )
         average_loss = 0
         self.language_model.train()
-        for minibatch in finetuning_dataloader:
+        for minibatch in tqdm(finetuning_dataloader, desc="Fine-tuning"):
             encodings = minibatch
+            print(f"Encodings are {type(encodings)}")
+            print(f"Encodings have shape {encodings.shape}")
             outputs = self.language_model(**encodings)
             print(f"Outpurs are {type(outputs)}")
-            print(f"Outputs are {outputs}")
+            print(f"Outputs are shape {outputs.shape}")
             print(f"Outputs have keys {outputs.keys()}")
-            average_loss += outputs.loss
+            loss = loss_function(
+                outputs.logits.view(-1, outputs.logits.shape[-1]), encodings.view(-1)
+            )
+            average_loss += loss
             # TODO loss and optimizer
         return average_loss / len(finetuning_dataloader)
 
