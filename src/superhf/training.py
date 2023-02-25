@@ -272,24 +272,24 @@ class SuperHFTrainer:
         accelerator = Accelerator()
         print(f"type of acceleartor is {type(accelerator)}")
 
-        # self.language_model, optimizer, finetuning_dataloader = (
-        #     accelerator.prepare(self.language_model, optimizer, finetuning_dataloader)
-        # )
+        self.language_model, optimizer, finetuning_dataloader = accelerator.prepare(
+            self.language_model, optimizer, finetuning_dataloader
+        )
         average_loss = 0
         self.language_model.train()
         for minibatch in tqdm(finetuning_dataloader, desc="Fine-tuning"):
             encodings = minibatch  # Encodings have keys dict_keys(['input_ids', 'attention_mask'])
             # input_ids have shape [completion_filter_top_k, seq_len]
-            print(f"[batch, seq_len] = {encodings['input_ids'].shape}")
+            # print(f"[batch, seq_len] = {encodings['input_ids'].shape}")
             targets_flat = encodings["input_ids"].view(-1)
-            print(
-                f"Targets_flat have shape {targets_flat.shape}"
-            )  # [completion_filter_top_k * seq_len]
+            # print(
+            #     f"Targets_flat have shape {targets_flat.shape}"
+            # )  # [completion_filter_top_k * seq_len]
             outputs = self.language_model(**encodings)
             logits_flat = outputs.logits.view(
                 -1, outputs.logits.shape[-1]
             )  # [completion_filter_top_k * seq_len, |V|]
-            print(f"Logits have shape {logits_flat.shape}")
+            # print(f"Logits have shape {logits_flat.shape}")
             # outputs contains odict_keys(['logits', 'past_key_values'])
             # outputs.logits have shape [completion_filter_top_k, seq_len, |V|]
 
@@ -297,12 +297,15 @@ class SuperHFTrainer:
             padding_mask_flat = encodings["attention_mask"].view(-1)
             targets_flat = targets_flat[padding_mask_flat]
             logits_flat = logits_flat[padding_mask_flat]
-            print(f"Targets_flat have shape {targets_flat.shape}")
-            print(f"Logits have shape {logits_flat.shape}")
+            # print(f"Targets_flat have shape {targets_flat.shape}")
+            # print(f"Logits have shape {logits_flat.shape}")
 
             loss = loss_function(logits_flat, targets_flat)
             average_loss += loss
-            # TODO loss and optimizer
+            loss.backward()
+            optimizer.step()
+            optimizer.zero_grad()
+
         return average_loss / len(finetuning_dataloader)
 
     def save_model(self) -> None:
