@@ -13,12 +13,39 @@
             "justMyCode": true
         },
         {
-            "name": "Python: SHF Iter (Mock)",
+            "name": "SHF Iter (Mock)",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/experiments/superhf/shf_iterative_v1/run_shf_iterative.py",
             "console": "integratedTerminal",
-            "args": [],
+            "args": [
+                "--config",
+                "${workspaceFolder}/experiments/superhf/shf_iterative_v1/configs/mock.yaml",
+            ],
+            "justMyCode": false
+        },
+        {
+            "name": "SHF Iter (Neo-125M)",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/experiments/superhf/shf_iterative_v1/run_shf_iterative.py",
+            "console": "integratedTerminal",
+            "args": [
+                "--config",
+                "${workspaceFolder}/experiments/superhf/shf_iterative_v1/configs/gpt-neo-125M.yaml",
+            ],
+            "justMyCode": false
+        },
+        {
+            "name": "SHF Iter (Neo-1.5B)",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/experiments/superhf/shf_iterative_v1/run_shf_iterative.py",
+            "console": "integratedTerminal",
+            "args": [
+                "--config",
+                "${workspaceFolder}/experiments/superhf/shf_iterative_v1/configs/gpt-neo-125M.yaml",
+            ],
             "justMyCode": false
         },
     ]

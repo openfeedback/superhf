@@ -1,0 +1,33 @@
+language_model_name:
+  desc: HuggingFace language model to use, or "mock" for testing
+  value: "mock"
+reward_model_name:
+  desc: HuggingFace reward model to use, or "mock" for testing
+  value: "mock"
+debug_max_prompts:
+  desc: Maximum number of prompts to use, or 0 for unlimited
+  value: 512
+max_prompt_char_length:
+  desc: Maximum number of characters to truncate prompts to
+  value: 1024
+temperature:
+  desc: Temperature to use for completion sampling
+  value: 1.0
+top_p:
+  desc: Top-p to use for completion sampling
+  value: 0.9
+superbatch_size:
+  desc: Number of completions to generate with the current policy before filtering and fine-tuning.
+  value: 128
+completion_filter_top_k:
+  desc: Top-k completions to filter and train on.
+  value: 8
+max_length_lm:
+  desc: Maximum new token length of language model completion.
+  value: 256
+max_length_rm:
+  desc: Maximum token length of reward model input.
+  value: 1024
+minibatch_size_initial:
+  desc: Initial size of minibatches for balancing speed and memory.
+  value: 64

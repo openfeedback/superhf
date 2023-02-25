@@ -48,17 +48,6 @@ class SuperHFTrainingArguments:
         metadata={"help": "Size of minibatches for not running out of memory."},
     )
 
-    # Filtering
-    filter_function: Optional[Callable[[list[float]], list[bool]]] = None
-
-    # Metrics
-    report_to: list[str] = field(
-        default_factory=lambda: [],
-        metadata={
-            "help": "The list of integrations to report the results and logs to."
-        },
-    )
-
 
 class SuperHFTrainer:
     """
@@ -128,7 +117,9 @@ class SuperHFTrainer:
 
         # Then, iterate over the prompts in superbatches
         for superbatch_index, superbatch_prompts in tqdm(
-            enumerate(prompts_dataloader), total=len(prompts_dataloader)
+            enumerate(prompts_dataloader),
+            total=len(prompts_dataloader),
+            desc="Superbatch",
         ):
             # Generate completions for each prompt in the superbatch
             completions_encoded = self.generate_completions(superbatch_prompts)
@@ -172,7 +163,7 @@ class SuperHFTrainer:
             padding=True,
             truncation=True,
             max_length=self.training_args.max_length_rm,
-        )
+        ).to(self.language_model.device)
 
     def generate_completions(
         self, superbatch_prompts: list[str]
@@ -184,7 +175,7 @@ class SuperHFTrainer:
             collate_fn=self.collate_fn_lm,
         )
         completions: list[str] = []
-        for minibatch in tqdm(completion_dataloader):
+        for minibatch in tqdm(completion_dataloader, desc="Generation"):
             encodings = minibatch
             completions.extend(
                 self.language_model.generate(
@@ -194,7 +185,8 @@ class SuperHFTrainer:
                     top_p=self.training_args.top_p,
                     do_sample=True,
                     num_return_sequences=1,
-                )
+                    pad_token_id=self.language_tokenizer.pad_token_id,
+                ).to("cpu")
             )
         return completions
 
@@ -210,6 +202,9 @@ class SuperHFTrainer:
         completions = self.language_tokenizer.batch_decode(
             batch, skip_special_tokens=True
         )
+
+        # TODO remove completions after any extra "\n\nHuman:", "\n\nA:", "\n\nH:", or similar.
+
         return (
             completions,
             self.reward_tokenizer(
@@ -218,7 +213,7 @@ class SuperHFTrainer:
                 padding=True,
                 truncation=True,
                 max_length=self.training_args.max_length_rm,
-            ),
+            ).to(self.reward_model.device),
         )
 
     def score_completions(
@@ -238,11 +233,12 @@ class SuperHFTrainer:
             collate_fn=self.collate_fn_rm,
         )
 
-        for minibatch in score_dataloader:
-            completions, completion_encodings = minibatch
-            scores = self.reward_model(**completion_encodings)
-            all_completions.extend(completions)
-            all_scores.extend(scores)
+        with torch.no_grad():
+            for minibatch in score_dataloader:
+                completions, completion_encodings = minibatch
+                scores = self.reward_model(**completion_encodings)
+                all_completions.extend(completions)
+                all_scores.extend(scores.logits.flatten().tolist())
         return all_completions, all_scores
 
     def finetune_language_model(self, filtered_completions: list[str]) -> float:
