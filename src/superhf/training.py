@@ -8,8 +8,7 @@ from typing import Callable, Optional, Union
 
 import torch
 from torch.utils.data import DataLoader
-
-# from accelerate import Accelerator
+from accelerate import Accelerator
 from tqdm import tqdm
 from transformers import (
     PreTrainedTokenizerBase,
@@ -37,8 +36,10 @@ class SuperHFTrainingArguments:
     superbatch_size: int = field(
         default=128,
         metadata={
-            "help": "Number of completions to generate with the current "
-            "policy before filtering and fine-tuning."
+            "help": (
+                "Number of completions to generate with the current "
+                "policy before filtering and fine-tuning."
+            )
         },
     )
     max_length_lm: int = 256
@@ -49,6 +50,9 @@ class SuperHFTrainingArguments:
         default=32,
         metadata={"help": "Size of minibatches for not running out of memory."},
     )
+
+    # Training
+    learning_rate: float = 1e-5
 
 
 class SuperHFTrainer:
@@ -111,10 +115,21 @@ class SuperHFTrainer:
         """
         Main training and evaluation loop.
         """
+        # Initialize the accelerator
+        accelerator = Accelerator()
+
+        # Initialize the optimizer
+        optimizer = torch.optim.AdamW(
+            self.language_model.parameters(), lr=self.training_args.learning_rate
+        )
 
         # First, put all the prompts into a Dataset and DataLoader
         prompts_dataloader = DataLoader(
             ListDataset(prompts), batch_size=self.training_args.superbatch_size
+        )
+
+        self.language_model, optimizer, prompts_dataloader = accelerator.prepare(
+            self.language_model, optimizer, prompts_dataloader
         )
 
         # Then, iterate over the prompts in superbatches
@@ -135,7 +150,7 @@ class SuperHFTrainer:
             )
 
             # Fine-tune the language model on the filtered completions
-            average_loss = self.finetune_language_model(filtered_completions)
+            average_loss = self.finetune_language_model(filtered_completions, optimizer)
 
             # Optionally report metrics
             metrics = SuperHFMetrics(
@@ -243,7 +258,9 @@ class SuperHFTrainer:
                 all_scores.extend(scores.logits.flatten().tolist())
         return all_completions, all_scores
 
-    def finetune_language_model(self, filtered_completions: list[str]) -> float:
+    def finetune_language_model(
+        self, filtered_completions: list[str], optimizer: torch.optim.Optimizer
+    ) -> float:
         """
         Fine-tune the language model on the completions.
 
@@ -254,14 +271,18 @@ class SuperHFTrainer:
             batch_size=self.training_args.minibatch_size_initial,
             collate_fn=self.collate_fn_lm,
         )
+        print(f"Optimizer is {type(optimizer)}")
         average_loss = 0
         self.language_model.train()
         for minibatch in finetuning_dataloader:
             encodings = minibatch
-            loss = self.language_model(**encodings).loss
-            average_loss += loss
+            outputs = self.language_model(**encodings)
+            print(f"Outpurs are {type(outputs)}")
+            print(f"Outputs are {outputs}")
+            print(f"Outputs have keys {outputs.keys()}")
+            average_loss += outputs.loss
             # TODO loss and optimizer
-        return average_loss.item() / len(finetuning_dataloader)
+        return average_loss / len(finetuning_dataloader)
 
     def save_model(self) -> None:
         """
