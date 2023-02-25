@@ -8,6 +8,8 @@ from typing import Callable, Optional, Union
 
 import torch
 from torch.utils.data import DataLoader
+
+# from accelerate import Accelerator
 from tqdm import tqdm
 from transformers import (
     PreTrainedTokenizerBase,
@@ -252,13 +254,14 @@ class SuperHFTrainer:
             batch_size=self.training_args.minibatch_size_initial,
             collate_fn=self.collate_fn_lm,
         )
+        average_loss = 0
         self.language_model.train()
         for minibatch in finetuning_dataloader:
             encodings = minibatch
-            self.language_model(**encodings)
+            loss = self.language_model(**encodings).loss
+            average_loss += loss
             # TODO loss and optimizer
-        average_loss = torch.rand(1) * 10
-        return average_loss.item()
+        return average_loss.item() / len(finetuning_dataloader)
 
     def save_model(self) -> None:
         """
