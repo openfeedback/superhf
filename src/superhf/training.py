@@ -20,6 +20,7 @@ from torchtyping import TensorType
 from superhf.data import ListDataset
 from superhf.filtering import CompletionFilterBase
 from superhf.metrics import SuperHFMetrics, report_metrics_print
+from superhf.utils import print_gpu_utilization
 
 
 @dataclass
@@ -265,6 +266,9 @@ class SuperHFTrainer:
 
         Returns the average loss for metrics.
         """
+        print(f"Trying with batch size {minibatch_size}")
+        print_gpu_utilization()
+
         loss_function = torch.nn.CrossEntropyLoss()
 
         finetuning_dataloader = DataLoader(
