@@ -266,11 +266,11 @@ class SuperHFTrainer:
             batch_size=self.training_args.minibatch_size_initial,
             collate_fn=self.collate_fn_lm,
         )
-        print(f"Optimizer is {type(optimizer)}")
+        # print(f"Optimizer is {type(optimizer)}")
 
         # Initialize the accelerator
         accelerator = Accelerator()
-        print(f"type of acceleartor is {type(accelerator)}")
+        # print(f"type of acceleartor is {type(accelerator)}")
 
         self.language_model, optimizer, finetuning_dataloader = accelerator.prepare(
             self.language_model, optimizer, finetuning_dataloader
@@ -281,7 +281,9 @@ class SuperHFTrainer:
             encodings = minibatch  # Encodings have keys dict_keys(['input_ids', 'attention_mask'])
             # input_ids have shape [completion_filter_top_k, seq_len]
             # print(f"[batch, seq_len] = {encodings['input_ids'].shape}")
-            targets_flat = encodings["input_ids"].view(-1)
+            targets_flat = encodings["input_ids"].view(
+                -1
+            )  # TODO: Do I need to shift the targets or logits?
             # print(
             #     f"Targets_flat have shape {targets_flat.shape}"
             # )  # [completion_filter_top_k * seq_len]
@@ -301,6 +303,8 @@ class SuperHFTrainer:
             # print(f"Logits have shape {logits_flat.shape}")
 
             loss = loss_function(logits_flat, targets_flat)  # is a scalar on gpu device
+            # assert loss.item() > 0.0, f"Loss is {loss.item()}, which is not positive."
+            #  TODO add this assertion
             average_loss += loss
             accelerator.backward(loss)
             optimizer.step()
