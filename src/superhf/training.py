@@ -132,7 +132,6 @@ class SuperHFTrainer:
             total=len(prompts_dataloader),
             desc="Superbatch",
         ):
-            self.language_model.eval()
             print(f"Before generation, on superbatch_index {superbatch_index} ", end="")
             print_gpu_utilization()
             # Generate completions for each prompt in the superbatch
@@ -196,19 +195,20 @@ class SuperHFTrainer:
             collate_fn=self.collate_fn_lm,
         )
         completions: list[str] = []
-        for minibatch in tqdm(completion_dataloader, desc="Generation"):
-            encodings = minibatch
-            completions.extend(
-                self.language_model.generate(
-                    **encodings,
-                    max_length=self.training_args.max_length_lm,
-                    temperature=self.training_args.temperature,
-                    top_p=self.training_args.top_p,
-                    do_sample=True,
-                    num_return_sequences=1,
-                    pad_token_id=self.language_tokenizer.pad_token_id,
-                ).to("cpu")
-            )
+        with torch.no_grad():
+            for minibatch in tqdm(completion_dataloader, desc="Generation"):
+                encodings = minibatch
+                completions.extend(
+                    self.language_model.generate(
+                        **encodings,
+                        max_length=self.training_args.max_length_lm,
+                        temperature=self.training_args.temperature,
+                        top_p=self.training_args.top_p,
+                        do_sample=True,
+                        num_return_sequences=1,
+                        pad_token_id=self.language_tokenizer.pad_token_id,
+                    ).to("cpu")
+                )
         return completions
 
     def collate_fn_rm(
