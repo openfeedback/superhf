@@ -132,12 +132,18 @@ class SuperHFTrainer:
             total=len(prompts_dataloader),
             desc="Superbatch",
         ):
+            print(f"Before generation, on superbatch_index {superbatch_index} ", end="")
+            print_gpu_utilization()
             # Generate completions for each prompt in the superbatch
             completions_encoded = self.generate_completions(superbatch_prompts)
 
+            print("Before scoring ", end="")
+            print_gpu_utilization()
             # Score the completions
             completions, scores = self.score_completions(completions_encoded)
 
+            print("Before filtering ", end="")
+            print_gpu_utilization()
             # Filter the completions
             filtered_completions, filtered_scores = self.completion_filter.filter(
                 completions, scores
@@ -279,12 +285,14 @@ class SuperHFTrainer:
         # print(f"Optimizer is {type(optimizer)}")
 
         # Initialize the accelerator
-        accelerator = Accelerator()
+        accelerator = Accelerator(mixed_precision="fp16")
         # print(f"type of acceleartor is {type(accelerator)}")
 
         self.language_model, optimizer, finetuning_dataloader = accelerator.prepare(
             self.language_model, optimizer, finetuning_dataloader
         )
+        print("After accelerator prepare, memory usage is: ", end="")
+        print_gpu_utilization()
         average_loss = 0
         self.language_model.train()
         for minibatch in tqdm(finetuning_dataloader, desc="Fine-tuning"):
