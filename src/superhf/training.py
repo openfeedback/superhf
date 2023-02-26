@@ -132,6 +132,7 @@ class SuperHFTrainer:
             total=len(prompts_dataloader),
             desc="Superbatch",
         ):
+            self.language_model.eval()
             print(f"Before generation, on superbatch_index {superbatch_index} ", end="")
             print_gpu_utilization()
             # Generate completions for each prompt in the superbatch
