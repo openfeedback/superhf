@@ -6,11 +6,9 @@ from a reward model with expert iteration using supervised learning).
 from dataclasses import dataclass, field
 from typing import Callable, Optional, Union
 
-# import deepspeed
 import torch
 from torch.utils.data import DataLoader
 
-# from torch.utils.data.distributed import DistributedSampler
 from accelerate import Accelerator, find_executable_batch_size
 from tqdm import tqdm
 from transformers import (
@@ -202,17 +200,10 @@ class SuperHFTrainer:
         """Generate completions for the prompts in the superbatch."""
         self.training_args.minibatch_size_generating = minibatch_size
 
-        # sampler = None
-        # engine, self.language_model, _, _ = deepspeed.initialize(
-        #     model=self.language_model, model_parameters=self.language_model.parameters()
-        # )
-        # sampler = DistributedSampler(ListDataset(superbatch_prompts))
-
         completion_dataloader = DataLoader(
             ListDataset(superbatch_prompts),
             batch_size=minibatch_size,
             collate_fn=self.collate_fn_lm,
-            # sampler=sampler,
         )
 
         accelerator = Accelerator(mixed_precision=self.training_args.mixed_precision)
@@ -234,10 +225,10 @@ class SuperHFTrainer:
                         do_sample=True,
                         num_return_sequences=1,
                         pad_token_id=self.language_tokenizer.pad_token_id,
-                    ).to("cpu")
+                    )
                 )
-
-        return completions
+        completions_gathered = accelerator.gather(completions).to("cpu")
+        return completions_gathered
 
     def collate_fn_rm(
         self, batch: list[TensorType["batch", "seq_len"]]
@@ -324,7 +315,7 @@ class SuperHFTrainer:
         self.language_model, optimizer, finetuning_dataloader = accelerator.prepare(
             self.language_model, optimizer, finetuning_dataloader
         )
-        print("After accelerator prepare, memory usage is: ", end="")
+        print("After accelerator prepare, ", end="")
         print_gpu_utilization()
         average_loss = 0
         self.language_model.train()
