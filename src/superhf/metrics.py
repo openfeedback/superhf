@@ -41,13 +41,14 @@ def report_metrics_print(metrics: SuperHFMetrics) -> None:
     average_score = np.mean(metrics.scores)
     average_filtered_score = np.mean(metrics.filtered_scores)
     print(
-        f"\nSuperbatch {metrics.superbatch_index}/{metrics.superbatch_count} "
-        f"({percent_complete:.3f}%): {len(metrics.completions)} completions, "
-        f"{len(metrics.filtered_completions)} filtered completions\n"
-        f"average completion length {average_completion_length:.3f}, "
-        f"average filtered completion length {average_filtered_completion_length:.3f}\n"
-        f"average score {average_score:.3f}, average filtered score {average_filtered_score:.3f}, "
-        f"average loss {metrics.average_loss:.3f}."
+        "\nSuperbatch"
+        f" {metrics.superbatch_index}/{metrics.superbatch_count} ({percent_complete:.3f}%):"
+        f" {len(metrics.completions)} completions,"
+        f" {len(metrics.filtered_completions)} filtered completions\naverage completion"
+        f" length {average_completion_length:.3f}, average filtered completion length"
+        f" {average_filtered_completion_length:.3f}\naverage score {average_score:.3f},"
+        f" average filtered score {average_filtered_score:.3f}, average loss"
+        f" {metrics.average_loss:.3f}."
     )
 
 
@@ -81,6 +82,7 @@ def report_metrics_wandb(metrics: SuperHFMetrics) -> None:
     """
     percent_complete = (metrics.superbatch_index + 1) / metrics.superbatch_count * 100
     average_completion_length = np.mean([len(c) for c in metrics.completions])
+    max_completion_length = np.max([len(c) for c in metrics.completions])
     average_filtered_completion_length = np.mean(
         [len(c) for c in metrics.filtered_completions]
     )
@@ -93,6 +95,7 @@ def report_metrics_wandb(metrics: SuperHFMetrics) -> None:
             "completion_count": len(metrics.completions),
             "filtered_completion_count": len(metrics.filtered_completions),
             "average_completion_length": average_completion_length,
+            "max_completion_length": max_completion_length,
             "average_filtered_completion_length": average_filtered_completion_length,
             "average_score": average_score,
             "average_filtered_score": average_filtered_score,

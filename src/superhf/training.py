@@ -6,10 +6,11 @@ from a reward model with expert iteration using supervised learning).
 from dataclasses import dataclass, field
 from typing import Callable, Optional, Union
 
-import deepspeed
+# import deepspeed
 import torch
 from torch.utils.data import DataLoader
-from torch.utils.data.distributed import DistributedSampler
+
+# from torch.utils.data.distributed import DistributedSampler
 from accelerate import Accelerator, find_executable_batch_size
 from tqdm import tqdm
 from transformers import (
@@ -201,24 +202,31 @@ class SuperHFTrainer:
         """Generate completions for the prompts in the superbatch."""
         self.training_args.minibatch_size_generating = minibatch_size
 
-        sampler = None
-        engine, self.language_model, _, _ = deepspeed.initialize(
-            model=self.language_model, model_parameters=self.language_model.parameters()
-        )
-        sampler = DistributedSampler(ListDataset(superbatch_prompts))
+        # sampler = None
+        # engine, self.language_model, _, _ = deepspeed.initialize(
+        #     model=self.language_model, model_parameters=self.language_model.parameters()
+        # )
+        # sampler = DistributedSampler(ListDataset(superbatch_prompts))
 
         completion_dataloader = DataLoader(
             ListDataset(superbatch_prompts),
             batch_size=minibatch_size,
             collate_fn=self.collate_fn_lm,
-            sampler=sampler,
+            # sampler=sampler,
         )
+
+        accelerator = Accelerator()
+
+        self.language_model, _, completion_dataloader = accelerator.prepare(
+            self.language_model, None, completion_dataloader
+        )
+
         completions: list[str] = []
         with torch.no_grad():
             for minibatch in tqdm(completion_dataloader, desc="Generation"):
                 encodings = minibatch
                 completions.extend(
-                    engine.generate(
+                    self.language_model.generate(
                         **encodings,
                         max_length=self.training_args.max_length_lm,
                         temperature=self.training_args.temperature,
@@ -342,7 +350,7 @@ class SuperHFTrainer:
 
             loss = loss_function(logits_flat, targets_flat)  # is a scalar on gpu device
             # assert loss.item() > 0.0, f"Loss is {loss.item()}, which is not positive."
-            #  TODO add this assertion
+            #  TODO add this assertion or remove it
             average_loss += loss
             accelerator.backward(loss)
             optimizer.step()
