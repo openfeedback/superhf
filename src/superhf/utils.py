@@ -24,6 +24,13 @@ def print_gpu_utilization() -> None:
     if not torch.cuda.is_available():
         return
     nvmlInit()
-    handle = nvmlDeviceGetHandleByIndex(0)
-    info = nvmlDeviceGetMemoryInfo(handle)
-    print(f"GPU memory occupied: {info.used//1024**2} MB.")
+    # get the number of GPUs
+    n_gpu = torch.cuda.device_count()
+
+    # for each GPU, get the name and the memory occupied
+    print("GPU memory occupied:", end="")
+    for i in range(n_gpu):
+        handle = nvmlDeviceGetHandleByIndex(i)
+        info = nvmlDeviceGetMemoryInfo(handle)
+        print(f" Device{i}: {info.used//1024**2} MB", end=";")
+    print()
