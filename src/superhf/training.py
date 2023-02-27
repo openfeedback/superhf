@@ -215,7 +215,7 @@ class SuperHFTrainer:
         )
 
         self.language_model, _, completion_dataloader = accelerator.prepare(
-            self.language_model, None, completion_dataloader
+            self.language_model, completion_dataloader, device_placement=[True, True]
         )
 
         completions: list[str] = []
@@ -324,7 +324,10 @@ class SuperHFTrainer:
         )
 
         self.language_model, optimizer, finetuning_dataloader = accelerator.prepare(
-            self.language_model, optimizer, finetuning_dataloader
+            self.language_model,
+            optimizer,
+            finetuning_dataloader,
+            device_placement=[True, True, True],
         )
         print("After accelerator prepare, ", end="")
         print_gpu_utilization()
