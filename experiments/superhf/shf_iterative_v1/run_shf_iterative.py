@@ -125,6 +125,7 @@ def main() -> None:
         max_length_lm=wandb.config.max_length_lm,
         max_length_rm=wandb.config.max_length_rm,
         minibatch_size_initial=wandb.config.minibatch_size_initial,
+        mixed_precision=wandb.config.mixed_precision,
     )
     completion_filter_top_k = wandb.config.completion_filter_top_k
     completion_filter = CompletionFilterTopK(completion_filter_top_k)

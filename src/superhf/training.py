@@ -54,6 +54,7 @@ class SuperHFTrainingArguments:
 
     # Training
     learning_rate: float = 1e-5
+    mixed_precision: str = "no"
 
 
 class SuperHFTrainer:
@@ -275,11 +276,9 @@ class SuperHFTrainer:
             batch_size=minibatch_size,
             collate_fn=self.collate_fn_lm,
         )
-        # print(f"Optimizer is {type(optimizer)}")
 
         # Initialize the accelerator
         accelerator = Accelerator(mixed_precision="fp16")
-        # print(f"type of acceleartor is {type(accelerator)}")
 
         # Initialize the optimizer
         optimizer = torch.optim.AdamW(
@@ -296,27 +295,22 @@ class SuperHFTrainer:
         for minibatch in tqdm(finetuning_dataloader, desc="Fine-tuning"):
             encodings = minibatch  # Encodings have keys dict_keys(['input_ids', 'attention_mask'])
             # input_ids have shape [completion_filter_top_k, seq_len]
-            # print(f"[batch, seq_len] = {encodings['input_ids'].shape}")
             targets_flat = encodings["input_ids"].view(
                 -1
             )  # TODO: Do I need to shift the targets or logits?
-            # print(
-            #     f"Targets_flat have shape {targets_flat.shape}"
-            # )  # [completion_filter_top_k * seq_len]
+
             outputs = self.language_model(**encodings)
+            # outputs contains odict_keys(['logits', 'past_key_values'])
             logits_flat = outputs.logits.view(
                 -1, outputs.logits.shape[-1]
             )  # [completion_filter_top_k * seq_len, |V|]
-            # print(f"Logits have shape {logits_flat.shape}")
-            # outputs contains odict_keys(['logits', 'past_key_values'])
+
             # outputs.logits have shape [completion_filter_top_k, seq_len, |V|]
 
             # Mask out positions with padding
             padding_mask_flat = encodings["attention_mask"].view(-1)
             targets_flat = targets_flat[padding_mask_flat]
             logits_flat = logits_flat[padding_mask_flat]
-            # print(f"Targets_flat have shape {targets_flat.shape}")
-            # print(f"Logits have shape {logits_flat.shape}")
 
             loss = loss_function(logits_flat, targets_flat)  # is a scalar on gpu device
             # assert loss.item() > 0.0, f"Loss is {loss.item()}, which is not positive."

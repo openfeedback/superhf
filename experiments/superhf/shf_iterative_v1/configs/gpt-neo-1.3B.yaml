@@ -31,3 +31,6 @@ max_length_rm:
 minibatch_size_initial:
   desc: Initial size of minibatches for balancing speed and memory.
   value: 64
+mixed_precision:
+  desc: Whether to use lower precision fp16 optimization, or other representations.
+  value: "no"

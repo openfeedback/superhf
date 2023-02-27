@@ -18,7 +18,7 @@ top_p:
   value: 0.9
 superbatch_size:
   desc: Number of completions to generate with the current policy before filtering and fine-tuning.
-  value: 32
+  value: 128
 completion_filter_top_k:
   desc: Top-k completions to filter and train on.
   value: 8
@@ -30,4 +30,7 @@ max_length_rm:
   value: 512
 minibatch_size_initial:
   desc: Initial size of minibatches for balancing speed and memory.
-  value: 16
+  value: 64
+mixed_precision:
+  desc: Whether to use lower precision fp16 optimization, or other representations.
+  value: "no"
