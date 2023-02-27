@@ -214,8 +214,6 @@ class SuperHFTrainer:
             collate_fn=self.collate_fn_lm,
         )
 
-        device = accelerator.device
-        self.language_model.to(device)
         self.language_model, _, completion_dataloader = accelerator.prepare(
             self.language_model, None, completion_dataloader
         )
@@ -224,7 +222,6 @@ class SuperHFTrainer:
         with torch.no_grad():
             for minibatch in tqdm(completion_dataloader, desc="Generation"):
                 encodings = minibatch
-                encodings.to(device)
                 completions.extend(
                     self.language_model.generate(
                         **encodings,
@@ -326,8 +323,6 @@ class SuperHFTrainer:
         optimizer = torch.optim.AdamW(
             self.language_model.parameters(), lr=self.training_args.learning_rate
         )
-        device = accelerator.device
-        self.language_model.to(device)
         self.language_model, optimizer, finetuning_dataloader = accelerator.prepare(
             self.language_model, optimizer, finetuning_dataloader
         )
@@ -339,13 +334,9 @@ class SuperHFTrainer:
         for minibatch in tqdm(finetuning_dataloader, desc="Fine-tuning"):
             encodings = minibatch  # Encodings contains dict_keys(['input_ids', 'attention_mask'])
             # input_ids.shape is [completion_filter_top_k, seq_len]
-            targets_flat = (
-                encodings["input_ids"].view(-1).to(device)
+            targets_flat = encodings["input_ids"].view(
+                -1
             )  # TODO: Do I need to shift the targets or logits?
-            # TODO Move attention mask to device as well
-            assert (
-                targets_flat.device == device
-            ), f"Targets are on {targets_flat.device}, but should be on {device}."
 
             optimizer.zero_grad()
             outputs = self.language_model(**encodings)
@@ -360,9 +351,6 @@ class SuperHFTrainer:
             targets_flat = targets_flat[padding_mask_flat]
             logits_flat = logits_flat[padding_mask_flat]
 
-            assert (
-                logits_flat.device == device
-            ), f"Logits are on {logits_flat.device}, but should be on {device}."
             loss = loss_function(logits_flat, targets_flat)  # is a scalar on gpu device
             # logger.warning loss.item() > 0.0, f"Loss is {loss.item()}, which is not positive."
             # TODO add logging
