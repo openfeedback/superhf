@@ -46,22 +46,11 @@ class SuperHFTrainingArguments:
     max_length_lm: int = 256
     max_length_rm: int = 1024
 
-    # Batching
+    # Batching to avoid OOM
     minibatch_size_initial: int = 64
-    minibatch_sizes_initial: dict[str, int] = field(
-        default={
-            "training": minibatch_size_initial,
-            "generating": minibatch_size_initial,
-            "scoring": minibatch_size_initial,
-        },
-        metadata={
-            "help": (
-                "Various initial sizes of minibatches for not running out of memory"
-                " when one of 'generating', 'scoring', or 'training'. These get resized"
-                " if there is a cuda OOM."
-            )
-        },
-    )
+    minibatch_size_generating: int = 64
+    minibatch_size_scoring: int = 64
+    minibatch_size_finetuning: int = 64
 
     # Training
     learning_rate: float = 1e-5
@@ -144,7 +133,7 @@ class SuperHFTrainer:
             # Generate completions for each prompt in the superbatch
             completions_encoded = find_executable_batch_size(
                 self.generate_completions,
-                self.training_args.minibatch_sizes_initial["generating"],
+                self.training_args.minibatch_size_initial,
             )(superbatch_prompts)
 
             print("Before scoring ", end="")
@@ -152,7 +141,7 @@ class SuperHFTrainer:
             # Score the completions
             completions, scores = find_executable_batch_size(
                 self.score_completions,
-                self.training_args.minibatch_sizes_initial["scoring"],
+                self.training_args.minibatch_size_initial,
             )(completions_encoded)
 
             print("Before filtering ", end="")
@@ -165,7 +154,7 @@ class SuperHFTrainer:
             # Fine-tune the language model on the filtered completions
             average_loss = find_executable_batch_size(
                 self.finetune_language_model,
-                self.training_args.minibatch_sizes_initial["training"],
+                self.training_args.minibatch_size_initial,
             )(filtered_completions)
 
             # Optionally report metrics
@@ -202,7 +191,7 @@ class SuperHFTrainer:
         self, minibatch_size: int, superbatch_prompts: list[str]
     ) -> list[TensorType["batch", "seq_len"]]:
         """Generate completions for the prompts in the superbatch."""
-        self.training_args.minibatch_sizes_initial["generating"] = minibatch_size
+        self.training_args.minibatch_size_generating = minibatch_size
         completion_dataloader = DataLoader(
             ListDataset(superbatch_prompts),
             batch_size=minibatch_size,
@@ -264,7 +253,7 @@ class SuperHFTrainer:
 
         Returns a tuple of the decoded completions and the scores.
         """
-        self.training_args.minibatch_sizes_initial["scoring"] = minibatch_size
+        self.training_args.minibatch_size_scoring = minibatch_size
         all_completions: list[str] = []
         all_scores: list[TensorType[1]] = []
 
@@ -292,7 +281,7 @@ class SuperHFTrainer:
         """
         print(f"Trying with batch size {minibatch_size}")
         print_gpu_utilization()
-        self.training_args.minibatch_sizes_initial["training"] = minibatch_size
+        self.training_args.minibatch_size_training = minibatch_size
 
         loss_function = torch.nn.CrossEntropyLoss()
 
