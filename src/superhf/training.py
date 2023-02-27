@@ -214,14 +214,17 @@ class SuperHFTrainer:
             collate_fn=self.collate_fn_lm,
         )
 
+        device = accelerator.device
+        self.language_model.to(device)
         self.language_model, _, completion_dataloader = accelerator.prepare(
-            self.language_model, completion_dataloader, device_placement=[True, True]
+            self.language_model, None, completion_dataloader
         )
 
         completions: list[str] = []
         with torch.no_grad():
             for minibatch in tqdm(completion_dataloader, desc="Generation"):
                 encodings = minibatch
+                encodings.to(device)
                 completions.extend(
                     self.language_model.generate(
                         **encodings,
@@ -231,12 +234,12 @@ class SuperHFTrainer:
                         do_sample=True,
                         num_return_sequences=1,
                         pad_token_id=self.language_tokenizer.pad_token_id,
-                    )
+                    ).to("cpu")
                 )
-        completions_gathered: list[str] = accelerator.gather(
-            completions
-        )  # TODO Unclear whether this is needed?
-        return completions_gathered
+        # completions_gathered: list[str] = accelerator.gather(
+        #     completions
+        # )  # TODO Unclear whether this is needed?
+        return completions
 
     def collate_fn_rm(
         self, batch: list[TensorType["batch", "seq_len"]]
@@ -305,6 +308,7 @@ class SuperHFTrainer:
 
         Returns the average loss for metrics.
         """
+        # pylint: disable=too-many-locals
         print(f"Trying finetuning with batch size {minibatch_size}")
         print_gpu_utilization()
         self.training_args.minibatch_size_finetuning = minibatch_size
@@ -322,13 +326,12 @@ class SuperHFTrainer:
         optimizer = torch.optim.AdamW(
             self.language_model.parameters(), lr=self.training_args.learning_rate
         )
-
+        device = accelerator.device
+        self.language_model.to(device)
         self.language_model, optimizer, finetuning_dataloader = accelerator.prepare(
-            self.language_model,
-            optimizer,
-            finetuning_dataloader,
-            device_placement=[True, True, True],
+            self.language_model, optimizer, finetuning_dataloader
         )
+
         print("After accelerator prepare, ", end="")
         print_gpu_utilization()
         average_loss = 0
@@ -336,10 +339,15 @@ class SuperHFTrainer:
         for minibatch in tqdm(finetuning_dataloader, desc="Fine-tuning"):
             encodings = minibatch  # Encodings contains dict_keys(['input_ids', 'attention_mask'])
             # input_ids.shape is [completion_filter_top_k, seq_len]
-            targets_flat = encodings["input_ids"].view(
-                -1
+            targets_flat = (
+                encodings["input_ids"].view(-1).to(device)
             )  # TODO: Do I need to shift the targets or logits?
+            # TODO Move attention mask to device as well
+            assert (
+                targets_flat.device == device
+            ), f"Targets are on {targets_flat.device}, but should be on {device}."
 
+            optimizer.zero_grad()
             outputs = self.language_model(**encodings)
             # outputs contains odict_keys(['logits', 'past_key_values'])
             # outputs.logits have shape [completion_filter_top_k, seq_len, |Vocab|]
@@ -352,13 +360,15 @@ class SuperHFTrainer:
             targets_flat = targets_flat[padding_mask_flat]
             logits_flat = logits_flat[padding_mask_flat]
 
+            assert (
+                logits_flat.device == device
+            ), f"Logits are on {logits_flat.device}, but should be on {device}."
             loss = loss_function(logits_flat, targets_flat)  # is a scalar on gpu device
-            # assert loss.item() > 0.0, f"Loss is {loss.item()}, which is not positive."
-            #  TODO add this assertion or remove it
+            # logger.warning loss.item() > 0.0, f"Loss is {loss.item()}, which is not positive."
+            # TODO add logging
             average_loss += loss
             accelerator.backward(loss)
             optimizer.step()
-            optimizer.zero_grad()
 
         return average_loss / len(
             finetuning_dataloader
