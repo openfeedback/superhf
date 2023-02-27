@@ -173,13 +173,18 @@ class SuperHFTrainer:
         """
         Collate function for the language model DataLoader.
         """
+        device = None
+        if isinstance(self.language_model, torch.nn.DataParallel):
+            device = self.language_model.module.device
+        else:
+            device = self.language_model.device
         return self.language_tokenizer(
             batch,
             return_tensors="pt",
             padding=True,
             truncation=True,
             max_length=self.training_args.max_length_rm,
-        ).to(self.language_model.device)
+        ).to(device)
 
     def generate_completions(
         self, superbatch_prompts: list[str]
