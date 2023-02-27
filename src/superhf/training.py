@@ -6,7 +6,7 @@ from a reward model with expert iteration using supervised learning).
 from dataclasses import dataclass, field
 from typing import Callable, Optional, Union
 
-import deepspeed  # pylint: disable=import-error
+import deepspeed
 import torch
 from torch.utils.data import DataLoader
 from torch.utils.data.distributed import DistributedSampler

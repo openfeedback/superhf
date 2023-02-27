@@ -22,9 +22,9 @@ charset-normalizer==3.0.1
     # via
     #   aiohttp
     #   requests
-colorama==0.4.6
-    # via tqdm
 datasets==2.10.0
+    # via -r requirements/prod.in
+deepspeed==0.8.1
     # via -r requirements/prod.in
 dill==0.3.6
     # via
@@ -40,6 +40,8 @@ frozenlist==1.3.3
     #   aiosignal
 fsspec[http]==2023.1.0
     # via datasets
+hjson==3.1.0
+    # via deepspeed
 huggingface-hub==0.12.1
     # via
     #   datasets
@@ -54,11 +56,14 @@ multidict==6.0.4
     #   yarl
 multiprocess==0.70.14
     # via datasets
+ninja==1.11.1
+    # via deepspeed
 numpy==1.24.2
     # via
     #   -r requirements/prod.in
     #   accelerate
     #   datasets
+    #   deepspeed
     #   pandas
     #   pyarrow
     #   transformers
@@ -68,14 +73,23 @@ packaging==23.0
     # via
     #   accelerate
     #   datasets
+    #   deepspeed
     #   huggingface-hub
     #   transformers
 pandas==1.5.3
     # via datasets
 psutil==5.9.4
-    # via accelerate
+    # via
+    #   accelerate
+    #   deepspeed
+py-cpuinfo==9.0.0
+    # via deepspeed
 pyarrow==11.0.0
     # via datasets
+pydantic==1.10.5
+    # via deepspeed
+pynvml==11.5.0
+    # via -r requirements/prod.in
 python-dateutil==2.8.2
     # via pandas
 pytz==2022.7.1
@@ -105,12 +119,14 @@ torch==1.13.1
     # via
     #   -r requirements/prod.in
     #   accelerate
+    #   deepspeed
     #   torchtyping
 torchtyping==0.1.4
     # via -r requirements/prod.in
 tqdm==4.64.1
     # via
     #   datasets
+    #   deepspeed
     #   huggingface-hub
     #   transformers
 transformers==4.26.1
@@ -120,6 +136,7 @@ typeguard==2.13.3
 typing-extensions==4.5.0
     # via
     #   huggingface-hub
+    #   pydantic
     #   torch
 urllib3==1.26.14
     # via

@@ -256,7 +256,7 @@ typeguard==2.13.3
     # via
     #   -c requirements/prod.txt
     #   pygls
-types-tqdm==4.64.7.15
+types-tqdm==4.64.7.16
     # via -r requirements/dev.in
 typing-extensions==4.5.0
     # via
@@ -276,7 +276,7 @@ wcwidth==0.2.6
     # via prompt-toolkit
 widgetsnbextension==4.0.5
     # via ipywidgets
-wrapt==1.14.1
+wrapt==1.15.0
     # via astroid
 
 # The following packages are considered to be unsafe in a requirements file:
