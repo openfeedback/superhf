@@ -8,6 +8,7 @@ from typing import Callable, Optional, Union
 
 import torch
 from torch.utils.data import DataLoader
+from torch.utils.data.distributed import DistributedSampler
 from accelerate import Accelerator, find_executable_batch_size
 from tqdm import tqdm
 from transformers import (
@@ -198,14 +199,18 @@ class SuperHFTrainer:
     ) -> list[TensorType["batch", "seq_len"]]:
         """Generate completions for the prompts in the superbatch."""
         self.training_args.minibatch_size_generating = minibatch_size
+
+        sampler = None
+        if torch.cuda.device_count() > 1:
+            self.language_model = torch.nn.DataParallel(self.language_model).module
+            sampler = DistributedSampler(ListDataset(superbatch_prompts))
+
         completion_dataloader = DataLoader(
             ListDataset(superbatch_prompts),
             batch_size=minibatch_size,
             collate_fn=self.collate_fn_lm,
+            sampler=sampler,
         )
-
-        if torch.cuda.device_count() > 1:
-            self.language_model = torch.nn.DataParallel(self.language_model).module
         completions: list[str] = []
         with torch.no_grad():
             for minibatch in tqdm(completion_dataloader, desc="Generation"):

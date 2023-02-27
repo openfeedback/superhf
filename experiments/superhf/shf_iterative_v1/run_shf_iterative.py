@@ -5,6 +5,7 @@ Client code showing how to call the training loop for the iterative version of t
 import argparse
 import random
 import os
+import sys
 
 from transformers import (
     AutoTokenizer,
@@ -31,7 +32,6 @@ def main() -> None:
     """
     Instantiate and train the SuperHF model.
     """
-    # pylint: disable=too-many-locals
 
     # Parse arguments
     parser = argparse.ArgumentParser()
@@ -48,7 +48,29 @@ def main() -> None:
         default="",
         help="Notes to add to the Weights and Biases run.",
     )
+    parser.add_argument(
+        "--exit_on_completion",
+        action="store_true",
+        help="Shut down the machine when the run is complete.",
+    )
     args = parser.parse_args()
+    if args.exit_on_completion:
+        print("WARNING: This run will shut down the machine when complete.")
+        try:
+            run_experiment(args)
+        except Exception as error:  # pylint: disable=broad-except
+            print("An error occurred:", error)
+        finally:
+            sys.exit(0)
+    else:
+        run_experiment(args)
+
+
+def run_experiment(args: argparse.Namespace) -> None:
+    """
+    Run a single experiment.
+    """
+    # pylint: disable=too-many-locals
 
     # Configure device and seed
     device = torch.device(
