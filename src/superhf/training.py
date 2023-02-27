@@ -122,6 +122,12 @@ class SuperHFTrainer:
             ListDataset(prompts), batch_size=self.training_args.superbatch_size
         )
 
+        # initallilze batch sizes
+        (
+            self.training_args.minibatch_size_finetuning,
+            self.training_args.minibatch_size_generating,
+            self.training_args.minibatch_size_scoring,
+        ) = [self.training_args.minibatch_size_initial] * 3
         # Then, iterate over the prompts in superbatches
         for superbatch_index, superbatch_prompts in tqdm(
             enumerate(prompts_dataloader),
@@ -133,7 +139,7 @@ class SuperHFTrainer:
             # Generate completions for each prompt in the superbatch
             completions_encoded = find_executable_batch_size(
                 self.generate_completions,
-                self.training_args.minibatch_size_initial,
+                self.training_args.minibatch_size_generating,
             )(superbatch_prompts)
 
             print("Before scoring ", end="")
@@ -141,7 +147,7 @@ class SuperHFTrainer:
             # Score the completions
             completions, scores = find_executable_batch_size(
                 self.score_completions,
-                self.training_args.minibatch_size_initial,
+                self.training_args.minibatch_size_scoring,
             )(completions_encoded)
 
             print("Before filtering ", end="")
@@ -154,7 +160,7 @@ class SuperHFTrainer:
             # Fine-tune the language model on the filtered completions
             average_loss = find_executable_batch_size(
                 self.finetune_language_model,
-                self.training_args.minibatch_size_initial,
+                self.training_args.minibatch_size_finetuning,
             )(filtered_completions)
 
             # Optionally report metrics
