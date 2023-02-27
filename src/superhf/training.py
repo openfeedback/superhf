@@ -6,6 +6,7 @@ from a reward model with expert iteration using supervised learning).
 from dataclasses import dataclass, field
 from typing import Callable, Optional, Union
 
+import deepspeed  # pylint: disable=import-error
 import torch
 from torch.utils.data import DataLoader
 from torch.utils.data.distributed import DistributedSampler
@@ -201,9 +202,10 @@ class SuperHFTrainer:
         self.training_args.minibatch_size_generating = minibatch_size
 
         sampler = None
-        if torch.cuda.device_count() > 1:
-            self.language_model = torch.nn.DataParallel(self.language_model).module
-            sampler = DistributedSampler(ListDataset(superbatch_prompts))
+        engine, self.language_model, _, _ = deepspeed.initialize(
+            model=self.language_model, model_parameters=self.language_model.parameters()
+        )
+        sampler = DistributedSampler(ListDataset(superbatch_prompts))
 
         completion_dataloader = DataLoader(
             ListDataset(superbatch_prompts),
@@ -216,7 +218,7 @@ class SuperHFTrainer:
             for minibatch in tqdm(completion_dataloader, desc="Generation"):
                 encodings = minibatch
                 completions.extend(
-                    self.language_model.generate(
+                    engine.generate(
                         **encodings,
                         max_length=self.training_args.max_length_lm,
                         temperature=self.training_args.temperature,
@@ -226,6 +228,7 @@ class SuperHFTrainer:
                         pad_token_id=self.language_tokenizer.pad_token_id,
                     ).to("cpu")
                 )
+
         return completions
 
     def collate_fn_rm(

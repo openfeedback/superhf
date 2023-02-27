@@ -7,3 +7,4 @@ torch>=1.13.1
 torchtyping
 pynvml
 nvidia-ml-py
+deepspeed
