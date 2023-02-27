@@ -123,6 +123,8 @@ class SuperHFTrainer:
             ListDataset(prompts), batch_size=self.training_args.superbatch_size
         )
 
+        accelerator = Accelerator(mixed_precision=self.training_args.mixed_precision)
+
         # initallilze batch sizes
         (
             self.training_args.minibatch_size_finetuning,
@@ -141,7 +143,7 @@ class SuperHFTrainer:
             completions_encoded = find_executable_batch_size(
                 self.generate_completions,
                 self.training_args.minibatch_size_generating,
-            )(superbatch_prompts)
+            )(superbatch_prompts, accelerator=accelerator)
 
             print("Before scoring ", end="")
             print_gpu_utilization()
@@ -162,7 +164,7 @@ class SuperHFTrainer:
             average_loss = find_executable_batch_size(
                 self.finetune_language_model,
                 self.training_args.minibatch_size_finetuning,
-            )(filtered_completions)
+            )(filtered_completions, accelerator=accelerator)
 
             # Optionally report metrics
             metrics = SuperHFMetrics(
@@ -192,21 +194,25 @@ class SuperHFTrainer:
             padding=True,
             truncation=True,
             max_length=self.training_args.max_length_rm,
-        ).to(self.language_model.device)
+        )
 
     def generate_completions(
-        self, minibatch_size: int, superbatch_prompts: list[str]
+        self,
+        minibatch_size: int,
+        superbatch_prompts: list[str],
+        accelerator: Accelerator,
     ) -> list[TensorType["batch", "seq_len"]]:
         """Generate completions for the prompts in the superbatch."""
         self.training_args.minibatch_size_generating = minibatch_size
+
+        print(f"Trying generation with batch size {minibatch_size}")
+        print_gpu_utilization()
 
         completion_dataloader = DataLoader(
             ListDataset(superbatch_prompts),
             batch_size=minibatch_size,
             collate_fn=self.collate_fn_lm,
         )
-
-        accelerator = Accelerator(mixed_precision=self.training_args.mixed_precision)
 
         self.language_model, _, completion_dataloader = accelerator.prepare(
             self.language_model, None, completion_dataloader
@@ -227,7 +233,9 @@ class SuperHFTrainer:
                         pad_token_id=self.language_tokenizer.pad_token_id,
                     )
                 )
-        completions_gathered: list[str] = accelerator.gather(completions)
+        completions_gathered: list[str] = accelerator.gather(
+            completions
+        )  # TODO Unclear whether this is needed?
         return completions_gathered
 
     def collate_fn_rm(
@@ -265,6 +273,8 @@ class SuperHFTrainer:
         Score the completions.
 
         Returns a tuple of the decoded completions and the scores.
+
+        If using accelerate for this step, will need to update collate_fn_rm to not set device.
         """
         self.training_args.minibatch_size_scoring = minibatch_size
         all_completions: list[str] = []
@@ -285,14 +295,17 @@ class SuperHFTrainer:
         return all_completions, all_scores
 
     def finetune_language_model(
-        self, minibatch_size: int, filtered_completions: list[str]
+        self,
+        minibatch_size: int,
+        filtered_completions: list[str],
+        accelerator: Accelerator,
     ) -> float:
         """
         Fine-tune the language model on the completions.
 
         Returns the average loss for metrics.
         """
-        print(f"Trying with batch size {minibatch_size}")
+        print(f"Trying finetuning with batch size {minibatch_size}")
         print_gpu_utilization()
         self.training_args.minibatch_size_finetuning = minibatch_size
 
@@ -304,10 +317,8 @@ class SuperHFTrainer:
             collate_fn=self.collate_fn_lm,
         )
 
-        # Initialize the accelerator
-        accelerator = Accelerator(mixed_precision=self.training_args.mixed_precision)
-
         # Initialize the optimizer
+        # TODO: Shoulld this be moved to outside this function?
         optimizer = torch.optim.AdamW(
             self.language_model.parameters(), lr=self.training_args.learning_rate
         )
@@ -320,19 +331,18 @@ class SuperHFTrainer:
         average_loss = 0
         self.language_model.train()
         for minibatch in tqdm(finetuning_dataloader, desc="Fine-tuning"):
-            encodings = minibatch  # Encodings have keys dict_keys(['input_ids', 'attention_mask'])
-            # input_ids have shape [completion_filter_top_k, seq_len]
+            encodings = minibatch  # Encodings contains dict_keys(['input_ids', 'attention_mask'])
+            # input_ids.shape is [completion_filter_top_k, seq_len]
             targets_flat = encodings["input_ids"].view(
                 -1
             )  # TODO: Do I need to shift the targets or logits?
 
             outputs = self.language_model(**encodings)
             # outputs contains odict_keys(['logits', 'past_key_values'])
+            # outputs.logits have shape [completion_filter_top_k, seq_len, |Vocab|]
             logits_flat = outputs.logits.view(
                 -1, outputs.logits.shape[-1]
-            )  # [completion_filter_top_k * seq_len, |V|]
-
-            # outputs.logits have shape [completion_filter_top_k, seq_len, |V|]
+            )  # [completion_filter_top_k * seq_len, |Vocab|]
 
             # Mask out positions with padding
             padding_mask_flat = encodings["attention_mask"].view(-1)
