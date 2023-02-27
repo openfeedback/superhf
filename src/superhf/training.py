@@ -116,11 +116,6 @@ class SuperHFTrainer:
         """
         Main training and evaluation loop.
         """
-        # Initialize the optimizer
-        optimizer = torch.optim.AdamW(
-            self.language_model.parameters(), lr=self.training_args.learning_rate
-        )
-
         # First, put all the prompts into a Dataset and DataLoader
         prompts_dataloader = DataLoader(
             ListDataset(prompts), batch_size=self.training_args.superbatch_size
@@ -153,7 +148,7 @@ class SuperHFTrainer:
             average_loss = find_executable_batch_size(
                 self.finetune_language_model,
                 self.training_args.minibatch_size_initial,
-            )(filtered_completions, optimizer)
+            )(filtered_completions)
 
             # Optionally report metrics
             metrics = SuperHFMetrics(
@@ -263,10 +258,7 @@ class SuperHFTrainer:
         return all_completions, all_scores
 
     def finetune_language_model(
-        self,
-        minibatch_size: int,
-        filtered_completions: list[str],
-        optimizer: torch.optim.Optimizer,
+        self, minibatch_size: int, filtered_completions: list[str]
     ) -> float:
         """
         Fine-tune the language model on the completions.
@@ -288,6 +280,11 @@ class SuperHFTrainer:
         # Initialize the accelerator
         accelerator = Accelerator(mixed_precision="fp16")
         # print(f"type of acceleartor is {type(accelerator)}")
+
+        # Initialize the optimizer
+        optimizer = torch.optim.AdamW(
+            self.language_model.parameters(), lr=self.training_args.learning_rate
+        )
 
         self.language_model, optimizer, finetuning_dataloader = accelerator.prepare(
             self.language_model, optimizer, finetuning_dataloader
