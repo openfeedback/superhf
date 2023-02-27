@@ -227,7 +227,7 @@ class SuperHFTrainer:
                         pad_token_id=self.language_tokenizer.pad_token_id,
                     )
                 )
-        completions_gathered = accelerator.gather(completions).to("cpu")
+        completions_gathered: list[str] = accelerator.gather(completions)
         return completions_gathered
 
     def collate_fn_rm(
