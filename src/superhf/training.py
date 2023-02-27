@@ -190,6 +190,9 @@ class SuperHFTrainer:
             batch_size=self.training_args.minibatch_size_initial,
             collate_fn=self.collate_fn_lm,
         )
+
+        if torch.cuda.device_count() > 1:
+            self.language_model = torch.nn.DataParallel(self.language_model)
         completions: list[str] = []
         with torch.no_grad():
             for minibatch in tqdm(completion_dataloader, desc="Generation"):
