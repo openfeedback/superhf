@@ -47,9 +47,20 @@ class SuperHFTrainingArguments:
     max_length_rm: int = 1024
 
     # Batching
-    minibatch_size_initial: int = field(
-        default=32,
-        metadata={"help": "Size of minibatches for not running out of memory."},
+    minibatch_size_initial: int = 64
+    minibatch_sizes_initial: dict[str, int] = field(
+        default={
+            "training": minibatch_size_initial,
+            "generating": minibatch_size_initial,
+            "scoring": minibatch_size_initial,
+        },
+        metadata={
+            "help": (
+                "Various initial sizes of minibatches for not running out of memory"
+                " when one of 'generating', 'scoring', or 'training'. These get resized"
+                " if there is a cuda OOM."
+            )
+        },
     )
 
     # Training
@@ -131,12 +142,18 @@ class SuperHFTrainer:
             print(f"Before generation, on superbatch_index {superbatch_index} ", end="")
             print_gpu_utilization()
             # Generate completions for each prompt in the superbatch
-            completions_encoded = self.generate_completions(superbatch_prompts)
+            completions_encoded = find_executable_batch_size(
+                self.generate_completions,
+                self.training_args.minibatch_sizes_initial["generating"],
+            )(superbatch_prompts)
 
             print("Before scoring ", end="")
             print_gpu_utilization()
             # Score the completions
-            completions, scores = self.score_completions(completions_encoded)
+            completions, scores = find_executable_batch_size(
+                self.score_completions,
+                self.training_args.minibatch_sizes_initial["scoring"],
+            )(completions_encoded)
 
             print("Before filtering ", end="")
             print_gpu_utilization()
@@ -148,7 +165,7 @@ class SuperHFTrainer:
             # Fine-tune the language model on the filtered completions
             average_loss = find_executable_batch_size(
                 self.finetune_language_model,
-                self.training_args.minibatch_size_initial,
+                self.training_args.minibatch_sizes_initial["training"],
             )(filtered_completions)
 
             # Optionally report metrics
@@ -182,12 +199,13 @@ class SuperHFTrainer:
         ).to(self.language_model.device)
 
     def generate_completions(
-        self, superbatch_prompts: list[str]
+        self, minibatch_size: int, superbatch_prompts: list[str]
     ) -> list[TensorType["batch", "seq_len"]]:
         """Generate completions for the prompts in the superbatch."""
+        self.training_args.minibatch_sizes_initial["generating"] = minibatch_size
         completion_dataloader = DataLoader(
             ListDataset(superbatch_prompts),
-            batch_size=self.training_args.minibatch_size_initial,
+            batch_size=minibatch_size,
             collate_fn=self.collate_fn_lm,
         )
 
@@ -237,19 +255,22 @@ class SuperHFTrainer:
         )
 
     def score_completions(
-        self, completions_encoded: list[TensorType["batch", "seq_len"]]
+        self,
+        minibatch_size: int,
+        completions_encoded: list[TensorType["batch", "seq_len"]],
     ) -> tuple[list[str], list[TensorType[1]]]:
         """
         Score the completions.
 
         Returns a tuple of the decoded completions and the scores.
         """
+        self.training_args.minibatch_sizes_initial["scoring"] = minibatch_size
         all_completions: list[str] = []
         all_scores: list[TensorType[1]] = []
 
         score_dataloader = DataLoader(
             ListDataset(completions_encoded),
-            batch_size=self.training_args.minibatch_size_initial,
+            batch_size=minibatch_size,
             collate_fn=self.collate_fn_rm,
         )
 
@@ -271,6 +292,7 @@ class SuperHFTrainer:
         """
         print(f"Trying with batch size {minibatch_size}")
         print_gpu_utilization()
+        self.training_args.minibatch_sizes_initial["training"] = minibatch_size
 
         loss_function = torch.nn.CrossEntropyLoss()
 
