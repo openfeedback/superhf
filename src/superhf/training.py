@@ -215,7 +215,7 @@ class SuperHFTrainer:
             # sampler=sampler,
         )
 
-        accelerator = Accelerator()
+        accelerator = Accelerator(mixed_precision=self.training_args.mixed_precision)
 
         self.language_model, _, completion_dataloader = accelerator.prepare(
             self.language_model, None, completion_dataloader
@@ -314,7 +314,7 @@ class SuperHFTrainer:
         )
 
         # Initialize the accelerator
-        accelerator = Accelerator(mixed_precision="fp16")
+        accelerator = Accelerator(mixed_precision=self.training_args.mixed_precision)
 
         # Initialize the optimizer
         optimizer = torch.optim.AdamW(
