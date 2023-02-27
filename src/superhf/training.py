@@ -287,7 +287,7 @@ class SuperHFTrainer:
         """
         print(f"Trying with batch size {minibatch_size}")
         print_gpu_utilization()
-        self.training_args.minibatch_size_training = minibatch_size
+        self.training_args.minibatch_size_finetuning = minibatch_size
 
         loss_function = torch.nn.CrossEntropyLoss()
 
