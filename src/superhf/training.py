@@ -143,7 +143,7 @@ class SuperHFTrainer:
             completions_encoded = find_executable_batch_size(
                 self.generate_completions,
                 self.training_args.minibatch_size_generating,
-            )(superbatch_prompts, accelerator=accelerator)
+            )(superbatch_prompts)
 
             print("Before scoring ", end="")
             print_gpu_utilization()
@@ -164,7 +164,7 @@ class SuperHFTrainer:
             average_loss = find_executable_batch_size(
                 self.finetune_language_model,
                 self.training_args.minibatch_size_finetuning,
-            )(filtered_completions)
+            )(filtered_completions, accelerator=accelerator)
 
             # Optionally report metrics
             metrics = SuperHFMetrics(
@@ -220,7 +220,11 @@ class SuperHFTrainer:
 
         completions: list[TensorType["batch", "seq_len"]] = []
         with torch.no_grad():
+            iteration = 0
             for minibatch in tqdm(completion_dataloader, desc="Generation"):
+                print(f"Generation minibatch {iteration},", end=" ")
+                print_gpu_utilization()
+                iteration += 1
                 encodings = minibatch
                 encodings.to(self.language_model.device)
                 completions.extend(
@@ -288,7 +292,11 @@ class SuperHFTrainer:
         )
 
         with torch.no_grad():
+            iteration = 0
             for minibatch in score_dataloader:
+                print(f"Scoring minibatch {iteration},", end=" ")
+                print_gpu_utilization()
+                iteration += 1
                 completions, completion_encodings = minibatch
                 scores = self.reward_model(**completion_encodings)
                 all_completions.extend(completions)
@@ -330,7 +338,11 @@ class SuperHFTrainer:
         print_gpu_utilization()
         average_loss = 0
         self.language_model.train()
+        iteration = 0
         for minibatch in tqdm(finetuning_dataloader, desc="Fine-tuning"):
+            print(f"Fine-tuning minibatch {iteration},", end=" ")
+            print_gpu_utilization()
+            iteration += 1
             encodings = minibatch  # Encodings contains dict_keys(['input_ids', 'attention_mask'])
             encodings["labels"] = encodings[
                 "input_ids"
