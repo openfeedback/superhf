@@ -88,21 +88,6 @@ def report_metrics_wandb(metrics: SuperHFMetrics) -> None:
     )
     average_score = np.mean(metrics.scores)
     average_filtered_score = np.mean(metrics.filtered_scores)
-    completions_table = wandb.Table(
-        columns=["superbatch", "completion", "score"],
-    )
-    filtered_completions_table = wandb.Table(
-        columns=["superbatch", "completion", "score"],
-    )
-
-    if "completions" in wandb.run.summary:
-        completions_table = wandb.run.summary["completions"]
-    if "filtered_completions" in wandb.run.summary:
-        filtered_completions_table = wandb.run.summary["filtered_completions"]
-    for completion, score in zip(metrics.completions, metrics.scores):
-        completions_table.add_data(metrics.superbatch_index, completion, score)
-    for completion, score in zip(metrics.filtered_completions, metrics.filtered_scores):
-        filtered_completions_table.add_data(metrics.superbatch_index, completion, score)
     wandb.log(
         {
             "superbatch_index": metrics.superbatch_index,
@@ -119,8 +104,22 @@ def report_metrics_wandb(metrics: SuperHFMetrics) -> None:
             "average_filtered_score_histogram": wandb.Histogram(
                 metrics.filtered_scores
             ),
-            "completions": completions_table,
-            "filtered_completions": filtered_completions_table,
+            "completions": wandb.Table(
+                columns=["superbatch", "completion", "score"],
+                data=[
+                    [metrics.superbatch_index, completion, score]
+                    for completion, score in zip(metrics.completions, metrics.scores)
+                ],
+            ),
+            "filtered_completions": wandb.Table(
+                columns=["superbatch", "completion", "score"],
+                data=[
+                    [metrics.superbatch_index, completion, score]
+                    for completion, score in zip(
+                        metrics.filtered_completions, metrics.filtered_scores
+                    )
+                ],
+            ),
             "scheduler_lr": metrics.scheduler_lr,
         }
     )
