@@ -310,8 +310,6 @@ class SuperHFTrainer:
         print_gpu_utilization()
         self.training_args.minibatch_size_finetuning = minibatch_size
 
-        loss_function = torch.nn.CrossEntropyLoss()
-
         finetuning_dataloader = DataLoader(
             ListDataset(filtered_completions),
             batch_size=minibatch_size,
@@ -333,27 +331,35 @@ class SuperHFTrainer:
         self.language_model.train()
         for minibatch in tqdm(finetuning_dataloader, desc="Fine-tuning"):
             encodings = minibatch  # Encodings contains dict_keys(['input_ids', 'attention_mask'])
+            encodings["labels"] = encodings[
+                "input_ids"
+            ].clone()  # Keeps it as part of the computation graph?
+            # TODO: Should I instead use copy or copy_?
             # input_ids.shape is [completion_filter_top_k, seq_len]
-            targets_flat = encodings["input_ids"].view(
-                -1
-            )  # TODO: Do I need to shift the targets or logits?
+            # targets_flat = encodings["input_ids"].view(
+            #     -1
+            # )  # TODO: Do I need to shift the targets or logits?
 
             optimizer.zero_grad()
             outputs = self.language_model(**encodings)
+            print(f"Keys of outputs: {outputs.keys()}")
+            if outputs.loss is None:
+                raise ValueError("Loss is None on the outputs")
             # outputs contains odict_keys(['logits', 'past_key_values'])
             # outputs.logits have shape [completion_filter_top_k, seq_len, |Vocab|]
-            logits_flat = outputs.logits.view(
-                -1, outputs.logits.shape[-1]
-            )  # [completion_filter_top_k * seq_len, |Vocab|]
+            # logits_flat = outputs.logits.view(
+            #     -1, outputs.logits.shape[-1]
+            # )  # [completion_filter_top_k * seq_len, |Vocab|]
 
             # Mask out positions with padding
-            padding_mask_flat = encodings["attention_mask"].view(-1)
-            targets_flat = targets_flat[padding_mask_flat]
-            logits_flat = logits_flat[padding_mask_flat]
+            # padding_mask_flat = encodings["attention_mask"].view(-1)
+            # targets_flat = targets_flat[padding_mask_flat]
+            # logits_flat = logits_flat[padding_mask_flat]
 
-            loss = loss_function(logits_flat, targets_flat)  # is a scalar on gpu device
+            # loss = loss_function(logits_flat, targets_flat)  # is a scalar on gpu device
             # logger.warning loss.item() > 0.0, f"Loss is {loss.item()}, which is not positive."
             # TODO add logging
+            loss = outputs.loss
             average_loss += loss
             accelerator.backward(loss)
             optimizer.step()

@@ -58,6 +58,7 @@ def main() -> None:
 
     # Initialize Weights and Biases run
     wandb.init(
+        entity="stanfordaialignment",
         project="shf-iterative-v1",
         notes=args.notes,
         save_code=True,
