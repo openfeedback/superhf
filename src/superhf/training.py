@@ -123,8 +123,6 @@ class SuperHFTrainer:
             ListDataset(prompts), batch_size=self.training_args.superbatch_size
         )
 
-        accelerator = Accelerator(mixed_precision=self.training_args.mixed_precision)
-
         # initallilze batch sizes
         (
             self.training_args.minibatch_size_finetuning,
@@ -164,7 +162,7 @@ class SuperHFTrainer:
             average_loss = find_executable_batch_size(
                 self.finetune_language_model,
                 self.training_args.minibatch_size_finetuning,
-            )(filtered_completions, accelerator=accelerator)
+            )(filtered_completions)
 
             # Optionally report metrics
             metrics = SuperHFMetrics(
@@ -307,13 +305,15 @@ class SuperHFTrainer:
         self,
         minibatch_size: int,
         filtered_completions: list[str],
-        accelerator: Accelerator,
+        # accelerator: Accelerator,
     ) -> float:
         """
         Fine-tune the language model on the completions.
 
         Returns the average loss for metrics.
         """
+        accelerator = Accelerator(mixed_precision=self.training_args.mixed_precision)
+
         # pylint: disable=too-many-locals
         print(f"Trying finetuning with batch size {minibatch_size}")
         print_gpu_utilization()
