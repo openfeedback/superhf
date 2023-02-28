@@ -200,7 +200,7 @@ class SuperHFTrainer:
         self,
         minibatch_size: int,
         superbatch_prompts: list[str],
-        accelerator: Accelerator,
+        # accelerator: Accelerator,
     ) -> list[TensorType["batch", "seq_len"]]:
         """Generate completions for the prompts in the superbatch."""
         self.training_args.minibatch_size_generating = minibatch_size
@@ -214,14 +214,15 @@ class SuperHFTrainer:
             collate_fn=self.collate_fn_lm,
         )
 
-        self.language_model, _, completion_dataloader = accelerator.prepare(
-            self.language_model, None, completion_dataloader
-        )
+        # self.language_model, _, completion_dataloader = accelerator.prepare(
+        #     self.language_model, None, completion_dataloader
+        # )
 
         completions: list[str] = []
         with torch.no_grad():
             for minibatch in tqdm(completion_dataloader, desc="Generation"):
                 encodings = minibatch
+                encodings.to(self.language_model.device)
                 completions.extend(
                     self.language_model.generate(
                         **encodings,
@@ -231,7 +232,7 @@ class SuperHFTrainer:
                         do_sample=True,
                         num_return_sequences=1,
                         pad_token_id=self.language_tokenizer.pad_token_id,
-                    ).to("cpu")
+                    )
                 )
         # completions_gathered: list[str] = accelerator.gather(
         #     completions
@@ -363,6 +364,7 @@ class SuperHFTrainer:
             average_loss += loss
             accelerator.backward(loss)
             optimizer.step()
+        optimizer.zero_grad()
 
         return average_loss / len(
             finetuning_dataloader
