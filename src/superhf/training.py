@@ -164,7 +164,7 @@ class SuperHFTrainer:
             average_loss = find_executable_batch_size(
                 self.finetune_language_model,
                 self.training_args.minibatch_size_finetuning,
-            )(filtered_completions, accelerator=accelerator)
+            )(filtered_completions)
 
             # Optionally report metrics
             metrics = SuperHFMetrics(
@@ -218,7 +218,7 @@ class SuperHFTrainer:
         #     self.language_model, None, completion_dataloader
         # )
 
-        completions: list[str] = []
+        completions: list[TensorType["batch", "seq_len"]] = []
         with torch.no_grad():
             for minibatch in tqdm(completion_dataloader, desc="Generation"):
                 encodings = minibatch
@@ -232,7 +232,7 @@ class SuperHFTrainer:
                         do_sample=True,
                         num_return_sequences=1,
                         pad_token_id=self.language_tokenizer.pad_token_id,
-                    )
+                    ).to("cpu")
                 )
         # completions_gathered: list[str] = accelerator.gather(
         #     completions
