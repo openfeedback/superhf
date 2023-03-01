@@ -2,6 +2,7 @@
 Assorted utility functions.
 """
 
+import gc
 import random
 
 import numpy as np
@@ -23,6 +24,11 @@ def print_gpu_utilization() -> None:
     """
     if not torch.cuda.is_available():
         return
+
+    # Garbage collect
+    gc.collect()
+    torch.cuda.empty_cache()
+
     nvmlInit()
     # get the number of GPUs
     n_gpu = torch.cuda.device_count()
