@@ -28,9 +28,15 @@ max_length_lm:
 max_length_rm:
   desc: Maximum token length of reward model input.
   value: 1024
-minibatch_size_initial:
-  desc: Initial size of minibatches for balancing speed and memory.
+minibatch_size_generating:
+  desc: Size of minibatches for generating completions.
+  value: 32
+minibatch_size_scoring:
+  desc: Size of minibatches for scoring completions.
   value: 64
+minibatch_size_finetuning:
+  desc: Size of minibatches for fine-tuning the language model.
+  value: 1
 mixed_precision:
   desc: Whether to use lower precision fp16 optimization, or other representations.
   value: "no"

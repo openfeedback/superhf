@@ -86,7 +86,8 @@ def main() -> None:
         prompts = prompts[: wandb.config.debug_max_prompts]
 
     print(f"Loaded {len(prompts)} prompts.")
-
+    print_gpu_utilization()
+    print("Instantiating models...")
     # Instantiate our language and reward models and tokenizers
     language_model_name = wandb.config.language_model_name
     language_model = (
@@ -125,7 +126,9 @@ def main() -> None:
         superbatch_size=wandb.config.superbatch_size,
         max_length_lm=wandb.config.max_length_lm,
         max_length_rm=wandb.config.max_length_rm,
-        minibatch_size_initial=wandb.config.minibatch_size_initial,
+        minibatch_size_generating=wandb.config.minibatch_size_generating,
+        minibatch_size_scoring=wandb.config.minibatch_size_scoring,
+        minibatch_size_finetuning=wandb.config.minibatch_size_finetuning,
         mixed_precision=wandb.config.mixed_precision,
     )
     completion_filter_top_k = wandb.config.completion_filter_top_k

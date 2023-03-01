@@ -47,8 +47,7 @@ class SuperHFTrainingArguments:
     max_length_lm: int = 256
     max_length_rm: int = 1024
 
-    # Batching to avoid OOM
-    minibatch_size_initial: int = 64
+    # Batching to avoid OOMs
     minibatch_size_generating: int = 64
     minibatch_size_scoring: int = 64
     minibatch_size_finetuning: int = 64
@@ -123,12 +122,6 @@ class SuperHFTrainer:
             ListDataset(prompts), batch_size=self.training_args.superbatch_size
         )
 
-        # initallilze batch sizes
-        (
-            self.training_args.minibatch_size_finetuning,
-            self.training_args.minibatch_size_generating,
-            self.training_args.minibatch_size_scoring,
-        ) = [self.training_args.minibatch_size_initial] * 3
         # Then, iterate over the prompts in superbatches
         for superbatch_index, superbatch_prompts in tqdm(
             enumerate(prompts_dataloader),
