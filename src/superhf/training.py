@@ -337,14 +337,11 @@ class SuperHFTrainer:
             print_gpu_utilization()
             iteration += 1
             encodings = minibatch  # Encodings contains dict_keys(['input_ids', 'attention_mask'])
-            encodings["labels"] = encodings[
-                "input_ids"
-            ].clone()  # Keeps it as part of the computation graph?
-            # TODO: Should I instead use copy or copy_?
+            encodings["labels"] = encodings["input_ids"].detach().clone()
             # input_ids.shape is [completion_filter_top_k, seq_len]
             # targets_flat = encodings["input_ids"].view(
             #     -1
-            # )  # TODO: Do I need to shift the targets or logits?
+            # )
 
             optimizer.zero_grad()
             outputs = self.language_model(**encodings)
