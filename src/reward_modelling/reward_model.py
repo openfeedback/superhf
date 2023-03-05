@@ -19,6 +19,8 @@ from transformers import (
     TrainingArguments,
     AutoTokenizer,
     AutoModelForSequenceClassification,
+    AutoModelForCausalLM,
+    AutoModel
 )
 from preference_datasets import AnthropicHelpfulHarmless
 
@@ -39,7 +41,7 @@ class PreferenceLoss(nn.Module):
 
     def forward(self, winner_scores: torch.Tensor, loser_scores):
         loss = -F.logsigmoid(winner_scores - loser_scores)
-        return loss.mean()
+        return loss.mean()  
 
 
 def compute_metrics(eval_prediction):
@@ -73,35 +75,18 @@ class RewardModelTrainer(Trainer):
             with winner_scores in first column and loser_scores in second.
 
         """
+        batch_size = inputs['input_ids'].shape[0]
 
-        winner_scores = model(inputs["winner"]).logits
-        loser_scores = model(inputs["loser"]).logits
+        scores = model(**inputs)
+
+
+        chosen_scores = scores[:(batch_size//2)]
+        rejected_scores = scores[(batch_size//2):]
+
 
         loss_fct = PreferenceLoss()
-        loss = loss_fct(winner_scores, loser_scores)
-        reward_scores = torch.stack([winner_scores, loser_scores], 1)
-        return (loss, reward_scores) if return_outputs else loss
-
-    def prediction_step(self, model, inputs, prediction_loss_only, ignore_keys=None):
-        """
-        model : RewardModel for computing loss
-        inputs :
-            tokenized input batch with features ['winner', 'loser'].
-        Returns
-        -------
-        loss: model's loss over inputs, computed by the PreferenceLoss class.
-        reward_scores: size (batch, 2) tensor of reward scores,
-            with winner_scores in first column and loser_scores in second.
-        """
-        loss, reward_scores = self.compute_loss(model, inputs, True)
-        loss = loss.detach()
-        reward_scores = reward_scores.detach()
-        return (
-            (loss, None, None)
-            if prediction_loss_only
-            else (loss, reward_scores, None)
-            # returns length 3 tuple as HF expects (loss, logits, labels)
-        )
+        loss = loss_fct(chosen_scores, rejected_scores)
+        return loss
 
 
 class RewardModel(nn.Module):
@@ -111,15 +96,16 @@ class RewardModel(nn.Module):
 
     def __init__(self, model_name, frozen_prefixes=()):
         super().__init__()
-        self.model = AutoModelForSequenceClassification.from_pretrained(
+        self.model = AutoModel.from_pretrained(
             model_name, num_labels=1
         )
         for name, param in self.model.base_model.named_parameters():
             if any(name.startswith(p) for p in frozen_prefixes):
                 param.requires_grad = False
+        self.v_head = nn.Linear(self.model.config.hidden_size, 1, bias=False)
 
-    def forward(self, inputs):
-        return self.model(**inputs)
+    def forward(self, **inputs):
+        return self.v_head(self.model(**inputs)[0].mean(dim=1))
 
 
 class PreferenceDataCollator:
@@ -128,68 +114,54 @@ class PreferenceDataCollator:
     are of the same type as the elements of train_dataset and eval_dataset.
     """
 
-    def __init__(self, tokenizer, device="cpu", padding=True, max_length=None):
+    def __init__(self, tokenizer, padding=True, max_length=None):
         self.tokenizer = tokenizer
         self.padding = padding
         self.max_length = max_length
-        self.device = device
 
     def __call__(self, batch):
 
-        winner_responses = []
-        loser_responses = []
-        for winner, loser in batch:
-            winner_responses.append(winner)
-            loser_responses.append(loser)
+        responses = []
+        for chosen_responess, rejected_responses in batch:
+            responses.append(chosen_responess)
+            responses.append(rejected_responses)
 
-        winner_tokenized = self.tokenizer(
-            winner_responses,
-            return_tensors="pt",
+        outputs = self.tokenizer(
+            responses,
+            return_tensors='pt',
             padding=self.padding,
             max_length=self.max_length,
-            truncation=True,
-        ).to(self.device)
+            truncation=True
+        )
 
-        loser_tokenized = self.tokenizer(
-            loser_responses,
-            return_tensors="pt",
-            padding=self.padding,
-            max_length=self.max_length,
-            truncation=True,
-        ).to(self.device)
-
-        return {"winner": winner_tokenized, "loser": loser_tokenized}
+        return outputs
 
 
 if __name__ == "__main__":
-    device = "cuda:0" if torch.cuda.is_available() else "cpu"
-    dataloader_pin_memory = not torch.cuda.is_available()
 
     model_name = "distilbert-base-uncased"
     tokenizer = AutoTokenizer.from_pretrained(model_name, max_length=256)
-    model = RewardModel(model_name).to(device)
+    model = RewardModel(model_name)
 
     model_output_dir = "reward_model_HH"
 
     arguments = TrainingArguments(
         output_dir=model_output_dir,
-        logging_steps=10,
+        logging_steps=5,
         per_device_train_batch_size=1,
         per_device_eval_batch_size=1,
         num_train_epochs=3,
         evaluation_strategy="steps",
-        eval_steps=100,
+        eval_steps=10,
         save_strategy="steps",
         save_steps=100,
         learning_rate=2e-5,
         weight_decay=0.01,
         load_best_model_at_end=True,
-        seed=420,
-        dataloader_pin_memory=dataloader_pin_memory,
-        report_to="tensorboard",
+        do_eval=True,
+        report_to="wandb",
         log_level="debug",
     )
-    # breakpoint()
 
     train_dataset = AnthropicHelpfulHarmless("train")
     eval_dataset = AnthropicHelpfulHarmless("test")
@@ -197,7 +169,7 @@ if __name__ == "__main__":
     trainer = RewardModelTrainer(
         model=model,
         args=arguments,
-        data_collator=PreferenceDataCollator(tokenizer, device),
+        data_collator=PreferenceDataCollator(tokenizer),
         train_dataset=train_dataset,
         eval_dataset=eval_dataset,
         compute_metrics=compute_metrics,

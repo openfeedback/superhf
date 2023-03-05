@@ -58,3 +58,4 @@ MANIFEST
 
 # Training checkpoints
 wandb/
+reward_model_HH/
