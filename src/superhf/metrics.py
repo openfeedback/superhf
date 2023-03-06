@@ -146,7 +146,7 @@ def report_metrics_wandb(metrics: SuperHFMetrics) -> None:
                 "Top-K",
                 "Score",
                 stroke="Variance",
-                title=f"Superbatch {metrics.superbatch_index}: Scores Per Top-K",
+                title="Scores Per Top-K (Latest)",
             ),
         }
     )
