@@ -3,10 +3,13 @@ Functions for reporting metrics in SuperHF training.
 """
 
 from dataclasses import dataclass
+import time
+from typing import Any
 
 import numpy as np
 import wandb
 
+from superhf.filtering import CompletionFilterTopK
 from superhf.utils import separate_prompt_from_completion
 
 
@@ -81,6 +84,7 @@ def report_metrics_wandb(metrics: SuperHFMetrics) -> None:
     - Filtered completions length average and histogram
     - Completions table
     - Filtered completions table
+    - Histogram of filtered score if we filtered different top-K numbers
     """
     percent_complete = (metrics.superbatch_index + 1) / metrics.superbatch_count * 100
     completion_lengths = [
@@ -93,6 +97,16 @@ def report_metrics_wandb(metrics: SuperHFMetrics) -> None:
     ]
     average_score = np.mean(metrics.scores)
     average_filtered_score = np.mean(metrics.filtered_scores)
+
+    # Create plot data of average score if we filtered different top-K numbers
+    max_top_k_to_explore = 32
+    scores_per_top_k: list[list[Any]] = []
+    for top_k in range(1, max_top_k_to_explore + 1):
+        top_k_filter = CompletionFilterTopK(top_k)
+        _, scores = top_k_filter.filter(metrics.completions, metrics.scores)
+        mean, variance = np.mean(scores), np.var(scores)
+        scores_per_top_k.append([top_k, mean, variance])
+
     wandb.log(
         {
             "superbatch_index": metrics.superbatch_index,
@@ -125,5 +139,24 @@ def report_metrics_wandb(metrics: SuperHFMetrics) -> None:
                     )
                 ],
             ),
+            "scores_per_top_k": wandb.plot.line(
+                wandb.Table(
+                    columns=["Top-K", "Score", "Variance"], data=scores_per_top_k
+                ),
+                "Top-K",
+                "Score",
+                stroke="Variance",
+                title=f"Superbatch {metrics.superbatch_index}: Scores Per Top-K",
+            ),
         }
     )
+
+
+### Delay ###
+
+
+def delay_metrics(_: SuperHFMetrics) -> None:
+    """
+    Delay to allow time for logging to reach a server.
+    """
+    time.sleep(3)

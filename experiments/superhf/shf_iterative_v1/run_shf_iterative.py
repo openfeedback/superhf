@@ -21,6 +21,7 @@ from superhf.metrics import (
     initialize_metrics_wandb,
     report_metrics_wandb,
     report_metrics_print,
+    delay_metrics,
 )
 from superhf.mocking import MockLanguageModel, MockRewardModel
 from superhf.training import SuperHFTrainingArguments, SuperHFTrainer
@@ -141,6 +142,11 @@ def main() -> None:
     )
     completion_filter_top_k = wandb.config.completion_filter_top_k
     completion_filter = CompletionFilterTopK(completion_filter_top_k)
+    metrics_functions = (
+        [report_metrics_wandb, report_metrics_print, delay_metrics]
+        if wandb.config.language_model_name == "mock"
+        else [report_metrics_wandb, report_metrics_print]
+    )
 
     # Instantiate our trainer
     trainer = SuperHFTrainer(
@@ -150,7 +156,7 @@ def main() -> None:
         reward_tokenizer=reward_tokenizer,
         completion_filter=completion_filter,
         training_args=training_args,
-        report_metrics=[report_metrics_wandb, report_metrics_print],
+        report_metrics=metrics_functions,
     )
 
     # Initialize metrics

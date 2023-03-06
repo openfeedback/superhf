@@ -50,4 +50,11 @@ class CompletionFilterTopK(CompletionFilterBase):
         filtered_completions = sorted_completions[: self.top_k]
 
         # Return the filtered completions and their scores
-        return tuple(zip(*filtered_completions))
+        # completions = [completion for completion, _ in filtered_completions]
+        # scores = [score for _, score in filtered_completions]
+        # Re-write this a better way using list comprehension:
+        unzipped = tuple(zip(*filtered_completions))
+        completions = list(unzipped[0])
+        scores = list(unzipped[1])
+
+        return completions, scores
