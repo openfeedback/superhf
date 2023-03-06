@@ -3,7 +3,7 @@ Mock classes for testing.
 """
 
 import time
-from typing import Optional, Any
+from typing import Any
 
 import numpy as np
 import torch
@@ -62,7 +62,7 @@ class MockRewardModel(torch.nn.Module):
 
     def __call__(
         self,
-        input_ids: Optional[torch.LongTensor] = None,
+        input_ids: torch.LongTensor,
         **_: Any,
     ) -> Any:
         """Mocks the __call__ method for sequence classification."""

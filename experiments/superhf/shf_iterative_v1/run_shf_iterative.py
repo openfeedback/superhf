@@ -67,11 +67,13 @@ def main() -> None:
     language_model_name = wandb.config.language_model_name
     reward_model_name = wandb.config.reward_model_name
 
-    # Get the prompt dataset
-    if language_model_name == "mock":
+    if language_model_name == "mock" and reward_model_name == "mock":
         # Create a mock dataset of prompts
-        prompts = [f"{i}: Sphinx of black quartz, judge my vow." for i in range(50000)]
+        prompts = [
+            f"Mock {i}: Sphinx of black quartz, judge my vow." for i in range(50000)
+        ]
     else:
+        # Get the prompt dataset
         prompts = get_superhf_prompts("anthropic-red-team")
     random.shuffle(prompts)
 
