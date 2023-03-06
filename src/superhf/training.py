@@ -252,7 +252,7 @@ class SuperHFTrainer:
         )
 
         # Remove completions after any extra "\n\nHuman:", "\n\nA:", "\n\nH:", or similar.
-        # This is to prevent the model from trying to generate additional turns of conversation.
+        # This is to prevent the model from learning to generate additional turns of conversation.
         prompts_and_completions = [
             separate_prompt_from_completion(completion) for completion in completions
         ]
