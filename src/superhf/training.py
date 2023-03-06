@@ -18,6 +18,7 @@ from transformers import (
 )
 from torchtyping import TensorType
 
+from superhf.constants import PROMPT_DELIMITER
 from superhf.data import ListDataset
 from superhf.filtering import CompletionFilterBase
 from superhf.metrics import SuperHFMetrics, report_metrics_print
@@ -57,7 +58,7 @@ class SuperHFTrainingArguments:
     mixed_precision: str = "no"
 
     # Dataset settings
-    prompt_delimiter: str = "\n\nAssistant:"
+    prompt_delimiter: str = PROMPT_DELIMITER
 
 
 class SuperHFTrainer:
