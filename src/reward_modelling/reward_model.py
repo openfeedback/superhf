@@ -107,7 +107,8 @@ class RewardModel(nn.Module):
     def forward(self, return_loss=True, **inputs):
         # set `return_loss=True` so that the trainer would compute its
         # loss during evaluation in the `prediction_step` function
-        return self.v_head(self.model(**inputs)[0].mean(dim=1))
+        # return self.v_head(self.model(**inputs)[0].mean(dim=1))
+        return self.v_head(self.model(**inputs)[0][:,0])
 
 
 class PreferenceDataCollator:
