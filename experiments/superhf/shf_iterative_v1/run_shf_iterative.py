@@ -70,7 +70,8 @@ def main() -> None:
     if language_model_name == "mock" and reward_model_name == "mock":
         # Create a mock dataset of prompts
         prompts = [
-            f"Mock {i}: Sphinx of black quartz, judge my vow." for i in range(50000)
+            f"Mock Human {i}: ...\n\nAssistant: Sphinx of black quartz, judge my vow."
+            for i in range(50000)
         ]
     else:
         # Get the prompt dataset

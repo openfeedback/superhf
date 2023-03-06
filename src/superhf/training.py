@@ -56,6 +56,9 @@ class SuperHFTrainingArguments:
     learning_rate: float = 1e-5
     mixed_precision: str = "no"
 
+    # Dataset settings
+    prompt_delimiter: str = "\n\nAssistant:"
+
 
 class SuperHFTrainer:
     """
@@ -175,9 +178,9 @@ class SuperHFTrainer:
             # Optionally, save the model
             # self.save_model()
 
-    def collate_fn_lm(self, batch: list[str]) -> BatchEncoding:
+    def collate_fn_lm_completions(self, batch: list[str]) -> BatchEncoding:
         """
-        Collate function for the language model DataLoader.
+        Collate function for the language model completions DataLoader.
         """
         return self.language_tokenizer(
             batch,
@@ -202,7 +205,7 @@ class SuperHFTrainer:
         completion_dataloader = DataLoader(
             ListDataset(superbatch_prompts),
             batch_size=minibatch_size,
-            collate_fn=self.collate_fn_lm,
+            collate_fn=self.collate_fn_lm_completions,
         )
 
         # self.language_model, _, completion_dataloader = accelerator.prepare(
@@ -294,6 +297,29 @@ class SuperHFTrainer:
                 all_scores.extend(scores.logits.flatten().tolist())
         return all_completions, all_scores
 
+    def collate_fn_lm_finetuning(self, batch: list[str]) -> BatchEncoding:
+        """
+        Collate function for the language model fine-tuning DataLoader.
+        """
+        encodings = self.language_tokenizer(
+            batch,
+            return_tensors="pt",
+            padding=True,
+            truncation=True,
+            max_length=self.training_args.max_length_rm,
+        )
+        encodings["labels"] = encodings["input_ids"].detach().clone()
+
+        # Extract the prompt (the part before and including the first "\n\nAssistant:")
+        # We only need the first example because of left-padding (the delimiter is aligned)
+        delimiter = self.training_args.prompt_delimiter
+        prompt = batch[0].split(delimiter)[0] + delimiter
+        prompt_token_length = len(self.language_tokenizer(prompt).input_ids)
+
+        # Set labels to -100 for tokens that should be ignored (non-completion part of the prompt)
+        encodings["labels"][:, :prompt_token_length] = -100
+        return encodings
+
     def finetune_language_model(
         self,
         minibatch_size: int,
@@ -315,7 +341,7 @@ class SuperHFTrainer:
         finetuning_dataloader = DataLoader(
             ListDataset(filtered_completions),
             batch_size=minibatch_size,
-            collate_fn=self.collate_fn_lm,
+            collate_fn=self.collate_fn_lm_finetuning,
         )
 
         # Initialize the optimizer
@@ -336,15 +362,9 @@ class SuperHFTrainer:
             print(f"Fine-tuning minibatch {iteration},", end=" ")
             print_gpu_utilization()
             iteration += 1
-            encodings = minibatch  # Encodings contains dict_keys(['input_ids', 'attention_mask'])
-            encodings["labels"] = encodings["input_ids"].detach().clone()
-            # input_ids.shape is [completion_filter_top_k, seq_len]
-            # targets_flat = encodings["input_ids"].view(
-            #     -1
-            # )
 
             optimizer.zero_grad()
-            outputs = self.language_model(**encodings)
+            outputs = self.language_model(**minibatch)
             print(f"Keys of outputs: {outputs.keys()}")
             if outputs.loss is None:
                 raise ValueError("Loss is None on the outputs")
