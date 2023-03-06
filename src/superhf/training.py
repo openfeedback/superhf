@@ -355,7 +355,7 @@ class SuperHFTrainer:
 
         print("After accelerator prepare, ", end="")
         print_gpu_utilization()
-        average_loss = 0
+        sum_loss = 0
         self.language_model.train()
         iteration = 0
         for minibatch in tqdm(finetuning_dataloader, desc="Fine-tuning"):
@@ -383,14 +383,12 @@ class SuperHFTrainer:
             # logger.warning loss.item() > 0.0, f"Loss is {loss.item()}, which is not positive."
             # TODO add logging
             loss = outputs.loss
-            average_loss += loss
+            sum_loss += loss.item()
             accelerator.backward(loss)
             optimizer.step()
         optimizer.zero_grad()
 
-        return average_loss / len(
-            finetuning_dataloader
-        )  # TODO: Figure out the correct denominator
+        return sum_loss / len(finetuning_dataloader)
 
     def save_model(self) -> None:
         """
