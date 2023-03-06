@@ -124,11 +124,14 @@ class PreferenceDataCollator:
 
     def __call__(self, batch):
 
+        chosen_responses = []
+        rejected_responses = []
         responses = []
-        for chosen_responess, rejected_responses in batch:
-            responses.append(chosen_responess)
-            responses.append(rejected_responses)
-
+        for chosen_response, rejected_response in batch:
+            chosen_responses.append(chosen_response)
+            rejected_responses.append(rejected_response)
+        responses = chosen_responses+rejected_responses
+        
         outputs = self.tokenizer(
             responses,
             return_tensors='pt',
