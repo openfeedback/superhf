@@ -70,15 +70,18 @@ def report_metrics_wandb(metrics: SuperHFMetrics) -> None:
 
     Logs the following metrics:
     - Superbatch index and percentage complete
-    - Number of completions, number of filtered completions
-    - Average completion length, average filtered completion length
-    - Average score, average filtered score
-    - Average loss
+    - Score average and histogram
+    - Filtered score average and histogram
+    - Scheduler learning rate
+    - Completions table
     - Average score histogram
     - Average filtered score histogram
-    - Table of completions and scores
-    - Table of filtered completions and scores
-    - Learning rate
+    - Average loss
+    - Scheduler learning rate
+    - Completions length average and histogram
+    - Filtered completions length average and histogram
+    - Completions table
+    - Filtered completions table
     """
     percent_complete = (metrics.superbatch_index + 1) / metrics.superbatch_count * 100
     average_completion_length = np.mean([len(c) for c in metrics.completions])
@@ -91,19 +94,16 @@ def report_metrics_wandb(metrics: SuperHFMetrics) -> None:
     wandb.log(
         {
             "superbatch_index": metrics.superbatch_index,
-            "superbatch_percent_complete": percent_complete,
-            "completion_count": len(metrics.completions),
-            "filtered_completion_count": len(metrics.filtered_completions),
-            "average_completion_length": average_completion_length,
-            "max_completion_length": max_completion_length,
-            "average_filtered_completion_length": average_filtered_completion_length,
+            "percent_complete": percent_complete,
             "average_score": average_score,
             "average_filtered_score": average_filtered_score,
+            "score_histogram": wandb.Histogram(metrics.scores),
+            "filtered_score_histogram": wandb.Histogram(metrics.filtered_scores),
             "average_loss": metrics.average_loss,
-            "average_score_histogram": wandb.Histogram(metrics.scores),
-            "average_filtered_score_histogram": wandb.Histogram(
-                metrics.filtered_scores
-            ),
+            "scheduler_lr": metrics.scheduler_lr,
+            "average_completion_length": average_completion_length,
+            "average_filtered_completion_length": average_filtered_completion_length,
+            "max_completion_length": max_completion_length,
             "completions": wandb.Table(
                 columns=["superbatch", "completion", "score"],
                 data=[
@@ -120,6 +120,5 @@ def report_metrics_wandb(metrics: SuperHFMetrics) -> None:
                     )
                 ],
             ),
-            "scheduler_lr": metrics.scheduler_lr,
         }
     )
