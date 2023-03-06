@@ -9,6 +9,7 @@ RewardModelTrainer.compute_loss(model, inputs) accepts this dict as the
 `inputs` argument.
 """
 
+import datetime
 
 import torch
 import torch.nn as nn
@@ -48,12 +49,11 @@ def compute_metrics(eval_prediction):
     """
     Computes decimal accuracy of predictions during model evaluation.
     """
-
-    reward_scores = eval_prediction.prediction
-    total = reward_scores.size[0]
+    reward_scores = eval_prediction.predictions
+    total = reward_scores.shape[0]
     num_correct = ((reward_scores[:, 0] - reward_scores[:, 1]) > 0).sum()
     accuracy = num_correct / total
-    return accuracy
+    return {'accuracy': accuracy}
 
 
 class RewardModelTrainer(Trainer):
@@ -79,14 +79,14 @@ class RewardModelTrainer(Trainer):
 
         scores = model(**inputs)
 
-
         chosen_scores = scores[:(batch_size//2)]
         rejected_scores = scores[(batch_size//2):]
 
+        outputs = {'scores': torch.squeeze(torch.stack((chosen_scores, rejected_scores),dim=1))}
 
         loss_fct = PreferenceLoss()
         loss = loss_fct(chosen_scores, rejected_scores)
-        return loss
+        return (loss, outputs) if return_outputs else loss
 
 
 class RewardModel(nn.Module):
@@ -104,7 +104,9 @@ class RewardModel(nn.Module):
                 param.requires_grad = False
         self.v_head = nn.Linear(self.model.config.hidden_size, 1, bias=False)
 
-    def forward(self, **inputs):
+    def forward(self, return_loss=True, **inputs):
+        # set `return_loss=True` so that the trainer would compute its
+        # loss during evaluation in the `prediction_step` function
         return self.v_head(self.model(**inputs)[0].mean(dim=1))
 
 
@@ -140,31 +142,30 @@ class PreferenceDataCollator:
 if __name__ == "__main__":
 
     model_name = "distilbert-base-uncased"
-    tokenizer = AutoTokenizer.from_pretrained(model_name, max_length=256)
+    tokenizer = AutoTokenizer.from_pretrained(model_name, max_length=512)
     model = RewardModel(model_name)
 
-    model_output_dir = "reward_model_HH"
+    model_output_dir = f"reward_model_HH/{datetime.datetime.now()}"
 
     arguments = TrainingArguments(
         output_dir=model_output_dir,
         logging_steps=5,
-        per_device_train_batch_size=1,
-        per_device_eval_batch_size=1,
-        num_train_epochs=3,
+        per_device_train_batch_size=3,
+        per_device_eval_batch_size=3,
+        num_train_epochs=20,
         evaluation_strategy="steps",
         eval_steps=10,
+        save_total_limit=5,
         save_strategy="steps",
-        save_steps=100,
+        save_steps=10,
+        load_best_model_at_end=True,
         learning_rate=2e-5,
         weight_decay=0.01,
-        load_best_model_at_end=True,
-        do_eval=True,
         report_to="wandb",
-        log_level="debug",
     )
 
-    train_dataset = AnthropicHelpfulHarmless("train")
-    eval_dataset = AnthropicHelpfulHarmless("test")
+    train_dataset = AnthropicHelpfulHarmless("train", data_dir="harmless-base")
+    eval_dataset = AnthropicHelpfulHarmless("test",data_dir="harmless-base")
 
     trainer = RewardModelTrainer(
         model=model,

@@ -17,8 +17,8 @@ class AnthropicHelpfulHarmless(Dataset):
         https://huggingface.co/datasets/Anthropic/hh-rlhf
     """
 
-    def __init__(self, split="train"):
-        data = load_dataset("Anthropic/hh-rlhf")[split]
+    def __init__(self, split="train", data_dir=None):
+        data = load_dataset("Anthropic/hh-rlhf", data_dir=data_dir)[split]
         self.winner_responses = data["chosen"]
         self.loser_responses = data["rejected"]
 
