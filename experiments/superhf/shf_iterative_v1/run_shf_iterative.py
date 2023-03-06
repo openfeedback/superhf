@@ -64,9 +64,15 @@ def main() -> None:
         save_code=True,
         config=args.config,
     )
+    language_model_name = wandb.config.language_model_name
+    reward_model_name = wandb.config.reward_model_name
 
     # Get the prompt dataset
-    prompts = get_superhf_prompts("anthropic-red-team")
+    if language_model_name == "mock":
+        # Create a mock dataset of prompts
+        prompts = [f"{i}: Sphinx of black quartz, judge my vow." for i in range(50000)]
+    else:
+        prompts = get_superhf_prompts("anthropic-red-team")
     random.shuffle(prompts)
 
     # Filter out prompts that are too long
@@ -89,13 +95,11 @@ def main() -> None:
     print_gpu_utilization()
     print("Instantiating models...")
     # Instantiate our language and reward models and tokenizers
-    language_model_name = wandb.config.language_model_name
     language_model = (
         MockLanguageModel()
         if language_model_name == "mock"
         else AutoModelForCausalLM.from_pretrained(language_model_name).to(device)
     )
-    reward_model_name = wandb.config.reward_model_name
     reward_model = (
         MockRewardModel()
         if reward_model_name == "mock"
@@ -120,6 +124,7 @@ def main() -> None:
     print_gpu_utilization()
 
     # Set our training arguments
+    print("Setting up trainer...")
     training_args = SuperHFTrainingArguments(
         temperature=wandb.config.temperature,
         top_p=wandb.config.top_p,
@@ -146,6 +151,7 @@ def main() -> None:
     )
 
     # Initialize metrics
+    print("Initializing metrics...")
     initialize_metrics_wandb()  # Defines the run metrics
     # wandb.watch(language_model, log="all")
 
