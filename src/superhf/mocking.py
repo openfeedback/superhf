@@ -11,7 +11,7 @@ from transformers import GenerationMixin
 from transformers.modeling_outputs import CausalLMOutputWithCrossAttentions
 
 
-class MockLanguageModel(GenerationMixin):
+class MockLanguageModel(torch.nn.Module, GenerationMixin):
     """Mocks a HuggingFace AutoModelForCausalLM class."""
 
     def __init__(self) -> None:
@@ -41,15 +41,27 @@ class MockLanguageModel(GenerationMixin):
         ).requires_grad_()
         return output
 
-    def train(self) -> None:
+    def train(self, _: bool = False) -> Any:
         """Mocks enabling training mode."""
+        return self
 
-    def to(self) -> None:  # pylint:disable=invalid-name
+    def to(
+        self,
+        *_: Any,
+    ) -> Any:
         """Mocks moving the model to a device."""
+        return self
 
-    def parameters(self) -> Any:
+    def parameters(self, _: bool = False) -> Any:
         """Mocks returning the model parameters."""
         return [torch.randn(1).requires_grad_()]
+
+    def forward(
+        self,
+        **kwargs: Any,
+    ) -> Any:
+        """Mocks the forward method."""
+        return self(**kwargs)
 
 
 class MockRewardModel(torch.nn.Module):

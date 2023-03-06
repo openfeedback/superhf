@@ -156,7 +156,7 @@ def main() -> None:
     # Initialize metrics
     print("Initializing metrics...")
     initialize_metrics_wandb()  # Defines the run metrics
-    # wandb.watch(language_model, log="all")
+    wandb.watch(language_model, log="all")
 
     # Run training
     wandb.alert(title="Beginning SuperHF run", text="Beginning SuperHF run...")
