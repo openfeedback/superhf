@@ -7,6 +7,8 @@ from dataclasses import dataclass
 import numpy as np
 import wandb
 
+from superhf.utils import separate_prompt_from_completion
+
 
 @dataclass
 class SuperHFMetrics:
@@ -81,8 +83,14 @@ def report_metrics_wandb(metrics: SuperHFMetrics) -> None:
     - Filtered completions table
     """
     percent_complete = (metrics.superbatch_index + 1) / metrics.superbatch_count * 100
-    completion_lengths = [len(c) for c in metrics.completions]
-    filtered_completion_length = [len(c) for c in metrics.filtered_completions]
+    completion_lengths = [
+        len(separate_prompt_from_completion(completion)[1])
+        for completion in metrics.completions
+    ]
+    filtered_completion_length = [
+        len(separate_prompt_from_completion(completion)[1])
+        for completion in metrics.filtered_completions
+    ]
     average_score = np.mean(metrics.scores)
     average_filtered_score = np.mean(metrics.filtered_scores)
     wandb.log(
