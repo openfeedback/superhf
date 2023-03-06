@@ -86,7 +86,6 @@ class SuperHFTrainer:
         reward_tokenizer: PreTrainedTokenizerBase,
         completion_filter: CompletionFilterBase,
         training_args: SuperHFTrainingArguments,
-        # TODO try getting rid of first None in these
         report_metrics: Optional[
             Union[
                 Callable[[SuperHFMetrics], None], list[Callable[[SuperHFMetrics], None]]
@@ -318,6 +317,7 @@ class SuperHFTrainer:
 
         # Set labels to -100 for tokens that should be ignored (non-completion part of the prompt)
         encodings["labels"][:, :prompt_token_length] = -100
+
         return encodings
 
     def finetune_language_model(
@@ -331,9 +331,10 @@ class SuperHFTrainer:
 
         Returns the average loss for metrics.
         """
+        # pylint: disable=too-many-locals
+
         accelerator = Accelerator(mixed_precision=self.training_args.mixed_precision)
 
-        # pylint: disable=too-many-locals
         print(f"Trying finetuning with batch size {minibatch_size}")
         print_gpu_utilization()
         self.training_args.minibatch_size_finetuning = minibatch_size
@@ -368,20 +369,7 @@ class SuperHFTrainer:
             print(f"Keys of outputs: {outputs.keys()}")
             if outputs.loss is None:
                 raise ValueError("Loss is None on the outputs")
-            # outputs contains odict_keys(['logits', 'past_key_values'])
-            # outputs.logits have shape [completion_filter_top_k, seq_len, |Vocab|]
-            # logits_flat = outputs.logits.view(
-            #     -1, outputs.logits.shape[-1]
-            # )  # [completion_filter_top_k * seq_len, |Vocab|]
 
-            # Mask out positions with padding
-            # padding_mask_flat = encodings["attention_mask"].view(-1)
-            # targets_flat = targets_flat[padding_mask_flat]
-            # logits_flat = logits_flat[padding_mask_flat]
-
-            # loss = loss_function(logits_flat, targets_flat)  # is a scalar on gpu device
-            # logger.warning loss.item() > 0.0, f"Loss is {loss.item()}, which is not positive."
-            # TODO add logging
             loss = outputs.loss
             sum_loss += loss.item()
             accelerator.backward(loss)
