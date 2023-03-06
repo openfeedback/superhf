@@ -4,6 +4,7 @@ from a reward model with expert iteration using supervised learning).
 """
 
 from dataclasses import dataclass, field
+import re
 from typing import Callable, Optional, Union
 
 import torch
@@ -22,7 +23,7 @@ from superhf import constants
 from superhf.data import ListDataset
 from superhf.filtering import CompletionFilterBase
 from superhf.metrics import SuperHFMetrics, report_metrics_print
-from superhf.utils import print_gpu_utilization
+from superhf.utils import print_gpu_utilization, separate_prompt_from_completion
 
 
 @dataclass
@@ -250,7 +251,15 @@ class SuperHFTrainer:
             batch, skip_special_tokens=True
         )
 
-        # TODO remove completions after any extra "\n\nHuman:", "\n\nA:", "\n\nH:", or similar.
+        # Remove completions after any extra "\n\nHuman:", "\n\nA:", "\n\nH:", or similar.
+        # This is to prevent the model from trying to generate additional turns of conversation.
+        prompts_and_completions = [
+            separate_prompt_from_completion(completion) for completion in completions
+        ]
+        completions = [
+            prompt + re.split(constants.PROMPT_DELIMITER_REGEX, completion)[0]
+            for prompt, completion in prompts_and_completions
+        ]
 
         return (
             completions,
