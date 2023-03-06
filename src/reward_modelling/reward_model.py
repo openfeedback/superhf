@@ -146,27 +146,27 @@ if __name__ == "__main__":
     tokenizer = AutoTokenizer.from_pretrained(model_name, max_length=512)
     model = RewardModel(model_name)
 
-    model_output_dir = f"reward_model_HH/{datetime.datetime.now()}"
+    model_output_dir = f"/nlp/scr/fongsu/reward_model_HH/{datetime.datetime.now()}"
 
     arguments = TrainingArguments(
         output_dir=model_output_dir,
-        logging_steps=5,
-        per_device_train_batch_size=3,
-        per_device_eval_batch_size=3,
+        logging_steps=10,
+        per_device_train_batch_size=20,
+        per_device_eval_batch_size=20,
         num_train_epochs=20,
         evaluation_strategy="steps",
-        eval_steps=10,
+        eval_steps=1000,
         save_total_limit=5,
         save_strategy="steps",
-        save_steps=10,
+        save_steps=1000,
         load_best_model_at_end=True,
-        learning_rate=2e-5,
-        weight_decay=0.01,
+        learning_rate=1e-4,
+#        weight_decay=0.0001,
         report_to="wandb",
     )
 
-    train_dataset = AnthropicHelpfulHarmless("train", data_dir="harmless-base")
-    eval_dataset = AnthropicHelpfulHarmless("test",data_dir="harmless-base")
+    train_dataset = AnthropicHelpfulHarmless("train", data_dir="helpful-base")
+    eval_dataset = AnthropicHelpfulHarmless("test",data_dir="helpful-base")
 
     trainer = RewardModelTrainer(
         model=model,

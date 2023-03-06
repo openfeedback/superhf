@@ -1,10 +1,10 @@
 #!/usr/bin/bash
-#SBATCH --job-name=train_harmless
+#SBATCH --job-name=train_helpful
 #SBATCH --output=batch_outputs/test_job.%j.out
 #SBATCH --error=batch_outputs/test_job.%j.err
 #SBATCH --account=nlp
 #SBATCH --partition=jag-standard
-#SBATCH --mem=60GB
+#SBATCH --mem=20GB
 #SBATCH --gres=gpu:1
 
 # list out some useful information (optional)
