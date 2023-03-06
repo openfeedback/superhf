@@ -216,8 +216,8 @@ class SuperHFTrainer:
         with torch.no_grad():
             iteration = 0
             for minibatch in tqdm(completion_dataloader, desc="Generation"):
-                print(f"Generation minibatch {iteration},", end=" ")
-                print_gpu_utilization()
+                # print(f"Generation minibatch {iteration},", end=" ")
+                # print_gpu_utilization()
                 iteration += 1
                 encodings = minibatch
                 encodings.to(self.language_model.device)
@@ -288,8 +288,8 @@ class SuperHFTrainer:
         with torch.no_grad():
             iteration = 0
             for minibatch in score_dataloader:
-                print(f"Scoring minibatch {iteration},", end=" ")
-                print_gpu_utilization()
+                # print(f"Scoring minibatch {iteration},", end=" ")
+                # print_gpu_utilization()
                 iteration += 1
                 completions, completion_encodings = minibatch
                 scores = self.reward_model(**completion_encodings)
@@ -359,15 +359,15 @@ class SuperHFTrainer:
         print_gpu_utilization()
         sum_loss = 0
         self.language_model.train()
-        iteration = 0
+        # iteration = 0
         for minibatch in tqdm(finetuning_dataloader, desc="Fine-tuning"):
-            print(f"Fine-tuning minibatch {iteration},", end=" ")
-            print_gpu_utilization()
-            iteration += 1
+            # print(f"Fine-tuning minibatch {iteration},", end=" ")
+            # print_gpu_utilization()
+            # iteration += 1
 
             optimizer.zero_grad()
             outputs = self.language_model(**minibatch)
-            print(f"Keys of outputs: {outputs.keys()}")
+            # print(f"Keys of outputs: {outputs.keys()}")
             if outputs.loss is None:
                 raise ValueError("Loss is None on the outputs")
 
