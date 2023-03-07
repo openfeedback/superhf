@@ -15,7 +15,7 @@ temperature:
   value: 0.9
 top_p:
   desc: Top-p to use for completion sampling
-  value: 0.9
+  value: 0.95
 superbatch_size:
   desc: Number of completions to generate with the current policy before filtering and fine-tuning.
   value: 128
