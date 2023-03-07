@@ -7,6 +7,7 @@ from dataclasses import dataclass, field
 import re
 from typing import Callable, Optional, Union
 
+
 import torch
 from torch.utils.data import DataLoader
 
@@ -16,6 +17,7 @@ from transformers import (
     PreTrainedTokenizerBase,
     BatchEncoding,
     PreTrainedModel,
+    LogitsProcessorList,
 )
 from torchtyping import TensorType
 
@@ -48,6 +50,7 @@ class SuperHFTrainingArguments:
     )
     max_length_lm: int = 256
     max_length_rm: int = 1024
+    logits_processors: Optional[LogitsProcessorList] = None
 
     # Batching to avoid OOMs
     minibatch_size_generating: int = 64
@@ -231,6 +234,7 @@ class SuperHFTrainer:
                         do_sample=True,
                         num_return_sequences=1,
                         pad_token_id=self.language_tokenizer.pad_token_id,
+                        logits_processor=self.training_args.logits_processors,
                     ).to("cpu")
                 )
         # completions_gathered: list[str] = accelerator.gather(

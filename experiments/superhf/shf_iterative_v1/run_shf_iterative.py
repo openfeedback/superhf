@@ -10,6 +10,8 @@ from transformers import (
     AutoTokenizer,
     AutoModelForCausalLM,
     AutoModelForSequenceClassification,
+    LogitsProcessorList,
+    NoRepeatNGramLogitsProcessor,
 )
 import torch
 import wandb
@@ -129,6 +131,7 @@ def main() -> None:
 
     # Set our training arguments
     print("Setting up trainer...")
+    logits_processors = LogitsProcessorList([NoRepeatNGramLogitsProcessor(6)])
     training_args = SuperHFTrainingArguments(
         temperature=wandb.config.temperature,
         top_p=wandb.config.top_p,
@@ -139,6 +142,7 @@ def main() -> None:
         minibatch_size_scoring=wandb.config.minibatch_size_scoring,
         minibatch_size_finetuning=wandb.config.minibatch_size_finetuning,
         mixed_precision=wandb.config.mixed_precision,
+        logits_processors=logits_processors,
     )
     completion_filter_top_k = wandb.config.completion_filter_top_k
     completion_filter = CompletionFilterTopK(completion_filter_top_k)
