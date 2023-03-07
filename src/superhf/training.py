@@ -296,7 +296,7 @@ class SuperHFTrainer:
 
         with torch.no_grad():
             iteration = 0
-            for minibatch in score_dataloader:
+            for minibatch in tqdm(score_dataloader, desc="Scoring"):
                 # print(f"Scoring minibatch {iteration},", end=" ")
                 # print_gpu_utilization()
                 iteration += 1
