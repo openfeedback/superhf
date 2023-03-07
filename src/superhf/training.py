@@ -51,6 +51,7 @@ class SuperHFTrainingArguments:
     max_length_lm: int = 256
     max_length_rm: int = 1024
     logits_processors: Optional[LogitsProcessorList] = None
+    constitution_prompt: str = ""  # the prompt to be prepended to all prompts
 
     # Batching to avoid OOMs
     minibatch_size_generating: int = 64
@@ -185,7 +186,11 @@ class SuperHFTrainer:
     def collate_fn_lm_completions(self, batch: list[str]) -> BatchEncoding:
         """
         Collate function for the language model completions DataLoader.
+
+        Prepends the constitution to each prompt. By default this is the empty string.
         """
+        constitution = self.training_args.constitution_prompt
+        batch = [constitution + prompt for prompt in batch]
         return self.language_tokenizer(
             batch,
             return_tensors="pt",
@@ -200,7 +205,13 @@ class SuperHFTrainer:
         superbatch_prompts: list[str],
         # accelerator: Accelerator,
     ) -> list[TensorType["batch", "seq_len"]]:
-        """Generate completions for the prompts in the superbatch."""
+        """
+        Generate completions for the prompts in the superbatch.
+
+        Args:
+            minibatch_size: The minibatch size to use for generation.
+            superbatch_prompts: The prompts in the superbatch.
+        """
         self.training_args.minibatch_size_generating = minibatch_size
 
         print(f"Trying generation with batch size {minibatch_size}")

@@ -142,6 +142,7 @@ def main() -> None:
         minibatch_size_scoring=wandb.config.minibatch_size_scoring,
         minibatch_size_finetuning=wandb.config.minibatch_size_finetuning,
         mixed_precision=wandb.config.mixed_precision,
+        constitution_prompt=wandb.config.constitution_prompt,
         logits_processors=logits_processors,
     )
     completion_filter_top_k = wandb.config.completion_filter_top_k
