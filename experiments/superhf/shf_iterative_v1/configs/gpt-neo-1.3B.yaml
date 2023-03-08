@@ -45,4 +45,4 @@ mixed_precision:
   value: "no"
 conversation_prompt:
   desc: A prompt to prepend to every prompt before generation to get the model more on distribution.
-  value: "The following is a conversation between a person and a helpful, polite, honest, sophisticated, emotionally aware, and humble-but-knowledgeable AI assistant:\n\n"
+  value: "A human user asks a question or says a statement, and a helpful, polite, honest, sophisticated, emotionally aware, and humble-but-knowledgeable AI assistant responds:"
