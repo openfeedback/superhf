@@ -17,7 +17,6 @@ from transformers import (
 import torch
 import wandb
 
-
 from superhf.data import get_superhf_prompts
 from superhf.filtering import CompletionFilterTopK
 from superhf.metrics import (
