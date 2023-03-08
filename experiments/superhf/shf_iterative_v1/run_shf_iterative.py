@@ -144,6 +144,7 @@ def main() -> None:
         mixed_precision=wandb.config.mixed_precision,
         constitution_prompt=wandb.config.constitution_prompt,
         logits_processors=logits_processors,
+        learning_rate=wandb.config.learning_rate,
     )
     completion_filter_top_k = wandb.config.completion_filter_top_k
     completion_filter = CompletionFilterTopK(completion_filter_top_k)

@@ -7,6 +7,9 @@ reward_model_name:
 debug_max_prompts:
   desc: Maximum number of prompts to use, or 0 for unlimited
   value: 0
+learning_rate:
+  desc: Learning rate for fine-tuning the language model.
+  value: 1e-6
 max_prompt_char_length:
   desc: Maximum number of characters to truncate prompts to
   value: 1024

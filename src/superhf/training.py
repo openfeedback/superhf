@@ -176,7 +176,7 @@ class SuperHFTrainer:
                 scores=scores,
                 filtered_scores=filtered_scores,
                 average_loss=average_loss,
-                scheduler_lr=5e-5,  # TODO get this from the scheduler
+                scheduler_lr=self.training_args.learning_rate,  # TODO get this from the scheduler
             )
             if self.report_metrics is not None:
                 for report_metrics_function in self.report_metrics:
@@ -225,17 +225,9 @@ class SuperHFTrainer:
             collate_fn=self.collate_fn_lm_completions,
         )
 
-        # self.language_model, _, completion_dataloader = accelerator.prepare(
-        #     self.language_model, None, completion_dataloader
-        # )
-
         completions: list[TensorType["batch", "seq_len"]] = []
         with torch.no_grad():
-            iteration = 0
             for minibatch in tqdm(completion_dataloader, desc="Generation"):
-                # print(f"Generation minibatch {iteration},", end=" ")
-                # print_gpu_utilization()
-                iteration += 1
                 encodings = minibatch
                 encodings.to(self.language_model.device)
                 completions.extend(
@@ -383,15 +375,9 @@ class SuperHFTrainer:
         print_gpu_utilization()
         sum_loss = 0
         self.language_model.train()
-        # iteration = 0
         for minibatch in tqdm(finetuning_dataloader, desc="Fine-tuning"):
-            # print(f"Fine-tuning minibatch {iteration},", end=" ")
-            # print_gpu_utilization()
-            # iteration += 1
-
             optimizer.zero_grad()
             outputs = self.language_model(**minibatch)
-            # print(f"Keys of outputs: {outputs.keys()}")
             if outputs.loss is None:
                 raise ValueError("Loss is None on the outputs")
 
