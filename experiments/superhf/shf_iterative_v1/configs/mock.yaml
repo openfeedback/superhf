@@ -46,3 +46,9 @@ mixed_precision:
 conversation_prompt:
   desc: A prompt to prepend to every prompt before generation to get the model more on distribution.
   value: "A human user asks a question or says a statement, and a helpful, polite, honest, sophisticated, emotionally aware, and humble-but-knowledgeable AI assistant responds:"
+repetition_penalty:
+  desc: Repetition penalty to use for completion sampling. 1.0 means no penalty (logits unchanged)
+  value: 1.2
+no_repeat_ngram_size:
+  desc: Prevents repeating of n-grams of this size during completion sampling. 0 means no constraint (logits unchanged)
+  value: 0

@@ -12,6 +12,7 @@ from transformers import (
     AutoModelForSequenceClassification,
     LogitsProcessorList,
     NoRepeatNGramLogitsProcessor,
+    RepetitionPenaltyLogitsProcessor,
 )
 import torch
 import wandb
@@ -131,7 +132,15 @@ def main() -> None:
 
     # Set our training arguments
     print("Setting up trainer...")
-    logits_processors = LogitsProcessorList([NoRepeatNGramLogitsProcessor(6)])
+    logits_processors = LogitsProcessorList()
+    if wandb.config.no_repeat_ngram_size > 0:
+        logits_processors.append(
+            NoRepeatNGramLogitsProcessor(wandb.config.no_repeat_ngram_size)
+        )
+    if wandb.config.repetition_penalty > 1.0:
+        logits_processors.append(
+            RepetitionPenaltyLogitsProcessor(wandb.config.repetition_penalty)
+        )
     training_args = SuperHFTrainingArguments(
         temperature=wandb.config.temperature,
         top_p=wandb.config.top_p,
