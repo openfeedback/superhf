@@ -51,7 +51,7 @@ class SuperHFTrainingArguments:
     max_length_lm: int = 256
     max_length_rm: int = 1024
     logits_processors: Optional[LogitsProcessorList] = None
-    constitution_prompt: str = ""  # the prompt to be prepended to all prompts
+    conversation_prompt: str = ""  # the prompt to be prepended to all prompts
 
     # Batching to avoid OOMs
     minibatch_size_generating: int = 64
@@ -191,7 +191,7 @@ class SuperHFTrainer:
 
         Prepends the constitution to each prompt. By default this is the empty string.
         """
-        constitution = self.training_args.constitution_prompt
+        constitution = self.training_args.conversation_prompt
         batch = [constitution + prompt for prompt in batch]
         return self.language_tokenizer(
             batch,
