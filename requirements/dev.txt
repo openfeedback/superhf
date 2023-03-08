@@ -14,7 +14,11 @@ asttokens==2.2.1
     # via stack-data
 attrs==22.2.0
     # via
+<<<<<<< HEAD
     #   -c requirements\prod.txt
+=======
+    #   -c requirements/prod.txt
+>>>>>>> wilder-new
     #   cattrs
     #   lsprotocol
 babel==2.11.0
@@ -27,6 +31,7 @@ cattrs==22.2.0
     # via lsprotocol
 certifi==2022.12.7
     # via
+<<<<<<< HEAD
     #   -c requirements\prod.txt
     #   requests
 cfgv==3.3.1
@@ -34,6 +39,15 @@ cfgv==3.3.1
 charset-normalizer==3.0.1
     # via
     #   -c requirements\prod.txt
+=======
+    #   -c requirements/prod.txt
+    #   requests
+cfgv==3.3.1
+    # via pre-commit
+charset-normalizer==2.1.1
+    # via
+    #   -c requirements/prod.txt
+>>>>>>> wilder-new
     #   requests
 click==8.1.3
     # via black
@@ -58,7 +72,11 @@ distlib==0.3.6
     # via virtualenv
 docutils==0.19
     # via sphinx
+<<<<<<< HEAD
 esbonio==0.16.1
+=======
+esbonio==0.16.0
+>>>>>>> wilder-new
     # via -r requirements/dev.in
 exceptiongroup==1.1.0
     # via cattrs
@@ -66,6 +84,7 @@ executing==1.2.0
     # via stack-data
 filelock==3.9.0
     # via
+<<<<<<< HEAD
     #   -c requirements\prod.txt
     #   virtualenv
 identify==2.5.18
@@ -81,14 +100,34 @@ ipykernel==6.21.2
     #   -r requirements/dev.in
     #   ipywidgets
 ipython==8.10.0
+=======
+    #   -c requirements/prod.txt
+    #   virtualenv
+identify==2.5.17
+    # via pre-commit
+idna==3.4
+    # via
+    #   -c requirements/prod.txt
+    #   requests
+imagesize==1.4.1
+    # via sphinx
+ipykernel==6.21.1
+    # via
+    #   -r requirements/dev.in
+    #   ipywidgets
+ipython==8.9.0
+>>>>>>> wilder-new
     # via
     #   -r requirements/dev.in
     #   ipykernel
     #   ipywidgets
 ipywidgets==8.0.4
     # via -r requirements/dev.in
+<<<<<<< HEAD
 isort==5.12.0
     # via pylint
+=======
+>>>>>>> wilder-new
 jedi==0.18.2
     # via ipython
 jinja2==3.1.2
@@ -101,8 +140,11 @@ jupyter-core==5.2.0
     #   jupyter-client
 jupyterlab-widgets==3.0.5
     # via ipywidgets
+<<<<<<< HEAD
 lazy-object-proxy==1.9.0
     # via astroid
+=======
+>>>>>>> wilder-new
 lsprotocol==2022.0.0a10
     # via pygls
 markupsafe==2.1.2
@@ -111,6 +153,7 @@ matplotlib-inline==0.1.6
     # via
     #   ipykernel
     #   ipython
+<<<<<<< HEAD
 mccabe==0.7.0
     # via pylint
 mypy==1.0.1
@@ -119,13 +162,21 @@ mypy-extensions==1.0.0
     # via
     #   black
     #   mypy
+=======
+mypy-extensions==1.0.0
+    # via black
+>>>>>>> wilder-new
 nest-asyncio==1.5.6
     # via ipykernel
 nodeenv==1.7.0
     # via pre-commit
 packaging==23.0
     # via
+<<<<<<< HEAD
     #   -c requirements\prod.txt
+=======
+    #   -c requirements/prod.txt
+>>>>>>> wilder-new
     #   black
     #   ipykernel
     #   sphinx
@@ -151,7 +202,11 @@ psutil==5.9.4
     #   ipykernel
 pure-eval==0.2.2
     # via stack-data
+<<<<<<< HEAD
 pygls==1.0.1
+=======
+pygls==1.0.0
+>>>>>>> wilder-new
     # via esbonio
 pygments==2.14.0
     # via
@@ -163,6 +218,7 @@ pyspellchecker==0.7.1
     # via esbonio
 python-dateutil==2.8.2
     # via
+<<<<<<< HEAD
     #   -c requirements\prod.txt
     #   jupyter-client
 pytz==2022.7.1
@@ -174,6 +230,17 @@ pywin32==305
 pyyaml==6.0
     # via
     #   -c requirements\prod.txt
+=======
+    #   -c requirements/prod.txt
+    #   jupyter-client
+pytz==2022.7.1
+    # via
+    #   -c requirements/prod.txt
+    #   babel
+pyyaml==6.0
+    # via
+    #   -c requirements/prod.txt
+>>>>>>> wilder-new
     #   pre-commit
 pyzmq==25.0.0
     # via
@@ -181,11 +248,19 @@ pyzmq==25.0.0
     #   jupyter-client
 requests==2.28.2
     # via
+<<<<<<< HEAD
     #   -c requirements\prod.txt
     #   sphinx
 six==1.16.0
     # via
     #   -c requirements\prod.txt
+=======
+    #   -c requirements/prod.txt
+    #   sphinx
+six==1.16.0
+    # via
+    #   -c requirements/prod.txt
+>>>>>>> wilder-new
     #   asttokens
     #   python-dateutil
 snowballstemmer==2.2.0
@@ -230,6 +305,7 @@ traitlets==5.9.0
     #   matplotlib-inline
 typeguard==2.13.3
     # via pygls
+<<<<<<< HEAD
 types-tqdm==4.64.7.12
     # via -r requirements/dev.in
 typing-extensions==4.5.0
@@ -242,13 +318,23 @@ urllib3==1.26.14
     #   -c requirements\prod.txt
     #   requests
 virtualenv==20.19.0
+=======
+urllib3==1.26.14
+    # via
+    #   -c requirements/prod.txt
+    #   requests
+virtualenv==20.17.1
+>>>>>>> wilder-new
     # via pre-commit
 wcwidth==0.2.6
     # via prompt-toolkit
 widgetsnbextension==4.0.5
     # via ipywidgets
+<<<<<<< HEAD
 wrapt==1.14.1
     # via astroid
+=======
+>>>>>>> wilder-new
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools
