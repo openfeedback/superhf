@@ -41,5 +41,5 @@ mixed_precision:
   desc: Whether to use lower precision fp16 optimization, or other representations.
   value: "no"
 constitution_prompt:
-  desc: A 'constitution', i.e. prompt, to prepend to every prompt before generation, get's model o.
+  desc: A 'constitution', i.e. prompt, to prepend to every prompt before generation, get's model on distribution.
   value: "The following is a conversation between a person and a helpful, polite, honest, sophisticated, emotionally aware, and humble-but-knowledgeable AI assistant:\n\n"

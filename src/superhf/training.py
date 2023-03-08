@@ -136,7 +136,9 @@ class SuperHFTrainer:
             total=len(prompts_dataloader),
             desc="Superbatch",
         ):
-            print(f"Before generation, on superbatch_index {superbatch_index} ", end="")
+            tqdm.write(
+                f"Before generation, on superbatch_index {superbatch_index} ", end=""
+            )
             print_gpu_utilization()
             # Generate completions for each prompt in the superbatch
             completions_encoded = find_executable_batch_size(
@@ -144,7 +146,7 @@ class SuperHFTrainer:
                 self.training_args.minibatch_size_generating,
             )(superbatch_prompts)
 
-            print("Before scoring ", end="")
+            tqdm.write("Before scoring ", end="")
             print_gpu_utilization()
             # Score the completions
             completions, scores = find_executable_batch_size(
@@ -152,7 +154,7 @@ class SuperHFTrainer:
                 self.training_args.minibatch_size_scoring,
             )(completions_encoded)
 
-            print("Before filtering ", end="")
+            tqdm.write("Before filtering ", end="")
             print_gpu_utilization()
             # Filter the completions
             filtered_completions, filtered_scores = self.completion_filter.filter(
@@ -214,7 +216,7 @@ class SuperHFTrainer:
         """
         self.training_args.minibatch_size_generating = minibatch_size
 
-        print(f"Trying generation with batch size {minibatch_size}")
+        tqdm.write(f"Trying generation with batch size {minibatch_size}")
         print_gpu_utilization()
 
         completion_dataloader = DataLoader(
@@ -312,8 +314,6 @@ class SuperHFTrainer:
         with torch.no_grad():
             iteration = 0
             for minibatch in tqdm(score_dataloader, desc="Scoring"):
-                # print(f"Scoring minibatch {iteration},", end=" ")
-                # print_gpu_utilization()
                 iteration += 1
                 completions, completion_encodings = minibatch
                 scores = self.reward_model(**completion_encodings)
@@ -360,7 +360,7 @@ class SuperHFTrainer:
 
         accelerator = Accelerator(mixed_precision=self.training_args.mixed_precision)
 
-        print(f"Trying finetuning with batch size {minibatch_size}")
+        tqdm.write(f"Trying finetuning with batch size {minibatch_size}")
         print_gpu_utilization()
         self.training_args.minibatch_size_finetuning = minibatch_size
 
@@ -379,7 +379,7 @@ class SuperHFTrainer:
             self.language_model, optimizer, finetuning_dataloader
         )
 
-        print("After accelerator prepare, ", end="")
+        tqdm.write("After accelerator prepare, ", end="")
         print_gpu_utilization()
         sum_loss = 0
         self.language_model.train()

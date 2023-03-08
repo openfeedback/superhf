@@ -4,6 +4,7 @@ Assorted utility functions.
 
 import gc
 import random
+from tqdm import tqdm
 
 import numpy as np
 import torch
@@ -46,9 +47,9 @@ def print_gpu_utilization() -> None:
     n_gpu = torch.cuda.device_count()
 
     # for each GPU, get the name and the memory occupied
-    print("GPU memory occupied:", end="")
+    tqdm.write("GPU memory occupied:", end="")
     for i in range(n_gpu):
         handle = nvmlDeviceGetHandleByIndex(i)
         info = nvmlDeviceGetMemoryInfo(handle)
-        print(f" Device{i}: {info.used//1024**2} MB", end=";")
-    print()
+        tqdm.write(f" Device{i}: {info.used//1024**2} MB", end=";")
+    tqdm.write("")
