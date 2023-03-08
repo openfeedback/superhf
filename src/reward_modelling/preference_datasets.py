@@ -27,7 +27,3 @@ class AnthropicHelpfulHarmless(Dataset):
 
     def __len__(self):
         return len(self.winner_responses)
-
-
-ahh = AnthropicHelpfulHarmless()
-print(max(len(ahh[i][1].split()) for i in range(len(ahh))))
