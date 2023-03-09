@@ -9,7 +9,7 @@ debug_max_prompts:
   value: 0
 learning_rate:
   desc: Learning rate for fine-tuning the language model.
-  value: 1.0e-7
+  value: 3.0e-8
 max_prompt_char_length:
   desc: Maximum number of characters to truncate prompts to
   value: 1024
@@ -24,7 +24,7 @@ superbatch_size:
   value: 256
 completion_filter_top_k:
   desc: Top-k completions to filter and train on.
-  value: 128
+  value: 96
 max_length_lm:
   desc: Maximum new token length of language model completion.
   value: 384
