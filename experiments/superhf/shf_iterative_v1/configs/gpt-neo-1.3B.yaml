@@ -9,7 +9,7 @@ debug_max_prompts:
   value: 0
 learning_rate:
   desc: Learning rate for fine-tuning the language model.
-  value: 3.0e-7
+  value: 1.0e-7
 max_prompt_char_length:
   desc: Maximum number of characters to truncate prompts to
   value: 1024
