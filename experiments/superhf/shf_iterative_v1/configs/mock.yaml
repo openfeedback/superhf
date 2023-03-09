@@ -3,7 +3,7 @@ language_model_name:
   value: "mock"
 reward_model_name:
   desc: HuggingFace reward model to use, or "mock" for testing
-  value: "mock"
+  value: "OpenAssistant/reward-model-deberta-v3-base"
 debug_max_prompts:
   desc: Maximum number of prompts to use, or 0 for unlimited
   value: 512
@@ -52,3 +52,6 @@ repetition_penalty:
 no_repeat_ngram_size:
   desc: Prevents repeating of n-grams of this size during completion sampling. 0 means no constraint (logits unchanged)
   value: 0
+prompt_dataset_names:
+  desc: The list of datasets to use for prompts. One or both of "anthropic-red-team" and "openai/webgpt_comparisons"
+  value: ["openai/webgpt_comparisons"]
