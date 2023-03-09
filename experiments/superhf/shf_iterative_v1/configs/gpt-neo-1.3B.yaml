@@ -9,22 +9,22 @@ debug_max_prompts:
   value: 0
 learning_rate:
   desc: Learning rate for fine-tuning the language model.
-  value: 1.0e-6
+  value: 3.0e-7
 max_prompt_char_length:
   desc: Maximum number of characters to truncate prompts to
   value: 1024
 temperature:
   desc: Temperature to use for completion sampling
-  value: 0.9
+  value: 1.0
 top_p:
   desc: Top-p to use for completion sampling
   value: 0.95
 superbatch_size:
   desc: Number of completions to generate with the current policy before filtering and fine-tuning.
-  value: 128
+  value: 256
 completion_filter_top_k:
   desc: Top-k completions to filter and train on.
-  value: 8
+  value: 32
 max_length_lm:
   desc: Maximum new token length of language model completion.
   value: 384
@@ -39,7 +39,7 @@ minibatch_size_scoring:
   value: 64
 minibatch_size_finetuning:
   desc: Size of minibatches for fine-tuning the language model.
-  value: 1
+  value: 4
 mixed_precision:
   desc: Whether to use lower precision fp16 optimization, or other representations.
   value: "no"
