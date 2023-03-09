@@ -54,4 +54,4 @@ no_repeat_ngram_size:
   value: 0
 prompt_dataset_names:
   desc: The list of datasets to use for prompts. One or both of "anthropic-red-team" and "openai/webgpt_comparisons"
-  value: ["openai/webgpt_comparisons"]
+  value: ["anthropic-red-team"]
