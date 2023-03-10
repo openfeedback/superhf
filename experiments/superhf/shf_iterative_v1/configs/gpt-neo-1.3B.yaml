@@ -27,7 +27,7 @@ completion_filter_top_k:
   value: 96
 max_length_lm:
   desc: Maximum new token length of language model completion.
-  value: 384
+  value: 256
 max_length_rm:
   desc: Maximum token length of reward model input.
   value: 1024
