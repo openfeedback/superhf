@@ -148,6 +148,7 @@ def main() -> None:
         conversation_prompt=wandb.config.conversation_prompt,
         logits_processors=logits_processors,
         learning_rate=wandb.config.learning_rate,
+        inverse_loss_penalty=wandb.config.inverse_loss_penalty,
     )
     completion_filter_top_k = wandb.config.completion_filter_top_k
     completion_filter = CompletionFilterTopK(completion_filter_top_k)

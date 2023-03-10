@@ -60,6 +60,7 @@ class SuperHFTrainingArguments:
 
     # Training
     learning_rate: float = 1e-5
+    inverse_loss_penalty: float = 0.0
     mixed_precision: str = "no"
 
     # Dataset settings
@@ -383,6 +384,11 @@ class SuperHFTrainer:
                 raise ValueError("Loss is None on the outputs")
 
             loss = outputs.loss
+
+            # Inverse loss penalty to regularize away from low-entropy states
+            if self.training_args.inverse_loss_penalty > 0:
+                loss = loss + self.training_args.inverse_loss_penalty / loss
+
             sum_loss += loss.item()
             accelerator.backward(loss)
             optimizer.step()

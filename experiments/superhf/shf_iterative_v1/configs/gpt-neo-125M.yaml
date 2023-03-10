@@ -10,6 +10,9 @@ debug_max_prompts:
 learning_rate:
   desc: Learning rate for fine-tuning the language model.
   value: 1.0e-6
+inverse_loss_penalty:
+  desc: Regularizes loss by C with loss' = loss + C / loss. Set to 0 to disable.
+  value: 0.1
 max_prompt_char_length:
   desc: Maximum number of characters to truncate prompts to
   value: 1024
