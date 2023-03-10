@@ -73,6 +73,13 @@ def get_superhf_prompts(dataset_name: str, split: str = "train") -> list[str]:
                 for row in dataset
             ]
         )
+    elif dataset_name == "mock":
+        prompts.extend(
+            [
+                f"{i}\n\nHuman: ...\n\nAssistant: Sphinx of black quartz, judge my vow."
+                for i in range(50000)
+            ]
+        )
     else:
         raise ValueError(f"Unknown dataset: {dataset_name}")
 
