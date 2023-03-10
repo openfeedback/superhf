@@ -48,7 +48,7 @@ class SuperHFTrainingArguments:
             )
         },
     )
-    max_length_lm: int = 256
+    max_new_tokens: int = 256
     max_length_rm: int = 1024
     logits_processors: Optional[LogitsProcessorList] = None
     conversation_prompt: str = ""  # the prompt to be prepended to all prompts
@@ -233,7 +233,8 @@ class SuperHFTrainer:
                 completions.extend(
                     self.language_model.generate(
                         **encodings,
-                        max_length=self.training_args.max_length_lm,
+                        max_length=self.training_args.max_new_tokens * 2,
+                        max_new_tokens=self.training_args.max_new_tokens,
                         temperature=self.training_args.temperature,
                         top_p=self.training_args.top_p,
                         do_sample=True,

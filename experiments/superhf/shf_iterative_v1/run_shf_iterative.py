@@ -148,7 +148,7 @@ def main() -> None:
         temperature=wandb.config.temperature,
         top_p=wandb.config.top_p,
         superbatch_size=wandb.config.superbatch_size,
-        max_length_lm=wandb.config.max_length_lm,
+        max_new_tokens=wandb.config.max_new_tokens,
         max_length_rm=wandb.config.max_length_rm,
         minibatch_size_generating=wandb.config.minibatch_size_generating,
         minibatch_size_scoring=wandb.config.minibatch_size_scoring,

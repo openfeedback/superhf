@@ -25,7 +25,7 @@ superbatch_size:
 completion_filter_top_k:
   desc: Top-k completions to filter and train on.
   value: 8
-max_length_lm:
+max_new_tokens:
   desc: Maximum new token length of language model completion.
   value: 256
 max_length_rm:
