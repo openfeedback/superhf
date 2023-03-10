@@ -234,7 +234,6 @@ class SuperHFTrainer:
                 completions.extend(
                     self.language_model.generate(
                         **encodings,
-                        max_length=self.training_args.max_new_tokens * 2,
                         max_new_tokens=self.training_args.max_new_tokens,
                         temperature=self.training_args.temperature,
                         top_p=self.training_args.top_p,
