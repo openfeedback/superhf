@@ -60,6 +60,19 @@ def get_superhf_prompts(dataset_name: str, split: str = "train") -> list[str]:
                 for row in dataset
             ]
         )
+    elif dataset_name == "anthropic-harmless-base":
+        dataset = load_dataset(
+            "Anthropic/hh-rlhf",
+            data_dir="harmless-base",
+            split=split,
+            keep_in_memory=False,
+        )
+        prompts.extend(
+            [
+                row["chosen"].split("\n\nAssistant:")[0] + "\n\nAssistant:"
+                for row in dataset
+            ]
+        )
     else:
         raise ValueError(f"Unknown dataset: {dataset_name}")
 
