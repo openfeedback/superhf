@@ -1,0 +1,63 @@
+program: train.py
+method: random
+metric:
+  goal: maximize
+  name: average_score
+parameters:
+  minibatch_size_generating:
+    values:
+      - 32
+  minibatch_size_finetuning:
+    values:
+      - 8
+  completion_filter_top_k:
+    values:
+      - 16
+      - 32
+      - 64
+      - 96
+  minibatch_size_scoring:
+    values:
+      - 64
+  max_prompt_char_length:
+    values:
+      - 1024
+  inverse_loss_penalty:
+    values:
+      - 0.1
+  language_model_name:
+    values:
+      - EleutherAI/gpt-neo-1.3B
+  conversation_prompt:
+    values:
+      - "A human user asks a question or says a statement, and a helpful, polite, honest, sophisticated, emotionally aware, and humble-but-knowledgeable AI assistant responds:"
+    distribution: categorical
+  repetition_penalty:
+    values:
+      - 1.2
+  reward_model_name:
+    values:
+      - OpenAssistant/reward-model-deberta-v3-large-v2
+  superbatch_size:
+    values:
+      - 256
+  mixed_precision:
+    values:
+      - no
+  max_new_tokens:
+    values:
+      - 256
+  max_length_rm:
+    values:
+      - 1024
+  learning_rate:
+    values:
+      - 1.0e-8
+      - 1.0e-7
+      - 1.0e-6
+  temperature:
+    values:
+      - 1.0
+  top_p:
+    values:
+     - 0.95

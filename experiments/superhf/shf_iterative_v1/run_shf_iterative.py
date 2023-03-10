@@ -5,6 +5,7 @@ Client code showing how to call the training loop for the iterative version of t
 import argparse
 import random
 import os
+import yaml
 
 from transformers import (
     AutoTokenizer,
@@ -29,29 +30,15 @@ from superhf.mocking import MockLanguageModel, MockRewardModel
 from superhf.training import SuperHFTrainingArguments, SuperHFTrainer
 from superhf.utils import set_seed, print_gpu_utilization
 
+WANDB_ENTITY_NAME = "stanfordaialignment"
+WANDB_PROJECT_NAME = "shf-iterative-v2"
 
-def main() -> None:
+
+def main(argparse_args: argparse.Namespace) -> None:
     """
     Instantiate and train the SuperHF model.
     """
     # pylint: disable=too-many-locals
-
-    # Parse arguments
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--config",
-        type=str,
-        # Get file path relative to this file
-        default=os.path.join(os.path.dirname(__file__), "configs", "gpt-neo-1.3B.yaml"),
-        help="The name of the Weights and Biases config to use.",
-    )
-    parser.add_argument(
-        "--notes",
-        type=str,
-        default="",
-        help="Notes to add to the Weights and Biases run.",
-    )
-    args = parser.parse_args()
 
     # Configure device and seed
     device = torch.device(
@@ -61,11 +48,11 @@ def main() -> None:
 
     # Initialize Weights and Biases run
     wandb.init(
-        entity="stanfordaialignment",
-        project="shf-iterative-v2",
-        notes=args.notes,
+        entity=WANDB_ENTITY_NAME,
+        project=WANDB_PROJECT_NAME,
+        notes=argparse_args.notes,
         save_code=True,
-        config=args.config,
+        config=argparse_args.config,
     )
     language_model_name = wandb.config.language_model_name
     reward_model_name = wandb.config.reward_model_name
@@ -180,4 +167,42 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    # Parse arguments
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--config",
+        type=str,
+        # Get file path relative to this file
+        default=os.path.join(os.path.dirname(__file__), "configs", "gpt-neo-1.3B.yaml"),
+        help="The name of the Weights and Biases config to use.",
+    )
+    parser.add_argument(
+        "--notes",
+        type=str,
+        default="",
+        help="Notes to add to the Weights and Biases run.",
+    )
+    parser.add_argument(
+        "--sweep",
+        type=str,
+        default="",
+        help=(
+            "If specified, path to a yaml file to use to for a sweep. See"
+            " ../sweeps/params.yaml"
+        ),
+    )
+    args = parser.parse_args()
+
+    if args.sweep != "":
+        # Run sweeps
+        with open(args.sweep, encoding="utf-8") as f:
+            sweep_params = yaml.load(f, Loader=yaml.FullLoader)
+        wandb.agent(
+            sweep_params["id"],
+            function=lambda: main(args),
+            entity=WANDB_ENTITY_NAME,
+            project=WANDB_PROJECT_NAME,
+            count=sweep_params["count"],
+        )
+    else:
+        main(args)

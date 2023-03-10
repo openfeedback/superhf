@@ -48,5 +48,17 @@
             ],
             "justMyCode": false
         },
+        {
+            "name": "SHF Iter (Sweep)",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/experiments/superhf/shf_iterative_v1/run_shf_iterative.py",
+            "console": "integratedTerminal",
+            "args": [
+                "--sweep",
+                "${workspaceFolder}/experiments/superhf/shf_iterative_v1/sweeps/params.yaml",
+            ],
+            "justMyCode": false
+        },
     ]
 }
