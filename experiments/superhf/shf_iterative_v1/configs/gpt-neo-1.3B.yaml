@@ -9,7 +9,7 @@ debug_max_prompts:
   value: 0
 learning_rate:
   desc: Learning rate for fine-tuning the language model.
-  value: 3.0e-8
+  value: 3.0e-7
 inverse_loss_penalty:
   desc: Regularizes loss by C with loss' = loss + C / loss. Set to 0 to disable.
   value: 0.1
