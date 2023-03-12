@@ -283,8 +283,11 @@ class SuperHFTrainer:
             separate_prompt_from_completion(completion) for completion in completions
         ]
         completions = [
-            prompt + re.split(constants.PROMPT_DELIMITER_REGEX, completion)[0]
+            prompt
+            + " "
+            + re.split(constants.PROMPT_DELIMITER_REGEX, completion)[0].strip()
             for prompt, completion in prompts_and_completions
+            if re.split(constants.PROMPT_DELIMITER_REGEX, completion)[0].strip() != ""
         ]
 
         return (
@@ -385,7 +388,9 @@ class SuperHFTrainer:
         tqdm.write("After accelerator prepare, ", end="")
         print_gpu_utilization()
         sum_loss = 0
+        num_nan_losses = 0
         self.language_model.train()
+
         for minibatch in tqdm(finetuning_dataloader, desc="Fine-tuning"):
             self.optimizer.zero_grad()
             outputs = self.language_model(**minibatch)
@@ -393,6 +398,9 @@ class SuperHFTrainer:
                 raise ValueError("Loss is None on the outputs")
 
             loss = outputs.loss
+            if torch.isnan(loss):
+                num_nan_losses += 1
+                continue
 
             # Inverse loss penalty to regularize away from low-entropy states
             if self.training_args.inverse_loss_penalty > 0:
@@ -403,7 +411,7 @@ class SuperHFTrainer:
             self.optimizer.step()
         self.optimizer.zero_grad()
 
-        return sum_loss / len(finetuning_dataloader)
+        return sum_loss / (len(finetuning_dataloader) - num_nan_losses)
 
     def save_model(self) -> None:
         """
