@@ -6,12 +6,12 @@ metric:
 parameters:
   completion_filter_top_k:
     values:
+      - 8
       - 16
       - 32
-      - 64
-      - 96
   learning_rate:
     values:
-      - 1.0e-8
       - 1.0e-7
       - 1.0e-6
+      - 1.0e-5
+      - 3.0e-5
