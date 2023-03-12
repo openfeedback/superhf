@@ -18,6 +18,7 @@ from transformers import (
     BatchEncoding,
     PreTrainedModel,
     LogitsProcessorList,
+    get_scheduler,
 )
 from torchtyping import TensorType
 
@@ -59,9 +60,11 @@ class SuperHFTrainingArguments:
     minibatch_size_finetuning: int = 64
 
     # Training
-    learning_rate: float = 1e-5
     inverse_loss_penalty: float = 0.0
     mixed_precision: str = "no"
+    learning_rate: float = 1e-5
+    scheduler_name: str = "linear"
+    scheduler_warmup_steps: int = 0
 
     # Dataset settings
     prompt_delimiter: str = constants.PROMPT_DELIMITER
@@ -131,7 +134,7 @@ class SuperHFTrainer:
 
         # Lazy-init optimizer and scheduler
         self.optimizer: Optional[torch.optim.Optimizer] = None
-        self.scheduler = None
+        self.scheduler: Optional[torch.optim.lr_scheduler.LambdaLR] = None
 
     def train(self, prompts: list[str]) -> None:
         """
@@ -146,6 +149,12 @@ class SuperHFTrainer:
         # Initialize optimizer and scheduler
         self.optimizer = torch.optim.AdamW(
             self.language_model.parameters(), lr=self.training_args.learning_rate
+        )
+        self.scheduler = get_scheduler(
+            self.training_args.scheduler_name,
+            self.optimizer,
+            num_warmup_steps=self.training_args.scheduler_warmup_steps,
+            num_training_steps=num_superbatches,
         )
 
         # Then, iterate over the prompts in superbatches
@@ -194,7 +203,7 @@ class SuperHFTrainer:
                 scores=scores,
                 filtered_scores=filtered_scores,
                 average_loss=average_loss,
-                scheduler_lr=self.training_args.learning_rate,  # TODO get this from the scheduler
+                scheduler_lr=self.scheduler.get_last_lr()[0],
             )
             if self.report_metrics is not None:
                 for report_metrics_function in self.report_metrics:
@@ -410,6 +419,7 @@ class SuperHFTrainer:
             self.accelerator.backward(loss)
             self.optimizer.step()
         self.optimizer.zero_grad()
+        self.scheduler.step()
 
         return sum_loss / (len(finetuning_dataloader) - num_nan_losses)
 
