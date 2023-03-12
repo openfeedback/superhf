@@ -85,6 +85,8 @@ class SuperHFTrainer:
     expert iteration.
     """
 
+    # pylint: disable=too-many-instance-attributes
+
     def __init__(
         self,
         language_model: PreTrainedModel,
@@ -122,6 +124,15 @@ class SuperHFTrainer:
         # Reward model is always in eval mode
         self.reward_model.eval()
 
+        # Initialize the accelerator
+        self.accelerator = Accelerator(
+            mixed_precision=self.training_args.mixed_precision
+        )
+
+        # Lazy-init optimizer and scheduler
+        self.optimizer: Optional[torch.optim.Optimizer] = None
+        self.scheduler = None
+
     def train(self, prompts: list[str]) -> None:
         """
         Main training and evaluation loop.
@@ -130,11 +141,17 @@ class SuperHFTrainer:
         prompts_dataloader = DataLoader(
             ListDataset(prompts), batch_size=self.training_args.superbatch_size
         )
+        num_superbatches = len(prompts_dataloader)
+
+        # Initialize optimizer and scheduler
+        self.optimizer = torch.optim.AdamW(
+            self.language_model.parameters(), lr=self.training_args.learning_rate
+        )
 
         # Then, iterate over the prompts in superbatches
         for superbatch_index, superbatch_prompts in tqdm(
             enumerate(prompts_dataloader),
-            total=len(prompts_dataloader),
+            total=num_superbatches,
             desc="Superbatch",
         ):
             tqdm.write(
@@ -206,7 +223,6 @@ class SuperHFTrainer:
         self,
         minibatch_size: int,
         superbatch_prompts: list[str],
-        # accelerator: Accelerator,
     ) -> list[TensorType["batch", "seq_len"]]:
         """
         Generate completions for the prompts in the superbatch.
@@ -342,7 +358,6 @@ class SuperHFTrainer:
         self,
         minibatch_size: int,
         filtered_completions: list[str],
-        # accelerator: Accelerator,
     ) -> float:
         """
         Fine-tune the language model on the completions.
@@ -351,7 +366,7 @@ class SuperHFTrainer:
         """
         # pylint: disable=too-many-locals
 
-        accelerator = Accelerator(mixed_precision=self.training_args.mixed_precision)
+        assert self.optimizer is not None
 
         tqdm.write(f"Trying finetuning with batch size {minibatch_size}")
         print_gpu_utilization()
@@ -363,13 +378,8 @@ class SuperHFTrainer:
             collate_fn=self.collate_fn_lm_finetuning,
         )
 
-        # Initialize the optimizer
-        # TODO: Shoulld this be moved to outside this function?
-        optimizer = torch.optim.AdamW(
-            self.language_model.parameters(), lr=self.training_args.learning_rate
-        )
-        self.language_model, optimizer, finetuning_dataloader = accelerator.prepare(
-            self.language_model, optimizer, finetuning_dataloader
+        self.language_model, finetuning_dataloader = self.accelerator.prepare(
+            self.language_model, finetuning_dataloader
         )
 
         tqdm.write("After accelerator prepare, ", end="")
@@ -377,7 +387,7 @@ class SuperHFTrainer:
         sum_loss = 0
         self.language_model.train()
         for minibatch in tqdm(finetuning_dataloader, desc="Fine-tuning"):
-            optimizer.zero_grad()
+            self.optimizer.zero_grad()
             outputs = self.language_model(**minibatch)
             if outputs.loss is None:
                 raise ValueError("Loss is None on the outputs")
@@ -389,9 +399,9 @@ class SuperHFTrainer:
                 loss = loss + self.training_args.inverse_loss_penalty / loss
 
             sum_loss += loss.item()
-            accelerator.backward(loss)
-            optimizer.step()
-        optimizer.zero_grad()
+            self.accelerator.backward(loss)
+            self.optimizer.step()
+        self.optimizer.zero_grad()
 
         return sum_loss / len(finetuning_dataloader)
 
