@@ -15,7 +15,7 @@ scheduler_name:
   value: "linear"
 scheduler_warmup_steps:
   desc: Number of warmup steps for the scheduler.
-  value: 20
+  value: 30
 inverse_loss_penalty:
   desc: Regularizes loss by C with loss' = loss + C / loss. Set to 0 to disable.
   value: 0.1

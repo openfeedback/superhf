@@ -135,6 +135,8 @@ def main(argparse_args: argparse.Namespace) -> None:
         conversation_prompt=wandb.config.conversation_prompt,
         logits_processors=logits_processors,
         learning_rate=wandb.config.learning_rate,
+        scheduler_name=wandb.config.scheduler_name,
+        scheduler_warmup_steps=wandb.config.scheduler_warmup_steps,
         inverse_loss_penalty=wandb.config.inverse_loss_penalty,
     )
     completion_filter_top_k = wandb.config.completion_filter_top_k
