@@ -403,7 +403,7 @@ class SuperHFTrainer:
         tqdm.write("After accelerator prepare, ", end="")
         print_gpu_utilization()
         sum_loss = 0
-        num_nan_losses = 0
+        num_invalid_losses = 0
         self.language_model.train()
 
         for minibatch in tqdm(finetuning_dataloader, desc="Fine-tuning"):
@@ -413,8 +413,8 @@ class SuperHFTrainer:
                 raise ValueError("Loss is None on the outputs")
 
             loss = outputs.loss
-            if torch.isnan(loss):
-                num_nan_losses += 1
+            if torch.isnan(loss) or torch.isinf(loss) or loss.item() < 0:
+                num_invalid_losses += 1
                 continue
 
             # Inverse loss penalty to regularize away from low-entropy states
@@ -427,7 +427,13 @@ class SuperHFTrainer:
         self.optimizer.zero_grad()
         self.scheduler.step()
 
-        return sum_loss / (len(finetuning_dataloader) - num_nan_losses)
+        if num_invalid_losses > 0:
+            tqdm.write(
+                f"WARNING: {num_invalid_losses} minibatches had nan, inf, or negative"
+                " loss."
+            )
+
+        return sum_loss / (len(finetuning_dataloader) - num_invalid_losses)
 
     def save_model(self) -> None:
         """
