@@ -77,8 +77,11 @@ class RewardModelTrainer(Trainer):
         """
         batch_size = inputs['input_ids'].shape[0]
 
-        scores = model(**inputs)
+        outputs = model(**inputs)
 
+        # breakpoint()
+
+        scores = outputs['logits']
         chosen_scores = scores[:(batch_size//2)]
         rejected_scores = scores[(batch_size//2):]
 
@@ -144,27 +147,32 @@ class PreferenceDataCollator:
 
 
 if __name__ == "__main__":
-
-    model_name = "distilbert-base-uncased"
+    # device='cpu'
+    # model_name = "distilbert-base-uncased"
+    model_name = "EleutherAI/gpt-neo-1.3B"
     tokenizer = AutoTokenizer.from_pretrained(model_name, max_length=512)
+    if tokenizer.pad_token == None:
+        tokenizer.pad_token = tokenizer.eos_token
+
     model = RewardModel(model_name)
+    # model = AutoModelForSequenceClassification.from_pretrained(model_name, num_labels=1)
 
     model_output_dir = f"reward_model_HH/{datetime.datetime.now()}"
 
     arguments = TrainingArguments(
         output_dir=model_output_dir,
-        logging_steps=5,
-        per_device_train_batch_size=3,
-        per_device_eval_batch_size=3,
-        num_train_epochs=20,
+        logging_steps=10,
+        per_device_train_batch_size=32,
+        per_device_eval_batch_size=32,
+        num_train_epochs=1,
         evaluation_strategy="steps",
-        eval_steps=10,
+        eval_steps=200,
         save_total_limit=5,
         save_strategy="steps",
-        save_steps=10,
+        save_steps=200,
         load_best_model_at_end=True,
-        learning_rate=2e-5,
-        weight_decay=0.01,
+        learning_rate=8e-16,
+        weight_decay=0.001,
         report_to="wandb",
     )
 
