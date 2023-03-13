@@ -1,17 +1,31 @@
-program: train.py
+program: experiments/superhf/shf_iterative_v1/run_shf_iterative.py
 method: grid
 metric:
   goal: maximize
   name: average_score.max
 parameters:
-  completion_filter_top_k:
+  language_model_name:
     values:
-      - 1
-      - 4
-      - 8
-      - 16
-  superbatch_size:
+      - "EleutherAI/pythia-1.4b-deduped"
+      - "Rallio67/chip_1.4B_instruct_alpha"
+      - "lambdalabs/pythia-1.4b-deduped-synthetic-instruct"
+      - "theblackcat102/pythia-1b-deduped-sft"
+      # - "EleutherAI/gpt-neo-1.3B"
+      # - "EleutherAI/gpt-neo-2.7B"
+      # - "gpt2-xl"
+  reward_model_name:
     values:
-      - 32
-      - 64
-      - 128
+      - "OpenAssistant/reward-model-deberta-v3-large-v2"
+      - "theblackcat102/reward-model-deberta-v3-base-v2"
+      - "OpenAssistant/reward-model-electra-large-discriminator"
+  # completion_filter_top_k:
+  #   values:
+  #     - 1
+  #     - 4
+  #     - 8
+  #     - 16
+  # superbatch_size:
+  #   values:
+  #     - 32
+  #     - 64
+  #     - 128
