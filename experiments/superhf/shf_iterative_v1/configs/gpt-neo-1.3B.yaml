@@ -51,7 +51,7 @@ minibatch_size_finetuning:
   value: 4
 mixed_precision:
   desc: Whether to use lower precision fp16 optimization, or other representations.
-  value: "no"
+  value: "fp16"
 conversation_prompt:
   desc: A prompt to prepend to every prompt before generation to get the model more on distribution.
   value: "A human user asks a question or says a statement, and a helpful, polite, honest, sophisticated, emotionally aware, and humble-but-knowledgeable AI assistant responds:"

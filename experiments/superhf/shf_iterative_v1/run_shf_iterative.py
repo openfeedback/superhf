@@ -83,10 +83,19 @@ def main(argparse_args: argparse.Namespace) -> None:
     print_gpu_utilization()
     print("Instantiating models...")
     # Instantiate our language and reward models and tokenizers
+    dtype = (
+        torch.float16
+        if wandb.config.mixed_precision == "fp16"
+        else torch.bfloat16
+        if wandb.config.mixed_precision == "bf16"
+        else torch.float32
+    )
     language_model = (
         MockLanguageModel()
         if language_model_name == "mock"
-        else AutoModelForCausalLM.from_pretrained(language_model_name).to(device)
+        else AutoModelForCausalLM.from_pretrained(
+            language_model_name, torch_dtype=dtype
+        ).to(device)
     )
     reward_model = (
         MockRewardModel()
