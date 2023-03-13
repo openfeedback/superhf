@@ -46,7 +46,7 @@ def report_metrics_print(metrics: SuperHFMetrics) -> None:
     average_score = np.mean(metrics.scores)
     average_filtered_score = np.mean(metrics.filtered_scores)
     print(
-        "\nSuperbatch"
+        f"\nMetrics at time {time.strftime('%H:%M:%S', time.localtime())}\nSuperbatch"
         f" {metrics.superbatch_index}/{metrics.superbatch_count} ({percent_complete:.3f}%):"
         f" {len(metrics.completions)} completions,"
         f" {len(metrics.filtered_completions)} filtered completions\naverage completion"
