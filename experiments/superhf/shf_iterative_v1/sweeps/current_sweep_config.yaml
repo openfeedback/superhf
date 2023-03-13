@@ -2,7 +2,7 @@ program: train.py
 method: random
 metric:
   goal: maximize
-  name: average_score
+  name: average_score.max
 parameters:
   completion_filter_top_k:
     values:

@@ -142,7 +142,8 @@ class SuperHFTrainer:
         """
         # First, put all the prompts into a Dataset and DataLoader
         prompts_dataloader = DataLoader(
-            ListDataset(prompts), batch_size=self.training_args.superbatch_size
+            ListDataset(prompts),
+            batch_size=self.training_args.superbatch_size,
         )
         num_superbatches = len(prompts_dataloader)
 
@@ -249,6 +250,8 @@ class SuperHFTrainer:
             ListDataset(superbatch_prompts),
             batch_size=minibatch_size,
             collate_fn=self.collate_fn_lm_completions,
+            pin_memory=True,
+            num_workers=4,
         )
 
         completions: list[TensorType["batch", "seq_len"]] = []
@@ -330,6 +333,7 @@ class SuperHFTrainer:
             ListDataset(completions_encoded),
             batch_size=minibatch_size,
             collate_fn=self.collate_fn_rm,
+            pin_memory=True,
         )
 
         with torch.no_grad():
@@ -388,6 +392,7 @@ class SuperHFTrainer:
             ListDataset(filtered_completions),
             batch_size=minibatch_size,
             collate_fn=self.collate_fn_lm_finetuning,
+            pin_memory=True,
         )
 
         self.language_model, finetuning_dataloader = self.accelerator.prepare(
