@@ -6,7 +6,7 @@ reward_model_name:
   value: "OpenAssistant/reward-model-deberta-v3-large-v2"
 debug_max_prompts:
   desc: Maximum number of prompts to use, or 0 for unlimited
-  value: 16000
+  value: 8000
 learning_rate:
   desc: Learning rate for fine-tuning the language model.
   value: 1.0e-5
@@ -15,7 +15,7 @@ scheduler_name:
   value: "linear"
 scheduler_warmup_steps:
   desc: Number of warmup steps for the scheduler.
-  value: 15
+  value: 8
 inverse_loss_penalty:
   desc: Regularizes loss by C with loss' = loss + C / loss. Set to 0 to disable.
   value: 0.01
@@ -33,7 +33,7 @@ superbatch_size:
   value: 128
 completion_filter_top_k:
   desc: Top-k completions to filter and train on.
-  value: 16
+  value: 8
 max_new_tokens:
   desc: Maximum new token length of language model completion.
   value: 256
@@ -45,7 +45,7 @@ minibatch_size_generating:
   value: 32
 minibatch_size_scoring:
   desc: Size of minibatches for scoring completions.
-  value: 64
+  value: 32
 minibatch_size_finetuning:
   desc: Size of minibatches for fine-tuning the language model.
   value: 8
@@ -63,5 +63,5 @@ no_repeat_ngram_size:
   value: 0
 prompt_dataset_names:
   desc: The list of datasets to use for prompts. See src/superhf/data.py for available datasets.
-  value: ["anthropic-red-team", "openai/webgpt_comparisons"]
+  value: ["anthropic-red-team", "anthropic-harmless-base", "openai/webgpt_comparisons"]
   # value: ["anthropic-harmless-base", "anthropic-red-team", "openai/webgpt_comparisons"]
