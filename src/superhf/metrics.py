@@ -99,7 +99,7 @@ def report_metrics_wandb(metrics: SuperHFMetrics) -> None:
     average_filtered_score = np.mean(metrics.filtered_scores)
 
     # Create plot data of average score if we filtered different top-K numbers
-    max_top_k_to_explore = 128
+    max_top_k_to_explore = 48
     scores_per_top_k: list[list[Any]] = []
     for top_k in range(1, max_top_k_to_explore + 1):
         top_k_filter = CompletionFilterTopK(top_k)

@@ -1,17 +1,17 @@
 program: train.py
-method: random
+method: grid
 metric:
   goal: maximize
   name: average_score.max
 parameters:
   completion_filter_top_k:
     values:
+      - 1
+      - 4
       - 8
       - 16
-      - 32
-  learning_rate:
+  superbatch_size:
     values:
-      - 1.0e-7
-      - 1.0e-6
-      - 1.0e-5
-      - 3.0e-5
+      - 32
+      - 64
+      - 128
