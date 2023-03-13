@@ -256,7 +256,11 @@ class SuperHFTrainer:
 
         completions: list[TensorType["batch", "seq_len"]] = []
         with torch.no_grad():
-            for minibatch in tqdm(completion_dataloader, desc="Generation"):
+            for minibatch in tqdm(
+                completion_dataloader,
+                desc="Generation",
+                total=len(completion_dataloader),
+            ):
                 encodings = minibatch
                 encodings.to(self.language_model.device)
                 completions.extend(
@@ -333,7 +337,6 @@ class SuperHFTrainer:
             ListDataset(completions_encoded),
             batch_size=minibatch_size,
             collate_fn=self.collate_fn_rm,
-            pin_memory=True,
         )
 
         with torch.no_grad():
@@ -392,7 +395,6 @@ class SuperHFTrainer:
             ListDataset(filtered_completions),
             batch_size=minibatch_size,
             collate_fn=self.collate_fn_lm_finetuning,
-            pin_memory=True,
         )
 
         self.language_model, finetuning_dataloader = self.accelerator.prepare(
