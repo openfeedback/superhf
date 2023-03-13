@@ -251,7 +251,6 @@ class SuperHFTrainer:
             batch_size=minibatch_size,
             collate_fn=self.collate_fn_lm_completions,
             pin_memory=True,
-            num_workers=4,
         )
 
         completions: list[TensorType["batch", "seq_len"]] = []
