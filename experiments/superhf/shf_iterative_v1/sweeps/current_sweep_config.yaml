@@ -24,21 +24,25 @@ parameters:
   #     - 2
   #     - 4
   #     - 8
-  superbatch_size:
-    values:
-      - 16
-      - 32
-      - 64
-      - 96
-      - 128
+  # superbatch_size:
+  #   values:
+  #     - 16
+  #     - 32
+  #     - 64
+  #     - 96
+  #     - 128
   prompt_dataset_names:
     values:
-    - ["anthropic-red-team", "anthropic-harmless-base", "openai/webgpt_comparisons"]
     - ["anthropic-red-team"]
-    - ["anthropic-harmless-base"]
-  # inverse_loss_penalty:
-  #   values:
-  #     - 0.0
-  #     - 0.0001
-  #     - 0.001
-  #     - 0.01
+    - ["anthropic-red-team", "anthropic-harmless-base"]
+    - ["anthropic-red-team", "openai/webgpt_comparisons"]
+    - ["anthropic-harmless-base", "openai/webgpt_comparisons"]
+  inverse_loss_penalty:
+    values:
+      - 0.001
+      - 0.005
+  learning_rate:
+    values:
+      - 1.0e-5
+      - 5.0e-6
+      - 1.0e-6
