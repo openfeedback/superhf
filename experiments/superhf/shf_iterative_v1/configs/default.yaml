@@ -1,9 +1,9 @@
 language_model_name:
   desc: HuggingFace language model to use, or "mock" for testing
-  value: "EleutherAI/gpt-neo-1.3B"
+  value: "theblackcat102/pythia-1b-deduped-sft"
 reward_model_name:
   desc: HuggingFace reward model to use, or "mock" for testing
-  value: "OpenAssistant/reward-model-deberta-v3-large-v2"
+  value: "theblackcat102/reward-model-deberta-v3-base-v2"
 debug_max_prompts:
   desc: Maximum number of prompts to use, or 0 for unlimited
   value: 8000
@@ -27,7 +27,7 @@ temperature:
   value: 1.0
 top_p:
   desc: Top-p to use for completion sampling
-  value: 0.925
+  value: 0.95
 superbatch_size:
   desc: Number of completions to generate with the current policy before filtering and fine-tuning.
   value: 128
@@ -57,7 +57,7 @@ conversation_prompt:
   value: "A human user asks a question or says a statement, and a helpful, polite, honest, sophisticated, emotionally aware, and humble-but-knowledgeable AI assistant responds:"
 repetition_penalty:
   desc: Repetition penalty to use for completion sampling. 1.0 means no penalty (logits unchanged)
-  value: 1.2
+  value: 1.1
 no_repeat_ngram_size:
   desc: Prevents repeating of n-grams of this size during completion sampling. 0 means no constraint (logits unchanged)
   value: 0
