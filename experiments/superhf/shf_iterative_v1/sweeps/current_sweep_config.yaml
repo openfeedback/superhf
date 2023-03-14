@@ -18,20 +18,27 @@ parameters:
   #     - "OpenAssistant/reward-model-deberta-v3-large-v2"
   #     - "theblackcat102/reward-model-deberta-v3-base-v2"
   #     - "OpenAssistant/reward-model-electra-large-discriminator"
-  completion_filter_top_k:
-    values:
-      - 1
-      - 2
-      - 4
-      - 8
-  # superbatch_size:
+  # completion_filter_top_k:
   #   values:
-  #     - 32
-  #     - 64
-  #     - 128
-  inverse_loss_penalty:
+  #     - 1
+  #     - 2
+  #     - 4
+  #     - 8
+  superbatch_size:
     values:
-      - 0.0
-      - 0.0001
-      - 0.001
-      - 0.01
+      - 16
+      - 32
+      - 64
+      - 96
+      - 128
+  prompt_dataset_names:
+    values:
+    - ["anthropic-red-team", "anthropic-harmless-base", "openai/webgpt_comparisons"]
+    - ["anthropic-red-team"]
+    - ["anthropic-harmless-base"]
+  # inverse_loss_penalty:
+  #   values:
+  #     - 0.0
+  #     - 0.0001
+  #     - 0.001
+  #     - 0.01

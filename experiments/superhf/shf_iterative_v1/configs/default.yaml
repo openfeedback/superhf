@@ -6,7 +6,7 @@ reward_model_name:
   value: "theblackcat102/reward-model-deberta-v3-base-v2"
 debug_max_prompts:
   desc: Maximum number of prompts to use, or 0 for unlimited
-  value: 8000
+  value: 10000
 learning_rate:
   desc: Learning rate for fine-tuning the language model.
   value: 1.0e-5
@@ -15,10 +15,10 @@ scheduler_name:
   value: "linear"
 scheduler_warmup_steps:
   desc: Number of warmup steps for the scheduler.
-  value: 8
+  value: 10
 inverse_loss_penalty:
   desc: Regularizes loss by C with loss' = loss + C / loss. Set to 0 to disable.
-  value: 0.01
+  value: 0.001
 max_prompt_char_length:
   desc: Maximum number of characters to truncate prompts to
   value: 1024
@@ -33,7 +33,7 @@ superbatch_size:
   value: 128
 completion_filter_top_k:
   desc: Top-k completions to filter and train on.
-  value: 8
+  value: 1
 max_new_tokens:
   desc: Maximum new token length of language model completion.
   value: 256
@@ -48,7 +48,7 @@ minibatch_size_scoring:
   value: 32
 minibatch_size_finetuning:
   desc: Size of minibatches for fine-tuning the language model.
-  value: 8
+  value: 12
 mixed_precision:
   desc: Whether to use lower precision fp16 optimization, or other representations.
   value: "no"
