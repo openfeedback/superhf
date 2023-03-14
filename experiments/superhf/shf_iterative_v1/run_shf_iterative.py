@@ -184,7 +184,7 @@ if __name__ == "__main__":
         "--config",
         type=str,
         # Get file path relative to this file
-        default=os.path.join(os.path.dirname(__file__), "configs", "gpt-neo-1.3B.yaml"),
+        default=os.path.join(os.path.dirname(__file__), "configs", "default.yaml"),
         help="The name of the Weights and Biases config to use.",
     )
     parser.add_argument(
