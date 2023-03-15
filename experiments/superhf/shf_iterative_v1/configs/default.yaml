@@ -9,7 +9,7 @@ debug_max_prompts:
   value: 9600
 learning_rate:
   desc: Learning rate for fine-tuning the language model.
-  value: 3.0e-6
+  value: 1.0e-6
 scheduler_name:
   desc: Name of the scheduler to use for fine-tuning the language model.
   value: "linear"
@@ -27,7 +27,7 @@ temperature:
   value: 0.9
 top_p:
   desc: Top-p to use for completion sampling
-  value: 0.9
+  value: 0.95
 superbatch_size:
   desc: Number of completions to generate with the current policy before filtering and fine-tuning.
   value: 32
@@ -70,4 +70,4 @@ same_prompt_per_superbatch:
   value: False
 length_penalty:
   desc: Adds -length_penalty * char_length to the reward. 0 means no penalty.
-  value: 0.0
+  value: 0.01

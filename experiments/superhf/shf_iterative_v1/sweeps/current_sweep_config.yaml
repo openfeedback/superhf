@@ -41,22 +41,27 @@ parameters:
   #   values:
   #     - 0.001
   #     - 0.005
-  # learning_rate:
-  #   values:
-  #     - 1.0e-5
-  #     - 5.0e-6
-  #     - 1.0e-6
+  learning_rate:
+    values:
+      - 1.0e-5
+      - 3.0e-6
+      - 1.0e-6
+  max_new_tokens:
+    values:
+      - 64
+      - 96
+      - 128
   same_prompt_per_superbatch:
     values:
       - True
       - False
-  length_penalty:
-    values:
-      - 0.1
-      - 0.03
-      - 0.01
-      - 0.003
-      - 0.001
-      - 0.0003
-      - 0.0001
-      - 0.0
+  # length_penalty:
+  #   values:
+  #     - 0.1
+  #     - 0.03
+  #     - 0.01
+  #     - 0.003
+  #     - 0.001
+  #     - 0.0003
+  #     - 0.0001
+  #     - 0.0
