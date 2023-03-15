@@ -11,6 +11,8 @@ RewardModelTrainer.compute_loss(model, inputs) accepts this dict as the
 
 import datetime
 
+
+import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -50,6 +52,8 @@ def compute_metrics(eval_prediction):
     Computes decimal accuracy of predictions during model evaluation.
     """
     reward_scores = eval_prediction.predictions
+    if reward_scores.ndim==1:
+        reward_scores = np.expand_dims(reward_scores, axis=1)
     total = reward_scores.shape[0]
     num_correct = ((reward_scores[:, 0] - reward_scores[:, 1]) > 0).sum()
     accuracy = num_correct / total
@@ -79,10 +83,14 @@ class RewardModelTrainer(Trainer):
 
         scores = model(**inputs)
 
+        # breakpoint()
+
+        # scores = outputs['logits']
+        # scores = outputs
         chosen_scores = scores[:(batch_size//2)]
         rejected_scores = scores[(batch_size//2):]
 
-        outputs = {'scores': torch.squeeze(torch.stack((chosen_scores, rejected_scores),dim=1))}
+        outputs = {'scores': torch.stack((chosen_scores, rejected_scores),dim=1).squeeze(-1)}
 
         loss_fct = PreferenceLoss()
         loss = loss_fct(chosen_scores, rejected_scores)
@@ -144,27 +152,32 @@ class PreferenceDataCollator:
 
 
 if __name__ == "__main__":
+    # device='cpu'
+    # model_name = "distilbert-base-uncased"
+    model_name = "EleutherAI/gpt-neo-1.3B"
+    tokenizer = AutoTokenizer.from_pretrained(model_name, max_length=256)
+    if tokenizer.pad_token == None:
+        tokenizer.pad_token = tokenizer.eos_token
 
-    model_name = "distilbert-base-uncased"
-    tokenizer = AutoTokenizer.from_pretrained(model_name, max_length=512)
     model = RewardModel(model_name)
+    # model = AutoModelForSequenceClassification.from_pretrained(model_name, num_labels=1)
 
     model_output_dir = f"/nlp/scr/fongsu/reward_model_HH/{datetime.datetime.now()}"
 
     arguments = TrainingArguments(
         output_dir=model_output_dir,
         logging_steps=10,
-        per_device_train_batch_size=20,
-        per_device_eval_batch_size=20,
-        num_train_epochs=20,
+        per_device_train_batch_size=1,
+        per_device_eval_batch_size=1,
+        num_train_epochs=1,
         evaluation_strategy="steps",
-        eval_steps=1000,
+        eval_steps=100,
         save_total_limit=5,
         save_strategy="steps",
-        save_steps=1000,
+        save_steps=200,
         load_best_model_at_end=True,
-        learning_rate=1e-4,
-#        weight_decay=0.0001,
+        learning_rate=8e-16,
+        weight_decay=0.001,
         report_to="wandb",
     )
 
