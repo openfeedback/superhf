@@ -64,3 +64,6 @@ no_repeat_ngram_size:
 prompt_dataset_names:
   desc: The list of datasets to use for prompts. Any combination of at least one of "anthropic-red-team", "anthropic-harmless-base", "anthropic-helpful", "openai/webgpt_comparisons"
   value: ["mock"]
+same_prompt_per_superbatch:
+  desc: Whether to duplicate each prompt so the superbatch is variations on the same prompt.
+  value: False

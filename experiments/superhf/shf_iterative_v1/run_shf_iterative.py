@@ -63,6 +63,12 @@ def main(argparse_args: argparse.Namespace) -> None:
         prompts.extend(get_superhf_prompts(dataset_name))
     random.shuffle(prompts)
 
+    # Duplicate each prompt so that each superbatch is the same prompt if desired
+    if wandb.config.same_prompt_per_superbatch:
+        new_prompts = []
+        for prompt in prompts:
+            new_prompts.extend([prompt] * wandb.config.superbatch_size)
+
     # Filter out prompts that are too long
     old_prompt_count = len(prompts)
     prompts = [
@@ -75,7 +81,7 @@ def main(argparse_args: argparse.Namespace) -> None:
         f"{wandb.config.max_prompt_char_length} chars."
     )
 
-    # Testing: only load the first section of prompts
+    # Only load the first section of prompts
     if wandb.config.debug_max_prompts != 0:
         prompts = prompts[: wandb.config.debug_max_prompts]
 
