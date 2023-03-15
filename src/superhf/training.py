@@ -69,6 +69,9 @@ class SuperHFTrainingArguments:
     # Dataset settings
     prompt_delimiter: str = constants.PROMPT_DELIMITER
 
+    # Reward shaping
+    length_penalty: float = 0.0
+
 
 class SuperHFTrainer:
     """
@@ -288,32 +291,41 @@ class SuperHFTrainer:
         Takes encoded completions from the language model, decodes them, encodes them for the
         reward model, and returns both the decoded completion text and re-encoded completions.
         """
-        completions = self.language_tokenizer.batch_decode(
+        raw_completions = self.language_tokenizer.batch_decode(
             batch, skip_special_tokens=True
         )
 
         # Remove completions after any extra "\n\nHuman:", "\n\nA:", "\n\nH:", or similar.
         # This is to prevent the model from learning to generate additional turns of conversation.
         prompts_and_completions = [
-            separate_prompt_from_completion(completion) for completion in completions
+            separate_prompt_from_completion(completion)
+            for completion in raw_completions
         ]
-        completions = [
-            prompt
-            + " "
-            + re.split(constants.PROMPT_DELIMITER_REGEX, completion)[0].strip()
-            for prompt, completion in prompts_and_completions
-            if re.split(constants.PROMPT_DELIMITER_REGEX, completion)[0].strip() != ""
-        ]
+        trimmed_completions: list[str] = []
+        model_completion_lengths: list[int] = []
+        for prompt, completion in prompts_and_completions:
+            stripped_completion = re.split(
+                constants.PROMPT_DELIMITER_REGEX, completion
+            )[0].strip()
+            if stripped_completion == "":
+                continue
+            trimmed_completions.append(
+                prompt
+                + " "
+                + re.split(constants.PROMPT_DELIMITER_REGEX, completion)[0].strip()
+            )
+            model_completion_lengths.append(len(stripped_completion))
 
         return (
-            completions,
+            trimmed_completions,
             self.reward_tokenizer(
-                completions,
+                trimmed_completions,
                 return_tensors="pt",
                 padding=True,
                 truncation=True,
                 max_length=self.training_args.max_length_rm,
             ).to(self.reward_model.device),
+            model_completion_lengths,
         )
 
     def score_completions(
@@ -342,10 +354,16 @@ class SuperHFTrainer:
             iteration = 0
             for minibatch in tqdm(score_dataloader, desc="Scoring"):
                 iteration += 1
-                completions, completion_encodings = minibatch
+                completions, completion_encodings, completion_lengths = minibatch
                 scores = self.reward_model(**completion_encodings)
+                scores = scores.logits.flatten()
+                if self.training_args.length_penalty != 0.0:
+                    # Add -length_penalty * char_length to penalize long completions.
+                    scores -= self.training_args.length_penalty * torch.log(
+                        torch.tensor(completion_lengths)
+                    )
                 all_completions.extend(completions)
-                all_scores.extend(scores.logits.flatten().tolist())
+                all_scores.extend(scores.tolist())
         return all_completions, all_scores
 
     def collate_fn_lm_finetuning(self, batch: list[str]) -> BatchEncoding:

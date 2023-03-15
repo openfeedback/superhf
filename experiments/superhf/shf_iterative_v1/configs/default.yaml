@@ -6,16 +6,16 @@ reward_model_name:
   value: "OpenAssistant/reward-model-deberta-v3-large-v2"
 debug_max_prompts:
   desc: Maximum number of prompts to use, or 0 for unlimited
-  value: 10000
+  value: 9600
 learning_rate:
   desc: Learning rate for fine-tuning the language model.
-  value: 1.0e-5
+  value: 3.0e-6
 scheduler_name:
   desc: Name of the scheduler to use for fine-tuning the language model.
   value: "linear"
 scheduler_warmup_steps:
   desc: Number of warmup steps for the scheduler.
-  value: 30
+  value: 20
 inverse_loss_penalty:
   desc: Regularizes loss by C with loss' = loss + C / loss. Set to 0 to disable.
   value: 0.001
@@ -27,10 +27,10 @@ temperature:
   value: 0.9
 top_p:
   desc: Top-p to use for completion sampling
-  value: 0.925
+  value: 0.9
 superbatch_size:
   desc: Number of completions to generate with the current policy before filtering and fine-tuning.
-  value: 16
+  value: 32
 completion_filter_top_k:
   desc: Top-k completions to filter and train on.
   value: 1
@@ -68,3 +68,6 @@ prompt_dataset_names:
 same_prompt_per_superbatch:
   desc: Whether to duplicate each prompt so the superbatch is variations on the same prompt.
   value: False
+length_penalty:
+  desc: Adds -length_penalty * char_length to the reward. 0 means no penalty.
+  value: 0.0

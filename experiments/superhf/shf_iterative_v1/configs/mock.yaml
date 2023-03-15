@@ -67,3 +67,6 @@ prompt_dataset_names:
 same_prompt_per_superbatch:
   desc: Whether to duplicate each prompt so the superbatch is variations on the same prompt.
   value: False
+length_penalty:
+  desc: Adds -length_penalty * char_length to the reward. 0 means no penalty.
+  value: 0.0
