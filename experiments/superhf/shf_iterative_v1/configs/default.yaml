@@ -63,5 +63,5 @@ no_repeat_ngram_size:
   value: 0
 prompt_dataset_names:
   desc: The list of datasets to use for prompts. See src/superhf/data.py for available datasets.
-  value: ["anthropic-red-team", "openai/webgpt_comparisons"]
+  value: ["anthropic-red-team", "anthropic-helpful-base", "anthropic-harmless-base", "openai/webgpt_comparisons"]
   # value: ["anthropic-harmless-base", "anthropic-red-team", "openai/webgpt_comparisons"]
