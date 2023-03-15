@@ -68,6 +68,7 @@ def main(argparse_args: argparse.Namespace) -> None:
         new_prompts = []
         for prompt in prompts:
             new_prompts.extend([prompt] * wandb.config.superbatch_size)
+        prompts = new_prompts
 
     # Filter out prompts that are too long
     old_prompt_count = len(prompts)
