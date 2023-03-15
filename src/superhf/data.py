@@ -73,10 +73,10 @@ def get_superhf_prompts(dataset_name: str, split: str = "train") -> list[str]:
                 for row in dataset
             ]
         )
-    elif dataset_name == "anthropic-helpful":
+    elif dataset_name == "anthropic-helpful-base":
         dataset = load_dataset(
             "Anthropic/hh-rlhf",
-            data_dir="helpful",
+            data_dir="helpful-base",
             split=split,
             keep_in_memory=False,
         )
