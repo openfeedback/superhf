@@ -62,5 +62,5 @@ no_repeat_ngram_size:
   desc: Prevents repeating of n-grams of this size during completion sampling. 0 means no constraint (logits unchanged)
   value: 0
 prompt_dataset_names:
-  desc: The list of datasets to use for prompts. Any combination of at least one of "anthropic-red-team", "anthropic-harmless-base", "openai/webgpt_comparisons"
+  desc: The list of datasets to use for prompts. Any combination of at least one of "anthropic-red-team", "anthropic-harmless-base", "anthropic-helpful", "openai/webgpt_comparisons"
   value: ["mock"]

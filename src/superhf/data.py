@@ -73,6 +73,19 @@ def get_superhf_prompts(dataset_name: str, split: str = "train") -> list[str]:
                 for row in dataset
             ]
         )
+    elif dataset_name == "anthropic-helpful":
+        dataset = load_dataset(
+            "Anthropic/hh-rlhf",
+            data_dir="helpful",
+            split=split,
+            keep_in_memory=False,
+        )
+        prompts.extend(
+            [
+                row["chosen"].split("\n\nAssistant:")[0] + "\n\nAssistant:"
+                for row in dataset
+            ]
+        )
     elif dataset_name == "mock":
         prompts.extend(
             [
