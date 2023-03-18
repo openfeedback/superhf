@@ -240,13 +240,24 @@ class SuperHFTrainer:
                 or superbatch_index == num_prompts - 1
             )
         ):
-            tqdm.write("Pushing model to the Hub!")
+            tqdm.write("Pushing model and tokenizer to the Hub!")
             tqdm.write(
                 str(
                     self.language_model.push_to_hub(
                         repo_id=self.training_args.hub_repo_id,
                         commit_message=(
                             f"Upload model from superbatch {superbatch_index}"
+                        ),
+                    )
+                )
+            )
+            # TODO debug real quick
+            tqdm.write(
+                str(
+                    self.language_tokenizer.push_to_hub(
+                        repo_id=self.training_args.hub_repo_id,
+                        commit_message=(
+                            f"Upload tokenizer from superbatch {superbatch_index}"
                         ),
                     )
                 )
