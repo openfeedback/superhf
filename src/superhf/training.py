@@ -305,17 +305,11 @@ class SuperHFTrainer:
         model_completion_lengths: list[int] = []
         for prompt, completion in prompts_and_completions:
             stripped_completion = re.split(
-                constants.PROMPT_DELIMITER_REGEX_COMPLEX, completion
+                constants.PROMPT_DELIMITER_REGEX_COMPLEX, completion, maxsplit=1
             )[0].strip()
             if stripped_completion == "":
                 continue
-            trimmed_completions.append(
-                prompt
-                + " "
-                + re.split(constants.PROMPT_DELIMITER_REGEX_COMPLEX, completion)[
-                    0
-                ].strip()
-            )
+            trimmed_completions.append(prompt + " " + stripped_completion)
             model_completion_lengths.append(len(stripped_completion))
 
         return (
