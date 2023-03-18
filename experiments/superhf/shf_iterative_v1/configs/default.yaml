@@ -6,7 +6,7 @@ reward_model_name:
   value: "OpenAssistant/reward-model-deberta-v3-large-v2"
 debug_max_prompts:
   desc: Maximum number of prompts to use, or 0 for unlimited
-  value: 9600
+  value: 16000
 learning_rate:
   desc: Learning rate for fine-tuning the language model.
   value: 1.0e-6
@@ -67,7 +67,7 @@ prompt_dataset_names:
   # value: ["anthropic-harmless-base", "anthropic-red-team", "openai/webgpt_comparisons"]
 same_prompt_per_superbatch:
   desc: Whether to duplicate each prompt so the superbatch is variations on the same prompt.
-  value: False
+  value: True
 length_penalty:
   desc: Adds -length_penalty * char_length to the reward. 0 means no penalty.
   value: 0.01
