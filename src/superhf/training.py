@@ -72,6 +72,10 @@ class SuperHFTrainingArguments:
     # Reward shaping
     length_penalty: float = 0.0
 
+    # Push to hub (set to 0 to disable)
+    hub_repo_id: Optional[str] = None
+    push_to_hub_interval: int = 0
+
 
 class SuperHFTrainer:
     """
@@ -215,6 +219,38 @@ class SuperHFTrainer:
 
             # Optionally, save the model
             # self.save_model()
+
+            # Optionally, push the model to the hub
+            self.consider_pushing_to_hub(superbatch_index, len(prompts_dataloader))
+
+    def consider_pushing_to_hub(self, superbatch_index: int, num_prompts: int) -> None:
+        """Pushes the model to the hub if it's appropriate to do so."""
+        if (  # pylint: disable=too-many-boolean-expressions
+            # User must specify a hub repo
+            self.training_args.hub_repo_id is not None
+            and self.training_args.hub_repo_id != ""
+            # User must specify a push interval
+            and self.training_args.push_to_hub_interval > 0
+            # Don't push on the first superbatch
+            and superbatch_index > 0
+            and (
+                # every N superbatches
+                superbatch_index % self.training_args.push_to_hub_interval == 0
+                # last superbatch
+                or superbatch_index == num_prompts - 1
+            )
+        ):
+            tqdm.write("Pushing model to the Hub!")
+            tqdm.write(
+                str(
+                    self.language_model.push_to_hub(
+                        repo_id=self.training_args.hub_repo_id,
+                        commit_message=(
+                            f"Upload model from superbatch {superbatch_index}"
+                        ),
+                    )
+                )
+            )
 
     def collate_fn_lm_completions(self, batch: list[str]) -> BatchEncoding:
         """
