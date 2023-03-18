@@ -251,7 +251,6 @@ class SuperHFTrainer:
                     )
                 )
             )
-            # TODO debug real quick
             tqdm.write(
                 str(
                     self.language_tokenizer.push_to_hub(

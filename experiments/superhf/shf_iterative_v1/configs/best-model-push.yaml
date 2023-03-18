@@ -9,7 +9,7 @@ debug_max_prompts:
   value: 64000
 learning_rate:
   desc: Learning rate for fine-tuning the language model.
-  value: 1.0e-6
+  value: 3.0e-7
 scheduler_name:
   desc: Name of the scheduler to use for fine-tuning the language model.
   value: "cosine"
@@ -36,7 +36,7 @@ completion_filter_top_k:
   value: 1
 max_new_tokens:
   desc: Maximum new token length of language model completion.
-  value: 64
+  value: 48
 max_length_rm:
   desc: Maximum token length of reward model input.
   value: 1024
@@ -73,7 +73,7 @@ length_penalty:
   value: 0.01
 hub_repo_id:
   desc: The ID of the HuggingFace Hub repo to use for storing the model. If empty, no model will be stored.
-  value: "pythia-1b-superhf-v1"
+  value: "pythia-1b-superhf-v1.1"
 push_to_hub_interval:
   desc: The number of superbatches to train before pushing to the HuggingFace Hub. If 0, no model will be stored.
-  value: 200
+  value: 400
