@@ -6,25 +6,25 @@ reward_model_name:
   value: "OpenAssistant/reward-model-deberta-v3-large-v2"
 debug_max_prompts:
   desc: Maximum number of prompts to use, or 0 for unlimited
-  value: 16000
+  value: 64000
 learning_rate:
   desc: Learning rate for fine-tuning the language model.
   value: 1.0e-6
 scheduler_name:
   desc: Name of the scheduler to use for fine-tuning the language model.
-  value: "linear"
+  value: "cosine"
 scheduler_warmup_steps:
   desc: Number of warmup steps for the scheduler.
-  value: 20
+  value: 100
 inverse_loss_penalty:
   desc: Regularizes loss by C with loss' = loss + C / loss. Set to 0 to disable.
-  value: 0.001
+  value: 0.01
 max_prompt_char_length:
   desc: Maximum number of characters to truncate prompts to
   value: 1024
 temperature:
   desc: Temperature to use for completion sampling
-  value: 0.9
+  value: 1.0
 top_p:
   desc: Top-p to use for completion sampling
   value: 0.95
@@ -73,7 +73,7 @@ length_penalty:
   value: 0.01
 hub_repo_id:
   desc: The ID of the HuggingFace Hub repo to use for storing the model. If empty, no model will be stored.
-  value: ""
+  value: "pythia-1b-superhf-v1"
 push_to_hub_interval:
   desc: The number of superbatches to train before pushing to the HuggingFace Hub. If 0, no model will be stored.
-  value: 0
+  value: 200
