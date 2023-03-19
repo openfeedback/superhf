@@ -142,11 +142,11 @@ def evaluate_model(model, tokenizer, dataset, device, batch_size = 8):
     return num_correct / num_evaluated
 
 
-# DATASETS = {
-#     'qnli' : qnli(),
-#     'wnli' : wnli(),
-#     'sentiment' : sentiment(),
-# }
+DATASETS = {
+    'qnli' : qnli(),
+    'wnli' : wnli(),
+    'sentiment' : sentiment(),
+}
 
 HHH = {
     'helpful' : hhh('helpful'),
@@ -157,9 +157,8 @@ HHH = {
 if __name__ == '__main__':
     EVAL_SIZE = 1000
     for model_name in (
-        "EleutherAI/pythia-1b",
-        "theblackcat102/pythia-1b-deduped-sft",
-        "gmukobi/pythia-1b-superhf-v1.0"):
+        "peterchatain/rlhf_v4",
+        ):
         eval_device = torch.device("cuda:0" if torch.cuda.is_available else "cpu")
         eval_model = AutoModelForCausalLM.from_pretrained(model_name).to(eval_device)
         eval_tokenizer = AutoTokenizer.from_pretrained(model_name)
@@ -167,13 +166,13 @@ if __name__ == '__main__':
             eval_tokenizer.pad_token = eval_tokenizer.eos_token
 
         print(f"\n\n\nEvaluating model: {model_name}")
-        # for d in ('sentiment', 'qnli', 'wnli'):
-        #     print(f'--------------------------\nEvaluating on dataset: {d}')
-        #     eval_dataset = DATASETS[d]
-        #     accuracy = evaluate_model(
-        #         eval_model, eval_tokenizer, eval_dataset[:EVAL_SIZE], eval_device
-        #         )
-        #     print(f'Accuracy: {accuracy}\n')
+        for d in ('sentiment', 'qnli', 'wnli'):
+            print(f'--------------------------\nEvaluating on dataset: {d}')
+            eval_dataset = DATASETS[d]
+            accuracy = evaluate_model(
+                eval_model, eval_tokenizer, eval_dataset[:EVAL_SIZE], eval_device
+                )
+            print(f'Accuracy: {accuracy}\n')
 
         for h in ('helpful', 'honest', 'harmless'):
             print(f'--------------------------\nEvaluating on dataset: {h}')
