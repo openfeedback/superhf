@@ -105,7 +105,8 @@ def evaluate_hhh(model, tokenizer, dataset, device, batch_size=8):
             out2 = model(input_ids=ids2["input_ids"], labels=ids2["input_ids"])
             log_likelihood1 = -out1.loss
             log_likelihood2 = -out2.loss
-        predictions = (log_likelihood1 > log_likelihood2).int().tolist()
+
+        predictions = (log_likelihood1 > log_likelihood2).tolist()
         num_correct += sum(predictions)
         num_evaluated += batch_size
 
