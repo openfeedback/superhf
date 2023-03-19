@@ -85,7 +85,7 @@ def hhh(subset="harmless"):
     return data
 
 
-def evaluate_hhh(model, tokenizer, dataset, device, batch_size=8):
+def evaluate_hhh(model, tokenizer, dataset, device, batch_size=1):
     """Evaluates model on dataset."""
     # pylint: disable=too-many-locals
     # pylint: disable=too-many-instance-attributes
@@ -106,10 +106,7 @@ def evaluate_hhh(model, tokenizer, dataset, device, batch_size=8):
             out2 = model(input_ids=ids2["input_ids"], labels=ids2["input_ids"])
             log_likelihood1 = -out1.loss
             log_likelihood2 = -out2.loss
-        print(log_likelihood1 > log_likelihood2)
-        predictions = (log_likelihood1 > log_likelihood2).int().tolist()
-        num_correct += sum(predictions)
-        num_evaluated += batch_size
+        num_correct += (log_likelihood1 > log_likelihood2).int().item()
 
     return num_correct / num_evaluated
 
