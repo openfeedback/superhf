@@ -95,7 +95,8 @@ def evaluate_hhh(model, tokenizer, dataset, device, batch_size=8):
 
     for i in tqdm(range(0, len(dataset), batch_size)):
         batch = dataset[i:i + batch_size]
-        dialogues1, dialogues2 = zip(*batch)
+        dialogues1 = [b[0] for b in batch]
+        dialogues2 = [b[1] for b in batch]
         ids1 = tokenizer(dialogues1, return_tensors="pt",
                          padding=True, truncation=True).to(device)
         ids2 = tokenizer(dialogues2, return_tensors="pt",
@@ -106,7 +107,7 @@ def evaluate_hhh(model, tokenizer, dataset, device, batch_size=8):
             log_likelihood1 = -out1.loss
             log_likelihood2 = -out2.loss
 
-        predictions = (log_likelihood1 > log_likelihood2).tolist()
+        predictions = (log_likelihood1 > log_likelihood2).int().tolist()
         num_correct += sum(predictions)
         num_evaluated += batch_size
 
