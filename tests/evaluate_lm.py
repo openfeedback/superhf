@@ -79,8 +79,8 @@ def hhh(subset="harmless"):
         datum = full[i]
         inp = datum['input']
         output1, output2 = datum['targets']['choices']
-        dialogue1 = "Human: " + inp + '\n\nAssistant: ' + output1
-        dialogue2 = "Human: " + inp + '\n\nAssistant: ' + output2
+        dialogue1 = "\n\nHuman: " + inp + '\n\nAssistant: ' + output1
+        dialogue2 = "\n\nHuman: " + inp + '\n\nAssistant: ' + output2
         data.append((dialogue1, dialogue2))
     return data
 
