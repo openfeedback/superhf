@@ -4,6 +4,7 @@ Evaluates a Causal LM.
 
 # pylint: disable=missing-parentheses-for-call-in-test
 # pylint: disable=using-constant-test
+# pylint : disable=consider-using-enumerate
 
 import torch
 from datasets import load_dataset
@@ -69,26 +70,55 @@ def sentiment(num_fewshot = 3):
         data.append((few_shot_example, feeling))
     return data
 
+def hhh(subset="harmless"):
+    """Returns List[(str, str)]"""
+    # pylint: disable=consider-using-enumerate
+    full = load_dataset("HuggingFaceH4/hhh_alignment", subset, split='test')
+    data = []
+    for i in range(len(full)):
+        datum = full[i]
+        inp = datum['input']
+        output1, output2 = datum['targets']['choices']
+        dialogue1 = "Human: " + inp + '\n\nAssistant: ' + output1
+        dialogue2 = "Human: " + inp + '\n\nAssistant: ' + output2
+        data.append((dialogue1, dialogue2))
+    return data
 
 
-DATASETS = {
-    'qnli' : qnli,
-    'wnli' : wnli,
-    'sentiment' : sentiment,
-}
+def evaluate_hhh(model, tokenizer, dataset, device, batch_size=8):
+    """Evaluates model on dataset."""
+    # pylint: disable=too-many-locals
+    # pylint: disable=too-many-instance-attributes
 
-def evaluate_model(model, tokenizer, dataset, device, batch_size=8):
+    num_correct = 0
+    num_evaluated = 0
+
+    for i in tqdm(range(0, len(dataset), batch_size)):
+        batch = dataset[i:i + batch_size]
+        dialogues1, dialogues2 = zip(*batch)
+        ids1 = tokenizer.encode(dialogues1, return_tensors="pt").to(device)
+        ids2 = tokenizer.encode(dialogues2, return_tensors="pt").to(device)
+        with torch.no_grad():
+            out1 = model(input_ids=ids1, labels=ids1)  # Same labels to compute CLM loss
+            out2 = model(input_ids=ids2, labels=ids2)  # Same labels to compute CLM loss
+            log_likelihood1 = -out1.loss
+            log_likelihood2 = -out2.loss
+        predictions = (log_likelihood1 > log_likelihood2).int().tolist()
+        num_correct += sum(predictions)
+        num_evaluated += batch_size
+
+    return num_correct / num_evaluated
+
+def evaluate_model(model, tokenizer, dataset, device, batch_size = 8):
     """Evaluates model on dataset."""
     # pylint: disable=too-many-locals
     # pylint: disable=too-many-instance-attributes
 
 
-    token_id_0 = tokenizer.encode('0', add_special_tokens=False)[0]
-    token_id_1 = tokenizer.encode('1', add_special_tokens=False)[0]
-
     num_correct = 0
     num_evaluated = 0
-
+    token_id_0 = tokenizer.encode('0', add_special_tokens=False)[0]
+    token_id_1 = tokenizer.encode('1', add_special_tokens=False)[0]
     for i in tqdm(range(0, len(dataset), batch_size)):
         batch = dataset[i:i + batch_size]
         prompts, labels = zip(*batch)
@@ -110,6 +140,19 @@ def evaluate_model(model, tokenizer, dataset, device, batch_size=8):
 
     return num_correct / num_evaluated
 
+
+# DATASETS = {
+#     'qnli' : qnli(),
+#     'wnli' : wnli(),
+#     'sentiment' : sentiment(),
+# }
+
+HHH = {
+    'helpful' : hhh('helpful'),
+    'honest' : hhh('honest'),
+    'harmless' : hhh('harmless'),
+}
+
 if __name__ == '__main__':
     EVAL_SIZE = 1000
     for model_name in (
@@ -123,10 +166,18 @@ if __name__ == '__main__':
             eval_tokenizer.pad_token = eval_tokenizer.eos_token
 
         print(f"\n\n\nEvaluating model: {model_name}")
-        for d in ('sentiment', 'qnli', 'wnli'):
-            print(f'--------------------------\nEvaluating on dataset: {d}')
-            eval_dataset = DATASETS[d]()
-            accuracy = evaluate_model(
-                eval_model, eval_tokenizer, eval_dataset[:EVAL_SIZE], eval_device
-                )
+        # for d in ('sentiment', 'qnli', 'wnli'):
+        #     print(f'--------------------------\nEvaluating on dataset: {d}')
+        #     eval_dataset = DATASETS[d]
+        #     accuracy = evaluate_model(
+        #         eval_model, eval_tokenizer, eval_dataset[:EVAL_SIZE], eval_device
+        #         )
+        #     print(f'Accuracy: {accuracy}\n')
+
+        for h in ('helpful', 'honest', 'harmless'):
+            print(f'--------------------------\nEvaluating on dataset: {h}')
+            eval_dataset = HHH[h]
+            accuracy = evaluate_hhh(
+                eval_model, eval_tokenizer, eval_dataset, eval_device
+            )
             print(f'Accuracy: {accuracy}\n')
