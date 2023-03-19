@@ -103,6 +103,7 @@ def evaluate_model(model, tokenizer, dataset, device, batch_size=8):
         logits_1 = logits[:, -1, token_id_1]
 
         predictions = (logits_1 > logits_0).int().tolist()
+        predictions = [1] * batch_size
         num_correct += sum(p == l for p, l in zip(predictions, labels))
         num_evaluated += batch_size
 
@@ -110,7 +111,7 @@ def evaluate_model(model, tokenizer, dataset, device, batch_size=8):
 
 if __name__ == '__main__':
     MODEL_NAME = "theblackcat102/pythia-1b-deduped-sft"
-    EVAL_SIZE = 100
+    EVAL_SIZE = 1000
     eval_device = torch.device("cuda:0" if torch.cuda.is_available else "cpu")
     eval_model = AutoModelForCausalLM.from_pretrained(MODEL_NAME).to(eval_device)
     eval_tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
