@@ -69,6 +69,8 @@ def sentiment(num_fewshot = 3):
         data.append((few_shot_example, feeling))
     return data
 
+
+
 DATASETS = {
     'qnli' : qnli,
     'wnli' : wnli,
@@ -103,21 +105,26 @@ def evaluate_model(model, tokenizer, dataset, device, batch_size=8):
         logits_1 = logits[:, -1, token_id_1]
 
         predictions = (logits_1 > logits_0).int().tolist()
-        predictions = [1] * batch_size
         num_correct += sum(p == l for p, l in zip(predictions, labels))
         num_evaluated += batch_size
 
     return num_correct / num_evaluated
 
 if __name__ == '__main__':
-    MODEL_NAME = "theblackcat102/pythia-1b-deduped-sft"
     EVAL_SIZE = 1000
-    eval_device = torch.device("cuda:0" if torch.cuda.is_available else "cpu")
-    eval_model = AutoModelForCausalLM.from_pretrained(MODEL_NAME).to(eval_device)
-    eval_tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
+    for model_name in (
+        "EleutherAI/pythia-1b",
+        "theblackcat102/pythia-1b-deduped-sft",
+        "gmukobi/pythia-1b-superhf-v1.0"):
+        eval_device = torch.device("cuda:0" if torch.cuda.is_available else "cpu")
+        eval_model = AutoModelForCausalLM.from_pretrained(model_name).to(eval_device)
+        eval_tokenizer = AutoTokenizer.from_pretrained(model_name)
 
-    for d in ('sentiment', 'qnli', 'wnli'):
-        print(f'--------------------------\nNow evaluating on dataset: {d}')
-        eval_dataset = DATASETS[d]()
-        accuracy = evaluate_model(eval_model, eval_tokenizer, eval_dataset[:EVAL_SIZE], eval_device)
-        print(f'Accuracy: {accuracy}\n')
+        print(f"\n\n\nEvaluating model: {model_name}")
+        for d in ('sentiment', 'qnli', 'wnli'):
+            print(f'--------------------------\nEvaluating on dataset: {d}')
+            eval_dataset = DATASETS[d]()
+            accuracy = evaluate_model(
+                eval_model, eval_tokenizer, eval_dataset[:EVAL_SIZE], eval_device
+                )
+            print(f'Accuracy: {accuracy}\n')
