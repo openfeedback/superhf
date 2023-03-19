@@ -96,11 +96,13 @@ def evaluate_hhh(model, tokenizer, dataset, device, batch_size=8):
     for i in tqdm(range(0, len(dataset), batch_size)):
         batch = dataset[i:i + batch_size]
         dialogues1, dialogues2 = zip(*batch)
-        ids1 = tokenizer.encode(dialogues1, return_tensors="pt").to(device)
-        ids2 = tokenizer.encode(dialogues2, return_tensors="pt").to(device)
+        ids1 = tokenizer(dialogues1, return_tensors="pt",
+                         padding=True, truncation=True).to(device)
+        ids2 = tokenizer(dialogues2, return_tensors="pt",
+                         padding=True, truncation=True).to(device)
         with torch.no_grad():
-            out1 = model(input_ids=ids1, labels=ids1)  # Same labels to compute CLM loss
-            out2 = model(input_ids=ids2, labels=ids2)  # Same labels to compute CLM loss
+            out1 = model(input_ids=ids1, labels=ids1)
+            out2 = model(input_ids=ids2, labels=ids2)
             log_likelihood1 = -out1.loss
             log_likelihood2 = -out2.loss
         predictions = (log_likelihood1 > log_likelihood2).int().tolist()
