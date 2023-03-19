@@ -91,7 +91,6 @@ def evaluate_hhh(model, tokenizer, dataset, device, batch_size=1):
     # pylint: disable=too-many-instance-attributes
 
     num_correct = 0
-    num_evaluated = 0
 
     for i in tqdm(range(0, len(dataset), batch_size)):
         batch = dataset[i:i + batch_size]
@@ -108,7 +107,7 @@ def evaluate_hhh(model, tokenizer, dataset, device, batch_size=1):
             log_likelihood2 = -out2.loss
         num_correct += (log_likelihood1 > log_likelihood2).int().item()
 
-    return num_correct / num_evaluated
+    return num_correct / len(dataset)
 
 def evaluate_model(model, tokenizer, dataset, device, batch_size = 8):
     """Evaluates model on dataset."""
