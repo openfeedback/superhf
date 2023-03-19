@@ -105,8 +105,7 @@ def evaluate_hhh(model, tokenizer, dataset, device, batch_size=1):
             out2 = model(input_ids=ids2["input_ids"], labels=ids2["input_ids"])
             log_likelihood1 = -out1.loss
             log_likelihood2 = -out2.loss
-        print(dialogues1[0], log_likelihood1, '\n', dialogues2[0], log_likelihood2)
-        print((log_likelihood1 > log_likelihood2).int().item())
+
         num_correct += (log_likelihood1 > log_likelihood2).int().item()
 
     return num_correct / len(dataset)
