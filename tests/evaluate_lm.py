@@ -101,8 +101,8 @@ def evaluate_hhh(model, tokenizer, dataset, device, batch_size=8):
         ids2 = tokenizer(dialogues2, return_tensors="pt",
                          padding=True, truncation=True).to(device)
         with torch.no_grad():
-            out1 = model(input_ids=ids1, labels=ids1)
-            out2 = model(input_ids=ids2, labels=ids2)
+            out1 = model(input_ids=ids1["input_ids"], labels=ids1["input_ids"])
+            out2 = model(input_ids=ids2["input_ids"], labels=ids2["input_ids"])
             log_likelihood1 = -out1.loss
             log_likelihood2 = -out2.loss
         predictions = (log_likelihood1 > log_likelihood2).int().tolist()
