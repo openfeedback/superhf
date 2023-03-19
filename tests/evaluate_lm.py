@@ -119,6 +119,8 @@ if __name__ == '__main__':
         eval_device = torch.device("cuda:0" if torch.cuda.is_available else "cpu")
         eval_model = AutoModelForCausalLM.from_pretrained(model_name).to(eval_device)
         eval_tokenizer = AutoTokenizer.from_pretrained(model_name)
+        if eval_tokenizer.pad_token is None:
+            eval_tokenizer.pad_token = eval_tokenizer.eos_token
 
         print(f"\n\n\nEvaluating model: {model_name}")
         for d in ('sentiment', 'qnli', 'wnli'):
