@@ -104,6 +104,7 @@ def evaluate_model(model, tokenizer, dataset, device, batch_size=8):
 
         predictions = (logits_1 > logits_0).int().tolist()
         num_correct += sum(p == l for p, l in zip(predictions, labels))
+        num_evaluated += batch_size
 
     return num_correct / num_evaluated
 
