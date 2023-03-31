@@ -109,7 +109,7 @@ class RewardModel(nn.Module):
             model_name, 
             num_labels=1,
             # gradient_checkpointing=True,
-            # use_cache=False
+            use_cache=False
         )
         # for name, param in self.model.base_model.named_parameters():
         #     if any(name.startswith(p) for p in frozen_prefixes):
@@ -123,6 +123,10 @@ class RewardModel(nn.Module):
         out = self.v_head(out)
         return out
         #return self.v_head(self.model(**inputs)[0][:,0])
+    
+    def gradient_checkpointing_enable(self):
+        if self.model.supports_gradient_checkpointing:
+            self.model.gradient_checkpointing_enable()
 
 
 class PreferenceDataCollator:
@@ -159,8 +163,8 @@ class PreferenceDataCollator:
 
 if __name__ == "__main__":
     # device='cpu'
-    # model_name = "distilbert-base-uncased"
-    model_name = "EleutherAI/gpt-neo-1.3B"
+    model_name = "distilbert-base-uncased"
+    # model_name = "EleutherAI/gpt-neo-1.3B"
     # model_name = "EleutherAI/gpt-neo-125M"
     tokenizer = AutoTokenizer.from_pretrained(model_name, max_length=512)
     if tokenizer.pad_token == None:
@@ -172,8 +176,8 @@ if __name__ == "__main__":
     # if model.model.supports_gradient_checkpointing:
         # model.model.gradient_checkpointing_enable()
 
-    # model_output_dir = f"/nlp/scr/fongsu/reward_model_HH/{datetime.datetime.now()}"
-    model_output_dir = "reward_model_HH/"
+    model_output_dir = f"/nlp/scr/fongsu/reward_model_HH/{datetime.datetime.now()}"
+    # model_output_dir = "reward_model_HH/"
 
     arguments = TrainingArguments(
         output_dir=model_output_dir,
@@ -197,7 +201,8 @@ if __name__ == "__main__":
         # optim='adafactor',
         log_level='debug',
         # label_names='label',
-        # gradient_checkpointing=True,
+        gradient_checkpointing=True,
+        ddp_find_unused_parameters=False,
     )
 
     train_dataset = AnthropicHelpfulHarmless("train", data_dir="harmless-base")
