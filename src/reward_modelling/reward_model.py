@@ -161,6 +161,7 @@ if __name__ == "__main__":
     # device='cpu'
     # model_name = "distilbert-base-uncased"
     model_name = "EleutherAI/gpt-neo-1.3B"
+    # model_name = "EleutherAI/gpt-neo-125M"
     tokenizer = AutoTokenizer.from_pretrained(model_name, max_length=512)
     if tokenizer.pad_token == None:
         tokenizer.pad_token = tokenizer.eos_token
@@ -168,7 +169,11 @@ if __name__ == "__main__":
     model = RewardModel(model_name)
     # model = AutoModelForSequenceClassification.from_pretrained(model_name, num_labels=1)
 
-    model_output_dir = f"/nlp/scr/fongsu/reward_model_HH/{datetime.datetime.now()}"
+    # if model.model.supports_gradient_checkpointing:
+        # model.model.gradient_checkpointing_enable()
+
+    # model_output_dir = f"/nlp/scr/fongsu/reward_model_HH/{datetime.datetime.now()}"
+    model_output_dir = "reward_model_HH/"
 
     arguments = TrainingArguments(
         output_dir=model_output_dir,
@@ -176,8 +181,9 @@ if __name__ == "__main__":
         per_device_train_batch_size=2,
         per_device_eval_batch_size=2,
         num_train_epochs=1,
+        do_eval=True,
         evaluation_strategy="steps",
-        eval_steps=100,
+        eval_steps=10,
         save_total_limit=5,
         # save_strategy="steps",
         save_strategy="no",
@@ -190,7 +196,8 @@ if __name__ == "__main__":
         # fp16=True,
         # optim='adafactor',
         log_level='debug',
-        gradient_checkpointing=True,
+        # label_names='label',
+        # gradient_checkpointing=True,
     )
 
     train_dataset = AnthropicHelpfulHarmless("train", data_dir="harmless-base")
