@@ -23,7 +23,8 @@ from transformers import (
     AutoTokenizer,
     AutoModelForSequenceClassification,
     AutoModelForCausalLM,
-    AutoModel
+    AutoModel,
+    PreTrainedModel
 )
 from preference_datasets import AnthropicHelpfulHarmless
 
@@ -105,18 +106,23 @@ class RewardModel(nn.Module):
     def __init__(self, model_name, frozen_prefixes=()):
         super().__init__()
         self.model = AutoModel.from_pretrained(
-            model_name, num_labels=1
+            model_name, 
+            num_labels=1,
+            # gradient_checkpointing=True,
+            # use_cache=False
         )
-        for name, param in self.model.base_model.named_parameters():
-            if any(name.startswith(p) for p in frozen_prefixes):
-                param.requires_grad = False
+        # for name, param in self.model.base_model.named_parameters():
+        #     if any(name.startswith(p) for p in frozen_prefixes):
+        #         param.requires_grad = False
         self.v_head = nn.Linear(self.model.config.hidden_size, 1, bias=False)
 
     def forward(self, return_loss=True, **inputs):
         # set `return_loss=True` so that the trainer would compute its
         # loss during evaluation in the `prediction_step` function
-        # return self.v_head(self.model(**inputs)[0].mean(dim=1))
-        return self.v_head(self.model(**inputs)[0][:,0])
+        out = self.model(**inputs)[0].mean(dim=1)
+        out = self.v_head(out)
+        return out
+        #return self.v_head(self.model(**inputs)[0][:,0])
 
 
 class PreferenceDataCollator:
@@ -155,7 +161,7 @@ if __name__ == "__main__":
     # device='cpu'
     # model_name = "distilbert-base-uncased"
     model_name = "EleutherAI/gpt-neo-1.3B"
-    tokenizer = AutoTokenizer.from_pretrained(model_name, max_length=256)
+    tokenizer = AutoTokenizer.from_pretrained(model_name, max_length=512)
     if tokenizer.pad_token == None:
         tokenizer.pad_token = tokenizer.eos_token
 
@@ -167,22 +173,28 @@ if __name__ == "__main__":
     arguments = TrainingArguments(
         output_dir=model_output_dir,
         logging_steps=10,
-        per_device_train_batch_size=1,
-        per_device_eval_batch_size=1,
+        per_device_train_batch_size=2,
+        per_device_eval_batch_size=2,
         num_train_epochs=1,
         evaluation_strategy="steps",
         eval_steps=100,
         save_total_limit=5,
-        save_strategy="steps",
-        save_steps=200,
-        load_best_model_at_end=True,
-        learning_rate=8e-16,
+        # save_strategy="steps",
+        save_strategy="no",
+        # save_steps=20,
+        # load_best_model_at_end=True,
+        learning_rate=1e-5,
         weight_decay=0.001,
         report_to="wandb",
+        # gradient_accumulation_steps=16,
+        # fp16=True,
+        # optim='adafactor',
+        log_level='debug',
+        gradient_checkpointing=True,
     )
 
-    train_dataset = AnthropicHelpfulHarmless("train", data_dir="helpful-base")
-    eval_dataset = AnthropicHelpfulHarmless("test",data_dir="helpful-base")
+    train_dataset = AnthropicHelpfulHarmless("train", data_dir="harmless-base")
+    eval_dataset = AnthropicHelpfulHarmless("test",data_dir="harmless-base")
 
     trainer = RewardModelTrainer(
         model=model,
@@ -192,4 +204,8 @@ if __name__ == "__main__":
         eval_dataset=eval_dataset,
         compute_metrics=compute_metrics,
     )
-    trainer.train()
+    result = trainer.train()
+    trainer.save_model(model_output_dir)
+    model.save(model.state_dict(), model_output_dir)
+    print(result)
+    print("==============END OF TRAINING===================")
