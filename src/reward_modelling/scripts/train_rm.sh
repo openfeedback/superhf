@@ -1,5 +1,5 @@
 #!/usr/bin/bash
-#SBATCH --job-name=train_harmless
+#SBATCH --job-name=train_helpful
 #SBATCH --output=batch_outputs/test_job.%j.out
 #SBATCH --error=batch_outputs/test_job.%j.err
 #SBATCH --account=nlp

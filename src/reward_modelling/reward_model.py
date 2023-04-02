@@ -163,8 +163,8 @@ class PreferenceDataCollator:
 
 if __name__ == "__main__":
     # device='cpu'
-    model_name = "distilbert-base-uncased"
-    # model_name = "EleutherAI/gpt-neo-1.3B"
+    # model_name = "distilbert-base-uncased"
+    model_name = "EleutherAI/gpt-neo-1.3B"
     # model_name = "EleutherAI/gpt-neo-125M"
     tokenizer = AutoTokenizer.from_pretrained(model_name, max_length=512)
     if tokenizer.pad_token == None:
@@ -182,12 +182,12 @@ if __name__ == "__main__":
     arguments = TrainingArguments(
         output_dir=model_output_dir,
         logging_steps=10,
-        per_device_train_batch_size=2,
-        per_device_eval_batch_size=2,
+        per_device_train_batch_size=4,
+        per_device_eval_batch_size=4,
         num_train_epochs=1,
         do_eval=True,
         evaluation_strategy="steps",
-        eval_steps=10,
+        eval_steps=200,
         save_total_limit=5,
         # save_strategy="steps",
         save_strategy="no",
@@ -199,14 +199,14 @@ if __name__ == "__main__":
         # gradient_accumulation_steps=16,
         # fp16=True,
         # optim='adafactor',
-        log_level='debug',
+        # log_level='debug',
         # label_names='label',
         gradient_checkpointing=True,
         ddp_find_unused_parameters=False,
     )
 
-    train_dataset = AnthropicHelpfulHarmless("train", data_dir="harmless-base")
-    eval_dataset = AnthropicHelpfulHarmless("test",data_dir="harmless-base")
+    train_dataset = AnthropicHelpfulHarmless("train", data_dir="helpful-base")
+    eval_dataset = AnthropicHelpfulHarmless("test",data_dir="helpful-base")
 
     trainer = RewardModelTrainer(
         model=model,
@@ -218,6 +218,6 @@ if __name__ == "__main__":
     )
     result = trainer.train()
     trainer.save_model(model_output_dir)
-    model.save(model.state_dict(), model_output_dir)
+    torch.save(model.state_dict(), model_output_dir)
     print(result)
     print("==============END OF TRAINING===================")
