@@ -23,6 +23,8 @@ from transformers import AutoTokenizer, HfArgumentParser, pipeline
 from trl import AutoModelForCausalLMWithValueHead, PPOConfig, PPOTrainer, set_seed
 from trl.core import LengthSampler
 
+from reward_model import RewardModel
+
 
 tqdm.pandas()
 
@@ -151,7 +153,11 @@ ppo_trainer = PPOTrainer(config, model, ref_model, tokenizer, dataset=dataset, d
 device = ppo_trainer.accelerator.device
 if ppo_trainer.accelerator.num_processes == 1:
     device = 0 if torch.cuda.is_available() else "cpu"  # to avoid a `pipeline` bug
-sentiment_pipe = pipeline("sentiment-analysis", model="lvwerra/distilbert-imdb", device=device)
+# sentiment_pipe = pipeline("sentiment-analysis", model="lvwerra/distilbert-imdb", device=device)
+reward_model_name_or_path = 'distilbert-base-uncased'
+reward_model = RewardModel(reward_model_name_or_path)
+rm_tokenizer = AutoTokenizer.from_pretrained(reward_model_name_or_path, max_length=512)
+reward_model.eval()
 
 # We then define the arguments to pass to the `generate` function. These arguments
 # are passed to the `generate` function of the PPOTrainer, which is a wrapper around
@@ -176,10 +182,14 @@ for epoch, batch in tqdm(enumerate(ppo_trainer.dataloader)):
     )
     batch["response"] = tokenizer.batch_decode(response_tensors)
 
+    # Compute reward from reward model
+    outputs = reward_model(**rm_tokenizer(batch['response'], return_tensors='pt', padding=True, truncation=True))
+    rewards = [torch.tensor(output) for output in outputs.tolist()]
+
     # Compute sentiment score
-    texts = [q + r for q, r in zip(batch["query"], batch["response"])]
-    pipe_outputs = sentiment_pipe(texts, **sent_kwargs)
-    rewards = [torch.tensor(output[1]["score"]) for output in pipe_outputs]
+    # texts = [q + r for q, r in zip(batch["query"], batch["response"])]
+    # pipe_outputs = sentiment_pipe(texts, **sent_kwargs)
+    # rewards = [torch.tensor(output[1]["score"]) for output in pipe_outputs]
 
     # Run PPO step
     stats = ppo_trainer.step(query_tensors, response_tensors, rewards)

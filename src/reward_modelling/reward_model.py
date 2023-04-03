@@ -26,7 +26,6 @@ from transformers import (
     AutoModel,
     PreTrainedModel
 )
-from preference_datasets import AnthropicHelpfulHarmless
 
 
 class PreferenceLoss(nn.Module):
@@ -109,7 +108,7 @@ class RewardModel(nn.Module):
             model_name, 
             num_labels=1,
             # gradient_checkpointing=True,
-            use_cache=False
+            # use_cache=False
         )
         # for name, param in self.model.base_model.named_parameters():
         #     if any(name.startswith(p) for p in frozen_prefixes):
@@ -162,6 +161,7 @@ class PreferenceDataCollator:
 
 
 if __name__ == "__main__":
+    from preference_datasets import AnthropicHelpfulHarmless
     # device='cpu'
     # model_name = "distilbert-base-uncased"
     # model_name = "EleutherAI/gpt-neo-1.3B"
