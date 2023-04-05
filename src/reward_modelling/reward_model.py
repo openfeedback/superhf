@@ -163,10 +163,10 @@ class PreferenceDataCollator:
 if __name__ == "__main__":
     from preference_datasets import AnthropicHelpfulHarmless
     # device='cpu'
-    # model_name = "distilbert-base-uncased"
+    model_name = "distilbert-base-uncased"
     # model_name = "EleutherAI/gpt-neo-1.3B"
     # model_name = "EleutherAI/gpt-neo-125M"
-    model_name = "facebook/xglm-4.5B"
+    # model_name = "facebook/xglm-4.5B"
     tokenizer = AutoTokenizer.from_pretrained(model_name, max_length=512)
     if tokenizer.pad_token == None:
         tokenizer.pad_token = tokenizer.eos_token
@@ -183,8 +183,8 @@ if __name__ == "__main__":
     arguments = TrainingArguments(
         output_dir=model_output_dir,
         logging_steps=10,
-        per_device_train_batch_size=1,
-        per_device_eval_batch_size=1,
+        per_device_train_batch_size=32,
+        per_device_eval_batch_size=32,
         num_train_epochs=1,
         do_eval=True,
         evaluation_strategy="steps",
