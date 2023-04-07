@@ -60,7 +60,10 @@ def compute_metrics(eval_prediction):
     total = reward_scores.shape[0]
     num_correct = ((reward_scores[:, 0] - reward_scores[:, 1]) > 0).sum()
     accuracy = num_correct / total
-    return {'accuracy': accuracy}
+    return {
+        'accuracy': accuracy, 
+        'average_pos_score': reward_scores[:,0].mean().item(),
+        'average_neg_score': reward_scores[:,0].mean().item()}
 
 
 class RewardModelTrainer(Trainer):
@@ -86,10 +89,6 @@ class RewardModelTrainer(Trainer):
 
         scores = model(**inputs)
 
-        # breakpoint()
-
-        # scores = outputs['logits']
-        # scores = outputs
         chosen_scores = scores[:(batch_size//2)]
         rejected_scores = scores[(batch_size//2):]
 
@@ -109,10 +108,6 @@ class RewardModel(PreTrainedModel):
 
     def __init__(self, config, base_model = None, **kwargs):
         super().__init__(config)
-        # self.model = AutoModel.from_config(config.base_model_config)
-        # for name, param in self.model.base_model.named_parameters():
-        #     if any(name.startswith(p) for p in frozen_prefixes):
-        #         param.requires_grad = False
         if base_model == None:
             print(config.base_model_config)
             self.model = AutoModel.from_config(config.base_model_config)
@@ -121,12 +116,9 @@ class RewardModel(PreTrainedModel):
         self.v_head = nn.Linear(self.model.config.hidden_size, 1, bias=False)
 
     def forward(self, return_loss=True, **inputs):
-        # set `return_loss=True` so that the trainer would compute its
-        # loss during evaluation in the `prediction_step` function
         out = self.model(**inputs)[0].mean(dim=1)
         out = self.v_head(out)
         return out
-        #return self.v_head(self.model(**inputs)[0][:,0])
     
     def gradient_checkpointing_enable(self):
         if self.model.supports_gradient_checkpointing:
@@ -186,20 +178,15 @@ if __name__ == "__main__":
     if tokenizer.pad_token == None:
         tokenizer.pad_token = tokenizer.eos_token
 
-    model = RewardModel(model_name)
-    # model = AutoModelForSequenceClassification.from_pretrained(model_name, num_labels=1)
+    model = RewardModel.from_pretrained_base_model(model_name)
 
-    # if model.model.supports_gradient_checkpointing:
-        # model.model.gradient_checkpointing_enable()
-
-    model_output_dir = f"/nlp/scr/fongsu/reward_model_HH/{datetime.datetime.now()}"
-    # model_output_dir = "reward_model_HH/"
+    model_output_dir = f"/nlp/scr/fongsu/reward_model_HH/{model_name}-{datetime.datetime.now()}"
 
     arguments = TrainingArguments(
         output_dir=model_output_dir,
         logging_steps=10,
-        per_device_train_batch_size=4,
-        per_device_eval_batch_size=4,
+        per_device_train_batch_size=32,
+        per_device_eval_batch_size=32,
         num_train_epochs=1,
         do_eval=True,
         evaluation_strategy="steps",
@@ -234,6 +221,6 @@ if __name__ == "__main__":
     )
     result = trainer.train()
     trainer.save_model(model_output_dir)
-    torch.save(model.state_dict(), model_output_dir)
-    print(result)
+    # torch.save(model.state_dict(), model_output_dir)
+    # print(result)
     print("==============END OF TRAINING===================")
