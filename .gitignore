@@ -59,6 +59,7 @@ MANIFEST
 # Training checkpoints
 wandb/
 reward_model_HH/
+models/
 
 # SC Cluster outputs
 batch_outputs

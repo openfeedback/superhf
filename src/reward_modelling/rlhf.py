@@ -187,15 +187,15 @@ if ppo_trainer.accelerator.num_processes == 1:
     device = 0 if torch.cuda.is_available() else "cpu"  # to avoid a `pipeline` bug
 # sentiment_pipe = pipeline("sentiment-analysis", model="lvwerra/distilbert-imdb", device=device)
 # rm_path = '/juice2/scr2/fongsu/reward_model_HH/2023-03-31 16:24:49.186242/pytorch_model.bin'
-rm_path = '/juice2/scr2/fongsu/reward_model_HH/2023-04-04 23:27:29.175109/pytorch_model.bin'
-# reward_model_name_or_path = 'EleutherAI/gpt-neo-1.3B'
-reward_model_name_or_path = 'distilbert-base-uncased'
-reward_model = RewardModel(reward_model_name_or_path)
-reward_model.load_state_dict(torch.load(rm_path))
-reward_model.to(device)
+reward_model_path = 'models/distilbert-base-uncased-rm'
+reward_model = RewardModel.from_pretrained(reward_model_path).to(device)
 reward_model.eval()
+rm_tokenizer = AutoTokenizer.from_pretrained(reward_model.config.base_model_config._name_or_path, max_length=512)
+# reward_model_name_or_path = 'EleutherAI/gpt-neo-1.3B'
+# reward_model_name_or_path = 'distilbert-base-uncased'
+# reward_model = RewardModel(reward_model_name_or_path)
+# reward_model.load_state_dict(torch.load(rm_path))
 
-rm_tokenizer = AutoTokenizer.from_pretrained(reward_model_name_or_path, max_length=512)
 if rm_tokenizer.pad_token == None:
     rm_tokenizer.pad_token = tokenizer.eos_token
 

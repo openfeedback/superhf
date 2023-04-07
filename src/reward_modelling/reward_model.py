@@ -24,8 +24,11 @@ from transformers import (
     AutoModelForSequenceClassification,
     AutoModelForCausalLM,
     AutoModel,
-    PreTrainedModel
+    PreTrainedModel,
+    AutoConfig
 )
+
+from reward_modelling.configuartion_reward_model import RewardModelConfig
 
 
 class PreferenceLoss(nn.Module):
@@ -97,22 +100,24 @@ class RewardModelTrainer(Trainer):
         return (loss, outputs) if return_outputs else loss
 
 
-class RewardModel(nn.Module):
+class RewardModel(PreTrainedModel):
     """
     The reward model to be trained from a pretrained language model.
     """
 
-    def __init__(self, model_name, frozen_prefixes=()):
-        super().__init__()
-        self.model = AutoModel.from_pretrained(
-            model_name, 
-            num_labels=1,
-            # gradient_checkpointing=True,
-            # use_cache=False
-        )
+    config_class = RewardModelConfig
+
+    def __init__(self, config, base_model = None, **kwargs):
+        super().__init__(config)
+        # self.model = AutoModel.from_config(config.base_model_config)
         # for name, param in self.model.base_model.named_parameters():
         #     if any(name.startswith(p) for p in frozen_prefixes):
         #         param.requires_grad = False
+        if base_model == None:
+            print(config.base_model_config)
+            self.model = AutoModel.from_config(config.base_model_config)
+        else:
+            self.model = base_model
         self.v_head = nn.Linear(self.model.config.hidden_size, 1, bias=False)
 
     def forward(self, return_loss=True, **inputs):
@@ -126,6 +131,16 @@ class RewardModel(nn.Module):
     def gradient_checkpointing_enable(self):
         if self.model.supports_gradient_checkpointing:
             self.model.gradient_checkpointing_enable()
+
+    def _init_weights(self, module):
+        return super()._init_weights(module)
+    
+    @classmethod
+    def from_pretrained_base_model(cls, base_model_name_or_path, **kwargs):
+        config = RewardModelConfig.from_pretrained_base_model(base_model_name_or_path)
+        base_model = AutoModel.from_pretrained(base_model_name_or_path)
+        return cls(config, base_model,**kwargs)
+
 
 
 class PreferenceDataCollator:
@@ -183,8 +198,8 @@ if __name__ == "__main__":
     arguments = TrainingArguments(
         output_dir=model_output_dir,
         logging_steps=10,
-        per_device_train_batch_size=32,
-        per_device_eval_batch_size=32,
+        per_device_train_batch_size=4,
+        per_device_eval_batch_size=4,
         num_train_epochs=1,
         do_eval=True,
         evaluation_strategy="steps",
