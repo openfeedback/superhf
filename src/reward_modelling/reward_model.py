@@ -63,7 +63,8 @@ def compute_metrics(eval_prediction):
     return {
         'accuracy': accuracy, 
         'average_pos_score': reward_scores[:,0].mean().item(),
-        'average_neg_score': reward_scores[:,0].mean().item()}
+        'average_neg_score': reward_scores[:,1].mean().item(),
+        'average_abs_score_diff': (reward_scores[:,0] - reward_scores[:1]).abs().mean()}
 
 
 class RewardModelTrainer(Trainer):
