@@ -201,16 +201,18 @@ if __name__ == "__main__":
         weight_decay=0.001,
         report_to="wandb",
         # gradient_accumulation_steps=16,
-        # fp16=True,
+        fp16=True,
         # optim='adafactor',
         # log_level='debug',
         # label_names='label',
         gradient_checkpointing=True,
         ddp_find_unused_parameters=False,
+        push_to_hub=True,
+        hub_model_id='distilbert-base-uncased-rm-harmless'
     )
 
-    train_dataset = AnthropicHelpfulHarmless("train", data_dir="helpful-base")
-    eval_dataset = AnthropicHelpfulHarmless("test",data_dir="helpful-base")
+    train_dataset = AnthropicHelpfulHarmless("train", data_dir="harmless-base")
+    eval_dataset = AnthropicHelpfulHarmless("test",data_dir="harmless-base")
 
     trainer = RewardModelTrainer(
         model=model,
