@@ -5,6 +5,7 @@ Client code showing how to call the training loop for the iterative version of t
 import argparse
 import random
 import os
+import yaml
 
 from transformers import (
     AutoTokenizer,
@@ -29,29 +30,15 @@ from superhf.mocking import MockLanguageModel, MockRewardModel
 from superhf.training import SuperHFTrainingArguments, SuperHFTrainer
 from superhf.utils import set_seed, print_gpu_utilization
 
+WANDB_ENTITY_NAME = "stanfordaialignment"
+WANDB_PROJECT_NAME = "shf-iterative-v2"
 
-def main() -> None:
+
+def main(argparse_args: argparse.Namespace) -> None:
     """
     Instantiate and train the SuperHF model.
     """
     # pylint: disable=too-many-locals
-
-    # Parse arguments
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--config",
-        type=str,
-        # Get file path relative to this file
-        default=os.path.join(os.path.dirname(__file__), "configs", "gpt-neo-1.3B.yaml"),
-        help="The name of the Weights and Biases config to use.",
-    )
-    parser.add_argument(
-        "--notes",
-        type=str,
-        default="",
-        help="Notes to add to the Weights and Biases run.",
-    )
-    args = parser.parse_args()
 
     # Configure device and seed
     device = torch.device(
@@ -61,25 +48,27 @@ def main() -> None:
 
     # Initialize Weights and Biases run
     wandb.init(
-        entity="stanfordaialignment",
-        project="shf-iterative-v1",
-        notes=args.notes,
+        entity=WANDB_ENTITY_NAME,
+        project=WANDB_PROJECT_NAME,
+        notes=argparse_args.notes,
         save_code=True,
-        config=args.config,
+        config=argparse_args.config,
     )
     language_model_name = wandb.config.language_model_name
     reward_model_name = wandb.config.reward_model_name
 
-    if language_model_name == "mock" and reward_model_name == "mock":
-        # Create a mock dataset of prompts
-        prompts = [
-            f"{i}\n\nHuman: ...\n\nAssistant: Sphinx of black quartz, judge my vow."
-            for i in range(50000)
-        ]
-    else:
-        # Get the prompt dataset
-        prompts = get_superhf_prompts("anthropic-red-team")
+    # Get the prompt dataset
+    prompts: list[str] = []
+    for dataset_name in wandb.config.prompt_dataset_names:
+        prompts.extend(get_superhf_prompts(dataset_name))
     random.shuffle(prompts)
+
+    # Duplicate each prompt so that each superbatch is the same prompt if desired
+    if wandb.config.same_prompt_per_superbatch:
+        new_prompts = []
+        for prompt in prompts:
+            new_prompts.extend([prompt] * wandb.config.superbatch_size)
+        prompts = new_prompts
 
     # Filter out prompts that are too long
     old_prompt_count = len(prompts)
@@ -93,7 +82,7 @@ def main() -> None:
         f"{wandb.config.max_prompt_char_length} chars."
     )
 
-    # Testing: only load the first section of prompts
+    # Only load the first section of prompts
     if wandb.config.debug_max_prompts != 0:
         prompts = prompts[: wandb.config.debug_max_prompts]
 
@@ -101,10 +90,19 @@ def main() -> None:
     print_gpu_utilization()
     print("Instantiating models...")
     # Instantiate our language and reward models and tokenizers
+    dtype = (
+        torch.float16
+        if wandb.config.mixed_precision == "fp16"
+        else torch.bfloat16
+        if wandb.config.mixed_precision == "bf16"
+        else torch.float32
+    )
     language_model = (
         MockLanguageModel()
         if language_model_name == "mock"
-        else AutoModelForCausalLM.from_pretrained(language_model_name).to(device)
+        else AutoModelForCausalLM.from_pretrained(
+            language_model_name, torch_dtype=dtype
+        ).to(device)
     )
     reward_model = (
         MockRewardModel()
@@ -144,7 +142,7 @@ def main() -> None:
         temperature=wandb.config.temperature,
         top_p=wandb.config.top_p,
         superbatch_size=wandb.config.superbatch_size,
-        max_length_lm=wandb.config.max_length_lm,
+        max_new_tokens=wandb.config.max_new_tokens,
         max_length_rm=wandb.config.max_length_rm,
         minibatch_size_generating=wandb.config.minibatch_size_generating,
         minibatch_size_scoring=wandb.config.minibatch_size_scoring,
@@ -153,6 +151,12 @@ def main() -> None:
         conversation_prompt=wandb.config.conversation_prompt,
         logits_processors=logits_processors,
         learning_rate=wandb.config.learning_rate,
+        scheduler_name=wandb.config.scheduler_name,
+        scheduler_warmup_steps=wandb.config.scheduler_warmup_steps,
+        inverse_loss_penalty=wandb.config.inverse_loss_penalty,
+        length_penalty=wandb.config.length_penalty,
+        hub_repo_id=wandb.config.hub_repo_id,
+        push_to_hub_interval=wandb.config.push_to_hub_interval,
     )
     completion_filter_top_k = wandb.config.completion_filter_top_k
     completion_filter = CompletionFilterTopK(completion_filter_top_k)
@@ -184,4 +188,42 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    # Parse arguments
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--config",
+        type=str,
+        # Get file path relative to this file
+        default=os.path.join(os.path.dirname(__file__), "configs", "default.yaml"),
+        help="The name of the Weights and Biases config to use.",
+    )
+    parser.add_argument(
+        "--notes",
+        type=str,
+        default="",
+        help="Notes to add to the Weights and Biases run.",
+    )
+    parser.add_argument(
+        "--sweep",
+        type=str,
+        default="",
+        help=(
+            "If specified, path to a yaml file to use to for a sweep. See"
+            " ../sweeps/params.yaml"
+        ),
+    )
+    args = parser.parse_args()
+
+    if args.sweep != "":
+        # Run sweeps
+        with open(args.sweep, encoding="utf-8") as f:
+            sweep_params = yaml.load(f, Loader=yaml.FullLoader)
+        wandb.agent(
+            sweep_params["id"],
+            function=lambda: main(args),
+            entity=WANDB_ENTITY_NAME,
+            project=WANDB_PROJECT_NAME,
+            count=sweep_params["count"],
+        )
+    else:
+        main(args)

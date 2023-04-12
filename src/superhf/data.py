@@ -33,7 +33,8 @@ def get_superhf_prompts(dataset_name: str, split: str = "train") -> list[str]:
     Returns:
         A list of prompts.
     """
-    # Load the appropriate dataset
+    # Load the appropriate dataset then convert to a list of prompts
+    prompts: list[str] = []
     if dataset_name == "anthropic-red-team":
         dataset = load_dataset(
             "Anthropic/hh-rlhf",
@@ -41,14 +42,60 @@ def get_superhf_prompts(dataset_name: str, split: str = "train") -> list[str]:
             split=split,
             keep_in_memory=False,
         )
+        prompts.extend(
+            [
+                dict(row)["transcript"].split("\n\nAssistant:")[0] + "\n\nAssistant:"
+                for row in dataset
+            ]
+        )
+    elif dataset_name == "openai/webgpt_comparisons":
+        dataset = load_dataset(
+            dataset_name,
+            split=split,
+            keep_in_memory=False,
+        )
+        prompts.extend(
+            [
+                "\n\nHuman: " + row["question"]["full_text"] + "\n\nAssistant:"
+                for row in dataset
+            ]
+        )
+    elif dataset_name == "anthropic-harmless-base":
+        dataset = load_dataset(
+            "Anthropic/hh-rlhf",
+            data_dir="harmless-base",
+            split=split,
+            keep_in_memory=False,
+        )
+        prompts.extend(
+            [
+                row["chosen"].split("\n\nAssistant:")[0] + "\n\nAssistant:"
+                for row in dataset
+            ]
+        )
+    elif dataset_name == "anthropic-helpful-base":
+        dataset = load_dataset(
+            "Anthropic/hh-rlhf",
+            data_dir="helpful-base",
+            split=split,
+            keep_in_memory=False,
+        )
+        prompts.extend(
+            [
+                row["chosen"].split("\n\nAssistant:")[0] + "\n\nAssistant:"
+                for row in dataset
+            ]
+        )
+    elif dataset_name == "mock":
+        prompts.extend(
+            [
+                f"{i}\n\nHuman: ...\n\nAssistant: Sphinx of black quartz, judge my vow."
+                for i in range(50000)
+            ]
+        )
     else:
         raise ValueError(f"Unknown dataset: {dataset_name}")
 
-    # Convert all the prompts to a list
-    prompts: list[str] = [
-        dict(row)["transcript"].split("\n\nAssistant:")[0] + "\n\nAssistant:"
-        for row in dataset
-    ]
     return prompts
 
 

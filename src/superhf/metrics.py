@@ -46,7 +46,7 @@ def report_metrics_print(metrics: SuperHFMetrics) -> None:
     average_score = np.mean(metrics.scores)
     average_filtered_score = np.mean(metrics.filtered_scores)
     print(
-        "\nSuperbatch"
+        f"\nMetrics at time {time.strftime('%H:%M:%S', time.localtime())}\nSuperbatch"
         f" {metrics.superbatch_index}/{metrics.superbatch_count} ({percent_complete:.3f}%):"
         f" {len(metrics.completions)} completions,"
         f" {len(metrics.filtered_completions)} filtered completions\naverage completion"
@@ -99,7 +99,7 @@ def report_metrics_wandb(metrics: SuperHFMetrics) -> None:
     average_filtered_score = np.mean(metrics.filtered_scores)
 
     # Create plot data of average score if we filtered different top-K numbers
-    max_top_k_to_explore = 32
+    max_top_k_to_explore = 48
     scores_per_top_k: list[list[Any]] = []
     for top_k in range(1, max_top_k_to_explore + 1):
         top_k_filter = CompletionFilterTopK(top_k)

@@ -10,6 +10,15 @@ debug_max_prompts:
 learning_rate:
   desc: Learning rate for fine-tuning the language model.
   value: 1.0e-6
+scheduler_name:
+  desc: Name of the scheduler to use for fine-tuning the language model.
+  value: "linear"
+scheduler_warmup_steps:
+  desc: Number of warmup steps for the scheduler.
+  value: 20
+inverse_loss_penalty:
+  desc: Regularizes loss by C with loss' = loss + C / loss. Set to 0 to disable.
+  value: 0.1
 max_prompt_char_length:
   desc: Maximum number of characters to truncate prompts to
   value: 1024
@@ -25,9 +34,9 @@ superbatch_size:
 completion_filter_top_k:
   desc: Top-k completions to filter and train on.
   value: 8
-max_length_lm:
+max_new_tokens:
   desc: Maximum new token length of language model completion.
-  value: 384
+  value: 256
 max_length_rm:
   desc: Maximum token length of reward model input.
   value: 512
@@ -51,4 +60,21 @@ repetition_penalty:
   value: 1.2
 no_repeat_ngram_size:
   desc: Prevents repeating of n-grams of this size during completion sampling. 0 means no constraint (logits unchanged)
+  value: 0
+prompt_dataset_names:
+  desc: The list of datasets to use for prompts. One or both of "anthropic-red-team" and "openai/webgpt_comparisons"
+  value: ["anthropic-red-team"]
+same_prompt_per_superbatch:
+  desc: Whether to duplicate each prompt so the superbatch is variations on the same prompt.
+  value: True
+length_penalty:
+  desc: Adds -length_penalty * char_length to the reward. 0 means no penalty.
+  value: 0.1
+hub_repo_id:
+  desc: The ID of the HuggingFace Hub repo to use for storing the model. If empty, no model will be stored.
+  # value: "test-repo"
+  value: ""
+push_to_hub_interval:
+  desc: The number of superbatches to train before pushing to the HuggingFace Hub. If 0, no model will be stored.
+  # value: 1
   value: 0
