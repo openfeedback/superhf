@@ -21,7 +21,7 @@ from torch.optim import Adam
 
 from transformers import AutoTokenizer, HfArgumentParser, pipeline, get_scheduler
 
-from datasets import load_dataset, Dataset
+from datasets import Dataset
 
 from trl import (
     PPOTrainer,
@@ -37,86 +37,12 @@ from utils import separate_prompt_from_completion
 import constants
 import wandb
 
+from superhf.data import get_superhf_prompts
+
 T = TypeVar("T")
 
 WANDB_ENTITY_NAME = "stanfordaialignment"
 WANDB_PROJECT_NAME = "rlhf-trl-v1"
-
-
-def get_superhf_prompts(dataset_name: str, split: str = "train") -> list[str]:
-    """
-    Get a list of prompts from a dataset.
-    Args:
-        dataset_name: The name of the dataset to load. One of:
-            - 'anthropic-red-team'
-        split: The split of the dataset to load.
-    Returns:
-        A list of prompts.
-    """
-    # Load the appropriate dataset then convert to a list of prompts
-    prompts: list[str] = []
-    if dataset_name == "anthropic-red-team":
-        dataset = load_dataset(
-            "Anthropic/hh-rlhf",
-            data_dir="red-team-attempts",
-            split=split,
-            keep_in_memory=False,
-        )
-        prompts.extend(
-            [
-                dict(row)["transcript"].split("\n\nAssistant:")[0] + "\n\nAssistant:"
-                for row in dataset
-            ]
-        )
-    elif dataset_name == "openai/webgpt_comparisons":
-        dataset = load_dataset(
-            dataset_name,
-            split=split,
-            keep_in_memory=False,
-        )
-        prompts.extend(
-            [
-                "\n\nHuman: " + row["question"]["full_text"] + "\n\nAssistant:"
-                for row in dataset
-            ]
-        )
-    elif dataset_name == "anthropic-harmless-base":
-        dataset = load_dataset(
-            "Anthropic/hh-rlhf",
-            data_dir="harmless-base",
-            split=split,
-            keep_in_memory=False,
-        )
-        prompts.extend(
-            [
-                row["chosen"].split("\n\nAssistant:")[0] + "\n\nAssistant:"
-                for row in dataset
-            ]
-        )
-    elif dataset_name == "anthropic-helpful-base":
-        dataset = load_dataset(
-            "Anthropic/hh-rlhf",
-            data_dir="helpful-base",
-            split=split,
-            keep_in_memory=False,
-        )
-        prompts.extend(
-            [
-                row["chosen"].split("\n\nAssistant:")[0] + "\n\nAssistant:"
-                for row in dataset
-            ]
-        )
-    elif dataset_name == "mock":
-        prompts.extend(
-            [
-                f"{i}\n\nHuman: ...\n\nAssistant: Sphinx of black quartz, judge my vow."
-                for i in range(50000)
-            ]
-        )
-    else:
-        raise ValueError(f"Unknown dataset: {dataset_name}")
-
-    return prompts
 
 
 # We first define the configuration of the experiment, defining the model, the dataset,
