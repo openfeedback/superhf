@@ -11,12 +11,18 @@ RewardModelTrainer.compute_loss(model, inputs) accepts this dict as the
 
 import datetime
 
+import logging
+import os
+import sys
+
 
 import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.utils.data import Dataset
+import datasets
+import transformers
 from transformers import (
     Trainer,
     TrainingArguments,
@@ -169,12 +175,27 @@ class PreferenceDataCollator:
 
 
 if __name__ == "__main__":
+    # setup logging
+    logger = logging.getLogger(__name__)
+    # Setup logging
+    logging.basicConfig(
+        format="%(asctime)s - %(levelname)s - %(name)s - %(message)s",
+        datefmt="%m/%d/%Y %H:%M:%S",
+        handlers=[logging.StreamHandler(sys.stdout)],
+    )
+
+    # The default of training_args.log_level is passive, so we set log level at info here to have that default.
+    transformers.utils.logging.set_verbosity_info()
+
     from preference_datasets import AnthropicHelpfulHarmless
     # device='cpu'
-    model_name = "distilbert-base-uncased"
+    # model_name = "distilbert-base-uncased"
     # model_name = "EleutherAI/gpt-neo-1.3B"
     # model_name = "EleutherAI/gpt-neo-125M"
     # model_name = "facebook/xglm-4.5B"
+    model_name = "facebook/xglm-2.9B"
+    # model_name = "t5-3b"
+    
     tokenizer = AutoTokenizer.from_pretrained(model_name, max_length=512)
     if tokenizer.pad_token == None:
         tokenizer.pad_token = tokenizer.eos_token
@@ -186,8 +207,8 @@ if __name__ == "__main__":
     arguments = TrainingArguments(
         output_dir=model_output_dir,
         logging_steps=10,
-        per_device_train_batch_size=32,
-        per_device_eval_batch_size=32,
+        per_device_train_batch_size=1,
+        per_device_eval_batch_size=1,
         num_train_epochs=1,
         do_eval=True,
         evaluation_strategy="steps",
@@ -200,16 +221,25 @@ if __name__ == "__main__":
         learning_rate=1e-5,
         weight_decay=0.001,
         report_to="wandb",
+        # bf16=True,
         # gradient_accumulation_steps=16,
-        fp16=True,
+        # fp16=True,
         # optim='adafactor',
         # log_level='debug',
         # label_names='label',
         gradient_checkpointing=True,
         ddp_find_unused_parameters=False,
-        push_to_hub=True,
-        hub_model_id='distilbert-base-uncased-rm-harmless'
+        # push_to_hub=True,
+        # hub_model_id='gptneo-1.3B-rm-harmless'
     )
+
+    log_level = arguments.get_process_log_level()
+    logger.setLevel(log_level)
+    datasets.utils.logging.set_verbosity(log_level)
+    transformers.utils.logging.set_verbosity(log_level)
+    transformers.utils.logging.enable_default_handler()
+    transformers.utils.logging.enable_explicit_format()
+
 
     train_dataset = AnthropicHelpfulHarmless("train", data_dir="harmless-base")
     eval_dataset = AnthropicHelpfulHarmless("test",data_dir="harmless-base")
