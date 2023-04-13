@@ -3,6 +3,7 @@
 import re
 
 # What we assume is the end of the prompt
+HUMAN_DELIMITER = "\n\nHuman:"
 PROMPT_DELIMITER = "\n\nAssistant:"
 
 # Matches "\n\n{anything}:" for pruning additional generated turns

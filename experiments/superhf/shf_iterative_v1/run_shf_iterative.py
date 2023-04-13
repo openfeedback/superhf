@@ -11,6 +11,7 @@ from transformers import (
     AutoTokenizer,
     AutoModelForCausalLM,
     AutoModelForSequenceClassification,
+    AutoModelForSeq2SeqLM,
     LogitsProcessorList,
     NoRepeatNGramLogitsProcessor,
     RepetitionPenaltyLogitsProcessor,
@@ -107,8 +108,12 @@ def main(argparse_args: argparse.Namespace) -> None:
     reward_model = (
         MockRewardModel()
         if reward_model_name == "mock"
-        else AutoModelForSequenceClassification.from_pretrained(reward_model_name).to(
-            device
+        else (
+            AutoModelForSequenceClassification.from_pretrained(reward_model_name).to(
+                device
+            )
+            if "SteamSHP-flan-t5" not in reward_model_name
+            else AutoModelForSeq2SeqLM.from_pretrained(reward_model_name).to(device)
         )
     )
     language_tokenizer_name = (
