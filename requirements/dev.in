@@ -11,3 +11,6 @@ ipython
 ipywidgets
 types-tqdm
 wandb
+sentencepiece
+# protodoc<=3.20.0
+# grpcio-tools
