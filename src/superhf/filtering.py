@@ -3,6 +3,7 @@ Functions for filtering completions in SuperHF training.
 """
 
 from abc import ABC, abstractmethod
+from typing import Any
 
 
 class CompletionFilterBase(ABC):
@@ -12,12 +13,12 @@ class CompletionFilterBase(ABC):
 
     @abstractmethod
     def filter(
-        self, completions: list[str], scores: list[float], completion_lenghts: list[int]
-    ) -> tuple[list[str], list[float]]:
+        self, scores: list[float], *data: list[list[Any]]
+    ) -> tuple[list[float], list[list[Any]]]:
         """
         Filter the completions by the scores.
 
-        Returns both the completions and the scores.
+        Returns both the scores and other things you want to filter (e.g. the text completions).
         """
         raise NotImplementedError
 
@@ -34,30 +35,26 @@ class CompletionFilterTopK(CompletionFilterBase):
         self.top_k = top_k
 
     def filter(
-        self, completions: list[str], scores: list[float], completion_lenghts: list[int]
-    ) -> tuple[list[str], list[float]]:
+        self, scores: list[float], *data: list[Any]
+    ) -> tuple[list[float], list[list[Any]]]:
         """
-        Filter the completions by the top-k scores.
+        Filter the completions by the scores.
 
-        Returns both the completions and the scores.
+        Returns both the scores and other things you want to filter (e.g. the text completions).
         """
         # Sort the completions by their scores
-        sorted_completions = sorted(
-            zip(completions, scores, completion_lenghts),
-            key=lambda x: x[1],
+        sorted_completions_packed = sorted(
+            zip(scores, *data),
+            key=lambda x: float(x[0]),
             reverse=True,
         )
 
         # Filter the completions by the top-k scores
-        filtered_completions = sorted_completions[: self.top_k]
+        filtered_completions_packed = sorted_completions_packed[: self.top_k]
 
-        # Return the filtered completions and their scores
-        # completions = [completion for completion, _ in filtered_completions]
-        # scores = [score for _, score in filtered_completions]
-        # Re-write this a better way using list comprehension:
-        unzipped = tuple(zip(*filtered_completions))
-        completions = list(unzipped[0])
-        scores = list(unzipped[1])
-        completion_lenghts = list(unzipped[2])
+        # Return the filtered scores and appropriate data
+        unzipped = tuple(zip(*filtered_completions_packed))
+        scores = list(unzipped[0])
+        filtered_data = [list(x) for x in unzipped[1:]]
 
-        return completions, scores, completion_lenghts
+        return scores, filtered_data

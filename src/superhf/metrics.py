@@ -96,8 +96,9 @@ def report_metrics_wandb(metrics: SuperHFMetrics) -> None:
     scores_per_top_k: list[list[Any]] = []
     for top_k in range(1, max_top_k_to_explore + 1):
         top_k_filter = CompletionFilterTopK(top_k)
-        _, scores, _ = top_k_filter.filter(
-            metrics.completions, metrics.scores, metrics.completion_lengths
+        scores, _ = top_k_filter.filter(
+            metrics.scores,
+            metrics.completions,
         )
         mean, variance = np.mean(scores), np.var(scores)
         scores_per_top_k.append([top_k, mean, variance])

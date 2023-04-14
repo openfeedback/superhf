@@ -181,7 +181,7 @@ class SuperHFTrainer:
             )
             print_gpu_utilization()
             # Generate completions for each prompt in the superbatch
-            completions_encoded = find_executable_batch_size(
+            completions_raw = find_executable_batch_size(
                 self.generate_completions,
                 self.training_args.minibatch_size_generating,
             )(superbatch_prompts)
@@ -189,19 +189,26 @@ class SuperHFTrainer:
             tqdm.write("Before scoring ", end="")
             print_gpu_utilization()
             # Score the completions
-            completions, scores, completion_lengths = find_executable_batch_size(
+            (
+                scores,
+                completions_trimmed,
+                completion_lengths,
+            ) = find_executable_batch_size(
                 self.score_completions,
                 self.training_args.minibatch_size_scoring,
-            )(completions_encoded)
+            )(
+                completions_raw
+            )
 
             tqdm.write("Before filtering ", end="")
             print_gpu_utilization()
             # Filter the completions
             (
-                filtered_completions,
                 filtered_scores,
-                filtered_completion_lengths,
-            ) = self.completion_filter.filter(completions, scores, completion_lengths)
+                (filtered_completions, filtered_completion_lengths),
+            ) = self.completion_filter.filter(
+                scores, completions_trimmed, completion_lengths
+            )
 
             # Fine-tune the language model on the filtered completions
             average_loss = find_executable_batch_size(
@@ -213,7 +220,7 @@ class SuperHFTrainer:
             metrics = SuperHFMetrics(
                 superbatch_index=superbatch_index,
                 superbatch_count=len(prompts_dataloader),
-                completions=completions,
+                completions=completions_raw,
                 filtered_completions=filtered_completions,
                 scores=scores,
                 filtered_scores=filtered_scores,
@@ -291,7 +298,7 @@ class SuperHFTrainer:
         self,
         minibatch_size: int,
         superbatch_prompts: list[str],
-    ) -> list[TensorType["batch", "seq_len"]]:
+    ) -> list[str]:
         """
         Generate completions for the prompts in the superbatch.
 
@@ -311,7 +318,7 @@ class SuperHFTrainer:
             pin_memory=True,
         )
 
-        completions: list[TensorType["batch", "seq_len"]] = []
+        completions_encoded: list[TensorType["batch", "seq_len"]] = []
         with torch.no_grad():
             for minibatch in tqdm(
                 completion_dataloader,
@@ -320,7 +327,7 @@ class SuperHFTrainer:
             ):
                 encodings = minibatch
                 encodings.to(self.language_model.device)
-                completions.extend(
+                completions_encoded.extend(
                     self.language_model.generate(
                         **encodings,
                         max_new_tokens=self.training_args.max_new_tokens,
@@ -335,78 +342,80 @@ class SuperHFTrainer:
         # completions_gathered: list[str] = accelerator.gather(
         #     completions
         # )  # TODO Unclear whether this is needed?
-        return completions
+        completions_text = self.language_tokenizer.batch_decode(
+            completions_encoded, skip_special_tokens=True
+        )
+        return completions_text
 
     def collate_fn_rm(
-        self, batch: list[TensorType["batch", "seq_len"]]
-    ) -> tuple[list[str], BatchEncoding]:
+        self, completions: list[str]
+    ) -> tuple[list[str], BatchEncoding, list[int]]:
         """
         Collate function for the reward model's dataloader.
 
         Takes encoded completions from the language model, decodes them, encodes them for the
         reward model, and returns both the decoded completion text and re-encoded completions.
         """
-        raw_completions = self.language_tokenizer.batch_decode(
-            batch, skip_special_tokens=True
-        )
 
         # Remove completions after any extra "\n\nHuman:", "\n\nA:", "\n\nH:", or similar.
         # This is to prevent the model from learning to generate additional turns of conversation.
         prompts_and_completions = [
-            separate_prompt_from_completion(completion)
-            for completion in raw_completions
+            separate_prompt_from_completion(completion) for completion in completions
         ]
-        trimmed_completions: list[str] = []
-        model_completion_lengths: list[int] = []
+        completions_for_lm: list[str] = []
+        completions_for_rm: list[str] = []
+        completion_lengths: list[int] = []
         for prompt, completion in prompts_and_completions:
             stripped_completion = re.split(
                 constants.PROMPT_DELIMITER_REGEX_COMPLEX, completion, maxsplit=1
             )[0].strip()
             if stripped_completion == "":
                 continue
+            completion_lengths.append(len(stripped_completion))
+            joined_completion_normal = prompt + " " + stripped_completion
+            completions_for_lm.append(joined_completion_normal)
             if self.training_args.reward_model_is_steamshp:
                 # Handle the weird SteamSHP format
                 prompt_only = prompt.split(constants.HUMAN_DELIMITER)[1].split(
                     constants.PROMPT_DELIMITER
                 )[0]
-                joined_completion = (
+                joined_completion_shp = (
                     f"POST:{prompt_only}\n\n"
                     f" RESPONSE A: {stripped_completion}\n\n RESPONSE B: .\n\n Which"
                     " response is better? RESPONSE"
                 )
+                completions_for_rm.append(joined_completion_shp)
             else:
                 # Concat normally
-                joined_completion = prompt + " " + stripped_completion
-            trimmed_completions.append(joined_completion)
-            model_completion_lengths.append(len(stripped_completion))
+                completions_for_rm.append(joined_completion_normal)
 
         return (
-            trimmed_completions,
+            completions_for_lm,
             self.reward_tokenizer(
-                trimmed_completions,
+                completions_for_rm,
                 return_tensors="pt",
                 padding=True,
                 truncation=True,
                 max_length=self.training_args.max_length_rm,
             ).to(self.reward_model.device),
-            model_completion_lengths,
+            completion_lengths,
         )
 
     def score_completions(
         self,
         minibatch_size: int,
         completions_encoded: list[TensorType["batch", "seq_len"]],
-    ) -> tuple[list[str], list[TensorType[1]], list[int]]:
+    ) -> tuple[list[TensorType[1]], list[str], list[int]]:
         """
         Score the completions.
 
-        Returns a tuple of the decoded completions and the scores.
+        Returns a tuple of the scores and the lengths of just the LM-generated completion parts.
 
         If using accelerate for this step, will need to update collate_fn_rm to not set device.
         """
         self.training_args.minibatch_size_scoring = minibatch_size
-        all_completions: list[str] = []
         all_scores: list[TensorType[1]] = []
+        all_completions_trimmed: list[str] = []
         all_completion_lengths: list[int] = []
 
         score_dataloader = DataLoader(
@@ -419,7 +428,11 @@ class SuperHFTrainer:
             iteration = 0
             for minibatch in tqdm(score_dataloader, desc="Scoring"):
                 iteration += 1
-                completions, completion_encodings, completion_lengths = minibatch
+                (
+                    completions_trimmed,
+                    completion_encodings,
+                    completion_lengths,
+                ) = minibatch
                 if self.training_args.reward_model_is_steamshp:
                     # Handle the weird SteamSHP format
                     outputs = self.reward_model.generate(
@@ -440,10 +453,10 @@ class SuperHFTrainer:
                     scores -= self.training_args.length_penalty * torch.log(
                         torch.tensor(completion_lengths)
                     )
-                all_completions.extend(completions)
                 all_scores.extend(scores.tolist())
+                all_completions_trimmed.extend(completions_trimmed)
                 all_completion_lengths.extend(completion_lengths)
-        return all_completions, all_scores, all_completion_lengths
+        return all_scores, all_completions_trimmed, all_completion_lengths
 
     def collate_fn_lm_finetuning(self, batch: list[str]) -> BatchEncoding:
         """
