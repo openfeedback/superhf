@@ -3,7 +3,7 @@ language_model_name:
   value: "theblackcat102/pythia-1b-deduped-sft"
 reward_model_name:
   desc: HuggingFace reward model to use, or "mock" for testing
-  value: "stanfordnlp/SteamSHP-flan-t5-xl"
+  value: "stanfordnlp/SteamSHP-flan-t5-large"
 debug_max_prompts:
   desc: Maximum number of prompts to use, or 0 for unlimited
   value: 4000
