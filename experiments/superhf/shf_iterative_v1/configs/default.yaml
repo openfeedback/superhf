@@ -6,7 +6,7 @@ reward_model_name:
   value: "stanfordnlp/SteamSHP-flan-t5-xl"
 debug_max_prompts:
   desc: Maximum number of prompts to use, or 0 for unlimited
-  value: 4000
+  value: 10000
 learning_rate:
   desc: Learning rate for fine-tuning the language model.
   value: 3.0e-7
@@ -15,7 +15,7 @@ scheduler_name:
   value: "cosine"
 scheduler_warmup_steps:
   desc: Number of warmup steps for the scheduler.
-  value: 16
+  value: 20
 inverse_loss_penalty:
   desc: Regularizes loss by C with loss' = loss + C / loss. Set to 0 to disable.
   value: 0.01
