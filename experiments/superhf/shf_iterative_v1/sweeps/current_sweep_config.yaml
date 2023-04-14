@@ -4,6 +4,11 @@ metric:
   goal: maximize
   name: average_score.max
 parameters:
+  conversation_prompt:
+  values:
+    - "A human user asks a question or says a statement, and an AI assistant responds."
+    - ""
+    - "You are a helpful assistant."
   # language_model_name:
   #   values:
   #     - "EleutherAI/pythia-1.4b-deduped"
