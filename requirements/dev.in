@@ -4,13 +4,13 @@ pre-commit
 black
 pylint
 mypy
-sphinx
-esbonio
+# sphinx
+# esbonio
 ipykernel
 ipython
 ipywidgets
 types-tqdm
 wandb
 sentencepiece
-# protodoc<=3.20.0
+protobuf<4.0.0  # Fix an issue with loading the T5 tokenizer
 # grpcio-tools
