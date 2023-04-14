@@ -522,7 +522,8 @@ class SuperHFTrainer:
                 " loss."
             )
 
-        return sum_loss / (len(finetuning_dataloader) - num_invalid_losses)
+        num_valid_losses = len(finetuning_dataloader) - num_invalid_losses
+        return sum_loss / num_valid_losses if num_valid_losses > 0 else 0
 
     def save_model(self) -> None:
         """
