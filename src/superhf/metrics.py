@@ -10,7 +10,6 @@ import numpy as np
 import wandb
 
 from superhf.filtering import CompletionFilterTopK
-from superhf.utils import separate_prompt_from_completion
 
 
 @dataclass
@@ -29,6 +28,8 @@ class SuperHFMetrics:
     filtered_scores: list[float]
     average_loss: float
     scheduler_lr: float
+    completion_lengths: list[int]
+    filtered_completion_lengths: list[int]
 
 
 ### Printing ###
@@ -87,14 +88,6 @@ def report_metrics_wandb(metrics: SuperHFMetrics) -> None:
     - Histogram of filtered score if we filtered different top-K numbers
     """
     percent_complete = (metrics.superbatch_index + 1) / metrics.superbatch_count * 100
-    completion_lengths = [
-        len(separate_prompt_from_completion(completion)[1])
-        for completion in metrics.completions
-    ]
-    filtered_completion_length = [
-        len(separate_prompt_from_completion(completion)[1])
-        for completion in metrics.filtered_completions
-    ]
     average_score = np.mean(metrics.scores)
     average_filtered_score = np.mean(metrics.filtered_scores)
 
@@ -103,7 +96,9 @@ def report_metrics_wandb(metrics: SuperHFMetrics) -> None:
     scores_per_top_k: list[list[Any]] = []
     for top_k in range(1, max_top_k_to_explore + 1):
         top_k_filter = CompletionFilterTopK(top_k)
-        _, scores = top_k_filter.filter(metrics.completions, metrics.scores)
+        _, scores, _ = top_k_filter.filter(
+            metrics.completions, metrics.scores, metrics.completion_lengths
+        )
         mean, variance = np.mean(scores), np.var(scores)
         scores_per_top_k.append([top_k, mean, variance])
 
@@ -117,11 +112,13 @@ def report_metrics_wandb(metrics: SuperHFMetrics) -> None:
             "filtered_score_histogram": wandb.Histogram(metrics.filtered_scores),
             "average_loss": metrics.average_loss,
             "scheduler_lr": metrics.scheduler_lr,
-            "average_completion_length": np.mean(completion_lengths),
-            "completion_length_histogram": wandb.Histogram(completion_lengths),
-            "average_filtered_completion_length": np.mean(filtered_completion_length),
+            "average_completion_length": np.mean(metrics.completion_lengths),
+            "completion_length_histogram": wandb.Histogram(metrics.completion_lengths),
+            "average_filtered_completion_length": np.mean(
+                metrics.filtered_completion_lengths
+            ),
             "filtered_completion_length_histogram": wandb.Histogram(
-                filtered_completion_length
+                metrics.filtered_completion_lengths
             ),
             "completions": wandb.Table(
                 columns=["superbatch", "completion", "score"],

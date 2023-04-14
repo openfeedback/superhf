@@ -12,7 +12,7 @@ class CompletionFilterBase(ABC):
 
     @abstractmethod
     def filter(
-        self, completions: list[str], scores: list[float]
+        self, completions: list[str], scores: list[float], completion_lenghts: list[int]
     ) -> tuple[list[str], list[float]]:
         """
         Filter the completions by the scores.
@@ -34,7 +34,7 @@ class CompletionFilterTopK(CompletionFilterBase):
         self.top_k = top_k
 
     def filter(
-        self, completions: list[str], scores: list[float]
+        self, completions: list[str], scores: list[float], completion_lenghts: list[int]
     ) -> tuple[list[str], list[float]]:
         """
         Filter the completions by the top-k scores.
@@ -43,7 +43,9 @@ class CompletionFilterTopK(CompletionFilterBase):
         """
         # Sort the completions by their scores
         sorted_completions = sorted(
-            zip(completions, scores), key=lambda x: x[1], reverse=True
+            zip(completions, scores, completion_lenghts),
+            key=lambda x: x[1],
+            reverse=True,
         )
 
         # Filter the completions by the top-k scores
@@ -56,5 +58,6 @@ class CompletionFilterTopK(CompletionFilterBase):
         unzipped = tuple(zip(*filtered_completions))
         completions = list(unzipped[0])
         scores = list(unzipped[1])
+        completion_lenghts = list(unzipped[2])
 
-        return completions, scores
+        return completions, scores, completion_lenghts

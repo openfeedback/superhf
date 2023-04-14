@@ -150,6 +150,8 @@ class SuperHFTrainer:
         """
         Main training and evaluation loop.
         """
+        # pylint: disable=too-many-locals
+
         # First, put all the prompts into a Dataset and DataLoader
         prompts_dataloader = DataLoader(
             ListDataset(prompts),
@@ -187,7 +189,7 @@ class SuperHFTrainer:
             tqdm.write("Before scoring ", end="")
             print_gpu_utilization()
             # Score the completions
-            completions, scores = find_executable_batch_size(
+            completions, scores, completion_lengths = find_executable_batch_size(
                 self.score_completions,
                 self.training_args.minibatch_size_scoring,
             )(completions_encoded)
@@ -195,9 +197,11 @@ class SuperHFTrainer:
             tqdm.write("Before filtering ", end="")
             print_gpu_utilization()
             # Filter the completions
-            filtered_completions, filtered_scores = self.completion_filter.filter(
-                completions, scores
-            )
+            (
+                filtered_completions,
+                filtered_scores,
+                filtered_completion_lengths,
+            ) = self.completion_filter.filter(completions, scores, completion_lengths)
 
             # Fine-tune the language model on the filtered completions
             average_loss = find_executable_batch_size(
@@ -215,6 +219,8 @@ class SuperHFTrainer:
                 filtered_scores=filtered_scores,
                 average_loss=average_loss,
                 scheduler_lr=self.scheduler.get_last_lr()[0],
+                completion_lengths=completion_lengths,
+                filtered_completion_lengths=filtered_completion_lengths,
             )
             if self.report_metrics is not None:
                 for report_metrics_function in self.report_metrics:
@@ -390,7 +396,7 @@ class SuperHFTrainer:
         self,
         minibatch_size: int,
         completions_encoded: list[TensorType["batch", "seq_len"]],
-    ) -> tuple[list[str], list[TensorType[1]]]:
+    ) -> tuple[list[str], list[TensorType[1]], list[int]]:
         """
         Score the completions.
 
@@ -401,6 +407,7 @@ class SuperHFTrainer:
         self.training_args.minibatch_size_scoring = minibatch_size
         all_completions: list[str] = []
         all_scores: list[TensorType[1]] = []
+        all_completion_lengths: list[int] = []
 
         score_dataloader = DataLoader(
             ListDataset(completions_encoded),
@@ -435,7 +442,8 @@ class SuperHFTrainer:
                     )
                 all_completions.extend(completions)
                 all_scores.extend(scores.tolist())
-        return all_completions, all_scores
+                all_completion_lengths.extend(completion_lengths)
+        return all_completions, all_scores, all_completion_lengths
 
     def collate_fn_lm_finetuning(self, batch: list[str]) -> BatchEncoding:
         """
