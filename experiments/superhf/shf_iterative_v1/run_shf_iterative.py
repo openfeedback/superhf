@@ -32,7 +32,7 @@ from superhf.training import SuperHFTrainingArguments, SuperHFTrainer
 from superhf.utils import set_seed, print_gpu_utilization
 
 WANDB_ENTITY_NAME = "stanfordaialignment"
-WANDB_PROJECT_NAME = "shf-iterative-v2"
+WANDB_PROJECT_NAME = "superhf-v3"
 
 
 def main(argparse_args: argparse.Namespace) -> None:
