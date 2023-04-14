@@ -45,7 +45,7 @@ minibatch_size_generating:
   value: 32
 minibatch_size_scoring:
   desc: Size of minibatches for scoring completions.
-  value: 32
+  value: 4
 minibatch_size_finetuning:
   desc: Size of minibatches for fine-tuning the language model.
   value: 8

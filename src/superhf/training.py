@@ -72,6 +72,9 @@ class SuperHFTrainingArguments:
     # Reward shaping
     length_penalty: float = 0.0
 
+    # Reward model settings
+    reward_model_is_steamshp: bool = False
+
     # Push to hub (set to 0 to disable)
     hub_repo_id: Optional[str] = None
     push_to_hub_interval: int = 0
@@ -355,7 +358,20 @@ class SuperHFTrainer:
             )[0].strip()
             if stripped_completion == "":
                 continue
-            trimmed_completions.append(prompt + " " + stripped_completion)
+            if self.training_args.reward_model_is_steamshp:
+                # Handle the weird SteamSHP format
+                prompt_only = prompt.split(constants.HUMAN_DELIMITER)[1].split(
+                    constants.PROMPT_DELIMITER
+                )[0]
+                joined_completion = (
+                    f"POST:{prompt_only}\n\n"
+                    f" RESPONSE A: {stripped_completion}\n\n RESPONSE B: .\n\n Which"
+                    " response is better? RESPONSE"
+                )
+            else:
+                # Concat normally
+                joined_completion = prompt + " " + stripped_completion
+            trimmed_completions.append(joined_completion)
             model_completion_lengths.append(len(stripped_completion))
 
         return (
@@ -397,8 +413,21 @@ class SuperHFTrainer:
             for minibatch in tqdm(score_dataloader, desc="Scoring"):
                 iteration += 1
                 completions, completion_encodings, completion_lengths = minibatch
-                scores = self.reward_model(**completion_encodings)
-                scores = scores.logits.flatten().cpu()
+                if self.training_args.reward_model_is_steamshp:
+                    # Handle the weird SteamSHP format
+                    outputs = self.reward_model.generate(
+                        **completion_encodings,
+                        return_dict_in_generate=True,
+                        output_scores=True,
+                        max_new_tokens=1,
+                    )
+                    # index 71 corresponds to the token for 'A'
+                    scores = (
+                        torch.softmax(outputs.scores[0], dim=1)[:, 71].flatten().cpu()
+                    )
+                else:
+                    scores = self.reward_model(**completion_encodings)
+                    scores = scores.logits.flatten().cpu()
                 if self.training_args.length_penalty != 0.0:
                     # Add -length_penalty * char_length to penalize long completions.
                     scores -= self.training_args.length_penalty * torch.log(
