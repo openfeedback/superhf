@@ -39,22 +39,25 @@ parameters:
   #   - ["anthropic-harmless-base", "openai/webgpt_comparisons"]
   inverse_loss_penalty:
     values:
-      - 0.0003
+      - 0.0
       - 0.001
-      - 0.003
       - 0.01
-  superbatch_size:
-    values:
-      - 8
-      - 16
-      - 24
-      - 32
-      - 48
-  # learning_rate:
+  # superbatch_size:
   #   values:
-  #     - 1.0e-5
-  #     - 3.0e-6
-  #     - 1.0e-6
+  #     - 8
+  #     - 16
+  #     - 24
+  #     - 32
+  #     - 48
+  learning_rate:
+    values:
+      - 1.0e-6
+      - 3.0e-7
+      - 1.0e-7
+  top_p:
+    values:
+      - 0.95
+      - 0.9
   # max_new_tokens:
   #   values:
   #     - 64
@@ -64,13 +67,11 @@ parameters:
   #   values:
   #     - True
   #     - False
-  # length_penalty:
-  #   values:
-  #     - 0.1
-  #     - 0.03
-  #     - 0.01
-  #     - 0.003
-  #     - 0.001
-  #     - 0.0003
-  #     - 0.0001
-  #     - 0.0
+  repetition_penalty:
+    values:
+      - 1.05
+      - 1.0
+  length_penalty:
+    values:
+      - 0.1
+      - 0.0
