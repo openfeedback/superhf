@@ -1,7 +1,7 @@
 import random
 
 class CombinedDataset:
-    def __init__(self, datasets, split_ratio=0.8):
+    def __init__(self, datasets, split_ratio=0.5):
         self.winner_pairs = []
         self.loser_pairs = []
 
@@ -45,14 +45,19 @@ class CombinedDataset:
         random.shuffle(self.indices)
 
 
+
 web_gpt_comparisons = WebGPTComparisons()
 anthropic_helpful_harmless = AnthropicHelpfulHarmless()
-
+summarize_feedback = SummarizeFromFeedbackComparisons()
+instrucptgpt_pairwise = CompatibleSyntheticInstructGPTJPairwise()
 
 combined_dataset = CombinedDataset([
     web_gpt_comparisons,
     anthropic_helpful_harmless,
+    instrucptgpt_pairwise,
+    summarize_feedback
 ])
+
 
 combined_dataset.shuffle()
 
