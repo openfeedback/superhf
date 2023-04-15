@@ -22,9 +22,10 @@ class WebGPTComparisons(Dataset):
         return re.sub(r'\[\d+\]', '', text)
 
     def __getitem__(self, idx):
-        return self.questions[idx], self.winner_responses[idx], self.loser_responses[idx]
+        question = self.questions[idx]
+        winner_response = f"{question} {self.winner_responses[idx]}"
+        loser_response = f"{question} {self.loser_responses[idx]}"
+        return winner_response, loser_response
 
     def __len__(self):
         return len(self.winner_responses)
-
-
