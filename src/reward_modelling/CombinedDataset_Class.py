@@ -2,14 +2,16 @@ import random
 
 class CombinedDataset:
     def __init__(self, datasets, split_ratio=0.8):
-        self.response_pairs = []
+        self.winner_pairs = []
+        self.loser_pairs = []
 
         for dataset in datasets:
             for idx in range(len(dataset)):
                 winner, loser = dataset.winner_responses[idx], dataset.loser_responses[idx]
-                self.response_pairs.append((winner, loser))
+                self.winner_pairs.append(winner)
+                self.loser_pairs.append(loser)
 
-        self.total_length = len(self.response_pairs)
+        self.total_length = len(self.winner_pairs)
         self.indices = list(range(self.total_length))
 
         # Shuffle the indices before splitting
@@ -27,7 +29,9 @@ class CombinedDataset:
         else:
             raise ValueError("Invalid split, use 'train' or 'val'")
 
-        return self.response_pairs[idx]
+        return self.winner_pairs[idx], self.loser_pairs[idx]
+
+
 
     def __len__(self, split="train"):
         if split == "train":
@@ -49,7 +53,6 @@ combined_dataset = CombinedDataset([
     web_gpt_comparisons,
     anthropic_helpful_harmless,
 ])
-
 
 combined_dataset.shuffle()
 
