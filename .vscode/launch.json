@@ -60,5 +60,17 @@
             ],
             "justMyCode": false
         },
+        {
+            "name": "RLHF Iter (Mock)",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/experiments/rlhf/rlhf_v1/run_rlhf.py",
+            "console": "integratedTerminal",
+            "args": [
+                "--config",
+                "${workspaceFolder}/experiments//rlhf/rlhf_v1/configs/mock.yaml",
+            ],
+            "justMyCode": false
+        },
     ]
 }
