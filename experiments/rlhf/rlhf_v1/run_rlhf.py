@@ -1,6 +1,9 @@
 """
 Script for running RLHF to compare with SuperHF.
 
+Utilizes hugging face pipelines for the reward model, and PPO trainer from TRL
+to train the language model.
+
 Example usage:
     python run_rlhf.py \
         --model_name "EleutherAI/gpt-neo-125M" \
@@ -15,7 +18,7 @@ from typing import Optional, TypeVar
 from dataclasses import dataclass, field
 
 from tqdm import tqdm
-
+import yaml
 import torch
 from torch.optim import Adam
 
@@ -66,6 +69,9 @@ class ScriptArguments:
     )
     notes: Optional[str] = field(
         default="", metadata={"help": "notes to add to the wandb run"}
+    )
+    sweep: Optional[str] = field(
+        default="", metadata={"help": "path to a yaml file to use to for a sweep"}
     )
 
 
@@ -134,12 +140,11 @@ def build_dataset(
     return dataset
 
 
-def main():
+def main(script_args: ScriptArguments):
     """
     Main function
     """
     # pylint: disable=too-many-locals
-    script_args = parse_args()
     wandb.init(
         entity=WANDB_ENTITY_NAME,
         project=WANDB_PROJECT_NAME,
@@ -166,11 +171,11 @@ def main():
         ppo_config.model_name, padding_side="left"
     )
 
-    sent_kwargs = {
+    reward_model_kwargs = {
         "top_k": None,
         "function_to_apply": "none",
         "batch_size": wandb.config.batch_size,
-    }
+    }  # arguments for the
 
     # set seed before initializing value head for deterministic eval
     set_seed(ppo_config.seed)
@@ -214,16 +219,13 @@ def main():
         data_collator=collator,
         optimizer=optimizer,
         lr_scheduler=scheduler,
-    )  # , data_collator=collator)
+    )
 
-    # We then build the sentiment analysis pipeline, passing the model name and the
-    # sentiment analysis pipeline arguments. Let's also make sure to set the device
-    # to the same device as the PPOTrainer.
     device = ppo_trainer.accelerator.device
     if ppo_trainer.accelerator.num_processes == 1:
         device = 0 if torch.cuda.is_available() else "cpu"  # to avoid a `pipeline` bug
-    # This pipelinle is for hte reward model
-    sentiment_pipe = pipeline(model=wandb.config.reward_model_name, device=device)
+    # This pipelinle is for the reward model
+    reward_model_pipe = pipeline(model=wandb.config.reward_model_name, device=device)
     print(f"The device is {device}")
 
     # We then define the arguments to pass to the `generate` function. These arguments
@@ -259,16 +261,17 @@ def main():
             generation_kwargs["max_new_tokens"] = wandb.config.max_new_tokens
             response = ppo_trainer.generate(query, **generation_kwargs)
             response_tensors.append(response.squeeze())
-        batch["response"] = [tokenizer.decode(r.squeeze()) for r in response_tensors]
-        batch["response"] = trim_generations(batch["response"])
+        batch["response"] = trim_generations(
+            [tokenizer.decode(r.squeeze()) for r in response_tensors]
+        )
 
         # Compute sentiment score
         texts = [q + r for q, r in zip(batch["query"], batch["response"])]
-        pipe_outputs = sentiment_pipe(texts, **sent_kwargs)
+        pipe_outputs = reward_model_pipe(texts, **reward_model_kwargs)
         if len(pipe_outputs[0]) > 1:
             print(
                 f"len of output is {len(pipe_outputs[0])}, so maybe it should be"
-                " output[1]['score']?"
+                " output[1]['score'] instead?"
             )
         rewards = [torch.tensor(output[0]["score"]) for output in pipe_outputs]
 
@@ -322,4 +325,17 @@ def trim_generations(raw_completions: list[str]) -> list[str]:
 
 
 if __name__ == "__main__":
-    main()
+    args = parse_args()
+    if args.sweep != "":
+        # Run sweeps
+        with open(args.sweep, encoding="utf-8") as f:
+            sweep_params = yaml.load(f, Loader=yaml.FullLoader)
+        wandb.agent(
+            sweep_params["id"],
+            function=lambda: main(args),
+            entity=WANDB_ENTITY_NAME,
+            project=WANDB_PROJECT_NAME,
+            count=sweep_params["count"],
+        )
+    else:
+        main(args)
