@@ -52,3 +52,6 @@ init_kl_coef:
 normalize_reward:
   desc: Whether to normalize the reward to have mean zero
   value: true
+reward_mean:
+  desc: The mean of the reward distribution, if we are normalizing it.
+  value: 0.0

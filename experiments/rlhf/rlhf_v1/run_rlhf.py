@@ -229,6 +229,7 @@ def main(script_args: ScriptArguments):
     run_name = wandb.run.name
     hub_repo_id = wandb.config.hub_repo_id
     save_every = wandb.config.save_every
+    reward_mean = wandb.config.reward_mean
 
     # create a ppo trainer config, model, ref_model, tokenizer,
     # dataset=dataset, data_collator=collator)
@@ -286,10 +287,12 @@ def main(script_args: ScriptArguments):
             )
         original_rewards = [torch.tensor(output[0]["score"]) for output in pipe_outputs]
         rewards = original_rewards
-        # add the negative of the mean to every reward
+
+        # add the negative of the mean to every reward so that the mean is zero
+        # and then add reward_mean to every reward so that the mean is reward_mean
         if normalize_reward:
-            mean_reward = torch.mean(torch.stack(rewards))
-            rewards = [r - mean_reward for r in rewards]
+            curr_mean_reward = torch.mean(torch.stack(rewards))
+            rewards = [r - curr_mean_reward + reward_mean for r in rewards]
 
         # Run PPO step
         stats = ppo_trainer.step(query_tensors, response_tensors, rewards)
