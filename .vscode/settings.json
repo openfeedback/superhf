@@ -1,6 +1,5 @@
 {
     // Formatter
-    "python.formatting.provider": "black",
     "python.formatting.blackArgs": [
         "--preview"
     ],
@@ -11,4 +10,7 @@
     "python.linting.pylintEnabled": true,
     "jupyter.debugJustMyCode": false,
     "esbonio.sphinx.confDir": "",
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.black-formatter"
+    },
 }
