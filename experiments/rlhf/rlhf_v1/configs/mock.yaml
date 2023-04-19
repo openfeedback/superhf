@@ -49,3 +49,6 @@ scheduler_warmup_steps:
 init_kl_coef:
   desc: The initial KL coefficient for the KL-divergence loss. Adaptive kl is performed. Originial code sets this to 0.2
   value: 0.4
+normalize_reward:
+  desc: Whether to normalize the reward to have mean zero
+  value: true

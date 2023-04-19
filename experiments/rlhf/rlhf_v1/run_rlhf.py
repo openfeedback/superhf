@@ -156,7 +156,6 @@ def main(script_args: ScriptArguments):
     ppo_config = PPOConfig(
         model_name=wandb.config.model_name,
         learning_rate=wandb.config.learning_rate,
-        log_with=wandb.config.log_with,
         mini_batch_size=wandb.config.mini_batch_size,
         batch_size=wandb.config.batch_size,
         gradient_accumulation_steps=wandb.config.gradient_accumulation_steps,
@@ -166,11 +165,14 @@ def main(script_args: ScriptArguments):
 
     assert ppo_config.mini_batch_size <= ppo_config.batch_size
 
-    model = AutoModelForCausalLMWithValueHead.from_pretrained(ppo_config.model_name)
+    language_model = AutoModelForCausalLMWithValueHead.from_pretrained(
+        ppo_config.model_name
+    )
     model_ref = AutoModelForCausalLMWithValueHead.from_pretrained(ppo_config.model_name)
     tokenizer = AutoTokenizer.from_pretrained(
         ppo_config.model_name, padding_side="left"
     )
+    reward_model = wandb.config.reward_model_name
 
     reward_model_kwargs = {
         "top_k": None,
@@ -199,7 +201,7 @@ def main(script_args: ScriptArguments):
             wandb.config.batch_size * wandb.config.gradient_accumulation_steps
         )
         optimizer = Adam(
-            filter(lambda p: p.requires_grad, model.parameters()),
+            filter(lambda p: p.requires_grad, language_model.parameters()),
             lr=wandb.config.learning_rate,
         )
         scheduler = get_scheduler(
@@ -213,7 +215,7 @@ def main(script_args: ScriptArguments):
     # the dataset and collator get bundled in a data loader together.
     ppo_trainer = PPOTrainer(
         ppo_config,
-        model,
+        language_model,
         model_ref,
         tokenizer,
         dataset=dataset,
@@ -226,7 +228,7 @@ def main(script_args: ScriptArguments):
     if ppo_trainer.accelerator.num_processes == 1:
         device = 0 if torch.cuda.is_available() else "cpu"  # to avoid a `pipeline` bug
     # This pipelinle is for the reward model
-    reward_model_pipe = pipeline(model=wandb.config.reward_model_name, device=device)
+    reward_model_pipe = pipeline(model=reward_model, device=device)
     print(f"The device is {device}")
 
     # We then define the arguments to pass to the `generate` function. These arguments
@@ -238,6 +240,7 @@ def main(script_args: ScriptArguments):
         "top_p": 1.0,
         "do_sample": True,
         "pad_token_id": tokenizer.eos_token_id,
+        "max_new_tokens": wandb.config.max_new_tokens,
     }
 
     # input_size = LengthSampler(input_min_text_length, input_max_text_length)
@@ -259,7 +262,6 @@ def main(script_args: ScriptArguments):
         for query in query_tensors:
             # gen_len = output_length_sampler()
             # generation_kwargs["max_new_tokens"] = gen_len
-            generation_kwargs["max_new_tokens"] = wandb.config.max_new_tokens
             response = ppo_trainer.generate(query, **generation_kwargs)
             response_tensors.append(response.squeeze())
         batch["response"] = trim_generations(
@@ -275,6 +277,10 @@ def main(script_args: ScriptArguments):
                 " output[1]['score'] instead?"
             )
         rewards = [torch.tensor(output[0]["score"]) for output in pipe_outputs]
+        # add the negative of the mean to every reward
+        if wandb.config.normalize_reward:
+            mean_reward = torch.mean(torch.stack(rewards))
+            rewards = [r - mean_reward for r in rewards]
 
         # Run PPO step
         stats = ppo_trainer.step(query_tensors, response_tensors, rewards)
