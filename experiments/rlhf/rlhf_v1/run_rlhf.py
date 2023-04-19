@@ -161,6 +161,7 @@ def main(script_args: ScriptArguments):
         batch_size=wandb.config.batch_size,
         gradient_accumulation_steps=wandb.config.gradient_accumulation_steps,
         seed=66,
+        init_kl_coef=wandb.config.init_kl_coef,
     )
 
     assert ppo_config.mini_batch_size <= ppo_config.batch_size

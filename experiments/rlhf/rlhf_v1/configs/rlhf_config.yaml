@@ -46,3 +46,6 @@ scheduler_name:
 scheduler_warmup_steps:
   desc: Number of warmup steps for the scheduler.
   value: 20
+init_kl_coef:
+  desc: The initial KL coefficient for the KL-divergence loss. Adaptive kl is performed. Originial code sets this to 0.2
+  vlue: 0.2
