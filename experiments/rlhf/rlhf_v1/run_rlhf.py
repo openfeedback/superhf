@@ -18,7 +18,7 @@ from typing import Optional, TypeVar
 from dataclasses import dataclass, field
 
 from tqdm import tqdm
-import yaml
+
 import torch
 from torch.optim import Adam
 
@@ -70,8 +70,8 @@ class ScriptArguments:
     notes: Optional[str] = field(
         default="", metadata={"help": "notes to add to the wandb run"}
     )
-    sweep: Optional[str] = field(
-        default="", metadata={"help": "path to a yaml file to use to for a sweep"}
+    sweep_id: Optional[str] = field(
+        default="", metadata={"help": "sweep id to use to for a sweep"}
     )
 
 
@@ -327,16 +327,16 @@ def trim_generations(raw_completions: list[str]) -> list[str]:
 
 if __name__ == "__main__":
     args = parse_args()
-    if args.sweep != "":
+    if args.sweep_id != "":
         # Run sweeps
-        with open(args.sweep, encoding="utf-8") as f:
-            sweep_params = yaml.load(f, Loader=yaml.FullLoader)
+        # with open(args.sweep, encoding="utf-8") as f:
+        #     sweep_params = yaml.load(f, Loader=yaml.FullLoader)
         wandb.agent(
-            sweep_params["id"],
+            args.sweep_id,
             function=lambda: main(args),
             entity=WANDB_ENTITY_NAME,
             project=WANDB_PROJECT_NAME,
-            count=sweep_params["count"],
+            count=1,
         )
     else:
         main(args)
