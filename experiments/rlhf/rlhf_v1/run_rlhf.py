@@ -161,6 +161,7 @@ def main(script_args: ScriptArguments):
         gradient_accumulation_steps=wandb.config.gradient_accumulation_steps,
         seed=66,
         init_kl_coef=wandb.config.init_kl_coef,
+        log_with=wandb.config.log_with,
     )
 
     assert ppo_config.mini_batch_size <= ppo_config.batch_size
@@ -210,6 +211,25 @@ def main(script_args: ScriptArguments):
             num_warmup_steps=wandb.config.scheduler_warmup_steps,
             num_training_steps=num_training_steps,
         )
+
+        # We then define the arguments to pass to the `generate` function. These arguments
+    # are passed to the `generate` function of the PPOTrainer, which is a wrapper around
+    # the `generate` function of the trained model.
+    generation_kwargs = {
+        "min_length": -1,
+        "top_k": 0.0,
+        "top_p": 1.0,
+        "do_sample": True,
+        "pad_token_id": tokenizer.eos_token_id,
+        "max_new_tokens": wandb.config.max_new_tokens,
+    }
+
+    # the ppo trainer deletes the wandb.config object for some reason on cpu.
+    normalize_reward = wandb.config.normalize_reward
+    run_name = wandb.run.name
+    hub_repo_id = wandb.config.hub_repo_id
+    save_every = wandb.config.save_every
+
     # create a ppo trainer config, model, ref_model, tokenizer,
     # dataset=dataset, data_collator=collator)
     # the dataset and collator get bundled in a data loader together.
@@ -230,18 +250,6 @@ def main(script_args: ScriptArguments):
     # This pipelinle is for the reward model
     reward_model_pipe = pipeline(model=reward_model, device=device)
     print(f"The device is {device}")
-
-    # We then define the arguments to pass to the `generate` function. These arguments
-    # are passed to the `generate` function of the PPOTrainer, which is a wrapper around
-    # the `generate` function of the trained model.
-    generation_kwargs = {
-        "min_length": -1,
-        "top_k": 0.0,
-        "top_p": 1.0,
-        "do_sample": True,
-        "pad_token_id": tokenizer.eos_token_id,
-        "max_new_tokens": wandb.config.max_new_tokens,
-    }
 
     # input_size = LengthSampler(input_min_text_length, input_max_text_length)
 
@@ -278,7 +286,7 @@ def main(script_args: ScriptArguments):
             )
         rewards = [torch.tensor(output[0]["score"]) for output in pipe_outputs]
         # add the negative of the mean to every reward
-        if wandb.config.normalize_reward:
+        if normalize_reward:
             mean_reward = torch.mean(torch.stack(rewards))
             rewards = [r - mean_reward for r in rewards]
 
@@ -286,21 +294,19 @@ def main(script_args: ScriptArguments):
         stats = ppo_trainer.step(query_tensors, response_tensors, rewards)
         ppo_trainer.log_stats(stats, batch, rewards)
 
-        if len(wandb.config.hub_repo_id) > 0 and (
+        if len(hub_repo_id) > 0 and (
             epoch == len(ppo_trainer.dataloader) - 1
-            or (epoch > 0 and epoch % wandb.config.save_every == 0)
+            or (epoch > 0 and epoch % save_every == 0)
         ):
-            run_name = wandb.run.name
             tqdm.write(
-                "Pushing model and tokenizer to the Hub! Location:"
-                f" {wandb.config.hub_repo_id}"
+                f"Pushing model and tokenizer to the Hub! Location: {hub_repo_id}"
             )
             ppo_trainer.model.push_to_hub(
-                repo_id=wandb.config.hub_repo_id,
+                repo_id=hub_repo_id,
                 commit_message=f"Upload model from batch {epoch}, run {run_name}",
             )
             ppo_trainer.tokenizer.push_to_hub(
-                repo_id=wandb.config.hub_repo_id,
+                repo_id=hub_repo_id,
                 commit_message=f"Upload tokenizer from batch {epoch}, run {run_name}",
             )
 
