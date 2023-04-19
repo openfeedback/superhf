@@ -284,7 +284,8 @@ def main(script_args: ScriptArguments):
                 f"len of output is {len(pipe_outputs[0])}, so maybe it should be"
                 " output[1]['score'] instead?"
             )
-        rewards = [torch.tensor(output[0]["score"]) for output in pipe_outputs]
+        original_rewards = [torch.tensor(output[0]["score"]) for output in pipe_outputs]
+        rewards = original_rewards
         # add the negative of the mean to every reward
         if normalize_reward:
             mean_reward = torch.mean(torch.stack(rewards))
@@ -292,7 +293,7 @@ def main(script_args: ScriptArguments):
 
         # Run PPO step
         stats = ppo_trainer.step(query_tensors, response_tensors, rewards)
-        ppo_trainer.log_stats(stats, batch, rewards)
+        ppo_trainer.log_stats(stats, batch, original_rewards)
 
         if len(hub_repo_id) > 0 and (
             epoch == len(ppo_trainer.dataloader) - 1
