@@ -180,8 +180,8 @@ def main(argparse_args: argparse.Namespace) -> None:
 
     # Instantiate our trainer
     trainer = SuperHFTrainer(
-        language_model=language_model,
-        reward_model=reward_model,
+        language_model=language_model,  # type: ignore
+        reward_model=reward_model,  # type: ignore
         language_tokenizer=language_tokenizer,
         reward_tokenizer=reward_tokenizer,
         completion_filter=completion_filter,

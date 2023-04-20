@@ -329,7 +329,7 @@ class SuperHFTrainer:
                 encodings = minibatch
                 encodings.to(self.language_model.device)
                 completions_encoded.extend(
-                    self.language_model.generate(
+                    self.language_model.generate(  # type: ignore
                         **encodings,
                         max_new_tokens=self.training_args.max_new_tokens,
                         temperature=self.training_args.temperature,
@@ -338,12 +338,14 @@ class SuperHFTrainer:
                         num_return_sequences=1,
                         pad_token_id=self.language_tokenizer.pad_token_id,
                         logits_processor=self.training_args.logits_processors,
-                    ).to("cpu")
+                    ).to(  # type: ignore
+                        "cpu"
+                    )
                 )
         # completions_gathered: list[str] = accelerator.gather(
         #     completions
         # )  # TODO Unclear whether this is needed?
-        completions_text = self.language_tokenizer.batch_decode(
+        completions_text: list[str] = self.language_tokenizer.batch_decode(
             completions_encoded, skip_special_tokens=True
         )
         return completions_text
@@ -444,7 +446,9 @@ class SuperHFTrainer:
                     )
                     # index 71 corresponds to the token for 'A'
                     scores = (
-                        torch.softmax(outputs.scores[0], dim=1)[:, 71].flatten().cpu()
+                        torch.softmax(outputs.scores[0], dim=1)[:, 71]  # type: ignore
+                        .flatten()
+                        .cpu()
                     )
                 else:
                     scores = self.reward_model(**completion_encodings)
@@ -470,7 +474,7 @@ class SuperHFTrainer:
             truncation=True,
             max_length=self.training_args.max_length_rm,
         )
-        encodings["labels"] = encodings["input_ids"].detach().clone()
+        encodings["labels"] = encodings["input_ids"].detach().clone()  # type: ignore
 
         # Extract the prompt (the part before and including the first "\n\nAssistant:")
         # We only need the first example because of left-padding (the delimiter is aligned)
@@ -479,7 +483,7 @@ class SuperHFTrainer:
         prompt_token_length = len(self.language_tokenizer(prompt).input_ids)
 
         # Set labels to -100 for tokens that should be ignored (non-completion part of the prompt)
-        encodings["labels"][:, :prompt_token_length] = -100
+        encodings["labels"][:, :prompt_token_length] = -100  # type: ignore
 
         return encodings
 
@@ -496,6 +500,7 @@ class SuperHFTrainer:
         # pylint: disable=too-many-locals
 
         assert self.optimizer is not None
+        assert self.scheduler is not None
 
         tqdm.write(f"Trying finetuning with batch size {minibatch_size}")
         print_gpu_utilization()
