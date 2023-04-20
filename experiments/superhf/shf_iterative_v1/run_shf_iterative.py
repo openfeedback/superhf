@@ -105,6 +105,8 @@ def main(argparse_args: argparse.Namespace) -> None:
             language_model_name, torch_dtype=dtype
         ).to(device)
     )
+    print(f"Instantiated language model: {language_model_name}")
+    print_gpu_utilization()
     reward_model = (
         MockRewardModel()
         if reward_model_name == "mock"
@@ -116,6 +118,9 @@ def main(argparse_args: argparse.Namespace) -> None:
             else AutoModelForSeq2SeqLM.from_pretrained(reward_model_name).to(device)
         )
     )
+    print(f"Instantiated reward model: {reward_model_name}")
+    print_gpu_utilization()
+
     language_tokenizer_name = (
         "gpt2"
         if wandb.config.language_model_name == "mock"
@@ -130,6 +135,7 @@ def main(argparse_args: argparse.Namespace) -> None:
         else wandb.config.reward_model_name
     )
     reward_tokenizer = AutoTokenizer.from_pretrained(reward_tokenizer_name)
+    print("Instantiated tokenizers.")
     print_gpu_utilization()
 
     # Set our training arguments
