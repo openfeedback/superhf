@@ -169,6 +169,7 @@ class SuperHFTrainer:
             num_warmup_steps=self.training_args.scheduler_warmup_steps,
             num_training_steps=num_superbatches,
         )
+        assert self.scheduler is not None
 
         # Then, iterate over the prompts in superbatches
         for superbatch_index, superbatch_prompts in tqdm(
