@@ -3,10 +3,10 @@ language_model_name:
   value: "theblackcat102/pythia-1b-deduped-sft"
 reward_model_name:
   desc: HuggingFace reward model to use, or "mock" for testing
-  value: "stanfordnlp/SteamSHP-flan-t5-large"
+  value: "OpenAssistant/reward-model-deberta-v3-base"
 debug_max_prompts:
   desc: Maximum number of prompts to use, or 0 for unlimited
-  value: 32000
+  value: 1000
 learning_rate:
   desc: Learning rate for fine-tuning the language model.
   value: 3.0e-7
@@ -51,11 +51,10 @@ minibatch_size_finetuning:
   value: 8
 mixed_precision:
   desc: Whether to use lower precision fp16 optimization, or other representations.
-  value: "no"
+  value: "none"
 conversation_prompt:
   desc: A prompt to prepend to every prompt before generation to get the model more on distribution.
-  value: "A human user asks a question or says a statement, and a helpful, polite, honest, sophisticated, emotionally aware, and humble-but-knowledgeable AI assistant responds."
-  # value: "A human user asks a question or says a statement, and a helpful, polite, honest, sophisticated, emotionally aware, and humble-but-knowledgeable AI assistant responds."
+  value: ""
 repetition_penalty:
   desc: Repetition penalty to use for completion sampling. 1.0 means no penalty (logits unchanged)
   value: 1.05
@@ -64,8 +63,7 @@ no_repeat_ngram_size:
   value: 0
 prompt_dataset_names:
   desc: The list of datasets to use for prompts. See src/superhf/data.py for available datasets.
-  value: ["anthropic-red-team", "anthropic-helpful-base", "anthropic-harmless-base", "openai/webgpt_comparisons"]
-  # value: ["anthropic-harmless-base", "anthropic-red-team", "openai/webgpt_comparisons"]
+  value: ["anthropic-harmless-base"]
 same_prompt_per_superbatch:
   desc: Whether to duplicate each prompt so the superbatch is variations on the same prompt.
   value: True
