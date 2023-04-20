@@ -2,36 +2,42 @@ import random
 
 class CombinedDataset:
     def __init__(self, datasets, split_ratio=0.5):
-        self.winner_pairs = []
-        self.loser_pairs = []
+        self.train_winner_pairs = []
+        self.train_loser_pairs = []
+        self.val_winner_pairs = []
+        self.val_loser_pairs = []
 
         for dataset in datasets:
-            for idx in range(len(dataset)):
+            dataset_length = len(dataset)
+            split_idx = int(dataset_length * split_ratio)
+
+            for idx in range(dataset_length):
                 winner, loser = dataset.winner_responses[idx], dataset.loser_responses[idx]
-                self.winner_pairs.append(winner)
-                self.loser_pairs.append(loser)
+                if idx < split_idx:
+                    self.train_winner_pairs.append(winner)
+                    self.train_loser_pairs.append(loser)
+                else:
+                    self.val_winner_pairs.append(winner)
+                    self.val_loser_pairs.append(loser)
 
-        self.total_length = len(self.winner_pairs)
-        self.indices = list(range(self.total_length))
+        self.train_indices = list(range(len(self.train_winner_pairs)))
+        self.val_indices = list(range(len(self.val_winner_pairs)))
 
-        # Shuffle the indices before splitting
-        random.shuffle(self.indices)
-
-        split_idx = int(self.total_length * split_ratio)
-        self.train_indices = self.indices[:split_idx]
-        self.val_indices = self.indices[split_idx:]
+        random.shuffle(self.train_indices)
+        random.shuffle(self.val_indices)
 
     def __getitem__(self, idx, split="train"):
         if split == "train":
-            idx = self.train_indices[idx[0]]
+            idx = self.train_indices[idx]
         elif split == "val":
-            idx = self.val_indices[idx[0]]
+            idx = self.val_indices[idx]
         else:
             raise ValueError("Invalid split, use 'train' or 'val'")
 
-        return self.winner_pairs[idx], self.loser_pairs[idx]
-
-
+        if split == "train":
+            return self.train_winner_pairs[idx], self.train_loser_pairs[idx]
+        else:
+            return self.val_winner_pairs[idx], self.val_loser_pairs[idx]
 
     def __len__(self, split="train"):
         if split == "train":
@@ -42,10 +48,10 @@ class CombinedDataset:
             raise ValueError("Invalid split, use 'train' or 'val'")
 
     def shuffle(self):
-        random.shuffle(self.indices)
+        random.shuffle(self.train_indices)
+        random.shuffle(self.val_indices)
 
-
-
+# Instantiate your dataset classes here
 web_gpt_comparisons = WebGPTComparisons()
 anthropic_helpful_harmless = AnthropicHelpfulHarmless()
 summarize_feedback = SummarizeFromFeedbackComparisons()
@@ -57,7 +63,6 @@ combined_dataset = CombinedDataset([
     instrucptgpt_pairwise,
     summarize_feedback
 ])
-
 
 combined_dataset.shuffle()
 
