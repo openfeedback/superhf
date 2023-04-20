@@ -452,7 +452,7 @@ class SuperHFTrainer:
                     )
                 else:
                     scores = self.reward_model(**completion_encodings)
-                    scores = scores.logits.flatten().cpu()
+                    scores = scores.logits.flatten().cpu()  # type: ignore
                 if self.training_args.length_penalty != 0.0:
                     # Add -length_penalty * char_length to penalize long completions.
                     scores -= self.training_args.length_penalty * torch.log(
