@@ -41,6 +41,7 @@ function install {
     activate
     pip-sync requirements/prod.txt requirements/dev.txt
     pip install -e .
+    mypy --install-types
     pre-commit install
 }
 
