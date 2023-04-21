@@ -564,6 +564,12 @@ class SuperHFTrainer:
                         torch.softmax(logp_original_model.logits[0], dim=1)
                     )
 
+                # Truncate each to just the part that was generated (after where labels == -100)
+                mask = (minibatch["labels"] != -100)[0]
+                logp_online_model = logp_online_model[mask, :]
+                logp_original_model = logp_original_model[mask, :]
+
+                # Compute the KL divergence
                 kl_divergence = self.kl_loss(logp_online_model, logp_original_model)
                 sum_kl_divergence += kl_divergence.item()
                 loss = loss + self.training_args.kl_coefficient * kl_divergence
