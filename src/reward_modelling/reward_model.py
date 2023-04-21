@@ -31,7 +31,8 @@ from transformers import (
     AutoModelForCausalLM,
     AutoModel,
     PreTrainedModel,
-    AutoConfig
+    AutoConfig,
+    HfArgumentParser
 )
 
 from reward_modelling.configuartion_reward_model import RewardModelConfig
@@ -116,10 +117,15 @@ class RewardModel(PreTrainedModel):
     def __init__(self, config, base_model = None, **kwargs):
         super().__init__(config)
         if base_model == None:
-            print(config.base_model_config)
-            self.model = AutoModel.from_config(config.base_model_config)
+            # print(config.base_model_config)
+            self.model = AutoModel.from_config(config.base_model_config, **kwargs)
         else:
             self.model = base_model
+
+        if self.model.config.pad_token_id == None:
+            self.model.config.pad_token_id = self.model.config.eos_token_id
+    
+
         self.v_head = nn.Linear(self.model.config.hidden_size, 1, bias=False)
 
     def forward(self, return_loss=True, **inputs):
@@ -175,6 +181,9 @@ class PreferenceDataCollator:
 
 
 if __name__ == "__main__":
+    parser = HfArgumentParser((TrainingArguments))
+    training_args = parser.parse_args_into_dataclasses()
+
     # setup logging
     logger = logging.getLogger(__name__)
     # Setup logging
@@ -188,12 +197,14 @@ if __name__ == "__main__":
     transformers.utils.logging.set_verbosity_info()
 
     from preference_datasets import AnthropicHelpfulHarmless
+    from InstructGPTJPairwise_dataset import CompatibleSyntheticInstructGPTJPairwise
+    from WebGPTComparisons_dataset import WebGPTComparisons
     # device='cpu'
     # model_name = "distilbert-base-uncased"
-    # model_name = "EleutherAI/gpt-neo-1.3B"
+    model_name = "EleutherAI/gpt-neo-1.3B"
     # model_name = "EleutherAI/gpt-neo-125M"
     # model_name = "facebook/xglm-4.5B"
-    model_name = "facebook/xglm-2.9B"
+    # model_name = "facebook/xglm-2.9B"
     # model_name = "t5-3b"
     
     tokenizer = AutoTokenizer.from_pretrained(model_name, max_length=512)
@@ -201,19 +212,21 @@ if __name__ == "__main__":
         tokenizer.pad_token = tokenizer.eos_token
 
     model = RewardModel.from_pretrained_base_model(model_name)
+    # model = AutoModelForSequenceClassification.from_pretrained(model_name)
+    model.config.pad_token_id = model.config.eos_token_id
 
     model_output_dir = f"/nlp/scr/fongsu/reward_model_HH/{model_name}-{datetime.datetime.now()}"
 
     arguments = TrainingArguments(
         output_dir=model_output_dir,
         logging_steps=10,
-        per_device_train_batch_size=1,
-        per_device_eval_batch_size=1,
+        per_device_train_batch_size=4,
+        # per_device_eval_batch_size=4,
         num_train_epochs=1,
-        do_eval=True,
-        evaluation_strategy="steps",
-        eval_steps=200,
-        save_total_limit=5,
+        do_eval=False,
+        # evaluation_strategy="steps",
+        # eval_steps=200,
+        # save_total_limit=5,
         # save_strategy="steps",
         save_strategy="no",
         # save_steps=20,
@@ -229,8 +242,8 @@ if __name__ == "__main__":
         # label_names='label',
         gradient_checkpointing=True,
         ddp_find_unused_parameters=False,
-        # push_to_hub=True,
-        # hub_model_id='gptneo-1.3B-rm-harmless'
+        push_to_hub=True,
+        hub_model_id='gptneo-1.3B-rm-instructgpt'
     )
 
     log_level = arguments.get_process_log_level()
@@ -241,15 +254,19 @@ if __name__ == "__main__":
     transformers.utils.logging.enable_explicit_format()
 
 
-    train_dataset = AnthropicHelpfulHarmless("train", data_dir="harmless-base")
-    eval_dataset = AnthropicHelpfulHarmless("test",data_dir="harmless-base")
+    # train_dataset = AnthropicHelpfulHarmless("train", data_dir="harmless-base")
+    # eval_dataset = AnthropicHelpfulHarmless("test",data_dir="harmless-base")
+    # train_dataset = WebGPTComparisons("train")
+    # eval_dataset = WebGPTComparisons("test")
+    train_dataset = CompatibleSyntheticInstructGPTJPairwise("train")
+    # eval_dataset = CompatibleSyntheticInstructGPTJPairwise("test")
 
     trainer = RewardModelTrainer(
         model=model,
         args=arguments,
         data_collator=PreferenceDataCollator(tokenizer),
         train_dataset=train_dataset,
-        eval_dataset=eval_dataset,
+        # eval_dataset=eval_dataset,
         compute_metrics=compute_metrics,
     )
     result = trainer.train()
