@@ -16,6 +16,10 @@ from transformers import (
     NoRepeatNGramLogitsProcessor,
     RepetitionPenaltyLogitsProcessor,
 )
+from peft import (
+    LoraConfig,
+    get_peft_model,
+)
 import torch
 import wandb
 
@@ -40,6 +44,7 @@ def main(argparse_args: argparse.Namespace) -> None:
     Instantiate and train the SuperHF model.
     """
     # pylint: disable=too-many-locals
+    # pylint: disable=too-many-statements
 
     # Configure device and seed
     device = torch.device(
@@ -105,6 +110,17 @@ def main(argparse_args: argparse.Namespace) -> None:
             language_model_name, torch_dtype=dtype
         ).to(device)
     )
+    if wandb.config.lora_r != 0 and wandb.config.lora_alpha != 0:
+        # Set up low-rank adapters (LoRA)
+        lora_config = LoraConfig(
+            r=wandb.config.lora_r,
+            lora_alpha=wandb.config.lora_alpha,
+            lora_dropout=wandb.config.lora_dropout,
+            target_modules=wandb.config.lora_target_modules,
+            task_type="CAUSAL_LM",
+        )
+        language_model = get_peft_model(language_model, lora_config)
+        language_model.print_trainable_parameters()
     print(f"Instantiated language model: {language_model_name}")
     print_gpu_utilization()
     reward_model = (

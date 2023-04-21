@@ -142,6 +142,9 @@ class SuperHFTrainer:
             mixed_precision=self.training_args.mixed_precision
         )
 
+        # Prepare with accelerator
+        self.language_model = self.accelerator.prepare(self.language_model)
+
         # Lazy-init optimizer and scheduler
         self.optimizer: Optional[torch.optim.Optimizer] = None
         self.scheduler: Optional[torch.optim.lr_scheduler.LambdaLR] = None
@@ -168,6 +171,9 @@ class SuperHFTrainer:
             self.optimizer,
             num_warmup_steps=self.training_args.scheduler_warmup_steps,
             num_training_steps=num_superbatches,
+        )
+        self.optimizer, self.scheduler = self.accelerator.prepare(
+            self.optimizer, self.scheduler
         )
         assert self.scheduler is not None
 
@@ -512,9 +518,7 @@ class SuperHFTrainer:
             collate_fn=self.collate_fn_lm_finetuning,
         )
 
-        self.language_model, finetuning_dataloader = self.accelerator.prepare(
-            self.language_model, finetuning_dataloader
-        )
+        finetuning_dataloader = self.accelerator.prepare(finetuning_dataloader)
 
         tqdm.write("After accelerator prepare, ", end="")
         print_gpu_utilization()
