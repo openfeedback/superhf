@@ -7,7 +7,6 @@ from dataclasses import dataclass, field
 import re
 from typing import Callable, Optional, Union
 
-
 import torch
 from torch.utils.data import DataLoader
 
@@ -21,6 +20,7 @@ from transformers import (
     get_scheduler,
 )
 from torchtyping import TensorType
+from peft import PeftModel
 
 from superhf import constants
 from superhf.data import ListDataset
@@ -65,6 +65,7 @@ class SuperHFTrainingArguments:
     learning_rate: float = 1e-5
     scheduler_name: str = "linear"
     scheduler_warmup_steps: int = 0
+    kl_coefficient: float = 0.0
 
     # Dataset settings
     prompt_delimiter: str = constants.PROMPT_DELIMITER
@@ -148,6 +149,12 @@ class SuperHFTrainer:
         # Lazy-init optimizer and scheduler
         self.optimizer: Optional[torch.optim.Optimizer] = None
         self.scheduler: Optional[torch.optim.lr_scheduler.LambdaLR] = None
+
+        # Check that we're using a LoRA model if using a KL loss term
+        if self.training_args.kl_coefficient > 0:
+            assert isinstance(
+                self.language_model, PeftModel
+            ), "KL loss term only supported for LoRA models."
 
     def train(self, prompts: list[str]) -> None:
         """

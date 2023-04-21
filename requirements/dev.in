@@ -7,7 +7,6 @@ mypy
 ipykernel
 ipython
 ipywidgets
-peft
 types-tqdm
 types-PyYAML
 wandb

@@ -118,9 +118,11 @@ def main(argparse_args: argparse.Namespace) -> None:
             lora_dropout=wandb.config.lora_dropout,
             target_modules=wandb.config.lora_target_modules,
             task_type="CAUSAL_LM",
+            fan_in_fan_out=False,
         )
         language_model = get_peft_model(language_model, lora_config)
         language_model.print_trainable_parameters()
+
     print(f"Instantiated language model: {language_model_name}")
     print_gpu_utilization()
     reward_model = (
@@ -181,6 +183,7 @@ def main(argparse_args: argparse.Namespace) -> None:
         scheduler_name=wandb.config.scheduler_name,
         scheduler_warmup_steps=wandb.config.scheduler_warmup_steps,
         inverse_loss_penalty=wandb.config.inverse_loss_penalty,
+        kl_coefficient=wandb.config.kl_coefficient,
         reward_model_is_steamshp=("SteamSHP" in wandb.config.reward_model_name),
         length_penalty=wandb.config.length_penalty,
         hub_repo_id=wandb.config.hub_repo_id,
