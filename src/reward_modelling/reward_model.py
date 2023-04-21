@@ -52,6 +52,20 @@ class ModelArguments:
         default=None, metadata={"help": "Pretrained tokenizer name or path if not the same as model_name"}
     )
 
+@dataclass
+class DataArguments:
+    """
+    Arguments pertaining to what data we are going to train and evaluate our model with.
+    """
+
+    
+    model_name_or_path: str = field(
+        metadata={"help": "Path to pretrained model or model identifier from huggingface.co/models"}
+    ),
+
+    tokenizer_name: Optional[str] = field(
+        default=None, metadata={"help": "Pretrained tokenizer name or path if not the same as model_name"}
+    )
 
 class PreferenceLoss(nn.Module):
     """
@@ -214,13 +228,8 @@ if __name__ == "__main__":
     from preference_datasets import AnthropicHelpfulHarmless
     from InstructGPTJPairwise_dataset import CompatibleSyntheticInstructGPTJPairwise
     from WebGPTComparisons_dataset import WebGPTComparisons
-    # device='cpu'
-    # model_name = "distilbert-base-uncased"
-    model_name = "EleutherAI/gpt-neo-1.3B"
-    # model_name = "EleutherAI/gpt-neo-125M"
-    # model_name = "facebook/xglm-4.5B"
-    # model_name = "facebook/xglm-2.9B"
-    # model_name = "t5-3b"
+    from SummarizeFromFeedbackComparisons_dataset import SummarizeFromFeedbackComparisons
+    from combined_datasets import CombinedDataset
     
     tokenizer = AutoTokenizer.from_pretrained(
         model_args.tokenizer_name if model_args.tokenizer_name else model_args.model_name_or_path,
@@ -232,37 +241,6 @@ if __name__ == "__main__":
     # model = AutoModelForSequenceClassification.from_pretrained(model_name)
     model.config.pad_token_id = model.config.eos_token_id
 
-    # model_output_dir = f"/nlp/scr/fongsu/reward_model_HH/{model_name}-{datetime.datetime.now()}"
-
-    # arguments = TrainingArguments(
-    #     output_dir=model_output_dir,
-    #     logging_steps=10,
-    #     per_device_train_batch_size=4,
-    #     # per_device_eval_batch_size=4,
-    #     num_train_epochs=1,
-    #     do_eval=False,
-    #     # evaluation_strategy="steps",
-    #     # eval_steps=200,
-    #     # save_total_limit=5,
-    #     # save_strategy="steps",
-    #     save_strategy="no",
-    #     # save_steps=20,
-    #     # load_best_model_at_end=True,
-    #     learning_rate=1e-5,
-    #     weight_decay=0.001,
-    #     report_to="wandb",
-    #     # bf16=True,
-    #     # gradient_accumulation_steps=16,
-    #     # fp16=True,
-    #     # optim='adafactor',
-    #     # log_level='debug',
-    #     # label_names='label',
-    #     gradient_checkpointing=True,
-    #     ddp_find_unused_parameters=False,
-    #     push_to_hub=True,
-    #     hub_model_id='gptneo-1.3B-rm-instructgpt'
-    # )
-
     log_level = training_args.get_process_log_level()
     logger.setLevel(log_level)
     datasets.utils.logging.set_verbosity(log_level)
@@ -271,19 +249,40 @@ if __name__ == "__main__":
     transformers.utils.logging.enable_explicit_format()
 
 
-    train_dataset = AnthropicHelpfulHarmless("train", data_dir="harmless-base")
+    # train_dataset = AnthropicHelpfulHarmless("train", data_dir="harmless-base")
     # eval_dataset = AnthropicHelpfulHarmless("test",data_dir="harmless-base")
     # train_dataset = WebGPTComparisons("train")
     # eval_dataset = WebGPTComparisons("test")
     # train_dataset = CompatibleSyntheticInstructGPTJPairwise("train")
     # eval_dataset = CompatibleSyntheticInstructGPTJPairwise("test")
 
+    
+    #Instantiate your dataset classes here
+    web_gpt_comparisons = WebGPTComparisons()
+    anthropic_helpful_harmless = AnthropicHelpfulHarmless()
+    summarize_feedback = SummarizeFromFeedbackComparisons()
+    instrucptgpt_pairwise = CompatibleSyntheticInstructGPTJPairwise()
+
+    combined_dataset = CombinedDataset([
+        web_gpt_comparisons,
+        anthropic_helpful_harmless,
+        instrucptgpt_pairwise,
+        summarize_feedback
+    ])
+    #Access the entire training set
+    training_set = [combined_dataset.__getitem__(i, "train") for i in range(combined_dataset.__len__("train"))]
+
+    # Access the entire validation set
+    validation_set = [combined_dataset.__getitem__(i, "val") for i in range(combined_dataset.__len__("val"))]
+
     trainer = RewardModelTrainer(
         model=model,
         args=training_args,
         # args=arguments,
         data_collator=PreferenceDataCollator(tokenizer),
-        train_dataset=train_dataset,
+        train_dataset=training_set,
+        # train_dataset=combined_dataset,
+        eval_dataset=validation_set,
         # eval_dataset=eval_dataset,
         compute_metrics=compute_metrics,
     )

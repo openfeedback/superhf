@@ -23,8 +23,8 @@ class CombinedDataset:
         self.train_indices = list(range(len(self.train_winner_pairs)))
         self.val_indices = list(range(len(self.val_winner_pairs)))
 
-        random.shuffle(self.train_indices)
-        random.shuffle(self.val_indices)
+        # random.shuffle(self.train_indices)
+        # random.shuffle(self.val_indices)
 
     def __getitem__(self, idx, split="train"):
         if split == "train":
@@ -52,17 +52,17 @@ class CombinedDataset:
         random.shuffle(self.val_indices)
 
 # Instantiate your dataset classes here
-web_gpt_comparisons = WebGPTComparisons()
-anthropic_helpful_harmless = AnthropicHelpfulHarmless()
-summarize_feedback = SummarizeFromFeedbackComparisons()
-instrucptgpt_pairwise = CompatibleSyntheticInstructGPTJPairwise()
+# web_gpt_comparisons = WebGPTComparisons()
+# anthropic_helpful_harmless = AnthropicHelpfulHarmless()
+# summarize_feedback = SummarizeFromFeedbackComparisons()
+# instrucptgpt_pairwise = CompatibleSyntheticInstructGPTJPairwise()
 
-combined_dataset = CombinedDataset([
-    web_gpt_comparisons,
-    anthropic_helpful_harmless,
-    instrucptgpt_pairwise,
-    summarize_feedback
-])
+# combined_dataset = CombinedDataset([
+#     web_gpt_comparisons,
+#     anthropic_helpful_harmless,
+#     instrucptgpt_pairwise,
+#     summarize_feedback
+# ])
 
-combined_dataset.shuffle()
+# combined_dataset.shuffle()
 
