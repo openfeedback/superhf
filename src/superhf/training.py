@@ -155,6 +155,7 @@ class SuperHFTrainer:
             assert isinstance(
                 self.language_model, PeftModel
             ), "KL loss term only supported for LoRA models."
+            self.kl_loss = torch.nn.KLDivLoss(reduction="batchmean", log_target=True)
 
     def train(self, prompts: list[str]) -> None:
         """
@@ -508,7 +509,7 @@ class SuperHFTrainer:
         """
         Fine-tune the language model on the completions.
 
-        Returns the average loss for metrics.
+        Returns the average loss for metrics. TODO also return the KL term.
         """
         # pylint: disable=too-many-locals
 
@@ -547,6 +548,20 @@ class SuperHFTrainer:
             # Inverse loss penalty to regularize away from low-entropy states
             if self.training_args.inverse_loss_penalty > 0:
                 loss = loss + self.training_args.inverse_loss_penalty / loss
+
+            # KL divergence penalty
+            if self.training_args.kl_coefficient > 0:
+                # Assume there's only 1 sequence in the minibatch and we're using LoRA models
+                logp_online_model = outputs.logits[0]
+
+                # Disable LoRA adapters
+                with self.language_model.disable_adapter(), torch.no_grad():  # type: ignore
+                    # Get the logits from the original model
+                    logp_original_model = self.language_model(**minibatch)
+                    logp_original_model = logp_original_model.logits[0]
+
+                kl_divergence = self.kl_loss(logp_online_model, logp_original_model)
+                loss = loss + self.training_args.kl_coefficient * kl_divergence
 
             sum_loss += loss.item()
             self.accelerator.backward(loss)
