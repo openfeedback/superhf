@@ -554,14 +554,14 @@ class SuperHFTrainer:
             # KL divergence penalty
             if self.training_args.kl_coefficient > 0:
                 # Assume there's only 1 sequence in the minibatch and we're using LoRA models
-                logp_online_model = torch.log(torch.softmax(outputs.logits[0], dim=1))
+                logp_online_model = torch.log_softmax(outputs.logits[0], dim=1)
 
                 # Disable LoRA adapters
                 with self.language_model.disable_adapter(), torch.no_grad():  # type: ignore
                     # Get the logits from the original model
                     logp_original_model = self.language_model(**minibatch)
-                    logp_original_model = torch.log(
-                        torch.softmax(logp_original_model.logits[0], dim=1)
+                    logp_original_model = torch.log_softmax(
+                        logp_original_model.logits[0], dim=1
                     )
 
                 # Truncate each to just the part that was generated (after where labels == -100)
