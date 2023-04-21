@@ -15,6 +15,7 @@ from transformers import (
     LogitsProcessorList,
     NoRepeatNGramLogitsProcessor,
     RepetitionPenaltyLogitsProcessor,
+    LlamaTokenizer,
 )
 from peft import (
     LoraConfig,
@@ -152,7 +153,11 @@ def main(argparse_args: argparse.Namespace) -> None:
         if wandb.config.reward_model_name == "mock"
         else wandb.config.reward_model_name
     )
-    reward_tokenizer = AutoTokenizer.from_pretrained(reward_tokenizer_name)
+    if "llama" in reward_tokenizer_name or "alpaca" in reward_tokenizer_name:
+        # Fix for misnamed class in the NLP Cluster's Alpaca tokenizer config
+        reward_tokenizer = LlamaTokenizer.from_pretrained(reward_tokenizer_name)
+    else:
+        reward_tokenizer = AutoTokenizer.from_pretrained(reward_tokenizer_name)
     print("Instantiated tokenizers.")
     print_gpu_utilization()
 
