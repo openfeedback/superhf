@@ -140,7 +140,7 @@ def report_metrics_wandb(metrics: SuperHFMetrics) -> None:
                     )
                 ],
             ),
-            "scores_per_top_k": wandb.plot.line(
+            "scores_per_top_k": wandb.plot.line(  # type: ignore
                 wandb.Table(
                     columns=["Top-K", "Score", "Variance"], data=scores_per_top_k
                 ),
