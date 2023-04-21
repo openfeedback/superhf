@@ -226,7 +226,7 @@ class SuperHFTrainer:
             )
 
             # Fine-tune the language model on the filtered completions
-            average_loss = find_executable_batch_size(
+            average_loss, average_kl_div = find_executable_batch_size(
                 self.finetune_language_model,
                 self.training_args.minibatch_size_finetuning,
             )(filtered_completions)
@@ -240,6 +240,7 @@ class SuperHFTrainer:
                 scores=scores,
                 filtered_scores=filtered_scores,
                 average_loss=average_loss,
+                average_kl_div=average_kl_div,
                 scheduler_lr=self.scheduler.get_last_lr()[0],
                 completion_lengths=completion_lengths,
                 filtered_completion_lengths=filtered_completion_lengths,
@@ -505,11 +506,11 @@ class SuperHFTrainer:
         self,
         minibatch_size: int,
         filtered_completions: list[str],
-    ) -> float:
+    ) -> tuple[float, float]:
         """
         Fine-tune the language model on the completions.
 
-        Returns the average loss for metrics. TODO also return the KL term.
+        Returns the average loss and KL divergence (or 0) for metrics.
         """
         # pylint: disable=too-many-locals
 
@@ -534,6 +535,7 @@ class SuperHFTrainer:
         num_invalid_losses = 0
         self.language_model.train()
 
+        sum_kl_divergence = 0
         for minibatch in tqdm(finetuning_dataloader, desc="Fine-tuning"):
             self.optimizer.zero_grad()
             outputs = self.language_model(**minibatch)
@@ -552,15 +554,18 @@ class SuperHFTrainer:
             # KL divergence penalty
             if self.training_args.kl_coefficient > 0:
                 # Assume there's only 1 sequence in the minibatch and we're using LoRA models
-                logp_online_model = outputs.logits[0]
+                logp_online_model = torch.log(torch.softmax(outputs.logits[0], dim=1))
 
                 # Disable LoRA adapters
                 with self.language_model.disable_adapter(), torch.no_grad():  # type: ignore
                     # Get the logits from the original model
                     logp_original_model = self.language_model(**minibatch)
-                    logp_original_model = logp_original_model.logits[0]
+                    logp_original_model = torch.log(
+                        torch.softmax(logp_original_model.logits[0], dim=1)
+                    )
 
                 kl_divergence = self.kl_loss(logp_online_model, logp_original_model)
+                sum_kl_divergence += kl_divergence.item()
                 loss = loss + self.training_args.kl_coefficient * kl_divergence
 
             sum_loss += loss.item()
@@ -576,7 +581,9 @@ class SuperHFTrainer:
             )
 
         num_valid_losses = len(finetuning_dataloader) - num_invalid_losses
-        return sum_loss / num_valid_losses if num_valid_losses > 0 else 0
+        return sum_loss / num_valid_losses if num_valid_losses > 0 else 0, (
+            sum_kl_divergence / num_valid_losses if num_valid_losses > 0 else 0
+        )
 
     def save_model(self) -> None:
         """

@@ -27,6 +27,7 @@ class SuperHFMetrics:
     scores: list[float]
     filtered_scores: list[float]
     average_loss: float
+    average_kl_div: float
     scheduler_lr: float
     completion_lengths: list[int]
     filtered_completion_lengths: list[int]
@@ -54,7 +55,7 @@ def report_metrics_print(metrics: SuperHFMetrics) -> None:
         f" length {average_completion_length:.3f}, average filtered completion length"
         f" {average_filtered_completion_length:.3f}\naverage score {average_score:.3f},"
         f" average filtered score {average_filtered_score:.3f}, average loss"
-        f" {metrics.average_loss:.3f}."
+        f" {metrics.average_loss:.3f}, average KL {metrics.average_kl_div:.3f}."
     )
 
 
@@ -67,6 +68,7 @@ def initialize_metrics_wandb() -> None:
     """
     wandb.define_metric("average_loss", summary="min")
     wandb.define_metric("average_score", summary="max")
+    wandb.define_metric("average_score", summary="last")
     wandb.define_metric("average_completion_length", summary="last")
 
 
@@ -112,6 +114,7 @@ def report_metrics_wandb(metrics: SuperHFMetrics) -> None:
             "average_filtered_score": average_filtered_score,
             "filtered_score_histogram": wandb.Histogram(metrics.filtered_scores),
             "average_loss": metrics.average_loss,
+            "average_kl_div": metrics.average_kl_div,
             "scheduler_lr": metrics.scheduler_lr,
             "average_completion_length": np.mean(metrics.completion_lengths),
             "completion_length_histogram": wandb.Histogram(metrics.completion_lengths),
