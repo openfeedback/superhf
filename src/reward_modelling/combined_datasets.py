@@ -23,8 +23,8 @@ class CombinedDataset:
         self.train_indices = list(range(len(self.train_winner_pairs)))
         self.val_indices = list(range(len(self.val_winner_pairs)))
 
-        # random.shuffle(self.train_indices)
-        # random.shuffle(self.val_indices)
+        random.shuffle(self.train_indices)
+        random.shuffle(self.val_indices)
 
     def __getitem__(self, idx, split="train"):
         if split == "train":

@@ -221,6 +221,14 @@ if __name__ == "__main__":
         datefmt="%m/%d/%Y %H:%M:%S",
         handlers=[logging.StreamHandler(sys.stdout)],
     )
+    
+    log_level = training_args.get_process_log_level()
+    logger.setLevel(log_level)
+    datasets.utils.logging.set_verbosity(log_level)
+    transformers.utils.logging.set_verbosity(log_level)
+    transformers.utils.logging.enable_default_handler()
+    transformers.utils.logging.enable_explicit_format()
+
 
     # The default of training_args.log_level is passive, so we set log level at info here to have that default.
     transformers.utils.logging.set_verbosity_info()
@@ -241,16 +249,9 @@ if __name__ == "__main__":
     # model = AutoModelForSequenceClassification.from_pretrained(model_name)
     model.config.pad_token_id = model.config.eos_token_id
 
-    log_level = training_args.get_process_log_level()
-    logger.setLevel(log_level)
-    datasets.utils.logging.set_verbosity(log_level)
-    transformers.utils.logging.set_verbosity(log_level)
-    transformers.utils.logging.enable_default_handler()
-    transformers.utils.logging.enable_explicit_format()
-
-
-    # train_dataset = AnthropicHelpfulHarmless("train", data_dir="harmless-base")
-    # eval_dataset = AnthropicHelpfulHarmless("test",data_dir="harmless-base")
+ 
+    # training_set = AnthropicHelpfulHarmless("train", data_dir="harmless-base")
+    # validation_set = AnthropicHelpfulHarmless("test",data_dir="harmless-base")
     # train_dataset = WebGPTComparisons("train")
     # eval_dataset = WebGPTComparisons("test")
     # train_dataset = CompatibleSyntheticInstructGPTJPairwise("train")
