@@ -145,9 +145,15 @@ def main(argparse_args: argparse.Namespace) -> None:
         if wandb.config.language_model_name == "mock"
         else wandb.config.language_model_name
     )
-    language_tokenizer = AutoTokenizer.from_pretrained(
-        language_tokenizer_name, padding_side="left"
-    )
+    if "llama" in language_tokenizer_name or "alpaca" in language_tokenizer_name:
+        # Fix for misnamed class in the NLP Cluster's Alpaca tokenizer config
+        language_tokenizer = LlamaTokenizer.from_pretrained(
+            language_tokenizer_name, padding_side="left"
+        )
+    else:
+        language_tokenizer = AutoTokenizer.from_pretrained(
+            language_tokenizer_name, padding_side="left"
+        )
     reward_tokenizer_name = (
         "gpt2"
         if wandb.config.reward_model_name == "mock"
