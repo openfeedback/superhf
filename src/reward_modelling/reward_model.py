@@ -9,12 +9,13 @@ RewardModelTrainer.compute_loss(model, inputs) accepts this dict as the
 `inputs` argument.
 """
 
+from dataclasses import dataclass, field
 import datetime
 
 import logging
 import os
 import sys
-
+from typing import Optional
 
 import numpy as np
 import torch
@@ -36,6 +37,20 @@ from transformers import (
 )
 
 from reward_modelling.configuartion_reward_model import RewardModelConfig
+
+@dataclass
+class ModelArguments:
+    """
+    Arguments pertaining to which model/config/tokenizer we are going to fine-tune from.
+    """
+    
+    model_name_or_path: str = field(
+        metadata={"help": "Path to pretrained model or model identifier from huggingface.co/models"}
+    ),
+
+    tokenizer_name: Optional[str] = field(
+        default=None, metadata={"help": "Pretrained tokenizer name or path if not the same as model_name"}
+    )
 
 
 class PreferenceLoss(nn.Module):
@@ -181,8 +196,8 @@ class PreferenceDataCollator:
 
 
 if __name__ == "__main__":
-    parser = HfArgumentParser((TrainingArguments))
-    training_args = parser.parse_args_into_dataclasses()
+    parser = HfArgumentParser((TrainingArguments, ModelArguments))
+    training_args, model_args = parser.parse_args_into_dataclasses()
 
     # setup logging
     logger = logging.getLogger(__name__)
@@ -207,46 +222,48 @@ if __name__ == "__main__":
     # model_name = "facebook/xglm-2.9B"
     # model_name = "t5-3b"
     
-    tokenizer = AutoTokenizer.from_pretrained(model_name, max_length=512)
+    tokenizer = AutoTokenizer.from_pretrained(
+        model_args.tokenizer_name if model_args.tokenizer_name else model_args.model_name_or_path,
+    )
     if tokenizer.pad_token == None:
         tokenizer.pad_token = tokenizer.eos_token
 
-    model = RewardModel.from_pretrained_base_model(model_name)
+    model = RewardModel.from_pretrained_base_model(model_args.model_name_or_path)
     # model = AutoModelForSequenceClassification.from_pretrained(model_name)
     model.config.pad_token_id = model.config.eos_token_id
 
-    model_output_dir = f"/nlp/scr/fongsu/reward_model_HH/{model_name}-{datetime.datetime.now()}"
+    # model_output_dir = f"/nlp/scr/fongsu/reward_model_HH/{model_name}-{datetime.datetime.now()}"
 
-    arguments = TrainingArguments(
-        output_dir=model_output_dir,
-        logging_steps=10,
-        per_device_train_batch_size=4,
-        # per_device_eval_batch_size=4,
-        num_train_epochs=1,
-        do_eval=False,
-        # evaluation_strategy="steps",
-        # eval_steps=200,
-        # save_total_limit=5,
-        # save_strategy="steps",
-        save_strategy="no",
-        # save_steps=20,
-        # load_best_model_at_end=True,
-        learning_rate=1e-5,
-        weight_decay=0.001,
-        report_to="wandb",
-        # bf16=True,
-        # gradient_accumulation_steps=16,
-        # fp16=True,
-        # optim='adafactor',
-        # log_level='debug',
-        # label_names='label',
-        gradient_checkpointing=True,
-        ddp_find_unused_parameters=False,
-        push_to_hub=True,
-        hub_model_id='gptneo-1.3B-rm-instructgpt'
-    )
+    # arguments = TrainingArguments(
+    #     output_dir=model_output_dir,
+    #     logging_steps=10,
+    #     per_device_train_batch_size=4,
+    #     # per_device_eval_batch_size=4,
+    #     num_train_epochs=1,
+    #     do_eval=False,
+    #     # evaluation_strategy="steps",
+    #     # eval_steps=200,
+    #     # save_total_limit=5,
+    #     # save_strategy="steps",
+    #     save_strategy="no",
+    #     # save_steps=20,
+    #     # load_best_model_at_end=True,
+    #     learning_rate=1e-5,
+    #     weight_decay=0.001,
+    #     report_to="wandb",
+    #     # bf16=True,
+    #     # gradient_accumulation_steps=16,
+    #     # fp16=True,
+    #     # optim='adafactor',
+    #     # log_level='debug',
+    #     # label_names='label',
+    #     gradient_checkpointing=True,
+    #     ddp_find_unused_parameters=False,
+    #     push_to_hub=True,
+    #     hub_model_id='gptneo-1.3B-rm-instructgpt'
+    # )
 
-    log_level = arguments.get_process_log_level()
+    log_level = training_args.get_process_log_level()
     logger.setLevel(log_level)
     datasets.utils.logging.set_verbosity(log_level)
     transformers.utils.logging.set_verbosity(log_level)
@@ -254,23 +271,22 @@ if __name__ == "__main__":
     transformers.utils.logging.enable_explicit_format()
 
 
-    # train_dataset = AnthropicHelpfulHarmless("train", data_dir="harmless-base")
+    train_dataset = AnthropicHelpfulHarmless("train", data_dir="harmless-base")
     # eval_dataset = AnthropicHelpfulHarmless("test",data_dir="harmless-base")
     # train_dataset = WebGPTComparisons("train")
     # eval_dataset = WebGPTComparisons("test")
-    train_dataset = CompatibleSyntheticInstructGPTJPairwise("train")
+    # train_dataset = CompatibleSyntheticInstructGPTJPairwise("train")
     # eval_dataset = CompatibleSyntheticInstructGPTJPairwise("test")
 
     trainer = RewardModelTrainer(
         model=model,
-        args=arguments,
+        args=training_args,
+        # args=arguments,
         data_collator=PreferenceDataCollator(tokenizer),
         train_dataset=train_dataset,
         # eval_dataset=eval_dataset,
         compute_metrics=compute_metrics,
     )
     result = trainer.train()
-    trainer.save_model(model_output_dir)
-    # torch.save(model.state_dict(), model_output_dir)
-    # print(result)
+    trainer.save_model(training_args.output_dir)
     print("==============END OF TRAINING===================")

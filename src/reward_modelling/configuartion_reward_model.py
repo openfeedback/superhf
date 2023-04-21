@@ -12,6 +12,8 @@ class RewardModelConfig(PretrainedConfig):
         if base_model_config and base_model_type is not None:
             self.base_model_config = AutoConfig.for_model(base_model_type, **base_model_config)
 
+        # Copy the following attributes over for the `Trainer` class to work
+        self.hidden_size = self.base_model_config.hidden_size
 
     @classmethod
     def from_pretrained_base_model(cls, pretrained_model_name_or_path, **kwargs):
