@@ -6,7 +6,7 @@ metric:
 parameters:
   conversation_prompt:
     values:
-      - "A human user asks a question or says a statement, and an AI assistant responds."
+      - "A human user sends a message, and a helpful and harmless AI assistant responds."
       - ""
       - "You are a helpful assistant."
   # language_model_name:
@@ -42,11 +42,11 @@ parameters:
   #   - ["anthropic-red-team", "anthropic-harmless-base"]
   #   - ["anthropic-red-team", "openai/webgpt_comparisons"]
   #   - ["anthropic-harmless-base", "openai/webgpt_comparisons"]
-  inverse_loss_penalty:
-    values:
-      - 0.0
-      - 0.001
-      - 0.01
+  # inverse_loss_penalty:
+  #   values:
+  #     - 0.0
+  #     - 0.001
+  #     - 0.01
   # superbatch_size:
   #   values:
   #     - 8
@@ -56,13 +56,23 @@ parameters:
   #     - 48
   learning_rate:
     values:
-      - 1.0e-6
-      - 3.0e-7
-      - 1.0e-7
-  top_p:
+      - 1.0e-5
+      - 3.3e-5
+      - 1.0e-4
+      - 3.3e-4
+  kl_coefficient:
     values:
-      - 0.95
-      - 0.9
+      - 0.0
+      - 0.001
+      - 0.1
+      - 0.3
+      - 0.35
+      - 0.4
+
+  # top_p:
+  #   values:
+  #     - 0.95
+  #     - 0.9
   # max_new_tokens:
   #   values:
   #     - 64
@@ -72,11 +82,11 @@ parameters:
   #   values:
   #     - True
   #     - False
-  repetition_penalty:
-    values:
-      - 1.05
-      - 1.0
-  length_penalty:
-    values:
-      - 0.1
-      - 0.0
+  # repetition_penalty:
+  #   values:
+  #     - 1.05
+  #     - 1.0
+  # length_penalty:
+  #   values:
+  #     - 0.1
+  #     - 0.0
