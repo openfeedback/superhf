@@ -6,10 +6,10 @@ reward_model_name:
   value: "OpenAssistant/reward-model-deberta-v3-large-v2"
 debug_max_prompts:
   desc: Maximum number of prompts to use, or 0 for unlimited
-  value: 20000
+  value: 64000
 learning_rate:
   desc: Learning rate for fine-tuning the language model.
-  value: 1.0e-5
+  value: 1.0e-4
 scheduler_name:
   desc: Name of the scheduler to use for fine-tuning the language model.
   value: "cosine"
