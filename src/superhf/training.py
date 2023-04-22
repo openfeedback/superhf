@@ -204,16 +204,23 @@ class SuperHFTrainer:
             tqdm.write("Before scoring ", end="")
             print_gpu_utilization()
             # Score the completions
-            (
-                scores,
-                completions_trimmed,
-                completion_lengths,
-            ) = find_executable_batch_size(
-                self.score_completions,
-                self.training_args.minibatch_size_scoring,
-            )(
-                completions_raw
-            )
+            try:
+                (
+                    scores,
+                    completions_trimmed,
+                    completion_lengths,
+                ) = find_executable_batch_size(
+                    self.score_completions,
+                    self.training_args.minibatch_size_scoring,
+                )(
+                    completions_raw
+                )
+            except (IndexError, KeyError) as exc:
+                print("Error during scoring completions:")
+                print(exc)
+                print("completions_raw:")
+                print(completions_raw)
+                continue
 
             tqdm.write("Before filtering ", end="")
             print_gpu_utilization()
