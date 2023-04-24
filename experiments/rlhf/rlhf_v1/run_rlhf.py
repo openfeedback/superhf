@@ -218,7 +218,7 @@ def main(script_args: ScriptArguments):
     generation_kwargs = {
         "min_length": -1,
         "top_k": 0.0,
-        "top_p": 1.0,
+        "top_p": wandb.config.top_p,
         "do_sample": True,
         "pad_token_id": tokenizer.eos_token_id,
         "max_new_tokens": wandb.config.max_new_tokens,

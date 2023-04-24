@@ -55,3 +55,6 @@ normalize_reward:
 reward_mean:
   desc: The mean of the reward distribution, if we are normalizing it.
   value: 0.0
+top_p:
+  desc: The top-p value for nucleus sampling
+  value: 0.95

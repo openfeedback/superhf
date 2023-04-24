@@ -9,7 +9,7 @@ log_with:
   value: "wandb"
 learning_rate:
   desc: "The learning rate"
-  value: 0.0000141 # 1.41e-5
+  value: 1e-6
 mini_batch_size:
   desc: "The mini-batch size"
   value: 2
@@ -42,7 +42,7 @@ hub_repo_id:
     value: ""
 scheduler_name:
   desc: Name of the scheduler to use for fine-tuning the language model.
-  value: "linear"
+  value: ""
 scheduler_warmup_steps:
   desc: Number of warmup steps for the scheduler.
   value: 20
@@ -55,3 +55,6 @@ normalize_reward:
 reward_mean:
   desc: The mean of the reward distribution, if we are normalizing it.
   value: 0.0
+top_p:
+  desc: The top-p value for nucleus sampling
+  value: 0.95
