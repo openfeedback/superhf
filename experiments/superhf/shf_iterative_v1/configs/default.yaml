@@ -9,7 +9,7 @@ debug_max_prompts:
   value: 48000
 learning_rate:
   desc: Learning rate for fine-tuning the language model.
-  value: 1.0e-4
+  value: 3.0e-5
 scheduler_name:
   desc: Name of the scheduler to use for fine-tuning the language model.
   value: "cosine"
