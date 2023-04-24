@@ -42,7 +42,7 @@ hub_repo_id:
     value: ""
 scheduler_name:
   desc: Name of the scheduler to use for fine-tuning the language model.
-  value: "linear"
+  value: "" # was linear
 scheduler_warmup_steps:
   desc: Number of warmup steps for the scheduler.
   value: 20
