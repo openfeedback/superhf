@@ -70,6 +70,7 @@ def initialize_metrics_wandb() -> None:
     wandb.define_metric("average_loss", summary="min")
     wandb.define_metric("average_score", summary="max")
     wandb.define_metric("average_score", summary="last")
+    wandb.define_metric("average_score", summary="mean")
     wandb.define_metric("average_completion_length", summary="last")
 
 
