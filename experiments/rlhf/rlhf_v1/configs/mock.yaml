@@ -9,7 +9,7 @@ log_with:
   value: "wandb"
 learning_rate:
   desc: "The learning rate"
-  value: 1e-6
+  value: 1.0e-6
 mini_batch_size:
   desc: "The mini-batch size"
   value: 2
