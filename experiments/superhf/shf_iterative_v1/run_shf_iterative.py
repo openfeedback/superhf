@@ -54,13 +54,14 @@ def main(argparse_args: argparse.Namespace) -> None:
     set_seed(66)
 
     # Initialize Weights and Biases run
-    wandb.init(
+    run = wandb.init(
         entity=WANDB_ENTITY_NAME,
         project=WANDB_PROJECT_NAME,
         notes=argparse_args.notes,
         save_code=True,
         config=argparse_args.config,
     )
+    assert run is not None
     language_model_name = wandb.config.language_model_name
     reward_model_name = wandb.config.reward_model_name
 
@@ -227,6 +228,9 @@ def main(argparse_args: argparse.Namespace) -> None:
     # Run training
     wandb.alert(title="Beginning SuperHF run", text="Beginning SuperHF run...")
     trainer.train(prompts)
+
+    # Finish up
+    run.finish()
 
 
 if __name__ == "__main__":
