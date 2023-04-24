@@ -4,12 +4,13 @@ Functions for reporting metrics in SuperHF training.
 
 from dataclasses import dataclass
 import time
-from typing import Any
+
+# from typing import Any
 
 import numpy as np
 import wandb
 
-from superhf.filtering import CompletionFilterTopK
+# from superhf.filtering import CompletionFilterTopK
 
 
 @dataclass
@@ -93,17 +94,17 @@ def report_metrics_wandb(metrics: SuperHFMetrics) -> None:
     average_score = np.mean(metrics.scores)
     average_filtered_score = np.mean(metrics.filtered_scores)
 
-    # Create plot data of average score if we filtered different top-K numbers
-    max_top_k_to_explore = 48
-    scores_per_top_k: list[list[Any]] = []
-    for top_k in range(1, max_top_k_to_explore + 1):
-        top_k_filter = CompletionFilterTopK(top_k)
-        scores, _ = top_k_filter.filter(
-            metrics.scores,
-            metrics.completions,
-        )
-        mean, variance = np.mean(scores), np.var(scores)
-        scores_per_top_k.append([top_k, mean, variance])
+    # # Create plot data of average score if we filtered different top-K numbers
+    # max_top_k_to_explore = 48
+    # scores_per_top_k: list[list[Any]] = []
+    # for top_k in range(1, max_top_k_to_explore + 1):
+    #     top_k_filter = CompletionFilterTopK(top_k)
+    #     scores, _ = top_k_filter.filter(
+    #         metrics.scores,
+    #         metrics.completions,
+    #     )
+    #     mean, variance = np.mean(scores), np.var(scores)
+    #     scores_per_top_k.append([top_k, mean, variance])
 
     wandb.log(
         {
@@ -140,15 +141,15 @@ def report_metrics_wandb(metrics: SuperHFMetrics) -> None:
                     )
                 ],
             ),
-            "scores_per_top_k": wandb.plot.line(  # type: ignore
-                wandb.Table(
-                    columns=["Top-K", "Score", "Variance"], data=scores_per_top_k
-                ),
-                "Top-K",
-                "Score",
-                stroke="Variance",
-                title="Scores Per Top-K (Latest)",
-            ),
+            # "scores_per_top_k": wandb.plot.line(  # type: ignore
+            #     wandb.Table(
+            #         columns=["Top-K", "Score", "Variance"], data=scores_per_top_k
+            #     ),
+            #     "Top-K",
+            #     "Score",
+            #     stroke="Variance",
+            #     title="Scores Per Top-K (Latest)",
+            # ),
         }
     )
 

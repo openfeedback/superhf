@@ -223,7 +223,7 @@ def main(argparse_args: argparse.Namespace) -> None:
     # Initialize metrics
     print("Initializing metrics...")
     initialize_metrics_wandb()  # Defines the run metrics
-    wandb.watch(language_model, log="all")
+    # wandb.watch(language_model, log="all")
 
     # Run training
     wandb.alert(title="Beginning SuperHF run", text="Beginning SuperHF run...")
@@ -262,7 +262,7 @@ if __name__ == "__main__":
 
     if args.sweep != "":
         # Run sweeps
-        with open(args.sweep, encoding="utf-8") as f:
+        with open(args.sweep, mode="r", encoding="utf-8") as f:
             sweep_params = yaml.load(f, Loader=yaml.FullLoader)
         wandb.agent(
             sweep_params["id"],
