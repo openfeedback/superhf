@@ -28,6 +28,10 @@ def get_superhf_prompts(dataset_name: str, split: str = "train") -> list[str]:
     Args:
         dataset_name: The name of the dataset to load. One of:
             - 'anthropic-red-team'
+            - 'openai/webgpt_comparisons'
+            - 'anthropic-harmless-base'
+            - 'anthropic-helpful-base'
+            - 'mock'
         split: The split of the dataset to load.
 
     Returns:
