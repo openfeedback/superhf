@@ -406,11 +406,6 @@ class SuperHFTrainer:
         prompts_and_completions = [
             separate_prompt_from_completion(completion) for completion in completions
         ]
-        # FIXME Debug hack for blank completions
-        prompts_and_completions[0] = (
-            prompts_and_completions[0][0],
-            "\n\nHuman: This should not be included!",
-        )
         completions_for_lm: list[str] = []
         completions_for_rm: list[str] = []
         completion_lengths: list[int] = []
