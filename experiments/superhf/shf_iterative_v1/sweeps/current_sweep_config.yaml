@@ -2,13 +2,13 @@ program: experiments/superhf/shf_iterative_v1/run_shf_iterative.py
 method: grid
 metric:
   goal: maximize
-  name: average_score.last
+  name: average_score.mean
 parameters:
-  conversation_prompt:
-    values:
-      - "A human user sends a message, and a helpful and harmless AI assistant responds."
-      - ""
-      - "You are a helpful assistant."
+  # conversation_prompt:
+    # values:
+    #   - "A human user sends a message, and a helpful and harmless AI assistant responds."
+    #   - ""
+    #   - "You are a helpful assistant."
   # language_model_name:
   #   values:
   #     - "EleutherAI/pythia-1.4b-deduped"
@@ -62,19 +62,15 @@ parameters:
   #     - 3.3e-4
   kl_coefficient:
     values:
-      - 0.01
-      - 0.025
-      - 0.05
-      - 0.075
-      - 0.1
       - 0.15
+      - 0.1625
+      - 0.175
+      - 0.1875
       - 0.2
+      - 0.2125
+      - 0.225
+      - 0.2375
       - 0.25
-      - 0.3
-      - 0.325
-      - 0.35
-      - 0.375
-      - 0.4
 
   # top_p:
   #   values:
