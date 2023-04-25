@@ -53,6 +53,12 @@ def main(argparse_args: argparse.Namespace) -> None:
     )
     set_seed(66)
 
+    # Enable tf32 training if supported
+    if torch.cuda.is_available() and torch.cuda.get_device_capability()[0] >= 8:
+        print("Enabling tf32 training.")
+        torch.backends.cuda.matmul.allow_tf32 = True
+        torch.backends.cudnn.allow_tf32 = True
+
     # Initialize Weights and Biases run
     run = wandb.init(
         entity=WANDB_ENTITY_NAME,
