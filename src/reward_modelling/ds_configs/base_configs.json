@@ -39,11 +39,5 @@
     "steps_per_print": 2000,
     "train_batch_size": "auto",
     "train_micro_batch_size_per_gpu": "auto",
-    "wall_clock_breakdown": false,
-    "comms_logger": {
-        "enabled": true,
-        "verbose": true,
-        "prof_all": true,
-        "debug": true
-    }
+    "wall_clock_breakdown": false
 }

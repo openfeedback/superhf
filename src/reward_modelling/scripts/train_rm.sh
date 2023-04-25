@@ -3,8 +3,8 @@
 #SBATCH --output=batch_outputs/test_job.%j.out
 #SBATCH --error=batch_outputs/test_job.%j.err
 #SBATCH --account=nlp
-#SBATCH --mem=200GB
-#SBATCH --cpus-per-gpu=16
+#SBATCH --mem=150GB
+#SBATCH --cpus-per-gpu=8
 
 # list out some useful information (optional)
 echo "SLURM_JOBID="$SLURM_JOBID
@@ -17,16 +17,18 @@ source ~/rm/bin/activate
 export NCCL_P2P_DISABLE=1 # look at https://github.com/microsoft/DeepSpeed/issues/2176
 export HF_DATASETS_CACHE="/nlp/scr/fongsu/.cache"
 # deepspeed src/reward_modelling/reward_model.py --output_dir . --deepspeed src/reward_modelling/ds_configs/base_config.json
+# --model_name_or_path="EleutherAI/gpt-neo-1.3B" \
 deepspeed src/reward_modelling/reward_model.py \
---model_name_or_path="EleutherAI/gpt-neo-1.3B" \
---output_dir="/nlp/src/fongsu/reward_model_HH/train_first_half/" \
---logging_steps=10 \
---per_device_train_batch_size=16 \
---per_device_eval_batch_size=16 \
+--model_name_or_path="distilbert-base-uncased" \
+--output_dir="/nlp/scr/fongsu/reward_model_HH/train_second_half/" \
+--logging_steps=100 \
+--per_device_train_batch_size=8 \
+--per_device_eval_batch_size=8 \
+--gradient_accumulation_steps=4 \
 --num_train_epochs=1 \
 --do_eval=True \
 --evaluation_strategy="steps" \
---eval_steps=1000 \
+--eval_steps=100 \
 --save_total_limit=5 \
 --save_strategy="steps" \
 --save_steps=1000 \
@@ -35,6 +37,4 @@ deepspeed src/reward_modelling/reward_model.py \
 --report_to="wandb" \
 --gradient_checkpointing=True \
 --ddp_find_unused_parameters=False \
---push_to_hub=True \
---hub_model_id='gptneo-1.3B-rm-combined-train-first-half' \
---deepspeed src/reward_modelling/ds_configs/stage_3_config.json
+--deepspeed src/reward_modelling/ds_configs/base_configs.json

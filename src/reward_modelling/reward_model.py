@@ -271,19 +271,22 @@ if __name__ == "__main__":
         summarize_feedback
     ])
     #Access the entire training set
-    training_set = [combined_dataset.__getitem__(i, "train") for i in range(combined_dataset.__len__("train"))]
+    # training_set = [combined_dataset.__getitem__(i, "train") for i in range(combined_dataset.__len__("train"))]
+    training_set = [combined_dataset.__getitem__(i, "val") for i in range(combined_dataset.__len__("val"))]
 
     # Access the entire validation set
-    validation_set = [combined_dataset.__getitem__(i, "val") for i in range(combined_dataset.__len__("val"))]
+    validation_set = [combined_dataset.__getitem__(i, "train") for i in range(combined_dataset.__len__("train")//10)]
+    # validation_set = [combined_dataset.__getitem__(i, "val") for i in range(combined_dataset.__len__("val")//10)]
 
     trainer = RewardModelTrainer(
         model=model,
         args=training_args,
         # args=arguments,
-        data_collator=PreferenceDataCollator(tokenizer),
-        train_dataset=training_set,
+        data_collator=PreferenceDataCollator(tokenizer), train_dataset=training_set,
+        # train_dataset=validation_set,
         # train_dataset=combined_dataset,
         eval_dataset=validation_set,
+        # eval_dataset=training_set,
         # eval_dataset=eval_dataset,
         compute_metrics=compute_metrics,
     )
