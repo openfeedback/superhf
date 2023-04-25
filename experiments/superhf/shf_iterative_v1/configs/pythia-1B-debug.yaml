@@ -4,9 +4,6 @@ language_model_name:
 reward_model_name:
   desc: HuggingFace reward model to use, or "mock" for testing
   value: "OpenAssistant/reward-model-deberta-v3-base"
-debug_max_prompts:
-  desc: Maximum number of prompts to use, or 0 for unlimited
-  value: 1000
 learning_rate:
   desc: Learning rate for fine-tuning the language model.
   value: 3.0e-7
@@ -21,7 +18,7 @@ kl_coefficient:
   value: 0.3
 inverse_loss_penalty:
   desc: Regularizes loss by C with loss' = loss + C / loss. Set to 0 to disable.
-  value: 0.01
+  value: 0.0
 max_prompt_char_length:
   desc: Maximum number of characters to truncate prompts to
   value: 1024
@@ -31,6 +28,9 @@ temperature:
 top_p:
   desc: Top-p to use for completion sampling
   value: 0.95
+num_prompts:
+  desc: Maximum number of prompts to use, or 0 for unlimited (up to the training set size).
+  value: 16
 superbatch_size:
   desc: Number of completions to generate with the current policy before filtering and fine-tuning.
   value: 32
@@ -73,7 +73,7 @@ conversation_prompt:
   value: ""
 repetition_penalty:
   desc: Repetition penalty to use for completion sampling. 1.0 means no penalty (logits unchanged)
-  value: 1.05
+  value: 1.0
 no_repeat_ngram_size:
   desc: Prevents repeating of n-grams of this size during completion sampling. 0 means no constraint (logits unchanged)
   value: 0
@@ -85,7 +85,7 @@ same_prompt_per_superbatch:
   value: True
 length_penalty:
   desc: Adds -length_penalty * char_length to the reward. 0 means no penalty.
-  value: 0.01
+  value: 0.0
 hub_repo_id:
   desc: The ID of the HuggingFace Hub repo to use for storing the model. If empty, no model will be stored.
   # value: "test-repo"

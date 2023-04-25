@@ -4,9 +4,6 @@ language_model_name:
 reward_model_name:
   desc: HuggingFace reward model to use, or "mock" for testing
   value: "OpenAssistant/reward-model-deberta-v3-large-v2"
-debug_max_prompts:
-  desc: Maximum number of prompts to use, or 0 for unlimited
-  value: 48000
 learning_rate:
   desc: Learning rate for fine-tuning the language model.
   value: 3.0e-5
@@ -31,6 +28,9 @@ temperature:
 top_p:
   desc: Top-p to use for completion sampling
   value: 0.95
+num_prompts:
+  desc: Maximum number of prompts to use, or 0 for unlimited (up to the training set size).
+  value: 1500
 superbatch_size:
   desc: Number of completions to generate with the current policy before filtering and fine-tuning.
   value: 32
@@ -81,9 +81,6 @@ prompt_dataset_names:
   desc: The list of datasets to use for prompts. See src/superhf/data.py for available datasets.
   value: ["anthropic-red-team", "anthropic-helpful-base", "anthropic-harmless-base", "openai/webgpt_comparisons"]
   # value: ["anthropic-harmless-base", "anthropic-red-team", "openai/webgpt_comparisons"]
-same_prompt_per_superbatch:
-  desc: Whether to duplicate each prompt so the superbatch is variations on the same prompt.
-  value: True
 length_penalty:
   desc: Adds -length_penalty * char_length to the reward. 0 means no penalty.
   value: 0.0

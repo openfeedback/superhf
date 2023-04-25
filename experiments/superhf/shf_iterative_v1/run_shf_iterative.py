@@ -77,13 +77,6 @@ def main(argparse_args: argparse.Namespace) -> None:
         prompts.extend(get_superhf_prompts(dataset_name))
     random.shuffle(prompts)
 
-    # Duplicate each prompt so that each superbatch is the same prompt if desired
-    if wandb.config.same_prompt_per_superbatch:
-        new_prompts = []
-        for prompt in prompts:
-            new_prompts.extend([prompt] * wandb.config.superbatch_size)
-        prompts = new_prompts
-
     # Filter out prompts that are too long
     old_prompt_count = len(prompts)
     prompts = [
@@ -97,8 +90,8 @@ def main(argparse_args: argparse.Namespace) -> None:
     )
 
     # Only load the first section of prompts
-    if wandb.config.debug_max_prompts != 0:
-        prompts = prompts[: wandb.config.debug_max_prompts]
+    if wandb.config.num_prompts != 0:
+        prompts = prompts[: wandb.config.num_prompts]
 
     print(f"Loaded {len(prompts)} prompts.")
     print_gpu_utilization()

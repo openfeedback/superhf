@@ -39,13 +39,23 @@ class SuperHFTrainingArguments:
 
     # Generation
     temperature: float = 1.0
-    top_p: float = 0.9
+    top_p: float = 0.95
     superbatch_size: int = field(
-        default=128,
+        default=32,
         metadata={
             "help": (
                 "Number of completions to generate with the current "
                 "policy before filtering and fine-tuning."
+            )
+        },
+    )
+    num_prompts_before_finetuning: int = field(
+        default=2,
+        metadata={
+            "help": (
+                "Number of prompts to generate, score, and filter before "
+                "fine-tuning. Used to blend between iterative and single-pass "
+                "training."
             )
         },
     )
@@ -166,7 +176,7 @@ class SuperHFTrainer:
         # First, put all the prompts into a Dataset and DataLoader
         prompts_dataloader = DataLoader(
             ListDataset(prompts),
-            batch_size=self.training_args.superbatch_size,
+            batch_size=self.training_args.num_prompts_before_finetuning,
         )
         num_superbatches = len(prompts_dataloader)
 
@@ -185,7 +195,7 @@ class SuperHFTrainer:
         )
         assert self.scheduler is not None
 
-        # Then, iterate over the prompts in superbatches
+        # Then, iterate over group of prompts in superbatches
         for superbatch_index, superbatch_prompts in tqdm(
             enumerate(prompts_dataloader),
             total=num_superbatches,
@@ -241,8 +251,8 @@ class SuperHFTrainer:
             # Optionally report metrics
             metrics = SuperHFMetrics(
                 superbatch_index=superbatch_index,
-                superbatch_count=len(prompts_dataloader),
-                completions=completions_raw,
+                superbatch_count=num_superbatches,
+                completions=completions_raw,  # TODO completions_trimmed
                 filtered_completions=filtered_completions,
                 scores=scores,
                 filtered_scores=filtered_scores,
@@ -260,7 +270,7 @@ class SuperHFTrainer:
             # self.save_model()
 
             # Optionally, push the model to the hub
-            self.consider_pushing_to_hub(superbatch_index, len(prompts_dataloader))
+            self.consider_pushing_to_hub(superbatch_index, num_superbatches)
 
     def consider_pushing_to_hub(self, superbatch_index: int, num_prompts: int) -> None:
         """Pushes the model to the hub if it's appropriate to do so."""
@@ -305,10 +315,8 @@ class SuperHFTrainer:
         """
         Collate function for the language model completions DataLoader.
 
-        Prepends the constitution to each prompt. By default this is the empty string.
+        Prepends the system prompt to each prompt. By default this is the empty string.
         """
-        constitution = self.training_args.conversation_prompt
-        batch = [constitution + prompt for prompt in batch]
         return self.language_tokenizer(
             batch,
             return_tensors="pt",
@@ -334,8 +342,16 @@ class SuperHFTrainer:
         tqdm.write(f"Trying generation with batch size {minibatch_size}")
         print_gpu_utilization()
 
+        # Duplicate each prompt superbatch_size numbers time with system prompt
+        system_prompt = self.training_args.conversation_prompt
+        prompt_batch_duplicated = [
+            system_prompt + prompt
+            for prompt in superbatch_prompts
+            for _ in range(self.training_args.superbatch_size)
+        ]
+
         completion_dataloader = DataLoader(
-            ListDataset(superbatch_prompts),
+            ListDataset(prompt_batch_duplicated),
             batch_size=minibatch_size,
             collate_fn=self.collate_fn_lm_completions,
             pin_memory=True,
