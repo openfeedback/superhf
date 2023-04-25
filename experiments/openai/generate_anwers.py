@@ -25,6 +25,7 @@ from tenacity import (
 )  # for exponential backoff
 
 from superhf.data import get_superhf_prompts
+from superhf.constants import SUPPORTED_DATASETS
 
 # TODO: Add to requirements.txt openai and tenacity
 
@@ -69,7 +70,10 @@ def parse_args():
         "--dataset",
         type=str,
         default="webgpt_comparisons",
-        help="Dataset to use, loaded from superhf.data.get_superhf_prompts()",
+        help=(
+            "Dataset to use, loaded from superhf.data.get_superhf_prompts(). 'All'"
+            " generates for all supported datasets except mock"
+        ),
     )
     args = parser.parse_args()
     return args
@@ -104,7 +108,22 @@ def main() -> None:
     # Set OpenAI API key
     openai.api_key = args.key
 
-    questions = get_superhf_prompts(args.dataset)
+    if args.dataset == "all":
+        for dataset in SUPPORTED_DATASETS:
+            if dataset == "mock":
+                continue
+            generate_for_dataset(args, dataset)
+    else:
+        generate_for_dataset(args, args.dataset)
+
+
+def generate_for_dataset(args, dataset: str) -> None:
+    """
+    Generate answers for a dataset
+    """
+
+    print("Generating completions for dataset: " + dataset)
+    questions = get_superhf_prompts(dataset)
     if args.debug:
         questions = questions[:5]
         assert len(questions) < 10
@@ -128,16 +147,21 @@ def main() -> None:
     for prompt in prompts:
         n_requests += 1
         answers.append(generate_answers(prompt, args.engine, args.max_tokens))
+    print(
+        "Just processed "
+        + str(n_requests)
+        + " requests to OpenAI APIs with model "
+        + args.engine
+    )
 
     completions = []
     for i, question in enumerate(questions):
-        # Stitch together the prompt and answer in form
-        # "\n\nHuman: " + prompt + "\n\nAssistant: " + answer
+        # Stitch together the prompt and answer
         completion = "\n\nHuman: " + question + "\n\nAssistant: " + answers[i]
         completions.append(completion)
 
     # Write answers to a file
-    output_file = args.dataset + "_" + args.output_file
+    output_file = dataset + "_" + args.output_file
     with open(output_file, "w", encoding="utf-8") as outfile:
         # write the result to the output file in json format
         json.dump({"completions": completions}, outfile)

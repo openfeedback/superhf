@@ -23,7 +23,7 @@ def parse_args():
     parser.add_argument(
         "--input_file",
         type=str,
-        default="completions_output.json",
+        default="webgpt_comparisons_completions_output.json",
         help="Input file",
     )
     args = parser.parse_args()

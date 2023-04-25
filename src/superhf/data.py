@@ -18,6 +18,8 @@ from typing import Iterator, TypeVar
 from datasets.load import load_dataset
 from torch.utils.data import IterableDataset
 
+from superhf.constants import SUPPORTED_DATASETS
+
 T = TypeVar("T")
 
 
@@ -98,7 +100,10 @@ def get_superhf_prompts(dataset_name: str, split: str = "train") -> list[str]:
             ]
         )
     else:
-        raise ValueError(f"Unknown dataset: {dataset_name}")
+        raise ValueError(
+            f"Unknown dataset: {dataset_name}. Must be one of the following "
+            + f"supported datasets: {SUPPORTED_DATASETS}"
+        )
 
     return prompts
 
