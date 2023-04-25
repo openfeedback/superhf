@@ -15,6 +15,7 @@ This script analyzes 1,000 randomly selected prompts.
 import argparse
 import json
 import random
+import tqdm
 
 import openai
 
@@ -144,9 +145,10 @@ def generate_for_dataset(args, dataset: str) -> None:
         prompts.append(prompt)
     answers = []
     n_requests = 0
-    for prompt in prompts:
+    for prompt in tqdm.tqdm(prompts):
         n_requests += 1
         answers.append(generate_answers(prompt, args.engine, args.max_tokens))
+
     print(
         "Just processed "
         + str(n_requests)
