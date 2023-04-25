@@ -174,9 +174,12 @@ class SuperHFTrainer:
         # pylint: disable=too-many-locals
 
         # First, put all the prompts into a Dataset and DataLoader
+        prompt_batch_size = self.training_args.prompt_accumulation_steps
+        if prompt_batch_size == 0:
+            prompt_batch_size = len(prompts)
         prompts_dataloader = DataLoader(
             ListDataset(prompts),
-            batch_size=self.training_args.prompt_accumulation_steps,
+            batch_size=prompt_batch_size,
         )
         num_superbatches = len(prompts_dataloader)
 
