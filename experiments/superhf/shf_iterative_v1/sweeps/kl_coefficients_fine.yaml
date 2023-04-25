@@ -1,0 +1,95 @@
+program: experiments/superhf/shf_iterative_v1/run_shf_iterative.py
+method: grid
+metric:
+  goal: maximize
+  name: average_score.mean
+parameters:
+  # conversation_prompt:
+    # values:
+    #   - "A human user sends a message, and a helpful and harmless AI assistant responds."
+    #   - ""
+    #   - "You are a helpful assistant."
+  # language_model_name:
+  #   values:
+  #     - "EleutherAI/pythia-1.4b-deduped"
+  #     - "Rallio67/chip_1.4B_instruct_alpha"
+  #     - "lambdalabs/pythia-1.4b-deduped-synthetic-instruct"
+  #     - "theblackcat102/pythia-1b-deduped-sft"
+      # - "EleutherAI/gpt-neo-1.3B"
+      # - "EleutherAI/gpt-neo-2.7B"
+      # - "gpt2-xl"
+  # reward_model_name:
+  #   values:
+  #     - "OpenAssistant/reward-model-deberta-v3-large-v2"
+  #     - "theblackcat102/reward-model-deberta-v3-base-v2"
+  #     - "OpenAssistant/reward-model-electra-large-discriminator"
+  # completion_filter_top_k:
+  #   values:
+  #     - 1
+  #     - 2
+  #     - 4
+  #     - 8
+  # superbatch_size:
+  #   values:
+  #     - 16
+  #     - 32
+  #     - 64
+  #     - 96
+  #     - 128
+  # prompt_dataset_names:
+  #   values:
+  #   - ["anthropic-red-team"]
+  #   - ["anthropic-red-team", "anthropic-harmless-base"]
+  #   - ["anthropic-red-team", "openai/webgpt_comparisons"]
+  #   - ["anthropic-harmless-base", "openai/webgpt_comparisons"]
+  # inverse_loss_penalty:
+  #   values:
+  #     - 0.0
+  #     - 0.001
+  #     - 0.01
+  # superbatch_size:
+  #   values:
+  #     - 8
+  #     - 16
+  #     - 24
+  #     - 32
+  #     - 48
+  # learning_rate:
+  #   values:
+  #     - 1.0e-5
+  #     - 3.3e-5
+  #     - 1.0e-4
+  #     - 3.3e-4
+  kl_coefficient:
+    values:
+      - 0.15
+      - 0.1625
+      - 0.175
+      - 0.1875
+      - 0.2
+      - 0.2125
+      - 0.225
+      - 0.2375
+      - 0.25
+
+  # top_p:
+  #   values:
+  #     - 0.95
+  #     - 0.9
+  # max_new_tokens:
+  #   values:
+  #     - 64
+  #     - 96
+  #     - 128
+  # same_prompt_per_superbatch:
+  #   values:
+  #     - True
+  #     - False
+  # repetition_penalty:
+  #   values:
+  #     - 1.05
+  #     - 1.0
+  # length_penalty:
+  #   values:
+  #     - 0.1
+  #     - 0.0
