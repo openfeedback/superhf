@@ -234,13 +234,13 @@ class SuperHFTrainer:
 
             tqdm.write("Before filtering ", end="")
             print_gpu_utilization()
+
             # Filter the completions
             (
                 filtered_scores,
-                (filtered_completions, filtered_completion_lengths),
-            ) = self.completion_filter.filter(
-                scores, completions_trimmed, completion_lengths
-            )
+                filtered_completions,
+                filtered_completion_lengths,
+            ) = self.filter_completions(scores, completions_trimmed, completion_lengths)
 
             # Fine-tune the language model on the filtered completions
             average_loss, average_kl_div = find_executable_batch_size(
@@ -403,6 +403,11 @@ class SuperHFTrainer:
         prompts_and_completions = [
             separate_prompt_from_completion(completion) for completion in completions
         ]
+        # FIXME Debug hack for blank completions
+        prompts_and_completions[0] = (
+            prompts_and_completions[0][0],
+            "\n\nHuman: This should not be included!",
+        )
         completions_for_lm: list[str] = []
         completions_for_rm: list[str] = []
         completion_lengths: list[int] = []
@@ -410,8 +415,6 @@ class SuperHFTrainer:
             stripped_completion = re.split(
                 constants.PROMPT_DELIMITER_REGEX_COMPLEX, completion, maxsplit=1
             )[0].strip()
-            if stripped_completion == "":
-                continue
             completion_lengths.append(len(stripped_completion))
             joined_completion_normal = prompt + " " + stripped_completion
             completions_for_lm.append(joined_completion_normal)
@@ -501,6 +504,49 @@ class SuperHFTrainer:
                 all_completion_lengths.extend(completion_lengths)
         return all_scores, all_completions_trimmed, all_completion_lengths
 
+    def filter_completions(
+        self,
+        scores: list[float],
+        completions_trimmed: list[str],
+        completion_lengths: list[int],
+    ) -> tuple[list[float], list[str], list[int]]:
+        """Filter the completions and their lengths based on the scores."""
+        # pylint: disable=too-many-locals
+
+        filtered_scores: list[float] = []
+        filtered_completions: list[str] = []
+        filtered_completion_lengths: list[int] = []
+        for i in range(self.training_args.num_prompts_before_finetuning):
+            start = i * self.training_args.superbatch_size
+            end = (i + 1) * self.training_args.superbatch_size
+
+            # Remove any 0-length completions
+            (scores_i, completions_trimmed_i, completion_lengths_i) = zip(
+                *[
+                    (score, completion, length)
+                    for score, completion, length in zip(
+                        scores[start:end],
+                        completions_trimmed[start:end],
+                        completion_lengths[start:end],
+                    )
+                    if length > 0
+                ]
+            )
+
+            # Filter the completions
+            (
+                filtered_scores_i,
+                (filtered_completions_i, filtered_completion_lengths_i),
+            ) = self.completion_filter.filter(
+                scores_i,  # type: ignore
+                completions_trimmed_i,  # type: ignore
+                completion_lengths_i,  # type: ignore
+            )
+            filtered_scores += filtered_scores_i
+            filtered_completions += filtered_completions_i
+            filtered_completion_lengths += filtered_completion_lengths_i
+        return filtered_scores, filtered_completions, filtered_completion_lengths
+
     def collate_fn_lm_finetuning(self, batch: list[str]) -> BatchEncoding:
         """
         Collate function for the language model fine-tuning DataLoader.
@@ -516,6 +562,7 @@ class SuperHFTrainer:
 
         # Extract the prompt (the part before and including the first "\n\nAssistant:")
         # We only need the first example because of left-padding (the delimiter is aligned)
+        # FIXME broken for multiple different prompts
         delimiter = self.training_args.prompt_delimiter
         prompt = batch[0].split(delimiter)[0] + delimiter
         prompt_token_length = len(self.language_tokenizer(prompt).input_ids)
@@ -576,10 +623,10 @@ class SuperHFTrainer:
 
             # KL divergence penalty
             if self.training_args.kl_coefficient > 0:
-                # Assume there's only 1 sequence in the minibatch and we're using LoRA models
+                # Go by each sequence in the minibatch since we trim them to different lengths
                 logp_online_model = torch.log_softmax(outputs.logits[0], dim=1)
 
-                # Disable LoRA adapters
+                # Disable LoRA adapters (required, otherwise high memory)
                 with self.language_model.disable_adapter(), torch.no_grad():  # type: ignore
                     # Get the logits from the original model
                     logp_original_model = self.language_model(**minibatch)
