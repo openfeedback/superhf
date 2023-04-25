@@ -182,6 +182,7 @@ def main(argparse_args: argparse.Namespace) -> None:
         temperature=wandb.config.temperature,
         top_p=wandb.config.top_p,
         superbatch_size=wandb.config.superbatch_size,
+        prompt_accumulation_steps=wandb.config.prompt_accumulation_steps,
         max_new_tokens=wandb.config.max_new_tokens,
         max_length_rm=wandb.config.max_length_rm,
         minibatch_size_generating=wandb.config.minibatch_size_generating,
@@ -230,6 +231,8 @@ def main(argparse_args: argparse.Namespace) -> None:
 
     # Finish up
     run.finish()
+
+    # TODO force exit to avoid wandb hanging
 
 
 if __name__ == "__main__":

@@ -49,13 +49,13 @@ class SuperHFTrainingArguments:
             )
         },
     )
-    num_prompts_before_finetuning: int = field(
-        default=2,
+    prompt_accumulation_steps: int = field(
+        default=1,
         metadata={
             "help": (
                 "Number of prompts to generate, score, and filter before "
-                "fine-tuning. Used to blend between iterative and single-pass "
-                "training."
+                "fine-tuning (0 for all the prompts). Used to blend between "
+                "iterative and single-pass training."
             )
         },
     )
@@ -176,7 +176,7 @@ class SuperHFTrainer:
         # First, put all the prompts into a Dataset and DataLoader
         prompts_dataloader = DataLoader(
             ListDataset(prompts),
-            batch_size=self.training_args.num_prompts_before_finetuning,
+            batch_size=self.training_args.prompt_accumulation_steps,
         )
         num_superbatches = len(prompts_dataloader)
 
@@ -516,7 +516,7 @@ class SuperHFTrainer:
         filtered_scores: list[float] = []
         filtered_completions: list[str] = []
         filtered_completion_lengths: list[int] = []
-        for i in range(self.training_args.num_prompts_before_finetuning):
+        for i in range(self.training_args.prompt_accumulation_steps):
             start = i * self.training_args.superbatch_size
             end = (i + 1) * self.training_args.superbatch_size
 
