@@ -252,7 +252,7 @@ class SuperHFTrainer:
             metrics = SuperHFMetrics(
                 superbatch_index=superbatch_index,
                 superbatch_count=num_superbatches,
-                completions=completions_raw,  # TODO completions_trimmed
+                completions=completions_trimmed,
                 filtered_completions=filtered_completions,
                 scores=scores,
                 filtered_scores=filtered_scores,
