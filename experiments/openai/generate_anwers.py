@@ -29,6 +29,7 @@ from superhf.data import get_superhf_prompts
 # TODO: Add to requirements.txt openai and tenacity
 
 NUMBER_OF_PROMPTS = 1000
+RANDOM_SEED = 0
 
 
 def parse_args():
@@ -67,7 +68,7 @@ def parse_args():
     parser.add_argument(
         "--dataset",
         type=str,
-        default="openai/webgpt_comparisons",
+        default="webgpt_comparisons",
         help="Dataset to use, loaded from superhf.data.get_superhf_prompts()",
     )
     args = parser.parse_args()
@@ -109,7 +110,7 @@ def main() -> None:
         assert len(questions) < 10
 
     # randomize the order of the prompts
-    random.seed(0)
+    random.seed(RANDOM_SEED)
     random.shuffle(questions)
     questions = questions[:NUMBER_OF_PROMPTS]
 
@@ -134,10 +135,10 @@ def main() -> None:
         # "\n\nHuman: " + prompt + "\n\nAssistant: " + answer
         completion = "\n\nHuman: " + question + "\n\nAssistant: " + answers[i]
         completions.append(completion)
-    print(completions)
 
     # Write answers to a file
-    with open(args.output_file, "w", encoding="utf-8") as outfile:
+    output_file = args.dataset + "_" + args.output_file
+    with open(output_file, "w", encoding="utf-8") as outfile:
         # write the result to the output file in json format
         json.dump({"completions": completions}, outfile)
 
