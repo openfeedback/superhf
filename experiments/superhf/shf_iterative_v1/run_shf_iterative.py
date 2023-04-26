@@ -230,10 +230,7 @@ def main(argparse_args: argparse.Namespace) -> None:
     wandb.alert(title="Beginning SuperHF run", text="Beginning SuperHF run...")
     trainer.train(prompts)
 
-    # Finish up
-    run.finish()
-
-    # TODO force exit to avoid wandb hanging
+    # Force exit to avoid wandb hanging
     sys.exit(0)
 
 
