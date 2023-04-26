@@ -48,6 +48,9 @@ def main(argparse_args: argparse.Namespace) -> None:
     # pylint: disable=too-many-locals
     # pylint: disable=too-many-statements
 
+    # Attempt to fix too many open files issue on SLURM
+    torch.multiprocessing.set_sharing_strategy("file_system")
+
     # Configure device and seed
     device = torch.device(
         torch.cuda.current_device() if torch.cuda.is_available() else "cpu"

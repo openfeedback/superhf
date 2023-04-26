@@ -113,31 +113,32 @@ def report_metrics_wandb(metrics: SuperHFMetrics) -> None:
     wandb.log(
         {
             "superbatch_index": metrics.superbatch_index,
-            "prompt_index": metrics.superbatch_index
-            * len(metrics.filtered_completions),
+            "prompt_index": metrics.superbatch_index * len(
+                metrics.filtered_completions
+            ),
             "percent_complete": percent_complete,
             "average_score": average_score,
             "score_histogram": wandb.Histogram(metrics.scores),
             "average_filtered_score": average_filtered_score,
-            "filtered_score_histogram": wandb.Histogram(metrics.filtered_scores),
+            # "filtered_score_histogram": wandb.Histogram(metrics.filtered_scores),
             "average_loss": metrics.average_loss,
             "average_kl_div": metrics.average_kl_div,
             "scheduler_lr": metrics.scheduler_lr,
             "average_completion_length": np.mean(metrics.completion_lengths),
-            "completion_length_histogram": wandb.Histogram(metrics.completion_lengths),
-            "average_filtered_completion_length": np.mean(
-                metrics.filtered_completion_lengths
-            ),
-            "filtered_completion_length_histogram": wandb.Histogram(
-                metrics.filtered_completion_lengths
-            ),
-            "completions": wandb.Table(
-                columns=["superbatch", "completion", "score"],
-                data=[
-                    [metrics.superbatch_index, completion, score]
-                    for completion, score in zip(metrics.completions, metrics.scores)
-                ],
-            ),
+            # "completion_length_histogram": wandb.Histogram(metrics.completion_lengths),
+            # "average_filtered_completion_length": np.mean(
+            #     metrics.filtered_completion_lengths
+            # ),
+            # "filtered_completion_length_histogram": wandb.Histogram(
+            #     metrics.filtered_completion_lengths
+            # ),
+            # "completions": wandb.Table(
+            #     columns=["superbatch", "completion", "score"],
+            #     data=[
+            #         [metrics.superbatch_index, completion, score]
+            #         for completion, score in zip(metrics.completions, metrics.scores)
+            #     ],
+            # ),
             "filtered_completions": wandb.Table(
                 columns=["superbatch", "completion", "score"],
                 data=[
