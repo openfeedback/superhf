@@ -173,6 +173,9 @@ class SuperHFTrainer:
         """
         # pylint: disable=too-many-locals
 
+        # FIXME hack
+        # self.training_args.prompt_accumulation_steps = 16
+
         # First, put all the prompts into a Dataset and DataLoader
         prompt_batch_size = self.training_args.prompt_accumulation_steps
         if prompt_batch_size == 0:
@@ -631,10 +634,16 @@ class SuperHFTrainer:
                 # Disable LoRA adapters (required, otherwise high memory)
                 with self.language_model.disable_adapter(), torch.no_grad():  # type: ignore
                     # Get the log probabilities from the original model
-                    logp_original_model = self.language_model(**minibatch)
-                    logp_original_model = torch.log_softmax(
-                        logp_original_model.logits, dim=1
-                    )
+                    try:
+                        logp_original_model = self.language_model(**minibatch)
+                        logp_original_model = torch.log_softmax(
+                            logp_original_model.logits, dim=1
+                        )
+                    except Exception as exc:
+                        # Hack to fix https://github.com/huggingface/peft/issues/367 until merged.
+                        # Manually fix the peft context adapter not re-enabling the adapter.
+                        self.language_model.base_model.enable_adapter_layers()
+                        raise exc
 
                 # Truncate each to just the part that was generated (after where labels == -100)
                 # We have to iterate over each fine-tune example because the lengths may differ

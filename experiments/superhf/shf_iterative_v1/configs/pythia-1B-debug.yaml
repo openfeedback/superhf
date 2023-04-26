@@ -33,7 +33,7 @@ num_prompts:
   value: 16
 prompt_accumulation_steps:
   desc: Number of prompts to generate, score, and filter before finetuning, or 0 for num_prompts.
-  value: 0
+  value: 2
 superbatch_size:
   desc: Number of completions to generate with the current policy before filtering and fine-tuning.
   value: 32
