@@ -101,9 +101,7 @@ def main(argparse_args: argparse.Namespace) -> None:
     dtype = (
         torch.float16
         if wandb.config.mixed_precision == "fp16"
-        else torch.bfloat16
-        if wandb.config.mixed_precision == "bf16"
-        else torch.float32
+        else torch.bfloat16 if wandb.config.mixed_precision == "bf16" else torch.float32
     )
     language_model = (
         MockLanguageModel()
