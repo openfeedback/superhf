@@ -243,7 +243,9 @@ class SuperHFTrainer:
                 filtered_scores,
                 filtered_completions,
                 filtered_completion_lengths,
-            ) = self.filter_completions(scores, completions_trimmed, completion_lengths)
+            ) = self.filter_completions(
+                prompt_batch_size, scores, completions_trimmed, completion_lengths
+            )
 
             # Fine-tune the language model on the filtered completions
             average_loss, average_kl_div = find_executable_batch_size(
@@ -504,6 +506,7 @@ class SuperHFTrainer:
 
     def filter_completions(
         self,
+        prompt_batch_size: int,
         scores: list[float],
         completions_trimmed: list[str],
         completion_lengths: list[int],
@@ -514,7 +517,7 @@ class SuperHFTrainer:
         filtered_scores: list[float] = []
         filtered_completions: list[str] = []
         filtered_completion_lengths: list[int] = []
-        for i in range(self.training_args.prompt_accumulation_steps):
+        for i in range(prompt_batch_size):
             start = i * self.training_args.superbatch_size
             end = (i + 1) * self.training_args.superbatch_size
 

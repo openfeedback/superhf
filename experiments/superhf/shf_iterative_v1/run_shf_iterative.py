@@ -4,6 +4,7 @@ Client code showing how to call the training loop for the iterative version of t
 
 import argparse
 import random
+import sys
 import os
 import yaml
 
@@ -233,6 +234,7 @@ def main(argparse_args: argparse.Namespace) -> None:
     run.finish()
 
     # TODO force exit to avoid wandb hanging
+    sys.exit(0)
 
 
 if __name__ == "__main__":
