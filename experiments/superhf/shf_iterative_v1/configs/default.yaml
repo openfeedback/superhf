@@ -6,7 +6,7 @@ reward_model_name:
   value: "OpenAssistant/reward-model-deberta-v3-large-v2"
 learning_rate:
   desc: Learning rate for fine-tuning the language model.
-  value: 3.0e-5
+  value: 2.0e-5
 scheduler_name:
   desc: Name of the scheduler to use for fine-tuning the language model.
   value: "cosine"
@@ -15,7 +15,7 @@ scheduler_warmup_steps:
   value: 32
 kl_coefficient:
   desc: Coefficient for the KL loss term added to the CLM loss. Requires LoRA. Set to 0 to disable.
-  value: 0.3
+  value: 0.2125
 inverse_loss_penalty:
   desc: Regularizes loss by C with loss' = loss + C / loss. Set to 0 to disable.
   value: 0.0
@@ -42,7 +42,7 @@ completion_filter_top_k:
   value: 1
 max_new_tokens:
   desc: Maximum new token length of language model completion.
-  value: 64
+  value: 32
 max_length_rm:
   desc: Maximum token length of reward model input.
   value: 1024
