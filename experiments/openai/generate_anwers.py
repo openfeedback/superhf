@@ -15,11 +15,15 @@ anthropic-helpful-base
 
 This script analyzes 1,000 randomly selected prompts.
 """
+import sys
 import argparse
 import json
 import random
-import tqdm
+import logging
+from concurrent.futures import ThreadPoolExecutor
 
+
+import tqdm
 import openai
 
 from tenacity import (
@@ -35,6 +39,10 @@ from superhf.constants import SUPPORTED_DATASETS
 
 NUMBER_OF_PROMPTS = 1000
 RANDOM_SEED = 0
+
+logging.basicConfig(stream=sys.stderr, level=logging.ERROR)
+
+logger = logging.getLogger(__name__)
 
 
 def parse_args():
@@ -142,15 +150,25 @@ def generate_for_dataset(args, dataset: str) -> None:
         for question in questions
     ]
 
+    def generate_answer_wrapper(prompt):
+        return generate_answers(prompt, args.engine, args.max_tokens)
+
     prompts = []
     for question in questions:
         prompt = {"role": "user", "content": question}
         prompts.append(prompt)
-    answers = []
+    answers = ["" for _ in prompts]
     n_requests = 0
-    for prompt in tqdm.tqdm(prompts):
-        n_requests += 1
-        answers.append(generate_answers(prompt, args.engine, args.max_tokens))
+
+    with ThreadPoolExecutor() as executor:
+        answers = list(
+            tqdm.tqdm(
+                executor.map(generate_answer_wrapper, prompts), total=len(prompts)
+            )
+        )
+    # for prompt in tqdm.tqdm(prompts):
+    #     answers[n_requests] = generate_answers(prompt, args.engine, args.max_tokens)
+    #     n_requests += 1
 
     print(
         "Just processed "
