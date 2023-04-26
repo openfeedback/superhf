@@ -559,14 +559,15 @@ class SuperHFTrainer:
         encodings["labels"] = encodings["input_ids"].detach().clone()  # type: ignore
 
         # Extract the prompt (the part before and including the first "\n\nAssistant:")
-        # We only need the first example because of left-padding (the delimiter is aligned)
-        # FIXME broken for multiple different prompts
         delimiter = self.training_args.prompt_delimiter
-        prompt = batch[0].split(delimiter)[0] + delimiter
-        prompt_token_length = len(self.language_tokenizer(prompt).input_ids)
+        prompts = [example.split(delimiter)[0] + delimiter for example in batch]
+        prompt_token_lengths = [
+            len(tokenized) for tokenized in self.language_tokenizer(prompts).input_ids
+        ]
 
         # Set labels to -100 for tokens that should be ignored (non-completion part of the prompt)
-        encodings["labels"][:, :prompt_token_length] = -100  # type: ignore
+        for i, length in enumerate(prompt_token_lengths):
+            encodings["labels"][i, :length] = -100
 
         return encodings
 
