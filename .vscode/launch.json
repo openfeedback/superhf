@@ -60,5 +60,17 @@
             ],
             "justMyCode": false
         },
+        {
+            "name": "GPT Generation Script",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/experiments/openai/generate_anwers.py",
+            "console": "integratedTerminal",
+            "args": [
+                "--key",
+                "----------------------"
+            ],
+            "justMyCode": false
+        },
     ]
 }

@@ -10,6 +10,9 @@ completions to a file in json format. The data adheres to the format:
     ]
 }
 
+# TODO: anthropic-harmless-base
+anthropic-helpful-base
+
 This script analyzes 1,000 randomly selected prompts.
 """
 import argparse
