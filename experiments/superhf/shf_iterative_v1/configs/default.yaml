@@ -6,7 +6,7 @@ reward_model_name:
   value: "OpenAssistant/reward-model-deberta-v3-large-v2"
 learning_rate:
   desc: Learning rate for fine-tuning the language model.
-  value: 2.0e-5
+  value: 3.0e-5
 scheduler_name:
   desc: Name of the scheduler to use for fine-tuning the language model.
   value: "cosine"
@@ -42,7 +42,7 @@ completion_filter_top_k:
   value: 1
 max_new_tokens:
   desc: Maximum new token length of language model completion.
-  value: 32
+  value: 64
 max_length_rm:
   desc: Maximum token length of reward model input.
   value: 1024

@@ -656,6 +656,8 @@ class SuperHFTrainer:
                     kl_divergence = self.kl_loss(
                         logp_online_model_i, logp_original_model_i
                     )
+                    # Clamp KL to be positive to avoid negative KL gaming
+                    kl_divergence = torch.maximum(kl_divergence, torch.tensor(0.0))
                     sum_kl_divergence += kl_divergence.item()
                     loss = loss + self.training_args.kl_coefficient * kl_divergence
 
