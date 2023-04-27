@@ -10,8 +10,8 @@ completions to a file in json format. The data adheres to the format:
     ]
 }
 
-# TODO: anthropic-harmless-base
-anthropic-helpful-base
+# TODO: label the data with the model used to generate it
+# TODO: Use the test splits we decided on
 
 This script analyzes 1,000 randomly selected prompts.
 """
@@ -166,9 +166,6 @@ def generate_for_dataset(args, dataset: str) -> None:
                 executor.map(generate_answer_wrapper, prompts), total=len(prompts)
             )
         )
-    # for prompt in tqdm.tqdm(prompts):
-    #     answers[n_requests] = generate_answers(prompt, args.engine, args.max_tokens)
-    #     n_requests += 1
 
     print(
         "Just processed "
