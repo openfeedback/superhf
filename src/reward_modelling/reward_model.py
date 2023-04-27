@@ -235,7 +235,7 @@ if __name__ == "__main__":
 
     from preference_datasets import AnthropicHelpfulHarmless
     from InstructGPTJPairwise_dataset import CompatibleSyntheticInstructGPTJPairwise
-    from WebGPTComparisons_dataset import WebGPTComparisons
+    from WebGPTComparisons_dataset import WebGPTComparisons 
     from SummarizeFromFeedbackComparisons_dataset import SummarizeFromFeedbackComparisons
     from combined_datasets import CombinedDataset
     
@@ -252,31 +252,42 @@ if __name__ == "__main__":
  
     # training_set = AnthropicHelpfulHarmless("train", data_dir="harmless-base")
     # validation_set = AnthropicHelpfulHarmless("test",data_dir="harmless-base")
-    # train_dataset = WebGPTComparisons("train")
-    # eval_dataset = WebGPTComparisons("test")
-    # train_dataset = CompatibleSyntheticInstructGPTJPairwise("train")
+    # training_set = WebGPTComparisons("train")
+    # validation_set = WebGPTComparisons("test")
+    # training_set = CompatibleSyntheticInstructGPTJPairwise("train")
     # eval_dataset = CompatibleSyntheticInstructGPTJPairwise("test")
 
+    anthropic_harmless_train = AnthropicHelpfulHarmless("train", data_dir="harmless-base")
+    anthropic_harmless_test = AnthropicHelpfulHarmless("test", data_dir="harmless-base")
+    anthropic_helpful_train = AnthropicHelpfulHarmless("train", data_dir="helpful-base")
+    anthropic_helpful_test = AnthropicHelpfulHarmless("test", data_dir="helpful-base")
+    web_gpt_train, web_gpt_test = WebGPTComparisons.create_train_test_splits(split='train', test_size=2300) 
     
-    #Instantiate your dataset classes here
-    web_gpt_comparisons = WebGPTComparisons()
-    anthropic_helpful_harmless = AnthropicHelpfulHarmless()
-    summarize_feedback = SummarizeFromFeedbackComparisons()
-    instrucptgpt_pairwise = CompatibleSyntheticInstructGPTJPairwise()
+    # Instantiate your dataset classes here
+    # web_gpt_comparisons = WebGPTComparisons()
+    # anthropic_helpful_harmless = AnthropicHelpfulHarmless()
+    # summarize_feedback = SummarizeFromFeedbackComparisons()
+    # instrucptgpt_pairwise = CompatibleSyntheticInstructGPTJPairwise()
 
+    # combined_dataset = CombinedDataset([
+    #     web_gpt_comparisons,
+    #     anthropic_helpful_harmless,
+    #     instrucptgpt_pairwise,
+    #     summarize_feedback
+    # ])
     combined_dataset = CombinedDataset([
-        web_gpt_comparisons,
-        anthropic_helpful_harmless,
-        instrucptgpt_pairwise,
-        summarize_feedback
+        anthropic_harmless_train,
+        anthropic_helpful_train,
+        web_gpt_train
     ])
+
     #Access the entire training set
     # training_set = [combined_dataset.__getitem__(i, "train") for i in range(combined_dataset.__len__("train"))]
     training_set = [combined_dataset.__getitem__(i, "val") for i in range(combined_dataset.__len__("val"))]
 
     # Access the entire validation set
-    validation_set = [combined_dataset.__getitem__(i, "train") for i in range(combined_dataset.__len__("train")//10)]
-    # validation_set = [combined_dataset.__getitem__(i, "val") for i in range(combined_dataset.__len__("val")//10)]
+    validation_set = [combined_dataset.__getitem__(i, "train") for i in range(combined_dataset.__len__("train"))]
+    # validation_set = [combined_dataset.__getitem__(i, "val") for i in range(combined_dataset.__len__("val"))]
 
     trainer = RewardModelTrainer(
         model=model,
@@ -292,4 +303,5 @@ if __name__ == "__main__":
     )
     result = trainer.train()
     trainer.save_model(training_args.output_dir)
+    combined_dataset.save(f"{training_args.output_dir}/combined_dataset.pt")
     print("==============END OF TRAINING===================")

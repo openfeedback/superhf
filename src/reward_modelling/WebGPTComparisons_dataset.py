@@ -4,8 +4,9 @@ from datasets import load_dataset
 
 
 class WebGPTComparisons(Dataset):
-    def __init__(self, split="train"):
-        data = load_dataset("openai/webgpt_comparisons", split=split)
+    def __init__(self, split="train", data=None):
+        if data == None:
+            data = load_dataset("openai/webgpt_comparisons", split=split)
         self.winner_responses = []
         self.loser_responses = []
 
@@ -27,4 +28,13 @@ class WebGPTComparisons(Dataset):
 
     def __len__(self):
         return len(self.winner_responses)
+
+    @classmethod
+    def create_train_test_splits(cls, split='train', test_size=0):
+        ds = load_dataset("openai/webgpt_comparisons", split=split)
+        ds = ds.train_test_split(test_size)
+        train_data = cls(data=ds['train'])
+        test_data = cls(data=ds['test'])
+        return train_data, test_data
+
 

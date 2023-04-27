@@ -1,4 +1,5 @@
 import random
+import torch
 
 class CombinedDataset:
     def __init__(self, datasets, split_ratio=0.5):
@@ -50,6 +51,17 @@ class CombinedDataset:
     def shuffle(self):
         random.shuffle(self.train_indices)
         random.shuffle(self.val_indices)
+
+    def save(self, path):
+        torch.save({
+            "train_winner_pairs": self.train_winner_pairs,
+            "train_loser_pairs": self.train_loser_pairs,
+            "val_winner_pairs": self.val_winner_pairs,
+            "val_loser_pairs": self.val_loser_pairs,
+            "train_indices": self.train_indices,
+            "val_indices": self.val_indices
+        }, path)
+
 
 # Instantiate your dataset classes here
 # web_gpt_comparisons = WebGPTComparisons()
