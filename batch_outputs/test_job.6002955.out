@@ -1,0 +1,302 @@
+SLURM_JOBID=6002955
+SLURM_JOB_NODELIST=jagupard36
+SLURM_NNODES=1
+SLURMTMPDIR=
+working directory = /sailhome/fongsu/superhf
+[2023-04-07 00:47:17,356] [WARNING] [runner.py:186:fetch_hostfile] Unable to find hostfile, will proceed with training with local resources only.
+Detected CUDA_VISIBLE_DEVICES=0,1,2,3 but ignoring it because one or several of --include/--exclude/--num_gpus/--num_nodes cl args were used. If you want to use CUDA_VISIBLE_DEVICES don't pass any of these arguments to deepspeed.
+[2023-04-07 00:47:17,468] [INFO] [runner.py:548:main] cmd = /sailhome/fongsu/rm/bin/python -u -m deepspeed.launcher.launch --world_info=eyJsb2NhbGhvc3QiOiBbMCwgMSwgMiwgM119 --master_addr=127.0.0.1 --master_port=29500 --enable_each_rank_log=None src/reward_modelling/reward_model.py --deepspeed src/reward_modelling/ds_configs/stage_3_config.json
+[2023-04-07 00:47:18,654] [INFO] [launch.py:135:main] 0 NCCL_P2P_DISABLE=1
+[2023-04-07 00:47:18,654] [INFO] [launch.py:142:main] WORLD INFO DICT: {'localhost': [0, 1, 2, 3]}
+[2023-04-07 00:47:18,654] [INFO] [launch.py:148:main] nnodes=1, num_local_procs=4, node_rank=0
+[2023-04-07 00:47:18,654] [INFO] [launch.py:161:main] global_rank_mapping=defaultdict(<class 'list'>, {'localhost': [0, 1, 2, 3]})
+[2023-04-07 00:47:18,654] [INFO] [launch.py:162:main] dist_world_size=4
+[2023-04-07 00:47:18,654] [INFO] [launch.py:164:main] Setting CUDA_VISIBLE_DEVICES=0,1,2,3
+{'loss': 0.6932, 'learning_rate': 9.939849624060152e-06, 'epoch': 0.01}
+{'loss': 0.6669, 'learning_rate': 9.87218045112782e-06, 'epoch': 0.02}
+{'loss': 0.6361, 'learning_rate': 9.796992481203008e-06, 'epoch': 0.02}
+{'loss': 0.6501, 'learning_rate': 9.721804511278196e-06, 'epoch': 0.03}
+{'loss': 0.6221, 'learning_rate': 9.646616541353384e-06, 'epoch': 0.04}
+{'loss': 0.5692, 'learning_rate': 9.571428571428573e-06, 'epoch': 0.05}
+{'loss': 0.618, 'learning_rate': 9.49624060150376e-06, 'epoch': 0.05}
+{'loss': 0.6646, 'learning_rate': 9.421052631578949e-06, 'epoch': 0.06}
+{'loss': 0.5984, 'learning_rate': 9.345864661654137e-06, 'epoch': 0.07}
+{'loss': 0.6043, 'learning_rate': 9.270676691729324e-06, 'epoch': 0.08}
+{'loss': 0.583, 'learning_rate': 9.195488721804512e-06, 'epoch': 0.08}
+{'loss': 0.5991, 'learning_rate': 9.1203007518797e-06, 'epoch': 0.09}
+{'loss': 0.5882, 'learning_rate': 9.045112781954888e-06, 'epoch': 0.1}
+{'loss': 0.5987, 'learning_rate': 8.969924812030076e-06, 'epoch': 0.11}
+{'loss': 0.5528, 'learning_rate': 8.894736842105264e-06, 'epoch': 0.11}
+{'loss': 0.6046, 'learning_rate': 8.819548872180453e-06, 'epoch': 0.12}
+{'loss': 0.5862, 'learning_rate': 8.744360902255639e-06, 'epoch': 0.13}
+{'loss': 0.5898, 'learning_rate': 8.669172932330829e-06, 'epoch': 0.14}
+{'loss': 0.6008, 'learning_rate': 8.593984962406016e-06, 'epoch': 0.14}
+{'loss': 0.6274, 'learning_rate': 8.518796992481204e-06, 'epoch': 0.15}
+{'eval_loss': 0.58984375, 'eval_accuracy': 0.6967993079584776, 'eval_average_pos_score': 1.7880859375, 'eval_average_neg_score': 1.2978515625, 'eval_average_abs_score_diff': 0.84130859375, 'eval_runtime': 48.6291, 'eval_samples_per_second': 47.544, 'eval_steps_per_second': 1.501, 'epoch': 0.15}
+{'loss': 0.5761, 'learning_rate': 8.443609022556392e-06, 'epoch': 0.16}
+{'loss': 0.5647, 'learning_rate': 8.36842105263158e-06, 'epoch': 0.17}
+{'loss': 0.5583, 'learning_rate': 8.293233082706768e-06, 'epoch': 0.17}
+{'loss': 0.5882, 'learning_rate': 8.218045112781955e-06, 'epoch': 0.18}
+{'loss': 0.5235, 'learning_rate': 8.142857142857143e-06, 'epoch': 0.19}
+{'loss': 0.5444, 'learning_rate': 8.067669172932333e-06, 'epoch': 0.2}
+{'loss': 0.5426, 'learning_rate': 7.992481203007519e-06, 'epoch': 0.2}
+{'loss': 0.5757, 'learning_rate': 7.917293233082708e-06, 'epoch': 0.21}
+{'loss': 0.5642, 'learning_rate': 7.842105263157895e-06, 'epoch': 0.22}
+{'loss': 0.5716, 'learning_rate': 7.766917293233084e-06, 'epoch': 0.23}
+{'loss': 0.5741, 'learning_rate': 7.691729323308272e-06, 'epoch': 0.23}
+{'loss': 0.5858, 'learning_rate': 7.61654135338346e-06, 'epoch': 0.24}
+{'loss': 0.5931, 'learning_rate': 7.5413533834586475e-06, 'epoch': 0.25}
+{'loss': 0.5135, 'learning_rate': 7.466165413533836e-06, 'epoch': 0.26}
+{'loss': 0.5501, 'learning_rate': 7.390977443609023e-06, 'epoch': 0.26}
+{'loss': 0.577, 'learning_rate': 7.315789473684212e-06, 'epoch': 0.27}
+{'loss': 0.5902, 'learning_rate': 7.240601503759399e-06, 'epoch': 0.28}
+{'loss': 0.5766, 'learning_rate': 7.165413533834587e-06, 'epoch': 0.29}
+{'loss': 0.5656, 'learning_rate': 7.090225563909775e-06, 'epoch': 0.29}
+{'loss': 0.5058, 'learning_rate': 7.015037593984964e-06, 'epoch': 0.3}
+{'eval_loss': 0.5810546875, 'eval_accuracy': 0.7115051903114187, 'eval_average_pos_score': 0.83935546875, 'eval_average_neg_score': -0.031402587890625, 'eval_average_abs_score_diff': 1.3798828125, 'eval_runtime': 48.6517, 'eval_samples_per_second': 47.521, 'eval_steps_per_second': 1.5, 'epoch': 0.3}
+{'loss': 0.6014, 'learning_rate': 6.939849624060151e-06, 'epoch': 0.31}
+{'loss': 0.5525, 'learning_rate': 6.864661654135339e-06, 'epoch': 0.32}
+{'loss': 0.5728, 'learning_rate': 6.789473684210527e-06, 'epoch': 0.32}
+{'loss': 0.5097, 'learning_rate': 6.714285714285714e-06, 'epoch': 0.33}
+{'loss': 0.508, 'learning_rate': 6.639097744360903e-06, 'epoch': 0.34}
+{'loss': 0.5966, 'learning_rate': 6.56390977443609e-06, 'epoch': 0.35}
+{'loss': 0.5866, 'learning_rate': 6.4887218045112785e-06, 'epoch': 0.35}
+{'loss': 0.5412, 'learning_rate': 6.413533834586466e-06, 'epoch': 0.36}
+{'loss': 0.5594, 'learning_rate': 6.338345864661655e-06, 'epoch': 0.37}
+{'loss': 0.5553, 'learning_rate': 6.263157894736842e-06, 'epoch': 0.38}
+{'loss': 0.5983, 'learning_rate': 6.187969924812031e-06, 'epoch': 0.38}
+{'loss': 0.551, 'learning_rate': 6.1127819548872184e-06, 'epoch': 0.39}
+{'loss': 0.4953, 'learning_rate': 6.037593984962406e-06, 'epoch': 0.4}
+{'loss': 0.5561, 'learning_rate': 5.962406015037594e-06, 'epoch': 0.41}
+{'loss': 0.5254, 'learning_rate': 5.887218045112783e-06, 'epoch': 0.41}
+{'loss': 0.5547, 'learning_rate': 5.81203007518797e-06, 'epoch': 0.42}
+{'loss': 0.573, 'learning_rate': 5.736842105263158e-06, 'epoch': 0.43}
+{'loss': 0.5645, 'learning_rate': 5.661654135338346e-06, 'epoch': 0.44}
+{'loss': 0.5462, 'learning_rate': 5.586466165413534e-06, 'epoch': 0.44}
+{'loss': 0.5699, 'learning_rate': 5.511278195488722e-06, 'epoch': 0.45}
+{'eval_loss': 0.552734375, 'eval_accuracy': 0.7166955017301038, 'eval_average_pos_score': 1.2802734375, 'eval_average_neg_score': 0.6005859375, 'eval_average_abs_score_diff': 1.029296875, 'eval_runtime': 48.6607, 'eval_samples_per_second': 47.513, 'eval_steps_per_second': 1.5, 'epoch': 0.45}
+{'loss': 0.5394, 'learning_rate': 5.4360902255639104e-06, 'epoch': 0.46}
+{'loss': 0.5627, 'learning_rate': 5.360902255639097e-06, 'epoch': 0.47}
+{'loss': 0.5287, 'learning_rate': 5.285714285714286e-06, 'epoch': 0.47}
+{'loss': 0.5404, 'learning_rate': 5.210526315789474e-06, 'epoch': 0.48}
+{'loss': 0.5503, 'learning_rate': 5.1353383458646625e-06, 'epoch': 0.49}
+{'loss': 0.5499, 'learning_rate': 5.0601503759398495e-06, 'epoch': 0.5}
+{'loss': 0.5584, 'learning_rate': 4.984962406015038e-06, 'epoch': 0.5}
+{'loss': 0.6069, 'learning_rate': 4.909774436090226e-06, 'epoch': 0.51}
+{'loss': 0.556, 'learning_rate': 4.834586466165414e-06, 'epoch': 0.52}
+{'loss': 0.5864, 'learning_rate': 4.759398496240602e-06, 'epoch': 0.53}
+{'loss': 0.579, 'learning_rate': 4.68421052631579e-06, 'epoch': 0.53}
+{'loss': 0.5081, 'learning_rate': 4.609022556390978e-06, 'epoch': 0.54}
+{'loss': 0.5321, 'learning_rate': 4.533834586466166e-06, 'epoch': 0.55}
+{'loss': 0.5098, 'learning_rate': 4.458646616541354e-06, 'epoch': 0.56}
+{'loss': 0.5273, 'learning_rate': 4.3834586466165415e-06, 'epoch': 0.56}
+{'loss': 0.4966, 'learning_rate': 4.30827067669173e-06, 'epoch': 0.57}
+{'loss': 0.5551, 'learning_rate': 4.233082706766918e-06, 'epoch': 0.58}
+{'loss': 0.5303, 'learning_rate': 4.157894736842106e-06, 'epoch': 0.59}
+{'loss': 0.5067, 'learning_rate': 4.0827067669172936e-06, 'epoch': 0.59}
+{'loss': 0.5533, 'learning_rate': 4.007518796992481e-06, 'epoch': 0.6}
+{'eval_loss': 0.55419921875, 'eval_accuracy': 0.717128027681661, 'eval_average_pos_score': 0.6689453125, 'eval_average_neg_score': -0.1876220703125, 'eval_average_abs_score_diff': 1.29296875, 'eval_runtime': 48.6328, 'eval_samples_per_second': 47.54, 'eval_steps_per_second': 1.501, 'epoch': 0.6}
+{'loss': 0.5649, 'learning_rate': 3.93233082706767e-06, 'epoch': 0.61}
+{'loss': 0.5284, 'learning_rate': 3.857142857142858e-06, 'epoch': 0.62}
+{'loss': 0.567, 'learning_rate': 3.7819548872180457e-06, 'epoch': 0.62}
+{'loss': 0.539, 'learning_rate': 3.7067669172932335e-06, 'epoch': 0.63}
+{'loss': 0.5502, 'learning_rate': 3.6315789473684217e-06, 'epoch': 0.64}
+{'loss': 0.5704, 'learning_rate': 3.5563909774436095e-06, 'epoch': 0.65}
+{'loss': 0.571, 'learning_rate': 3.4812030075187973e-06, 'epoch': 0.65}
+{'loss': 0.521, 'learning_rate': 3.4060150375939856e-06, 'epoch': 0.66}
+{'loss': 0.4938, 'learning_rate': 3.3308270676691734e-06, 'epoch': 0.67}
+{'loss': 0.6041, 'learning_rate': 3.255639097744361e-06, 'epoch': 0.68}
+{'loss': 0.5758, 'learning_rate': 3.1804511278195494e-06, 'epoch': 0.68}
+{'loss': 0.5255, 'learning_rate': 3.1052631578947372e-06, 'epoch': 0.69}
+{'loss': 0.5792, 'learning_rate': 3.0300751879699255e-06, 'epoch': 0.7}
+{'loss': 0.553, 'learning_rate': 2.9548872180451133e-06, 'epoch': 0.71}
+{'loss': 0.4945, 'learning_rate': 2.879699248120301e-06, 'epoch': 0.71}
+{'loss': 0.5343, 'learning_rate': 2.8045112781954893e-06, 'epoch': 0.72}
+{'loss': 0.541, 'learning_rate': 2.729323308270677e-06, 'epoch': 0.73}
+{'loss': 0.5604, 'learning_rate': 2.654135338345865e-06, 'epoch': 0.74}
+{'loss': 0.542, 'learning_rate': 2.578947368421053e-06, 'epoch': 0.74}
+{'loss': 0.5396, 'learning_rate': 2.503759398496241e-06, 'epoch': 0.75}
+{'eval_loss': 0.54443359375, 'eval_accuracy': 0.722318339100346, 'eval_average_pos_score': 1.09765625, 'eval_average_neg_score': 0.360107421875, 'eval_average_abs_score_diff': 1.09765625, 'eval_runtime': 48.6647, 'eval_samples_per_second': 47.509, 'eval_steps_per_second': 1.5, 'epoch': 0.75}
+{'loss': 0.5695, 'learning_rate': 2.428571428571429e-06, 'epoch': 0.76}
+{'loss': 0.5685, 'learning_rate': 2.3533834586466166e-06, 'epoch': 0.77}
+{'loss': 0.5436, 'learning_rate': 2.278195488721805e-06, 'epoch': 0.77}
+{'loss': 0.5336, 'learning_rate': 2.2030075187969927e-06, 'epoch': 0.78}
+{'loss': 0.5282, 'learning_rate': 2.1278195488721805e-06, 'epoch': 0.79}
+{'loss': 0.549, 'learning_rate': 2.0526315789473687e-06, 'epoch': 0.8}
+{'loss': 0.5028, 'learning_rate': 1.9774436090225565e-06, 'epoch': 0.8}
+{'loss': 0.5593, 'learning_rate': 1.9022556390977445e-06, 'epoch': 0.81}
+{'loss': 0.5453, 'learning_rate': 1.8270676691729326e-06, 'epoch': 0.82}
+{'loss': 0.5143, 'learning_rate': 1.7518796992481204e-06, 'epoch': 0.83}
+{'loss': 0.5186, 'learning_rate': 1.6766917293233084e-06, 'epoch': 0.83}
+{'loss': 0.5199, 'learning_rate': 1.6015037593984964e-06, 'epoch': 0.84}
+{'loss': 0.5786, 'learning_rate': 1.5263157894736844e-06, 'epoch': 0.85}
+{'loss': 0.5439, 'learning_rate': 1.4511278195488722e-06, 'epoch': 0.86}
+{'loss': 0.5298, 'learning_rate': 1.3759398496240603e-06, 'epoch': 0.86}
+{'loss': 0.5284, 'learning_rate': 1.3007518796992483e-06, 'epoch': 0.87}
+{'loss': 0.5479, 'learning_rate': 1.2255639097744363e-06, 'epoch': 0.88}
+{'loss': 0.5571, 'learning_rate': 1.1503759398496241e-06, 'epoch': 0.89}
+{'loss': 0.5673, 'learning_rate': 1.0751879699248121e-06, 'epoch': 0.89}
+{'loss': 0.5791, 'learning_rate': 1.0000000000000002e-06, 'epoch': 0.9}
+{'eval_loss': 0.544921875, 'eval_accuracy': 0.7184256055363322, 'eval_average_pos_score': 1.162109375, 'eval_average_neg_score': 0.411376953125, 'eval_average_abs_score_diff': 1.11328125, 'eval_runtime': 48.686, 'eval_samples_per_second': 47.488, 'eval_steps_per_second': 1.499, 'epoch': 0.9}
+{'loss': 0.5849, 'learning_rate': 9.248120300751881e-07, 'epoch': 0.91}
+{'loss': 0.5117, 'learning_rate': 8.496240601503761e-07, 'epoch': 0.92}
+{'loss': 0.5776, 'learning_rate': 7.74436090225564e-07, 'epoch': 0.92}
+{'loss': 0.5721, 'learning_rate': 6.992481203007518e-07, 'epoch': 0.93}
+{'loss': 0.5467, 'learning_rate': 6.240601503759399e-07, 'epoch': 0.94}
+{'loss': 0.5083, 'learning_rate': 5.488721804511279e-07, 'epoch': 0.95}
+{'loss': 0.5395, 'learning_rate': 4.7368421052631585e-07, 'epoch': 0.95}
+{'loss': 0.5222, 'learning_rate': 3.984962406015038e-07, 'epoch': 0.96}
+{'loss': 0.5268, 'learning_rate': 3.233082706766918e-07, 'epoch': 0.97}
+{'loss': 0.5359, 'learning_rate': 2.481203007518797e-07, 'epoch': 0.98}
+{'loss': 0.5246, 'learning_rate': 1.7293233082706767e-07, 'epoch': 0.98}
+{'loss': 0.5313, 'learning_rate': 9.774436090225564e-08, 'epoch': 0.99}
+{'loss': 0.5542, 'learning_rate': 2.255639097744361e-08, 'epoch': 1.0}
+{'train_runtime': 9015.1577, 'train_samples_per_second': 4.718, 'train_steps_per_second': 0.148, 'train_loss': 0.5591417470372709, 'epoch': 1.0}
+==============END OF TRAINING===================
+==============END OF TRAINING===================
+==============END OF TRAINING===================
+[2023-04-07 03:19:05,985] [INFO] [launch.py:350:main] Process 194547 exits successfully.
+[2023-04-07 03:19:05,985] [INFO] [launch.py:350:main] Process 194545 exits successfully.
+[2023-04-07 03:19:06,987] [INFO] [launch.py:350:main] Process 194546 exits successfully.
+huggingface/tokenizers: The current process just got forked, after parallelism has already been used. Disabling parallelism to avoid deadlocks...
+To disable this warning, you can either:
+	- Avoid using `tokenizers` before the fork if possible
+	- Explicitly set the environment variable TOKENIZERS_PARALLELISM=(true | false)
+huggingface/tokenizers: The current process just got forked, after parallelism has already been used. Disabling parallelism to avoid deadlocks...
+To disable this warning, you can either:
+	- Avoid using `tokenizers` before the fork if possible
+	- Explicitly set the environment variable TOKENIZERS_PARALLELISM=(true | false)
+huggingface/tokenizers: The current process just got forked, after parallelism has already been used. Disabling parallelism to avoid deadlocks...
+To disable this warning, you can either:
+	- Avoid using `tokenizers` before the fork if possible
+	- Explicitly set the environment variable TOKENIZERS_PARALLELISM=(true | false)
+huggingface/tokenizers: The current process just got forked, after parallelism has already been used. Disabling parallelism to avoid deadlocks...
+To disable this warning, you can either:
+	- Avoid using `tokenizers` before the fork if possible
+	- Explicitly set the environment variable TOKENIZERS_PARALLELISM=(true | false)
+huggingface/tokenizers: The current process just got forked, after parallelism has already been used. Disabling parallelism to avoid deadlocks...
+To disable this warning, you can either:
+	- Avoid using `tokenizers` before the fork if possible
+	- Explicitly set the environment variable TOKENIZERS_PARALLELISM=(true | false)
+huggingface/tokenizers: The current process just got forked, after parallelism has already been used. Disabling parallelism to avoid deadlocks...
+To disable this warning, you can either:
+	- Avoid using `tokenizers` before the fork if possible
+	- Explicitly set the environment variable TOKENIZERS_PARALLELISM=(true | false)
+huggingface/tokenizers: The current process just got forked, after parallelism has already been used. Disabling parallelism to avoid deadlocks...
+To disable this warning, you can either:
+	- Avoid using `tokenizers` before the fork if possible
+	- Explicitly set the environment variable TOKENIZERS_PARALLELISM=(true | false)
+huggingface/tokenizers: The current process just got forked, after parallelism has already been used. Disabling parallelism to avoid deadlocks...
+To disable this warning, you can either:
+	- Avoid using `tokenizers` before the fork if possible
+	- Explicitly set the environment variable TOKENIZERS_PARALLELISM=(true | false)
+huggingface/tokenizers: The current process just got forked, after parallelism has already been used. Disabling parallelism to avoid deadlocks...
+To disable this warning, you can either:
+	- Avoid using `tokenizers` before the fork if possible
+	- Explicitly set the environment variable TOKENIZERS_PARALLELISM=(true | false)
+huggingface/tokenizers: The current process just got forked, after parallelism has already been used. Disabling parallelism to avoid deadlocks...
+To disable this warning, you can either:
+	- Avoid using `tokenizers` before the fork if possible
+	- Explicitly set the environment variable TOKENIZERS_PARALLELISM=(true | false)
+huggingface/tokenizers: The current process just got forked, after parallelism has already been used. Disabling parallelism to avoid deadlocks...
+To disable this warning, you can either:
+	- Avoid using `tokenizers` before the fork if possible
+	- Explicitly set the environment variable TOKENIZERS_PARALLELISM=(true | false)
+huggingface/tokenizers: The current process just got forked, after parallelism has already been used. Disabling parallelism to avoid deadlocks...
+To disable this warning, you can either:
+	- Avoid using `tokenizers` before the fork if possible
+	- Explicitly set the environment variable TOKENIZERS_PARALLELISM=(true | false)
+huggingface/tokenizers: The current process just got forked, after parallelism has already been used. Disabling parallelism to avoid deadlocks...
+To disable this warning, you can either:
+	- Avoid using `tokenizers` before the fork if possible
+	- Explicitly set the environment variable TOKENIZERS_PARALLELISM=(true | false)
+huggingface/tokenizers: The current process just got forked, after parallelism has already been used. Disabling parallelism to avoid deadlocks...
+To disable this warning, you can either:
+	- Avoid using `tokenizers` before the fork if possible
+	- Explicitly set the environment variable TOKENIZERS_PARALLELISM=(true | false)
+huggingface/tokenizers: The current process just got forked, after parallelism has already been used. Disabling parallelism to avoid deadlocks...
+To disable this warning, you can either:
+	- Avoid using `tokenizers` before the fork if possible
+	- Explicitly set the environment variable TOKENIZERS_PARALLELISM=(true | false)
+huggingface/tokenizers: The current process just got forked, after parallelism has already been used. Disabling parallelism to avoid deadlocks...
+To disable this warning, you can either:
+	- Avoid using `tokenizers` before the fork if possible
+	- Explicitly set the environment variable TOKENIZERS_PARALLELISM=(true | false)
+huggingface/tokenizers: The current process just got forked, after parallelism has already been used. Disabling parallelism to avoid deadlocks...
+To disable this warning, you can either:
+	- Avoid using `tokenizers` before the fork if possible
+	- Explicitly set the environment variable TOKENIZERS_PARALLELISM=(true | false)
+huggingface/tokenizers: The current process just got forked, after parallelism has already been used. Disabling parallelism to avoid deadlocks...
+To disable this warning, you can either:
+	- Avoid using `tokenizers` before the fork if possible
+	- Explicitly set the environment variable TOKENIZERS_PARALLELISM=(true | false)
+huggingface/tokenizers: The current process just got forked, after parallelism has already been used. Disabling parallelism to avoid deadlocks...
+To disable this warning, you can either:
+	- Avoid using `tokenizers` before the fork if possible
+	- Explicitly set the environment variable TOKENIZERS_PARALLELISM=(true | false)
+huggingface/tokenizers: The current process just got forked, after parallelism has already been used. Disabling parallelism to avoid deadlocks...
+To disable this warning, you can either:
+	- Avoid using `tokenizers` before the fork if possible
+	- Explicitly set the environment variable TOKENIZERS_PARALLELISM=(true | false)
+huggingface/tokenizers: The current process just got forked, after parallelism has already been used. Disabling parallelism to avoid deadlocks...
+To disable this warning, you can either:
+	- Avoid using `tokenizers` before the fork if possible
+	- Explicitly set the environment variable TOKENIZERS_PARALLELISM=(true | false)
+huggingface/tokenizers: The current process just got forked, after parallelism has already been used. Disabling parallelism to avoid deadlocks...
+To disable this warning, you can either:
+	- Avoid using `tokenizers` before the fork if possible
+	- Explicitly set the environment variable TOKENIZERS_PARALLELISM=(true | false)
+huggingface/tokenizers: The current process just got forked, after parallelism has already been used. Disabling parallelism to avoid deadlocks...
+To disable this warning, you can either:
+	- Avoid using `tokenizers` before the fork if possible
+	- Explicitly set the environment variable TOKENIZERS_PARALLELISM=(true | false)
+huggingface/tokenizers: The current process just got forked, after parallelism has already been used. Disabling parallelism to avoid deadlocks...
+To disable this warning, you can either:
+	- Avoid using `tokenizers` before the fork if possible
+	- Explicitly set the environment variable TOKENIZERS_PARALLELISM=(true | false)
+huggingface/tokenizers: The current process just got forked, after parallelism has already been used. Disabling parallelism to avoid deadlocks...
+To disable this warning, you can either:
+	- Avoid using `tokenizers` before the fork if possible
+	- Explicitly set the environment variable TOKENIZERS_PARALLELISM=(true | false)
+huggingface/tokenizers: The current process just got forked, after parallelism has already been used. Disabling parallelism to avoid deadlocks...
+To disable this warning, you can either:
+	- Avoid using `tokenizers` before the fork if possible
+	- Explicitly set the environment variable TOKENIZERS_PARALLELISM=(true | false)
+huggingface/tokenizers: The current process just got forked, after parallelism has already been used. Disabling parallelism to avoid deadlocks...
+To disable this warning, you can either:
+	- Avoid using `tokenizers` before the fork if possible
+	- Explicitly set the environment variable TOKENIZERS_PARALLELISM=(true | false)
+huggingface/tokenizers: The current process just got forked, after parallelism has already been used. Disabling parallelism to avoid deadlocks...
+To disable this warning, you can either:
+	- Avoid using `tokenizers` before the fork if possible
+	- Explicitly set the environment variable TOKENIZERS_PARALLELISM=(true | false)
+huggingface/tokenizers: The current process just got forked, after parallelism has already been used. Disabling parallelism to avoid deadlocks...
+To disable this warning, you can either:
+	- Avoid using `tokenizers` before the fork if possible
+	- Explicitly set the environment variable TOKENIZERS_PARALLELISM=(true | false)
+huggingface/tokenizers: The current process just got forked, after parallelism has already been used. Disabling parallelism to avoid deadlocks...
+To disable this warning, you can either:
+	- Avoid using `tokenizers` before the fork if possible
+	- Explicitly set the environment variable TOKENIZERS_PARALLELISM=(true | false)
+huggingface/tokenizers: The current process just got forked, after parallelism has already been used. Disabling parallelism to avoid deadlocks...
+To disable this warning, you can either:
+	- Avoid using `tokenizers` before the fork if possible
+	- Explicitly set the environment variable TOKENIZERS_PARALLELISM=(true | false)
+huggingface/tokenizers: The current process just got forked, after parallelism has already been used. Disabling parallelism to avoid deadlocks...
+To disable this warning, you can either:
+	- Avoid using `tokenizers` before the fork if possible
+	- Explicitly set the environment variable TOKENIZERS_PARALLELISM=(true | false)
+huggingface/tokenizers: The current process just got forked, after parallelism has already been used. Disabling parallelism to avoid deadlocks...
+To disable this warning, you can either:
+	- Avoid using `tokenizers` before the fork if possible
+	- Explicitly set the environment variable TOKENIZERS_PARALLELISM=(true | false)
+huggingface/tokenizers: The current process just got forked, after parallelism has already been used. Disabling parallelism to avoid deadlocks...
+To disable this warning, you can either:
+	- Avoid using `tokenizers` before the fork if possible
+	- Explicitly set the environment variable TOKENIZERS_PARALLELISM=(true | false)
+huggingface/tokenizers: The current process just got forked, after parallelism has already been used. Disabling parallelism to avoid deadlocks...
+To disable this warning, you can either:
+	- Avoid using `tokenizers` before the fork if possible
+	- Explicitly set the environment variable TOKENIZERS_PARALLELISM=(true | false)
+==============END OF TRAINING===================
+[2023-04-07 03:29:45,677] [INFO] [launch.py:350:main] Process 194544 exits successfully.
