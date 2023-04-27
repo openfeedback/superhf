@@ -1,0 +1,96 @@
+Using custom data configuration Anthropic--hh-rlhf-c8cd8dc58ab67414
+Using custom data configuration Anthropic--hh-rlhf-c8cd8dc58ab67414
+Using custom data configuration Anthropic--hh-rlhf-c8cd8dc58ab67414
+Using custom data configuration Anthropic--hh-rlhf-c8cd8dc58ab67414
+Found cached dataset json (/sailhome/fongsu/.cache/huggingface/datasets/Anthropic___json/Anthropic--hh-rlhf-c8cd8dc58ab67414/0.0.0/0f7e3662623656454fcd2b650f34e886a7db4b9104504885bd462096cc7a9f51)
+  0%|          | 0/2 [00:00<?, ?it/s]100%|██████████| 2/2 [00:00<00:00, 143.03it/s]
+Found cached dataset json (/sailhome/fongsu/.cache/huggingface/datasets/Anthropic___json/Anthropic--hh-rlhf-c8cd8dc58ab67414/0.0.0/0f7e3662623656454fcd2b650f34e886a7db4b9104504885bd462096cc7a9f51)
+  0%|          | 0/2 [00:00<?, ?it/s]100%|██████████| 2/2 [00:00<00:00, 195.93it/s]
+Found cached dataset json (/sailhome/fongsu/.cache/huggingface/datasets/Anthropic___json/Anthropic--hh-rlhf-c8cd8dc58ab67414/0.0.0/0f7e3662623656454fcd2b650f34e886a7db4b9104504885bd462096cc7a9f51)
+  0%|          | 0/2 [00:00<?, ?it/s]100%|██████████| 2/2 [00:00<00:00, 241.04it/s]
+Found cached dataset json (/sailhome/fongsu/.cache/huggingface/datasets/Anthropic___json/Anthropic--hh-rlhf-c8cd8dc58ab67414/0.0.0/0f7e3662623656454fcd2b650f34e886a7db4b9104504885bd462096cc7a9f51)
+  0%|          | 0/2 [00:00<?, ?it/s]100%|██████████| 2/2 [00:00<00:00, 168.04it/s]
+Using pad_token, but it is not set yet.
+Using pad_token, but it is not set yet.
+Using pad_token, but it is not set yet.
+Using pad_token, but it is not set yet.
+Some weights of GPTNeoModel were not initialized from the model checkpoint at EleutherAI/gpt-neo-1.3B and are newly initialized: ['transformer.h.1.attn.attention.bias', 'transformer.h.23.attn.attention.bias', 'transformer.h.13.attn.attention.bias', 'transformer.h.3.attn.attention.bias', 'transformer.h.17.attn.attention.bias', 'transformer.h.11.attn.attention.bias', 'transformer.h.21.attn.attention.bias', 'transformer.h.19.attn.attention.bias', 'transformer.h.9.attn.attention.bias', 'transformer.h.15.attn.attention.bias', 'transformer.h.7.attn.attention.bias', 'transformer.h.5.attn.attention.bias']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+Some weights of GPTNeoModel were not initialized from the model checkpoint at EleutherAI/gpt-neo-1.3B and are newly initialized: ['transformer.h.1.attn.attention.bias', 'transformer.h.13.attn.attention.bias', 'transformer.h.3.attn.attention.bias', 'transformer.h.17.attn.attention.bias', 'transformer.h.15.attn.attention.bias', 'transformer.h.5.attn.attention.bias', 'transformer.h.23.attn.attention.bias', 'transformer.h.11.attn.attention.bias', 'transformer.h.19.attn.attention.bias', 'transformer.h.21.attn.attention.bias', 'transformer.h.9.attn.attention.bias', 'transformer.h.7.attn.attention.bias']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+Some weights of GPTNeoModel were not initialized from the model checkpoint at EleutherAI/gpt-neo-1.3B and are newly initialized: ['transformer.h.5.attn.attention.bias', 'transformer.h.11.attn.attention.bias', 'transformer.h.3.attn.attention.bias', 'transformer.h.19.attn.attention.bias', 'transformer.h.23.attn.attention.bias', 'transformer.h.21.attn.attention.bias', 'transformer.h.7.attn.attention.bias', 'transformer.h.13.attn.attention.bias', 'transformer.h.9.attn.attention.bias', 'transformer.h.17.attn.attention.bias', 'transformer.h.1.attn.attention.bias', 'transformer.h.15.attn.attention.bias']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+Some weights of GPTNeoModel were not initialized from the model checkpoint at EleutherAI/gpt-neo-1.3B and are newly initialized: ['transformer.h.7.attn.attention.bias', 'transformer.h.23.attn.attention.bias', 'transformer.h.11.attn.attention.bias', 'transformer.h.9.attn.attention.bias', 'transformer.h.3.attn.attention.bias', 'transformer.h.5.attn.attention.bias', 'transformer.h.1.attn.attention.bias', 'transformer.h.19.attn.attention.bias', 'transformer.h.15.attn.attention.bias', 'transformer.h.21.attn.attention.bias', 'transformer.h.13.attn.attention.bias', 'transformer.h.17.attn.attention.bias']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+Using custom data configuration Anthropic--hh-rlhf-161bcf33652d7a11
+Using custom data configuration Anthropic--hh-rlhf-161bcf33652d7a11
+Using custom data configuration Anthropic--hh-rlhf-161bcf33652d7a11
+Using custom data configuration Anthropic--hh-rlhf-161bcf33652d7a11
+Found cached dataset json (/sailhome/fongsu/.cache/huggingface/datasets/Anthropic___json/Anthropic--hh-rlhf-161bcf33652d7a11/0.0.0/0f7e3662623656454fcd2b650f34e886a7db4b9104504885bd462096cc7a9f51)
+  0%|          | 0/2 [00:00<?, ?it/s]Found cached dataset json (/sailhome/fongsu/.cache/huggingface/datasets/Anthropic___json/Anthropic--hh-rlhf-161bcf33652d7a11/0.0.0/0f7e3662623656454fcd2b650f34e886a7db4b9104504885bd462096cc7a9f51)
+  0%|          | 0/2 [00:00<?, ?it/s]100%|██████████| 2/2 [00:00<00:00, 400.76it/s]
+100%|██████████| 2/2 [00:00<00:00, 627.70it/s]
+Found cached dataset json (/sailhome/fongsu/.cache/huggingface/datasets/Anthropic___json/Anthropic--hh-rlhf-161bcf33652d7a11/0.0.0/0f7e3662623656454fcd2b650f34e886a7db4b9104504885bd462096cc7a9f51)
+  0%|          | 0/2 [00:00<?, ?it/s]100%|██████████| 2/2 [00:00<00:00, 626.11it/s]
+Found cached dataset json (/sailhome/fongsu/.cache/huggingface/datasets/Anthropic___json/Anthropic--hh-rlhf-161bcf33652d7a11/0.0.0/0f7e3662623656454fcd2b650f34e886a7db4b9104504885bd462096cc7a9f51)
+  0%|          | 0/2 [00:00<?, ?it/s]100%|██████████| 2/2 [00:00<00:00, 566.87it/s]
+Using custom data configuration Anthropic--hh-rlhf-161bcf33652d7a11
+Found cached dataset json (/sailhome/fongsu/.cache/huggingface/datasets/Anthropic___json/Anthropic--hh-rlhf-161bcf33652d7a11/0.0.0/0f7e3662623656454fcd2b650f34e886a7db4b9104504885bd462096cc7a9f51)
+  0%|          | 0/2 [00:00<?, ?it/s]Using custom data configuration Anthropic--hh-rlhf-161bcf33652d7a11
+100%|██████████| 2/2 [00:00<00:00, 376.78it/s]
+Found cached dataset json (/sailhome/fongsu/.cache/huggingface/datasets/Anthropic___json/Anthropic--hh-rlhf-161bcf33652d7a11/0.0.0/0f7e3662623656454fcd2b650f34e886a7db4b9104504885bd462096cc7a9f51)
+  0%|          | 0/2 [00:00<?, ?it/s]100%|██████████| 2/2 [00:00<00:00, 402.16it/s]
+Using custom data configuration Anthropic--hh-rlhf-161bcf33652d7a11
+Found cached dataset json (/sailhome/fongsu/.cache/huggingface/datasets/Anthropic___json/Anthropic--hh-rlhf-161bcf33652d7a11/0.0.0/0f7e3662623656454fcd2b650f34e886a7db4b9104504885bd462096cc7a9f51)
+  0%|          | 0/2 [00:00<?, ?it/s]100%|██████████| 2/2 [00:00<00:00, 401.16it/s]
+Using custom data configuration Anthropic--hh-rlhf-161bcf33652d7a11
+Found cached dataset json (/sailhome/fongsu/.cache/huggingface/datasets/Anthropic___json/Anthropic--hh-rlhf-161bcf33652d7a11/0.0.0/0f7e3662623656454fcd2b650f34e886a7db4b9104504885bd462096cc7a9f51)
+  0%|          | 0/2 [00:00<?, ?it/s]100%|██████████| 2/2 [00:00<00:00, 324.52it/s]
+/sailhome/fongsu/rm/lib/python3.8/site-packages/transformers/optimization.py:306: FutureWarning: This implementation of AdamW is deprecated and will be removed in a future version. Use the PyTorch implementation torch.optim.AdamW instead, or set `no_deprecation_warning=True` to disable this warning
+  warnings.warn(
+Traceback (most recent call last):
+  File "src/reward_modelling/reward_model.py", line 207, in <module>
+    result = trainer.train()
+  File "/sailhome/fongsu/rm/lib/python3.8/site-packages/transformers/trainer.py", line 1543, in train
+    return inner_training_loop(
+  File "/sailhome/fongsu/rm/lib/python3.8/site-packages/transformers/trainer.py", line 1628, in _inner_training_loop
+    self.model.gradient_checkpointing_enable()
+  File "/sailhome/fongsu/rm/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1207, in __getattr__
+    raise AttributeError("'{}' object has no attribute '{}'".format(
+AttributeError: 'RewardModel' object has no attribute 'gradient_checkpointing_enable'
+/sailhome/fongsu/rm/lib/python3.8/site-packages/transformers/optimization.py:306: FutureWarning: This implementation of AdamW is deprecated and will be removed in a future version. Use the PyTorch implementation torch.optim.AdamW instead, or set `no_deprecation_warning=True` to disable this warning
+  warnings.warn(
+Traceback (most recent call last):
+  File "src/reward_modelling/reward_model.py", line 207, in <module>
+    result = trainer.train()
+  File "/sailhome/fongsu/rm/lib/python3.8/site-packages/transformers/trainer.py", line 1543, in train
+    return inner_training_loop(
+  File "/sailhome/fongsu/rm/lib/python3.8/site-packages/transformers/trainer.py", line 1628, in _inner_training_loop
+    self.model.gradient_checkpointing_enable()
+  File "/sailhome/fongsu/rm/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1207, in __getattr__
+    raise AttributeError("'{}' object has no attribute '{}'".format(
+AttributeError: 'RewardModel' object has no attribute 'gradient_checkpointing_enable'
+/sailhome/fongsu/rm/lib/python3.8/site-packages/transformers/optimization.py:306: FutureWarning: This implementation of AdamW is deprecated and will be removed in a future version. Use the PyTorch implementation torch.optim.AdamW instead, or set `no_deprecation_warning=True` to disable this warning
+  warnings.warn(
+Traceback (most recent call last):
+  File "src/reward_modelling/reward_model.py", line 207, in <module>
+    result = trainer.train()
+  File "/sailhome/fongsu/rm/lib/python3.8/site-packages/transformers/trainer.py", line 1543, in train
+    return inner_training_loop(
+  File "/sailhome/fongsu/rm/lib/python3.8/site-packages/transformers/trainer.py", line 1628, in _inner_training_loop
+    self.model.gradient_checkpointing_enable()
+  File "/sailhome/fongsu/rm/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1207, in __getattr__
+    raise AttributeError("'{}' object has no attribute '{}'".format(
+AttributeError: 'RewardModel' object has no attribute 'gradient_checkpointing_enable'
+/sailhome/fongsu/rm/lib/python3.8/site-packages/transformers/optimization.py:306: FutureWarning: This implementation of AdamW is deprecated and will be removed in a future version. Use the PyTorch implementation torch.optim.AdamW instead, or set `no_deprecation_warning=True` to disable this warning
+  warnings.warn(
+Traceback (most recent call last):
+  File "src/reward_modelling/reward_model.py", line 207, in <module>
+    result = trainer.train()
+  File "/sailhome/fongsu/rm/lib/python3.8/site-packages/transformers/trainer.py", line 1543, in train
+    return inner_training_loop(
+  File "/sailhome/fongsu/rm/lib/python3.8/site-packages/transformers/trainer.py", line 1628, in _inner_training_loop
+    self.model.gradient_checkpointing_enable()
+  File "/sailhome/fongsu/rm/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1207, in __getattr__
+    raise AttributeError("'{}' object has no attribute '{}'".format(
+AttributeError: 'RewardModel' object has no attribute 'gradient_checkpointing_enable'

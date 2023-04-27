@@ -1,0 +1,16 @@
+SLURM_JOBID=6000404
+SLURM_JOB_NODELIST=jagupard36
+SLURM_NNODES=1
+SLURMTMPDIR=
+working directory = /sailhome/fongsu/superhf
+[2023-04-04 23:17:22,209] [WARNING] [runner.py:186:fetch_hostfile] Unable to find hostfile, will proceed with training with local resources only.
+Detected CUDA_VISIBLE_DEVICES=0 but ignoring it because one or several of --include/--exclude/--num_gpus/--num_nodes cl args were used. If you want to use CUDA_VISIBLE_DEVICES don't pass any of these arguments to deepspeed.
+[2023-04-04 23:17:22,282] [INFO] [runner.py:548:main] cmd = /sailhome/fongsu/rm/bin/python -u -m deepspeed.launcher.launch --world_info=eyJsb2NhbGhvc3QiOiBbMF19 --master_addr=127.0.0.1 --master_port=29500 --enable_each_rank_log=None src/reward_modelling/reward_model.py --deepspeed src/reward_modelling/ds_configs/stage_3_config.json
+[2023-04-04 23:17:23,447] [INFO] [launch.py:135:main] 0 NCCL_P2P_DISABLE=1
+[2023-04-04 23:17:23,447] [INFO] [launch.py:142:main] WORLD INFO DICT: {'localhost': [0]}
+[2023-04-04 23:17:23,448] [INFO] [launch.py:148:main] nnodes=1, num_local_procs=1, node_rank=0
+[2023-04-04 23:17:23,448] [INFO] [launch.py:161:main] global_rank_mapping=defaultdict(<class 'list'>, {'localhost': [0]})
+[2023-04-04 23:17:23,448] [INFO] [launch.py:162:main] dist_world_size=1
+[2023-04-04 23:17:23,448] [INFO] [launch.py:164:main] Setting CUDA_VISIBLE_DEVICES=0
+[2023-04-04 23:17:44,475] [INFO] [launch.py:318:sigkill_handler] Killing subprocess 2476163
+[2023-04-04 23:17:44,477] [ERROR] [launch.py:324:sigkill_handler] ['/sailhome/fongsu/rm/bin/python', '-u', 'src/reward_modelling/reward_model.py', '--local_rank=0', '--deepspeed', 'src/reward_modelling/ds_configs/stage_3_config.json'] exits with return code = 1

@@ -7,19 +7,28 @@ repos:
     -   id: trailing-whitespace
     -   id: end-of-file-fixer
     -   id: check-yaml
-    -   id: check-added-large-files
--   repo: https://github.com/psf/black
-    rev: 22.10.0
+    # -   id: check-added-large-files
+# Local black
+-   repo: local
     hooks:
     -   id: black
-# - repo: local # TODO (Peter or Gabe): make this work for not just command line
-#   hooks:
-#     - id: pylint
-#       name: pylint
-#       entry: pylint
-#       language: conda
-#       types: [python]
-#       args: [
-#         "-p",
-#         "./requirements.txt"
-#       ]
+        name: black
+        entry: conda run -n superhf black
+        language: system
+        types: [python]
+# Local pylint
+-   repo: local
+    hooks:
+    -   id: pylint
+        name: pylint
+        entry: conda run -n superhf pylint
+        language: system
+        types: [python]
+# # Local mypy
+# -   repo: local
+#     hooks:
+#     -   id: mypy
+#         name: mypy
+#         entry: conda run -n superhf mypy
+#         language: system
+#         types: [python]

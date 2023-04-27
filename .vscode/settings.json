@@ -1,0 +1,14 @@
+{
+    // Formatter
+    "python.formatting.provider": "black",
+    "python.formatting.blackArgs": [
+        "--preview"
+    ],
+    "editor.formatOnSave": true,
+    // Linter
+    "python.linting.enabled": true,
+    "python.linting.mypyEnabled": true,
+    "python.linting.pylintEnabled": true,
+    "jupyter.debugJustMyCode": false,
+    "esbonio.sphinx.confDir": "",
+}

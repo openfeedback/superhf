@@ -1,0 +1,27 @@
+SLURM_JOBID=5996203
+SLURM_JOB_NODELIST=jagupard36
+SLURM_NNODES=1
+SLURMTMPDIR=
+working directory = /sailhome/fongsu/superhf
+[2023-04-02 13:38:50,676] [WARNING] [runner.py:186:fetch_hostfile] Unable to find hostfile, will proceed with training with local resources only.
+Detected CUDA_VISIBLE_DEVICES=0,1,2,3 but ignoring it because one or several of --include/--exclude/--num_gpus/--num_nodes cl args were used. If you want to use CUDA_VISIBLE_DEVICES don't pass any of these arguments to deepspeed.
+[2023-04-02 13:38:50,773] [INFO] [runner.py:548:main] cmd = /sailhome/fongsu/rm/bin/python -u -m deepspeed.launcher.launch --world_info=eyJsb2NhbGhvc3QiOiBbMCwgMSwgMiwgM119 --master_addr=127.0.0.1 --master_port=29500 --enable_each_rank_log=None src/reward_modelling/reward_model.py --deepspeed src/reward_modelling/ds_configs/stage_3_config.json
+[2023-04-02 13:38:51,931] [INFO] [launch.py:135:main] 0 NCCL_P2P_DISABLE=1
+[2023-04-02 13:38:51,932] [INFO] [launch.py:142:main] WORLD INFO DICT: {'localhost': [0, 1, 2, 3]}
+[2023-04-02 13:38:51,932] [INFO] [launch.py:148:main] nnodes=1, num_local_procs=4, node_rank=0
+[2023-04-02 13:38:51,932] [INFO] [launch.py:161:main] global_rank_mapping=defaultdict(<class 'list'>, {'localhost': [0, 1, 2, 3]})
+[2023-04-02 13:38:51,932] [INFO] [launch.py:162:main] dist_world_size=4
+[2023-04-02 13:38:51,932] [INFO] [launch.py:164:main] Setting CUDA_VISIBLE_DEVICES=0,1,2,3
+Downloading and preparing dataset json/Anthropic--hh-rlhf to /nlp/scr/fongsu/.cache/Anthropic___json/Anthropic--hh-rlhf-c8cd8dc58ab67414/0.0.0/0f7e3662623656454fcd2b650f34e886a7db4b9104504885bd462096cc7a9f51...
+Dataset json downloaded and prepared to /nlp/scr/fongsu/.cache/Anthropic___json/Anthropic--hh-rlhf-c8cd8dc58ab67414/0.0.0/0f7e3662623656454fcd2b650f34e886a7db4b9104504885bd462096cc7a9f51. Subsequent calls will reuse this data.
+1644
+1644
+1644
+1644
+Downloading and preparing dataset json/Anthropic--hh-rlhf to /nlp/scr/fongsu/.cache/Anthropic___json/Anthropic--hh-rlhf-b971c05e85ce84ae/0.0.0/0f7e3662623656454fcd2b650f34e886a7db4b9104504885bd462096cc7a9f51...
+Dataset json downloaded and prepared to /nlp/scr/fongsu/.cache/Anthropic___json/Anthropic--hh-rlhf-b971c05e85ce84ae/0.0.0/0f7e3662623656454fcd2b650f34e886a7db4b9104504885bd462096cc7a9f51. Subsequent calls will reuse this data.
+[2023-04-02 13:46:12,421] [INFO] [launch.py:318:sigkill_handler] Killing subprocess 433830
+[2023-04-02 13:46:12,771] [INFO] [launch.py:318:sigkill_handler] Killing subprocess 433831
+[2023-04-02 13:46:12,785] [INFO] [launch.py:318:sigkill_handler] Killing subprocess 433832
+[2023-04-02 13:46:12,785] [INFO] [launch.py:318:sigkill_handler] Killing subprocess 433833
+[2023-04-02 13:46:13,168] [ERROR] [launch.py:324:sigkill_handler] ['/sailhome/fongsu/rm/bin/python', '-u', 'src/reward_modelling/reward_model.py', '--local_rank=3', '--deepspeed', 'src/reward_modelling/ds_configs/stage_3_config.json'] exits with return code = 1

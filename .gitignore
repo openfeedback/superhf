@@ -20,7 +20,6 @@ __pycache__/*
 .pydevproject
 .settings
 .idea
-.vscode
 tags
 
 # Package files
@@ -56,10 +55,8 @@ MANIFEST
 # Notebook Checkpoints
 **/.ipynb_checkpoints
 
-# Training checkpoints
-wandb/
-reward_model_HH/
-models/
-
-# SC Cluster outputs
-batch_outputs
+# SuperHF Edits
+.mypy_cache
+# experiments/**/output
+wandb
+checkpoints
