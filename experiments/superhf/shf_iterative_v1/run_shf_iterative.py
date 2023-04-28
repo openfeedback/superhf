@@ -102,6 +102,7 @@ def main(argparse_args: argparse.Namespace) -> None:
     print(f"Loaded {len(prompts)} prompts.")
     print_gpu_utilization()
     print("Instantiating models...")
+
     # Instantiate our language and reward models and tokenizers
     dtype = (
         torch.float16
@@ -160,11 +161,12 @@ def main(argparse_args: argparse.Namespace) -> None:
         language_tokenizer = AutoTokenizer.from_pretrained(
             language_tokenizer_name, padding_side="left"
         )
-    reward_tokenizer_name = (
-        "gpt2"
-        if wandb.config.reward_model_name == "mock"
-        else wandb.config.reward_model_name
-    )
+    reward_tokenizer_name = wandb.config.reward_model_name
+    if wandb.config.reward_model_name == "mock":
+        reward_tokenizer_name = "gpt2"
+    elif "rm_combined" in wandb.config.reward_model_name:
+        reward_tokenizer_name = "EleutherAI/gpt-neo-1.3B"
+
     if "llama" in reward_tokenizer_name or "alpaca" in reward_tokenizer_name:
         # Fix for misnamed class in the NLP Cluster's Alpaca tokenizer config
         reward_tokenizer = LlamaTokenizer.from_pretrained(reward_tokenizer_name)
