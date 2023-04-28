@@ -54,12 +54,11 @@ parameters:
   #     - 24
   #     - 32
   #     - 48
-  # learning_rate:
-  #   values:
-  #     - 1.0e-5
-  #     - 3.3e-5
-  #     - 1.0e-4
-  #     - 3.3e-4
+  learning_rate:
+    values:
+      - 3.0e-5
+      - 1.0e-5
+      - 1.0e-4
   kl_coefficient:
     values:
       # - 0.15
