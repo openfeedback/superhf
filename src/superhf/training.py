@@ -628,58 +628,38 @@ class SuperHFTrainer:
 
             # KL divergence penalty
             if self.training_args.kl_coefficient > 0:
-                # Assume there's only 1 sequence in the minibatch and we're using LoRA models
-                logp_online_model = torch.log_softmax(outputs.logits[0], dim=1)
+                # Calculate the log probabilities of the generated tokens
+                logp_online_model = torch.log_softmax(outputs.logits, dim=2)
 
-                # Disable LoRA adapters
+                # Disable LoRA adapters (required, otherwise high memory)
                 with self.language_model.disable_adapter(), torch.no_grad():  # type: ignore
-                    # Get the logits from the original model
-                    logp_original_model = self.language_model(**minibatch)
-                    logp_original_model = torch.log_softmax(
-                        logp_original_model.logits[0], dim=1
-                    )
+                    # Get the log probabilities from the original model
+                    try:
+                        logp_original_model = self.language_model(**minibatch)
+                        logp_original_model = torch.log_softmax(
+                            logp_original_model.logits, dim=2
+                        )
+                    except Exception as exc:
+                        # Hack to fix https://github.com/huggingface/peft/issues/367 until merged.
+                        # Manually fix the peft context adapter not re-enabling the adapter.
+                        self.language_model.base_model.enable_adapter_layers()
+                        raise exc
 
                 # Truncate each to just the part that was generated (after where labels == -100)
-                mask = (minibatch["labels"] != -100)[0]
-                logp_online_model = logp_online_model[mask, :]
-                logp_original_model = logp_original_model[mask, :]
+                # We have to iterate over each fine-tune example because the lengths may differ
+                for i in range(logp_online_model.shape[0]):
+                    mask = minibatch["labels"][i] != -100
+                    logp_online_model_i = logp_online_model[i, mask, :]
+                    logp_original_model_i = logp_original_model[i, mask, :]
 
-                # Compute the KL divergence
-                kl_divergence = self.kl_loss(logp_online_model, logp_original_model)
-                sum_kl_divergence += kl_divergence.item()
-                loss = loss + self.training_args.kl_coefficient * kl_divergence
-                # # Calculate the log probabilities of the generated tokens
-                # logp_online_model = torch.log_softmax(outputs.logits, dim=1)
-
-                # # Disable LoRA adapters (required, otherwise high memory)
-                # with self.language_model.disable_adapter(), torch.no_grad():  # type: ignore
-                #     # Get the log probabilities from the original model
-                #     try:
-                #         logp_original_model = self.language_model(**minibatch)
-                #         logp_original_model = torch.log_softmax(
-                #             logp_original_model.logits, dim=1
-                #         )
-                #     except Exception as exc:
-                #         # Hack to fix https://github.com/huggingface/peft/issues/367 until merged.
-                #         # Manually fix the peft context adapter not re-enabling the adapter.
-                #         self.language_model.base_model.enable_adapter_layers()
-                #         raise exc
-
-                # # Truncate each to just the part that was generated (after where labels == -100)
-                # # We have to iterate over each fine-tune example because the lengths may differ
-                # for i in range(logp_online_model.shape[0]):
-                #     mask = minibatch["labels"][i] != -100
-                #     logp_online_model_i = logp_online_model[i, mask, :]
-                #     logp_original_model_i = logp_original_model[i, mask, :]
-
-                #     # Compute the KL divergence
-                #     kl_divergence = self.kl_loss(
-                #         logp_online_model_i, logp_original_model_i
-                #     )
-                #     # Clamp KL to be positive to avoid negative KL gaming
-                #     kl_divergence = torch.maximum(kl_divergence, torch.tensor(0.0))
-                #     sum_kl_divergence += kl_divergence.item()
-                #     loss = loss + self.training_args.kl_coefficient * kl_divergence
+                    # Compute the KL divergence
+                    kl_divergence = self.kl_loss(
+                        logp_online_model_i, logp_original_model_i
+                    )
+                    # Clamp KL to be positive to avoid negative KL gaming
+                    kl_divergence = torch.maximum(kl_divergence, torch.tensor(0.0))
+                    sum_kl_divergence += kl_divergence.item()
+                    loss = loss + self.training_args.kl_coefficient * kl_divergence
 
             sum_loss += loss.item()
             self.accelerator.backward(loss)

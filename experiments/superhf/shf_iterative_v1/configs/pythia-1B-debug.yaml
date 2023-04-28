@@ -6,7 +6,7 @@ reward_model_name:
   value: "OpenAssistant/reward-model-deberta-v3-base"
 learning_rate:
   desc: Learning rate for fine-tuning the language model.
-  value: 3.0e-7
+  value: 3.0e-5
 scheduler_name:
   desc: Name of the scheduler to use for fine-tuning the language model.
   value: "cosine"
@@ -30,13 +30,13 @@ top_p:
   value: 0.95
 num_prompts:
   desc: Maximum number of prompts to use, or 0 for unlimited (up to the training set size).
-  value: 3
+  value: 10
 prompt_accumulation_steps:
   desc: Number of prompts to generate, score, and filter before finetuning, or 0 for num_prompts.
-  value: 2
+  value: 1
 superbatch_size:
   desc: Number of completions to generate with the current policy before filtering and fine-tuning.
-  value: 4
+  value: 2
 completion_filter_top_k:
   desc: Top-k completions to filter and train on.
   value: 1
