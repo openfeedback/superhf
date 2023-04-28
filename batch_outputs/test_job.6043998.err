@@ -1,0 +1,476 @@
+[INFO|configuration_utils.py:668] 2023-04-25 18:26:52,782 >> loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--distilbert-base-uncased/snapshots/1c4513b2eedbda136f57676a34eea67aba266e5c/config.json
+[INFO|configuration_utils.py:668] 2023-04-25 18:26:52,782 >> loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--distilbert-base-uncased/snapshots/1c4513b2eedbda136f57676a34eea67aba266e5c/config.json
+[INFO|configuration_utils.py:668] 2023-04-25 18:26:52,782 >> loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--distilbert-base-uncased/snapshots/1c4513b2eedbda136f57676a34eea67aba266e5c/config.json
+[INFO|configuration_utils.py:668] 2023-04-25 18:26:52,782 >> loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--distilbert-base-uncased/snapshots/1c4513b2eedbda136f57676a34eea67aba266e5c/config.json
+[INFO|configuration_utils.py:720] 2023-04-25 18:26:52,892 >> Model config DistilBertConfig {
+  "_name_or_path": "distilbert-base-uncased",
+  "activation": "gelu",
+  "architectures": [
+    "DistilBertForMaskedLM"
+  ],
+  "attention_dropout": 0.1,
+  "dim": 768,
+  "dropout": 0.1,
+  "hidden_dim": 3072,
+  "initializer_range": 0.02,
+  "max_position_embeddings": 512,
+  "model_type": "distilbert",
+  "n_heads": 12,
+  "n_layers": 6,
+  "pad_token_id": 0,
+  "qa_dropout": 0.1,
+  "seq_classif_dropout": 0.2,
+  "sinusoidal_pos_embds": false,
+  "tie_weights_": true,
+  "transformers_version": "4.28.1",
+  "vocab_size": 30522
+}
+
+[INFO|configuration_utils.py:720] 2023-04-25 18:26:52,893 >> Model config DistilBertConfig {
+  "_name_or_path": "distilbert-base-uncased",
+  "activation": "gelu",
+  "architectures": [
+    "DistilBertForMaskedLM"
+  ],
+  "attention_dropout": 0.1,
+  "dim": 768,
+  "dropout": 0.1,
+  "hidden_dim": 3072,
+  "initializer_range": 0.02,
+  "max_position_embeddings": 512,
+  "model_type": "distilbert",
+  "n_heads": 12,
+  "n_layers": 6,
+  "pad_token_id": 0,
+  "qa_dropout": 0.1,
+  "seq_classif_dropout": 0.2,
+  "sinusoidal_pos_embds": false,
+  "tie_weights_": true,
+  "transformers_version": "4.28.1",
+  "vocab_size": 30522
+}
+
+[INFO|configuration_utils.py:720] 2023-04-25 18:26:52,893 >> Model config DistilBertConfig {
+  "_name_or_path": "distilbert-base-uncased",
+  "activation": "gelu",
+  "architectures": [
+    "DistilBertForMaskedLM"
+  ],
+  "attention_dropout": 0.1,
+  "dim": 768,
+  "dropout": 0.1,
+  "hidden_dim": 3072,
+  "initializer_range": 0.02,
+  "max_position_embeddings": 512,
+  "model_type": "distilbert",
+  "n_heads": 12,
+  "n_layers": 6,
+  "pad_token_id": 0,
+  "qa_dropout": 0.1,
+  "seq_classif_dropout": 0.2,
+  "sinusoidal_pos_embds": false,
+  "tie_weights_": true,
+  "transformers_version": "4.28.1",
+  "vocab_size": 30522
+}
+
+[INFO|configuration_utils.py:720] 2023-04-25 18:26:52,893 >> Model config DistilBertConfig {
+  "_name_or_path": "distilbert-base-uncased",
+  "activation": "gelu",
+  "architectures": [
+    "DistilBertForMaskedLM"
+  ],
+  "attention_dropout": 0.1,
+  "dim": 768,
+  "dropout": 0.1,
+  "hidden_dim": 3072,
+  "initializer_range": 0.02,
+  "max_position_embeddings": 512,
+  "model_type": "distilbert",
+  "n_heads": 12,
+  "n_layers": 6,
+  "pad_token_id": 0,
+  "qa_dropout": 0.1,
+  "seq_classif_dropout": 0.2,
+  "sinusoidal_pos_embds": false,
+  "tie_weights_": true,
+  "transformers_version": "4.28.1",
+  "vocab_size": 30522
+}
+
+[INFO|tokenization_utils_base.py:1809] 2023-04-25 18:26:52,902 >> loading file vocab.txt from cache at /nlp/scr/fongsu/.cache/hub/models--distilbert-base-uncased/snapshots/1c4513b2eedbda136f57676a34eea67aba266e5c/vocab.txt
+[INFO|tokenization_utils_base.py:1809] 2023-04-25 18:26:52,902 >> loading file vocab.txt from cache at /nlp/scr/fongsu/.cache/hub/models--distilbert-base-uncased/snapshots/1c4513b2eedbda136f57676a34eea67aba266e5c/vocab.txt
+[INFO|tokenization_utils_base.py:1809] 2023-04-25 18:26:52,902 >> loading file vocab.txt from cache at /nlp/scr/fongsu/.cache/hub/models--distilbert-base-uncased/snapshots/1c4513b2eedbda136f57676a34eea67aba266e5c/vocab.txt
+[INFO|tokenization_utils_base.py:1809] 2023-04-25 18:26:52,902 >> loading file vocab.txt from cache at /nlp/scr/fongsu/.cache/hub/models--distilbert-base-uncased/snapshots/1c4513b2eedbda136f57676a34eea67aba266e5c/vocab.txt
+[INFO|tokenization_utils_base.py:1809] 2023-04-25 18:26:52,902 >> loading file tokenizer.json from cache at /nlp/scr/fongsu/.cache/hub/models--distilbert-base-uncased/snapshots/1c4513b2eedbda136f57676a34eea67aba266e5c/tokenizer.json
+[INFO|tokenization_utils_base.py:1809] 2023-04-25 18:26:52,902 >> loading file tokenizer.json from cache at /nlp/scr/fongsu/.cache/hub/models--distilbert-base-uncased/snapshots/1c4513b2eedbda136f57676a34eea67aba266e5c/tokenizer.json
+[INFO|tokenization_utils_base.py:1809] 2023-04-25 18:26:52,902 >> loading file tokenizer.json from cache at /nlp/scr/fongsu/.cache/hub/models--distilbert-base-uncased/snapshots/1c4513b2eedbda136f57676a34eea67aba266e5c/tokenizer.json
+[INFO|tokenization_utils_base.py:1809] 2023-04-25 18:26:52,902 >> loading file added_tokens.json from cache at None
+[INFO|tokenization_utils_base.py:1809] 2023-04-25 18:26:52,902 >> loading file added_tokens.json from cache at None
+[INFO|tokenization_utils_base.py:1809] 2023-04-25 18:26:52,902 >> loading file tokenizer.json from cache at /nlp/scr/fongsu/.cache/hub/models--distilbert-base-uncased/snapshots/1c4513b2eedbda136f57676a34eea67aba266e5c/tokenizer.json
+[INFO|tokenization_utils_base.py:1809] 2023-04-25 18:26:52,902 >> loading file added_tokens.json from cache at None
+[INFO|tokenization_utils_base.py:1809] 2023-04-25 18:26:52,902 >> loading file special_tokens_map.json from cache at None
+[INFO|tokenization_utils_base.py:1809] 2023-04-25 18:26:52,902 >> loading file special_tokens_map.json from cache at None
+[INFO|tokenization_utils_base.py:1809] 2023-04-25 18:26:52,902 >> loading file added_tokens.json from cache at None
+[INFO|tokenization_utils_base.py:1809] 2023-04-25 18:26:52,902 >> loading file special_tokens_map.json from cache at None
+[INFO|tokenization_utils_base.py:1809] 2023-04-25 18:26:52,902 >> loading file tokenizer_config.json from cache at /nlp/scr/fongsu/.cache/hub/models--distilbert-base-uncased/snapshots/1c4513b2eedbda136f57676a34eea67aba266e5c/tokenizer_config.json
+[INFO|tokenization_utils_base.py:1809] 2023-04-25 18:26:52,902 >> loading file tokenizer_config.json from cache at /nlp/scr/fongsu/.cache/hub/models--distilbert-base-uncased/snapshots/1c4513b2eedbda136f57676a34eea67aba266e5c/tokenizer_config.json
+[INFO|tokenization_utils_base.py:1809] 2023-04-25 18:26:52,902 >> loading file tokenizer_config.json from cache at /nlp/scr/fongsu/.cache/hub/models--distilbert-base-uncased/snapshots/1c4513b2eedbda136f57676a34eea67aba266e5c/tokenizer_config.json
+[INFO|tokenization_utils_base.py:1809] 2023-04-25 18:26:52,902 >> loading file special_tokens_map.json from cache at None
+[INFO|tokenization_utils_base.py:1809] 2023-04-25 18:26:52,902 >> loading file tokenizer_config.json from cache at /nlp/scr/fongsu/.cache/hub/models--distilbert-base-uncased/snapshots/1c4513b2eedbda136f57676a34eea67aba266e5c/tokenizer_config.json
+[INFO|configuration_utils.py:668] 2023-04-25 18:26:52,903 >> loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--distilbert-base-uncased/snapshots/1c4513b2eedbda136f57676a34eea67aba266e5c/config.json
+[INFO|configuration_utils.py:668] 2023-04-25 18:26:52,903 >> loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--distilbert-base-uncased/snapshots/1c4513b2eedbda136f57676a34eea67aba266e5c/config.json
+[INFO|configuration_utils.py:668] 2023-04-25 18:26:52,903 >> loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--distilbert-base-uncased/snapshots/1c4513b2eedbda136f57676a34eea67aba266e5c/config.json
+[INFO|configuration_utils.py:668] 2023-04-25 18:26:52,903 >> loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--distilbert-base-uncased/snapshots/1c4513b2eedbda136f57676a34eea67aba266e5c/config.json
+[INFO|configuration_utils.py:720] 2023-04-25 18:26:52,904 >> Model config DistilBertConfig {
+  "_name_or_path": "distilbert-base-uncased",
+  "activation": "gelu",
+  "architectures": [
+    "DistilBertForMaskedLM"
+  ],
+  "attention_dropout": 0.1,
+  "dim": 768,
+  "dropout": 0.1,
+  "hidden_dim": 3072,
+  "initializer_range": 0.02,
+  "max_position_embeddings": 512,
+  "model_type": "distilbert",
+  "n_heads": 12,
+  "n_layers": 6,
+  "pad_token_id": 0,
+  "qa_dropout": 0.1,
+  "seq_classif_dropout": 0.2,
+  "sinusoidal_pos_embds": false,
+  "tie_weights_": true,
+  "transformers_version": "4.28.1",
+  "vocab_size": 30522
+}
+
+[INFO|configuration_utils.py:720] 2023-04-25 18:26:52,904 >> Model config DistilBertConfig {
+  "_name_or_path": "distilbert-base-uncased",
+  "activation": "gelu",
+  "architectures": [
+    "DistilBertForMaskedLM"
+  ],
+  "attention_dropout": 0.1,
+  "dim": 768,
+  "dropout": 0.1,
+  "hidden_dim": 3072,
+  "initializer_range": 0.02,
+  "max_position_embeddings": 512,
+  "model_type": "distilbert",
+  "n_heads": 12,
+  "n_layers": 6,
+  "pad_token_id": 0,
+  "qa_dropout": 0.1,
+  "seq_classif_dropout": 0.2,
+  "sinusoidal_pos_embds": false,
+  "tie_weights_": true,
+  "transformers_version": "4.28.1",
+  "vocab_size": 30522
+}
+
+[INFO|configuration_utils.py:720] 2023-04-25 18:26:52,904 >> Model config DistilBertConfig {
+  "_name_or_path": "distilbert-base-uncased",
+  "activation": "gelu",
+  "architectures": [
+    "DistilBertForMaskedLM"
+  ],
+  "attention_dropout": 0.1,
+  "dim": 768,
+  "dropout": 0.1,
+  "hidden_dim": 3072,
+  "initializer_range": 0.02,
+  "max_position_embeddings": 512,
+  "model_type": "distilbert",
+  "n_heads": 12,
+  "n_layers": 6,
+  "pad_token_id": 0,
+  "qa_dropout": 0.1,
+  "seq_classif_dropout": 0.2,
+  "sinusoidal_pos_embds": false,
+  "tie_weights_": true,
+  "transformers_version": "4.28.1",
+  "vocab_size": 30522
+}
+
+[INFO|configuration_utils.py:720] 2023-04-25 18:26:52,904 >> Model config DistilBertConfig {
+  "_name_or_path": "distilbert-base-uncased",
+  "activation": "gelu",
+  "architectures": [
+    "DistilBertForMaskedLM"
+  ],
+  "attention_dropout": 0.1,
+  "dim": 768,
+  "dropout": 0.1,
+  "hidden_dim": 3072,
+  "initializer_range": 0.02,
+  "max_position_embeddings": 512,
+  "model_type": "distilbert",
+  "n_heads": 12,
+  "n_layers": 6,
+  "pad_token_id": 0,
+  "qa_dropout": 0.1,
+  "seq_classif_dropout": 0.2,
+  "sinusoidal_pos_embds": false,
+  "tie_weights_": true,
+  "transformers_version": "4.28.1",
+  "vocab_size": 30522
+}
+
+[INFO|configuration_utils.py:668] 2023-04-25 18:26:53,094 >> loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--distilbert-base-uncased/snapshots/1c4513b2eedbda136f57676a34eea67aba266e5c/config.json
+[INFO|configuration_utils.py:720] 2023-04-25 18:26:53,095 >> Model config DistilBertConfig {
+  "_name_or_path": "distilbert-base-uncased",
+  "activation": "gelu",
+  "architectures": [
+    "DistilBertForMaskedLM"
+  ],
+  "attention_dropout": 0.1,
+  "dim": 768,
+  "dropout": 0.1,
+  "hidden_dim": 3072,
+  "initializer_range": 0.02,
+  "max_position_embeddings": 512,
+  "model_type": "distilbert",
+  "n_heads": 12,
+  "n_layers": 6,
+  "pad_token_id": 0,
+  "qa_dropout": 0.1,
+  "seq_classif_dropout": 0.2,
+  "sinusoidal_pos_embds": false,
+  "tie_weights_": true,
+  "transformers_version": "4.28.1",
+  "vocab_size": 30522
+}
+
+[INFO|configuration_utils.py:668] 2023-04-25 18:26:53,097 >> loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--distilbert-base-uncased/snapshots/1c4513b2eedbda136f57676a34eea67aba266e5c/config.json
+[INFO|configuration_utils.py:668] 2023-04-25 18:26:53,098 >> loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--distilbert-base-uncased/snapshots/1c4513b2eedbda136f57676a34eea67aba266e5c/config.json
+[INFO|configuration_utils.py:720] 2023-04-25 18:26:53,099 >> Model config DistilBertConfig {
+  "_name_or_path": "distilbert-base-uncased",
+  "activation": "gelu",
+  "architectures": [
+    "DistilBertForMaskedLM"
+  ],
+  "attention_dropout": 0.1,
+  "dim": 768,
+  "dropout": 0.1,
+  "hidden_dim": 3072,
+  "initializer_range": 0.02,
+  "max_position_embeddings": 512,
+  "model_type": "distilbert",
+  "n_heads": 12,
+  "n_layers": 6,
+  "pad_token_id": 0,
+  "qa_dropout": 0.1,
+  "seq_classif_dropout": 0.2,
+  "sinusoidal_pos_embds": false,
+  "tie_weights_": true,
+  "transformers_version": "4.28.1",
+  "vocab_size": 30522
+}
+
+[INFO|configuration_utils.py:720] 2023-04-25 18:26:53,100 >> Model config DistilBertConfig {
+  "_name_or_path": "distilbert-base-uncased",
+  "activation": "gelu",
+  "architectures": [
+    "DistilBertForMaskedLM"
+  ],
+  "attention_dropout": 0.1,
+  "dim": 768,
+  "dropout": 0.1,
+  "hidden_dim": 3072,
+  "initializer_range": 0.02,
+  "max_position_embeddings": 512,
+  "model_type": "distilbert",
+  "n_heads": 12,
+  "n_layers": 6,
+  "pad_token_id": 0,
+  "qa_dropout": 0.1,
+  "seq_classif_dropout": 0.2,
+  "sinusoidal_pos_embds": false,
+  "tie_weights_": true,
+  "transformers_version": "4.28.1",
+  "vocab_size": 30522
+}
+
+[INFO|configuration_utils.py:668] 2023-04-25 18:26:53,100 >> loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--distilbert-base-uncased/snapshots/1c4513b2eedbda136f57676a34eea67aba266e5c/config.json
+[INFO|configuration_utils.py:720] 2023-04-25 18:26:53,102 >> Model config DistilBertConfig {
+  "_name_or_path": "distilbert-base-uncased",
+  "activation": "gelu",
+  "architectures": [
+    "DistilBertForMaskedLM"
+  ],
+  "attention_dropout": 0.1,
+  "dim": 768,
+  "dropout": 0.1,
+  "hidden_dim": 3072,
+  "initializer_range": 0.02,
+  "max_position_embeddings": 512,
+  "model_type": "distilbert",
+  "n_heads": 12,
+  "n_layers": 6,
+  "pad_token_id": 0,
+  "qa_dropout": 0.1,
+  "seq_classif_dropout": 0.2,
+  "sinusoidal_pos_embds": false,
+  "tie_weights_": true,
+  "transformers_version": "4.28.1",
+  "vocab_size": 30522
+}
+
+[INFO|configuration_utils.py:668] 2023-04-25 18:26:53,215 >> loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--distilbert-base-uncased/snapshots/1c4513b2eedbda136f57676a34eea67aba266e5c/config.json
+[INFO|configuration_utils.py:720] 2023-04-25 18:26:53,216 >> Model config DistilBertConfig {
+  "_name_or_path": "distilbert-base-uncased",
+  "activation": "gelu",
+  "architectures": [
+    "DistilBertForMaskedLM"
+  ],
+  "attention_dropout": 0.1,
+  "dim": 768,
+  "dropout": 0.1,
+  "hidden_dim": 3072,
+  "initializer_range": 0.02,
+  "max_position_embeddings": 512,
+  "model_type": "distilbert",
+  "n_heads": 12,
+  "n_layers": 6,
+  "pad_token_id": 0,
+  "qa_dropout": 0.1,
+  "seq_classif_dropout": 0.2,
+  "sinusoidal_pos_embds": false,
+  "tie_weights_": true,
+  "transformers_version": "4.28.1",
+  "vocab_size": 30522
+}
+
+[INFO|configuration_utils.py:668] 2023-04-25 18:26:53,228 >> loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--distilbert-base-uncased/snapshots/1c4513b2eedbda136f57676a34eea67aba266e5c/config.json
+[INFO|configuration_utils.py:668] 2023-04-25 18:26:53,228 >> loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--distilbert-base-uncased/snapshots/1c4513b2eedbda136f57676a34eea67aba266e5c/config.json
+[INFO|configuration_utils.py:720] 2023-04-25 18:26:53,229 >> Model config DistilBertConfig {
+  "_name_or_path": "distilbert-base-uncased",
+  "activation": "gelu",
+  "architectures": [
+    "DistilBertForMaskedLM"
+  ],
+  "attention_dropout": 0.1,
+  "dim": 768,
+  "dropout": 0.1,
+  "hidden_dim": 3072,
+  "initializer_range": 0.02,
+  "max_position_embeddings": 512,
+  "model_type": "distilbert",
+  "n_heads": 12,
+  "n_layers": 6,
+  "pad_token_id": 0,
+  "qa_dropout": 0.1,
+  "seq_classif_dropout": 0.2,
+  "sinusoidal_pos_embds": false,
+  "tie_weights_": true,
+  "transformers_version": "4.28.1",
+  "vocab_size": 30522
+}
+
+[INFO|configuration_utils.py:720] 2023-04-25 18:26:53,230 >> Model config DistilBertConfig {
+  "_name_or_path": "distilbert-base-uncased",
+  "activation": "gelu",
+  "architectures": [
+    "DistilBertForMaskedLM"
+  ],
+  "attention_dropout": 0.1,
+  "dim": 768,
+  "dropout": 0.1,
+  "hidden_dim": 3072,
+  "initializer_range": 0.02,
+  "max_position_embeddings": 512,
+  "model_type": "distilbert",
+  "n_heads": 12,
+  "n_layers": 6,
+  "pad_token_id": 0,
+  "qa_dropout": 0.1,
+  "seq_classif_dropout": 0.2,
+  "sinusoidal_pos_embds": false,
+  "tie_weights_": true,
+  "transformers_version": "4.28.1",
+  "vocab_size": 30522
+}
+
+[INFO|configuration_utils.py:668] 2023-04-25 18:26:53,410 >> loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--distilbert-base-uncased/snapshots/1c4513b2eedbda136f57676a34eea67aba266e5c/config.json
+[INFO|configuration_utils.py:720] 2023-04-25 18:26:53,411 >> Model config DistilBertConfig {
+  "_name_or_path": "distilbert-base-uncased",
+  "activation": "gelu",
+  "architectures": [
+    "DistilBertForMaskedLM"
+  ],
+  "attention_dropout": 0.1,
+  "dim": 768,
+  "dropout": 0.1,
+  "hidden_dim": 3072,
+  "initializer_range": 0.02,
+  "max_position_embeddings": 512,
+  "model_type": "distilbert",
+  "n_heads": 12,
+  "n_layers": 6,
+  "pad_token_id": 0,
+  "qa_dropout": 0.1,
+  "seq_classif_dropout": 0.2,
+  "sinusoidal_pos_embds": false,
+  "tie_weights_": true,
+  "transformers_version": "4.28.1",
+  "vocab_size": 30522
+}
+
+[INFO|modeling_utils.py:2534] 2023-04-25 18:26:54,042 >> loading weights file pytorch_model.bin from cache at /nlp/scr/fongsu/.cache/hub/models--distilbert-base-uncased/snapshots/1c4513b2eedbda136f57676a34eea67aba266e5c/pytorch_model.bin
+[INFO|modeling_utils.py:2534] 2023-04-25 18:26:54,042 >> loading weights file pytorch_model.bin from cache at /nlp/scr/fongsu/.cache/hub/models--distilbert-base-uncased/snapshots/1c4513b2eedbda136f57676a34eea67aba266e5c/pytorch_model.bin
+[INFO|modeling_utils.py:2534] 2023-04-25 18:26:54,049 >> loading weights file pytorch_model.bin from cache at /nlp/scr/fongsu/.cache/hub/models--distilbert-base-uncased/snapshots/1c4513b2eedbda136f57676a34eea67aba266e5c/pytorch_model.bin
+[INFO|modeling_utils.py:2534] 2023-04-25 18:26:54,090 >> loading weights file pytorch_model.bin from cache at /nlp/scr/fongsu/.cache/hub/models--distilbert-base-uncased/snapshots/1c4513b2eedbda136f57676a34eea67aba266e5c/pytorch_model.bin
+[WARNING|modeling_utils.py:3180] 2023-04-25 18:26:57,348 >> Some weights of the model checkpoint at distilbert-base-uncased were not used when initializing DistilBertModel: ['vocab_layer_norm.bias', 'vocab_layer_norm.weight', 'vocab_projector.bias', 'vocab_projector.weight', 'vocab_transform.bias', 'vocab_transform.weight']
+- This IS expected if you are initializing DistilBertModel from the checkpoint of a model trained on another task or with another architecture (e.g. initializing a BertForSequenceClassification model from a BertForPreTraining model).
+- This IS NOT expected if you are initializing DistilBertModel from the checkpoint of a model that you expect to be exactly identical (initializing a BertForSequenceClassification model from a BertForSequenceClassification model).
+[INFO|modeling_utils.py:3198] 2023-04-25 18:26:57,348 >> All the weights of DistilBertModel were initialized from the model checkpoint at distilbert-base-uncased.
+If your task is similar to the task the model of the checkpoint was trained on, you can already use DistilBertModel for predictions without further training.
+[WARNING|modeling_utils.py:3180] 2023-04-25 18:26:57,507 >> Some weights of the model checkpoint at distilbert-base-uncased were not used when initializing DistilBertModel: ['vocab_layer_norm.bias', 'vocab_layer_norm.weight', 'vocab_transform.weight', 'vocab_transform.bias', 'vocab_projector.weight', 'vocab_projector.bias']
+- This IS expected if you are initializing DistilBertModel from the checkpoint of a model trained on another task or with another architecture (e.g. initializing a BertForSequenceClassification model from a BertForPreTraining model).
+- This IS NOT expected if you are initializing DistilBertModel from the checkpoint of a model that you expect to be exactly identical (initializing a BertForSequenceClassification model from a BertForSequenceClassification model).
+[INFO|modeling_utils.py:3198] 2023-04-25 18:26:57,508 >> All the weights of DistilBertModel were initialized from the model checkpoint at distilbert-base-uncased.
+If your task is similar to the task the model of the checkpoint was trained on, you can already use DistilBertModel for predictions without further training.
+[WARNING|modeling_utils.py:3180] 2023-04-25 18:26:57,518 >> Some weights of the model checkpoint at distilbert-base-uncased were not used when initializing DistilBertModel: ['vocab_transform.weight', 'vocab_layer_norm.weight', 'vocab_layer_norm.bias', 'vocab_projector.weight', 'vocab_projector.bias', 'vocab_transform.bias']
+- This IS expected if you are initializing DistilBertModel from the checkpoint of a model trained on another task or with another architecture (e.g. initializing a BertForSequenceClassification model from a BertForPreTraining model).
+- This IS NOT expected if you are initializing DistilBertModel from the checkpoint of a model that you expect to be exactly identical (initializing a BertForSequenceClassification model from a BertForSequenceClassification model).
+[INFO|modeling_utils.py:3198] 2023-04-25 18:26:57,518 >> All the weights of DistilBertModel were initialized from the model checkpoint at distilbert-base-uncased.
+If your task is similar to the task the model of the checkpoint was trained on, you can already use DistilBertModel for predictions without further training.
+[WARNING|modeling_utils.py:3180] 2023-04-25 18:26:57,564 >> Some weights of the model checkpoint at distilbert-base-uncased were not used when initializing DistilBertModel: ['vocab_layer_norm.bias', 'vocab_projector.bias', 'vocab_layer_norm.weight', 'vocab_projector.weight', 'vocab_transform.bias', 'vocab_transform.weight']
+- This IS expected if you are initializing DistilBertModel from the checkpoint of a model trained on another task or with another architecture (e.g. initializing a BertForSequenceClassification model from a BertForPreTraining model).
+- This IS NOT expected if you are initializing DistilBertModel from the checkpoint of a model that you expect to be exactly identical (initializing a BertForSequenceClassification model from a BertForSequenceClassification model).
+[INFO|modeling_utils.py:3198] 2023-04-25 18:26:57,564 >> All the weights of DistilBertModel were initialized from the model checkpoint at distilbert-base-uncased.
+If your task is similar to the task the model of the checkpoint was trained on, you can already use DistilBertModel for predictions without further training.
+  0%|          | 0/2 [00:00<?, ?it/s]  0%|          | 0/2 [00:00<?, ?it/s]  0%|          | 0/2 [00:00<?, ?it/s]  0%|          | 0/2 [00:00<?, ?it/s] 50%|█████     | 1/2 [00:01<00:01,  1.69s/it] 50%|█████     | 1/2 [00:01<00:01,  1.10s/it] 50%|█████     | 1/2 [00:00<00:00,  1.05it/s] 50%|█████     | 1/2 [00:01<00:01,  1.58s/it]100%|██████████| 2/2 [00:01<00:00,  1.12it/s]
+100%|██████████| 2/2 [00:01<00:00,  1.20it/s]
+100%|██████████| 2/2 [00:01<00:00,  1.92it/s]
+100%|██████████| 2/2 [00:01<00:00,  1.67it/s]
+  0%|          | 0/2 [00:00<?, ?it/s]  0%|          | 0/2 [00:00<?, ?it/s]  0%|          | 0/2 [00:00<?, ?it/s]  0%|          | 0/2 [00:00<?, ?it/s] 50%|█████     | 1/2 [00:00<00:00,  5.26it/s] 50%|█████     | 1/2 [00:00<00:00,  7.87it/s] 50%|█████     | 1/2 [00:00<00:00,  8.89it/s]100%|██████████| 2/2 [00:00<00:00,  5.87it/s]100%|██████████| 2/2 [00:00<00:00,  5.76it/s]
+100%|██████████| 2/2 [00:00<00:00,  9.44it/s]
+100%|██████████| 2/2 [00:00<00:00, 12.03it/s]100%|██████████| 2/2 [00:00<00:00, 12.01it/s]
+100%|██████████| 2/2 [00:00<00:00,  7.51it/s]100%|██████████| 2/2 [00:00<00:00,  7.55it/s]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 16.59it/s]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 175.93it/s]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 401.87it/s]
+[INFO|trainer.py:621] 2023-04-25 18:27:29,981 >> Using cuda_amp half precision backend
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 291.23it/s]
+Using /sailhome/fongsu/.cache/torch_extensions/py38_cu117 as PyTorch extensions root...
+Using /sailhome/fongsu/.cache/torch_extensions/py38_cu117 as PyTorch extensions root...
+Using /sailhome/fongsu/.cache/torch_extensions/py38_cu117 as PyTorch extensions root...
+Using /sailhome/fongsu/.cache/torch_extensions/py38_cu117 as PyTorch extensions root...
+Loading extension module cpu_adam...
+Loading extension module cpu_adam...
+Loading extension module cpu_adam...
+Loading extension module cpu_adam...
+Using /sailhome/fongsu/.cache/torch_extensions/py38_cu117 as PyTorch extensions root...
+Using /sailhome/fongsu/.cache/torch_extensions/py38_cu117 as PyTorch extensions root...
+Using /sailhome/fongsu/.cache/torch_extensions/py38_cu117 as PyTorch extensions root...
+Using /sailhome/fongsu/.cache/torch_extensions/py38_cu117 as PyTorch extensions root...
+Emitting ninja build file /sailhome/fongsu/.cache/torch_extensions/py38_cu117/utils/build.ninja...
+Building extension module utils...
+Allowing ninja to set a default number of workers... (overridable by setting the environment variable MAX_JOBS=N)
+Loading extension module utils...
+Loading extension module utils...
+Loading extension module utils...
+Loading extension module utils...

@@ -1,0 +1,1562 @@
+loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/config.json
+loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/config.json
+Model config GPTNeoConfig {
+  "_name_or_path": "EleutherAI/gpt-neo-1.3B",
+  "activation_function": "gelu_new",
+  "architectures": [
+    "GPTNeoForCausalLM"
+  ],
+  "attention_dropout": 0,
+  "attention_layers": [
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local"
+  ],
+  "attention_types": [
+    [
+      [
+        "global",
+        "local"
+      ],
+      12
+    ]
+  ],
+  "bos_token_id": 50256,
+  "embed_dropout": 0,
+  "eos_token_id": 50256,
+  "gradient_checkpointing": false,
+  "hidden_size": 2048,
+  "initializer_range": 0.02,
+  "intermediate_size": null,
+  "layer_norm_epsilon": 1e-05,
+  "max_length": 512,
+  "max_position_embeddings": 2048,
+  "model_type": "gpt_neo",
+  "num_heads": 16,
+  "num_layers": 24,
+  "resid_dropout": 0,
+  "summary_activation": null,
+  "summary_first_dropout": 0.1,
+  "summary_proj_to_labels": true,
+  "summary_type": "cls_index",
+  "summary_use_proj": true,
+  "task_specific_params": {
+    "text-generation": {
+      "do_sample": true,
+      "max_length": 50,
+      "temperature": 0.9
+    }
+  },
+  "tokenizer_class": "GPT2Tokenizer",
+  "transformers_version": "4.28.1",
+  "use_cache": true,
+  "vocab_size": 50257,
+  "window_size": 256
+}
+
+Model config GPTNeoConfig {
+  "_name_or_path": "EleutherAI/gpt-neo-1.3B",
+  "activation_function": "gelu_new",
+  "architectures": [
+    "GPTNeoForCausalLM"
+  ],
+  "attention_dropout": 0,
+  "attention_layers": [
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local"
+  ],
+  "attention_types": [
+    [
+      [
+        "global",
+        "local"
+      ],
+      12
+    ]
+  ],
+  "bos_token_id": 50256,
+  "embed_dropout": 0,
+  "eos_token_id": 50256,
+  "gradient_checkpointing": false,
+  "hidden_size": 2048,
+  "initializer_range": 0.02,
+  "intermediate_size": null,
+  "layer_norm_epsilon": 1e-05,
+  "max_length": 512,
+  "max_position_embeddings": 2048,
+  "model_type": "gpt_neo",
+  "num_heads": 16,
+  "num_layers": 24,
+  "resid_dropout": 0,
+  "summary_activation": null,
+  "summary_first_dropout": 0.1,
+  "summary_proj_to_labels": true,
+  "summary_type": "cls_index",
+  "summary_use_proj": true,
+  "task_specific_params": {
+    "text-generation": {
+      "do_sample": true,
+      "max_length": 50,
+      "temperature": 0.9
+    }
+  },
+  "tokenizer_class": "GPT2Tokenizer",
+  "transformers_version": "4.28.1",
+  "use_cache": true,
+  "vocab_size": 50257,
+  "window_size": 256
+}
+
+loading file vocab.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/vocab.json
+loading file merges.txt from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/merges.txt
+loading file tokenizer.json from cache at None
+loading file added_tokens.json from cache at None
+loading file vocab.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/vocab.json
+loading file special_tokens_map.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/special_tokens_map.json
+loading file tokenizer_config.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/tokenizer_config.json
+loading file merges.txt from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/merges.txt
+loading file tokenizer.json from cache at None
+loading file added_tokens.json from cache at None
+loading file special_tokens_map.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/special_tokens_map.json
+loading file tokenizer_config.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/tokenizer_config.json
+loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/config.json
+loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/config.json
+Model config GPTNeoConfig {
+  "_name_or_path": "EleutherAI/gpt-neo-1.3B",
+  "activation_function": "gelu_new",
+  "architectures": [
+    "GPTNeoForCausalLM"
+  ],
+  "attention_dropout": 0,
+  "attention_layers": [
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local"
+  ],
+  "attention_types": [
+    [
+      [
+        "global",
+        "local"
+      ],
+      12
+    ]
+  ],
+  "bos_token_id": 50256,
+  "embed_dropout": 0,
+  "eos_token_id": 50256,
+  "gradient_checkpointing": false,
+  "hidden_size": 2048,
+  "initializer_range": 0.02,
+  "intermediate_size": null,
+  "layer_norm_epsilon": 1e-05,
+  "max_position_embeddings": 2048,
+  "model_type": "gpt_neo",
+  "num_heads": 16,
+  "num_layers": 24,
+  "resid_dropout": 0,
+  "summary_activation": null,
+  "summary_first_dropout": 0.1,
+  "summary_proj_to_labels": true,
+  "summary_type": "cls_index",
+  "summary_use_proj": true,
+  "task_specific_params": {
+    "text-generation": {
+      "do_sample": true,
+      "max_length": 50,
+      "temperature": 0.9
+    }
+  },
+  "tokenizer_class": "GPT2Tokenizer",
+  "transformers_version": "4.28.1",
+  "use_cache": true,
+  "vocab_size": 50257,
+  "window_size": 256
+}
+
+Model config GPTNeoConfig {
+  "_name_or_path": "EleutherAI/gpt-neo-1.3B",
+  "activation_function": "gelu_new",
+  "architectures": [
+    "GPTNeoForCausalLM"
+  ],
+  "attention_dropout": 0,
+  "attention_layers": [
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local"
+  ],
+  "attention_types": [
+    [
+      [
+        "global",
+        "local"
+      ],
+      12
+    ]
+  ],
+  "bos_token_id": 50256,
+  "embed_dropout": 0,
+  "eos_token_id": 50256,
+  "gradient_checkpointing": false,
+  "hidden_size": 2048,
+  "initializer_range": 0.02,
+  "intermediate_size": null,
+  "layer_norm_epsilon": 1e-05,
+  "max_position_embeddings": 2048,
+  "model_type": "gpt_neo",
+  "num_heads": 16,
+  "num_layers": 24,
+  "resid_dropout": 0,
+  "summary_activation": null,
+  "summary_first_dropout": 0.1,
+  "summary_proj_to_labels": true,
+  "summary_type": "cls_index",
+  "summary_use_proj": true,
+  "task_specific_params": {
+    "text-generation": {
+      "do_sample": true,
+      "max_length": 50,
+      "temperature": 0.9
+    }
+  },
+  "tokenizer_class": "GPT2Tokenizer",
+  "transformers_version": "4.28.1",
+  "use_cache": true,
+  "vocab_size": 50257,
+  "window_size": 256
+}
+
+loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/config.json
+loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/config.json
+loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/config.json
+Model config GPTNeoConfig {
+  "_name_or_path": "EleutherAI/gpt-neo-1.3B",
+  "activation_function": "gelu_new",
+  "architectures": [
+    "GPTNeoForCausalLM"
+  ],
+  "attention_dropout": 0,
+  "attention_layers": [
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local"
+  ],
+  "attention_types": [
+    [
+      [
+        "global",
+        "local"
+      ],
+      12
+    ]
+  ],
+  "bos_token_id": 50256,
+  "embed_dropout": 0,
+  "eos_token_id": 50256,
+  "gradient_checkpointing": false,
+  "hidden_size": 2048,
+  "initializer_range": 0.02,
+  "intermediate_size": null,
+  "layer_norm_epsilon": 1e-05,
+  "max_position_embeddings": 2048,
+  "model_type": "gpt_neo",
+  "num_heads": 16,
+  "num_layers": 24,
+  "resid_dropout": 0,
+  "summary_activation": null,
+  "summary_first_dropout": 0.1,
+  "summary_proj_to_labels": true,
+  "summary_type": "cls_index",
+  "summary_use_proj": true,
+  "task_specific_params": {
+    "text-generation": {
+      "do_sample": true,
+      "max_length": 50,
+      "temperature": 0.9
+    }
+  },
+  "tokenizer_class": "GPT2Tokenizer",
+  "transformers_version": "4.28.1",
+  "use_cache": true,
+  "vocab_size": 50257,
+  "window_size": 256
+}
+
+loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/config.json
+Model config GPTNeoConfig {
+  "_name_or_path": "EleutherAI/gpt-neo-1.3B",
+  "activation_function": "gelu_new",
+  "architectures": [
+    "GPTNeoForCausalLM"
+  ],
+  "attention_dropout": 0,
+  "attention_layers": [
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local"
+  ],
+  "attention_types": [
+    [
+      [
+        "global",
+        "local"
+      ],
+      12
+    ]
+  ],
+  "bos_token_id": 50256,
+  "embed_dropout": 0,
+  "eos_token_id": 50256,
+  "gradient_checkpointing": false,
+  "hidden_size": 2048,
+  "initializer_range": 0.02,
+  "intermediate_size": null,
+  "layer_norm_epsilon": 1e-05,
+  "max_position_embeddings": 2048,
+  "model_type": "gpt_neo",
+  "num_heads": 16,
+  "num_layers": 24,
+  "resid_dropout": 0,
+  "summary_activation": null,
+  "summary_first_dropout": 0.1,
+  "summary_proj_to_labels": true,
+  "summary_type": "cls_index",
+  "summary_use_proj": true,
+  "task_specific_params": {
+    "text-generation": {
+      "do_sample": true,
+      "max_length": 50,
+      "temperature": 0.9
+    }
+  },
+  "tokenizer_class": "GPT2Tokenizer",
+  "transformers_version": "4.28.1",
+  "use_cache": true,
+  "vocab_size": 50257,
+  "window_size": 256
+}
+
+Model config GPTNeoConfig {
+  "_name_or_path": "EleutherAI/gpt-neo-1.3B",
+  "activation_function": "gelu_new",
+  "architectures": [
+    "GPTNeoForCausalLM"
+  ],
+  "attention_dropout": 0,
+  "attention_layers": [
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local"
+  ],
+  "attention_types": [
+    [
+      [
+        "global",
+        "local"
+      ],
+      12
+    ]
+  ],
+  "bos_token_id": 50256,
+  "embed_dropout": 0,
+  "eos_token_id": 50256,
+  "gradient_checkpointing": false,
+  "hidden_size": 2048,
+  "initializer_range": 0.02,
+  "intermediate_size": null,
+  "layer_norm_epsilon": 1e-05,
+  "max_length": 512,
+  "max_position_embeddings": 2048,
+  "model_type": "gpt_neo",
+  "num_heads": 16,
+  "num_layers": 24,
+  "resid_dropout": 0,
+  "summary_activation": null,
+  "summary_first_dropout": 0.1,
+  "summary_proj_to_labels": true,
+  "summary_type": "cls_index",
+  "summary_use_proj": true,
+  "task_specific_params": {
+    "text-generation": {
+      "do_sample": true,
+      "max_length": 50,
+      "temperature": 0.9
+    }
+  },
+  "tokenizer_class": "GPT2Tokenizer",
+  "transformers_version": "4.28.1",
+  "use_cache": true,
+  "vocab_size": 50257,
+  "window_size": 256
+}
+
+Model config GPTNeoConfig {
+  "_name_or_path": "EleutherAI/gpt-neo-1.3B",
+  "activation_function": "gelu_new",
+  "architectures": [
+    "GPTNeoForCausalLM"
+  ],
+  "attention_dropout": 0,
+  "attention_layers": [
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local"
+  ],
+  "attention_types": [
+    [
+      [
+        "global",
+        "local"
+      ],
+      12
+    ]
+  ],
+  "bos_token_id": 50256,
+  "embed_dropout": 0,
+  "eos_token_id": 50256,
+  "gradient_checkpointing": false,
+  "hidden_size": 2048,
+  "initializer_range": 0.02,
+  "intermediate_size": null,
+  "layer_norm_epsilon": 1e-05,
+  "max_length": 512,
+  "max_position_embeddings": 2048,
+  "model_type": "gpt_neo",
+  "num_heads": 16,
+  "num_layers": 24,
+  "resid_dropout": 0,
+  "summary_activation": null,
+  "summary_first_dropout": 0.1,
+  "summary_proj_to_labels": true,
+  "summary_type": "cls_index",
+  "summary_use_proj": true,
+  "task_specific_params": {
+    "text-generation": {
+      "do_sample": true,
+      "max_length": 50,
+      "temperature": 0.9
+    }
+  },
+  "tokenizer_class": "GPT2Tokenizer",
+  "transformers_version": "4.28.1",
+  "use_cache": true,
+  "vocab_size": 50257,
+  "window_size": 256
+}
+
+loading file vocab.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/vocab.json
+loading file merges.txt from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/merges.txt
+loading file tokenizer.json from cache at None
+loading file added_tokens.json from cache at None
+loading file special_tokens_map.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/special_tokens_map.json
+loading file tokenizer_config.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/tokenizer_config.json
+loading file vocab.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/vocab.json
+loading file merges.txt from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/merges.txt
+loading file tokenizer.json from cache at None
+loading file added_tokens.json from cache at None
+loading file special_tokens_map.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/special_tokens_map.json
+loading file tokenizer_config.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/tokenizer_config.json
+loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/config.json
+loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/config.json
+Model config GPTNeoConfig {
+  "_name_or_path": "EleutherAI/gpt-neo-1.3B",
+  "activation_function": "gelu_new",
+  "architectures": [
+    "GPTNeoForCausalLM"
+  ],
+  "attention_dropout": 0,
+  "attention_layers": [
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local"
+  ],
+  "attention_types": [
+    [
+      [
+        "global",
+        "local"
+      ],
+      12
+    ]
+  ],
+  "bos_token_id": 50256,
+  "embed_dropout": 0,
+  "eos_token_id": 50256,
+  "gradient_checkpointing": false,
+  "hidden_size": 2048,
+  "initializer_range": 0.02,
+  "intermediate_size": null,
+  "layer_norm_epsilon": 1e-05,
+  "max_position_embeddings": 2048,
+  "model_type": "gpt_neo",
+  "num_heads": 16,
+  "num_layers": 24,
+  "resid_dropout": 0,
+  "summary_activation": null,
+  "summary_first_dropout": 0.1,
+  "summary_proj_to_labels": true,
+  "summary_type": "cls_index",
+  "summary_use_proj": true,
+  "task_specific_params": {
+    "text-generation": {
+      "do_sample": true,
+      "max_length": 50,
+      "temperature": 0.9
+    }
+  },
+  "tokenizer_class": "GPT2Tokenizer",
+  "transformers_version": "4.28.1",
+  "use_cache": true,
+  "vocab_size": 50257,
+  "window_size": 256
+}
+
+Model config GPTNeoConfig {
+  "_name_or_path": "EleutherAI/gpt-neo-1.3B",
+  "activation_function": "gelu_new",
+  "architectures": [
+    "GPTNeoForCausalLM"
+  ],
+  "attention_dropout": 0,
+  "attention_layers": [
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local"
+  ],
+  "attention_types": [
+    [
+      [
+        "global",
+        "local"
+      ],
+      12
+    ]
+  ],
+  "bos_token_id": 50256,
+  "embed_dropout": 0,
+  "eos_token_id": 50256,
+  "gradient_checkpointing": false,
+  "hidden_size": 2048,
+  "initializer_range": 0.02,
+  "intermediate_size": null,
+  "layer_norm_epsilon": 1e-05,
+  "max_position_embeddings": 2048,
+  "model_type": "gpt_neo",
+  "num_heads": 16,
+  "num_layers": 24,
+  "resid_dropout": 0,
+  "summary_activation": null,
+  "summary_first_dropout": 0.1,
+  "summary_proj_to_labels": true,
+  "summary_type": "cls_index",
+  "summary_use_proj": true,
+  "task_specific_params": {
+    "text-generation": {
+      "do_sample": true,
+      "max_length": 50,
+      "temperature": 0.9
+    }
+  },
+  "tokenizer_class": "GPT2Tokenizer",
+  "transformers_version": "4.28.1",
+  "use_cache": true,
+  "vocab_size": 50257,
+  "window_size": 256
+}
+
+Using pad_token, but it is not set yet.
+Using pad_token, but it is not set yet.
+loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/config.json
+Model config GPTNeoConfig {
+  "_name_or_path": "EleutherAI/gpt-neo-1.3B",
+  "activation_function": "gelu_new",
+  "architectures": [
+    "GPTNeoForCausalLM"
+  ],
+  "attention_dropout": 0,
+  "attention_layers": [
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local"
+  ],
+  "attention_types": [
+    [
+      [
+        "global",
+        "local"
+      ],
+      12
+    ]
+  ],
+  "bos_token_id": 50256,
+  "embed_dropout": 0,
+  "eos_token_id": 50256,
+  "gradient_checkpointing": false,
+  "hidden_size": 2048,
+  "initializer_range": 0.02,
+  "intermediate_size": null,
+  "layer_norm_epsilon": 1e-05,
+  "max_position_embeddings": 2048,
+  "model_type": "gpt_neo",
+  "num_heads": 16,
+  "num_layers": 24,
+  "resid_dropout": 0,
+  "summary_activation": null,
+  "summary_first_dropout": 0.1,
+  "summary_proj_to_labels": true,
+  "summary_type": "cls_index",
+  "summary_use_proj": true,
+  "task_specific_params": {
+    "text-generation": {
+      "do_sample": true,
+      "max_length": 50,
+      "temperature": 0.9
+    }
+  },
+  "tokenizer_class": "GPT2Tokenizer",
+  "transformers_version": "4.28.1",
+  "use_cache": true,
+  "vocab_size": 50257,
+  "window_size": 256
+}
+
+loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/config.json
+Model config GPTNeoConfig {
+  "_name_or_path": "EleutherAI/gpt-neo-1.3B",
+  "activation_function": "gelu_new",
+  "architectures": [
+    "GPTNeoForCausalLM"
+  ],
+  "attention_dropout": 0,
+  "attention_layers": [
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local"
+  ],
+  "attention_types": [
+    [
+      [
+        "global",
+        "local"
+      ],
+      12
+    ]
+  ],
+  "bos_token_id": 50256,
+  "embed_dropout": 0,
+  "eos_token_id": 50256,
+  "gradient_checkpointing": false,
+  "hidden_size": 2048,
+  "initializer_range": 0.02,
+  "intermediate_size": null,
+  "layer_norm_epsilon": 1e-05,
+  "max_position_embeddings": 2048,
+  "model_type": "gpt_neo",
+  "num_heads": 16,
+  "num_layers": 24,
+  "resid_dropout": 0,
+  "summary_activation": null,
+  "summary_first_dropout": 0.1,
+  "summary_proj_to_labels": true,
+  "summary_type": "cls_index",
+  "summary_use_proj": true,
+  "task_specific_params": {
+    "text-generation": {
+      "do_sample": true,
+      "max_length": 50,
+      "temperature": 0.9
+    }
+  },
+  "tokenizer_class": "GPT2Tokenizer",
+  "transformers_version": "4.28.1",
+  "use_cache": true,
+  "vocab_size": 50257,
+  "window_size": 256
+}
+
+Using pad_token, but it is not set yet.
+Using pad_token, but it is not set yet.
+loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/config.json
+Model config GPTNeoConfig {
+  "_name_or_path": "EleutherAI/gpt-neo-1.3B",
+  "activation_function": "gelu_new",
+  "architectures": [
+    "GPTNeoForCausalLM"
+  ],
+  "attention_dropout": 0,
+  "attention_layers": [
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local"
+  ],
+  "attention_types": [
+    [
+      [
+        "global",
+        "local"
+      ],
+      12
+    ]
+  ],
+  "bos_token_id": 50256,
+  "embed_dropout": 0,
+  "eos_token_id": 50256,
+  "gradient_checkpointing": false,
+  "hidden_size": 2048,
+  "initializer_range": 0.02,
+  "intermediate_size": null,
+  "layer_norm_epsilon": 1e-05,
+  "max_position_embeddings": 2048,
+  "model_type": "gpt_neo",
+  "num_heads": 16,
+  "num_layers": 24,
+  "resid_dropout": 0,
+  "summary_activation": null,
+  "summary_first_dropout": 0.1,
+  "summary_proj_to_labels": true,
+  "summary_type": "cls_index",
+  "summary_use_proj": true,
+  "task_specific_params": {
+    "text-generation": {
+      "do_sample": true,
+      "max_length": 50,
+      "temperature": 0.9
+    }
+  },
+  "tokenizer_class": "GPT2Tokenizer",
+  "transformers_version": "4.28.1",
+  "use_cache": true,
+  "vocab_size": 50257,
+  "window_size": 256
+}
+
+loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/config.json
+Model config GPTNeoConfig {
+  "_name_or_path": "EleutherAI/gpt-neo-1.3B",
+  "activation_function": "gelu_new",
+  "architectures": [
+    "GPTNeoForCausalLM"
+  ],
+  "attention_dropout": 0,
+  "attention_layers": [
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local"
+  ],
+  "attention_types": [
+    [
+      [
+        "global",
+        "local"
+      ],
+      12
+    ]
+  ],
+  "bos_token_id": 50256,
+  "embed_dropout": 0,
+  "eos_token_id": 50256,
+  "gradient_checkpointing": false,
+  "hidden_size": 2048,
+  "initializer_range": 0.02,
+  "intermediate_size": null,
+  "layer_norm_epsilon": 1e-05,
+  "max_position_embeddings": 2048,
+  "model_type": "gpt_neo",
+  "num_heads": 16,
+  "num_layers": 24,
+  "resid_dropout": 0,
+  "summary_activation": null,
+  "summary_first_dropout": 0.1,
+  "summary_proj_to_labels": true,
+  "summary_type": "cls_index",
+  "summary_use_proj": true,
+  "task_specific_params": {
+    "text-generation": {
+      "do_sample": true,
+      "max_length": 50,
+      "temperature": 0.9
+    }
+  },
+  "tokenizer_class": "GPT2Tokenizer",
+  "transformers_version": "4.28.1",
+  "use_cache": true,
+  "vocab_size": 50257,
+  "window_size": 256
+}
+
+loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/config.json
+Model config GPTNeoConfig {
+  "_name_or_path": "EleutherAI/gpt-neo-1.3B",
+  "activation_function": "gelu_new",
+  "architectures": [
+    "GPTNeoForCausalLM"
+  ],
+  "attention_dropout": 0,
+  "attention_layers": [
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local"
+  ],
+  "attention_types": [
+    [
+      [
+        "global",
+        "local"
+      ],
+      12
+    ]
+  ],
+  "bos_token_id": 50256,
+  "embed_dropout": 0,
+  "eos_token_id": 50256,
+  "gradient_checkpointing": false,
+  "hidden_size": 2048,
+  "initializer_range": 0.02,
+  "intermediate_size": null,
+  "layer_norm_epsilon": 1e-05,
+  "max_position_embeddings": 2048,
+  "model_type": "gpt_neo",
+  "num_heads": 16,
+  "num_layers": 24,
+  "resid_dropout": 0,
+  "summary_activation": null,
+  "summary_first_dropout": 0.1,
+  "summary_proj_to_labels": true,
+  "summary_type": "cls_index",
+  "summary_use_proj": true,
+  "task_specific_params": {
+    "text-generation": {
+      "do_sample": true,
+      "max_length": 50,
+      "temperature": 0.9
+    }
+  },
+  "tokenizer_class": "GPT2Tokenizer",
+  "transformers_version": "4.28.1",
+  "use_cache": true,
+  "vocab_size": 50257,
+  "window_size": 256
+}
+
+loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/config.json
+Model config GPTNeoConfig {
+  "_name_or_path": "EleutherAI/gpt-neo-1.3B",
+  "activation_function": "gelu_new",
+  "architectures": [
+    "GPTNeoForCausalLM"
+  ],
+  "attention_dropout": 0,
+  "attention_layers": [
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local"
+  ],
+  "attention_types": [
+    [
+      [
+        "global",
+        "local"
+      ],
+      12
+    ]
+  ],
+  "bos_token_id": 50256,
+  "embed_dropout": 0,
+  "eos_token_id": 50256,
+  "gradient_checkpointing": false,
+  "hidden_size": 2048,
+  "initializer_range": 0.02,
+  "intermediate_size": null,
+  "layer_norm_epsilon": 1e-05,
+  "max_position_embeddings": 2048,
+  "model_type": "gpt_neo",
+  "num_heads": 16,
+  "num_layers": 24,
+  "resid_dropout": 0,
+  "summary_activation": null,
+  "summary_first_dropout": 0.1,
+  "summary_proj_to_labels": true,
+  "summary_type": "cls_index",
+  "summary_use_proj": true,
+  "task_specific_params": {
+    "text-generation": {
+      "do_sample": true,
+      "max_length": 50,
+      "temperature": 0.9
+    }
+  },
+  "tokenizer_class": "GPT2Tokenizer",
+  "transformers_version": "4.28.1",
+  "use_cache": true,
+  "vocab_size": 50257,
+  "window_size": 256
+}
+
+loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/config.json
+Model config GPTNeoConfig {
+  "_name_or_path": "EleutherAI/gpt-neo-1.3B",
+  "activation_function": "gelu_new",
+  "architectures": [
+    "GPTNeoForCausalLM"
+  ],
+  "attention_dropout": 0,
+  "attention_layers": [
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local"
+  ],
+  "attention_types": [
+    [
+      [
+        "global",
+        "local"
+      ],
+      12
+    ]
+  ],
+  "bos_token_id": 50256,
+  "embed_dropout": 0,
+  "eos_token_id": 50256,
+  "gradient_checkpointing": false,
+  "hidden_size": 2048,
+  "initializer_range": 0.02,
+  "intermediate_size": null,
+  "layer_norm_epsilon": 1e-05,
+  "max_position_embeddings": 2048,
+  "model_type": "gpt_neo",
+  "num_heads": 16,
+  "num_layers": 24,
+  "resid_dropout": 0,
+  "summary_activation": null,
+  "summary_first_dropout": 0.1,
+  "summary_proj_to_labels": true,
+  "summary_type": "cls_index",
+  "summary_use_proj": true,
+  "task_specific_params": {
+    "text-generation": {
+      "do_sample": true,
+      "max_length": 50,
+      "temperature": 0.9
+    }
+  },
+  "tokenizer_class": "GPT2Tokenizer",
+  "transformers_version": "4.28.1",
+  "use_cache": true,
+  "vocab_size": 50257,
+  "window_size": 256
+}
+
+loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/config.json
+Model config GPTNeoConfig {
+  "_name_or_path": "EleutherAI/gpt-neo-1.3B",
+  "activation_function": "gelu_new",
+  "architectures": [
+    "GPTNeoForCausalLM"
+  ],
+  "attention_dropout": 0,
+  "attention_layers": [
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local"
+  ],
+  "attention_types": [
+    [
+      [
+        "global",
+        "local"
+      ],
+      12
+    ]
+  ],
+  "bos_token_id": 50256,
+  "embed_dropout": 0,
+  "eos_token_id": 50256,
+  "gradient_checkpointing": false,
+  "hidden_size": 2048,
+  "initializer_range": 0.02,
+  "intermediate_size": null,
+  "layer_norm_epsilon": 1e-05,
+  "max_position_embeddings": 2048,
+  "model_type": "gpt_neo",
+  "num_heads": 16,
+  "num_layers": 24,
+  "resid_dropout": 0,
+  "summary_activation": null,
+  "summary_first_dropout": 0.1,
+  "summary_proj_to_labels": true,
+  "summary_type": "cls_index",
+  "summary_use_proj": true,
+  "task_specific_params": {
+    "text-generation": {
+      "do_sample": true,
+      "max_length": 50,
+      "temperature": 0.9
+    }
+  },
+  "tokenizer_class": "GPT2Tokenizer",
+  "transformers_version": "4.28.1",
+  "use_cache": true,
+  "vocab_size": 50257,
+  "window_size": 256
+}
+
+loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/config.json
+Model config GPTNeoConfig {
+  "_name_or_path": "EleutherAI/gpt-neo-1.3B",
+  "activation_function": "gelu_new",
+  "architectures": [
+    "GPTNeoForCausalLM"
+  ],
+  "attention_dropout": 0,
+  "attention_layers": [
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local"
+  ],
+  "attention_types": [
+    [
+      [
+        "global",
+        "local"
+      ],
+      12
+    ]
+  ],
+  "bos_token_id": 50256,
+  "embed_dropout": 0,
+  "eos_token_id": 50256,
+  "gradient_checkpointing": false,
+  "hidden_size": 2048,
+  "initializer_range": 0.02,
+  "intermediate_size": null,
+  "layer_norm_epsilon": 1e-05,
+  "max_position_embeddings": 2048,
+  "model_type": "gpt_neo",
+  "num_heads": 16,
+  "num_layers": 24,
+  "resid_dropout": 0,
+  "summary_activation": null,
+  "summary_first_dropout": 0.1,
+  "summary_proj_to_labels": true,
+  "summary_type": "cls_index",
+  "summary_use_proj": true,
+  "task_specific_params": {
+    "text-generation": {
+      "do_sample": true,
+      "max_length": 50,
+      "temperature": 0.9
+    }
+  },
+  "tokenizer_class": "GPT2Tokenizer",
+  "transformers_version": "4.28.1",
+  "use_cache": true,
+  "vocab_size": 50257,
+  "window_size": 256
+}
+
+loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/config.json
+Model config GPTNeoConfig {
+  "_name_or_path": "EleutherAI/gpt-neo-1.3B",
+  "activation_function": "gelu_new",
+  "architectures": [
+    "GPTNeoForCausalLM"
+  ],
+  "attention_dropout": 0,
+  "attention_layers": [
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local"
+  ],
+  "attention_types": [
+    [
+      [
+        "global",
+        "local"
+      ],
+      12
+    ]
+  ],
+  "bos_token_id": 50256,
+  "embed_dropout": 0,
+  "eos_token_id": 50256,
+  "gradient_checkpointing": false,
+  "hidden_size": 2048,
+  "initializer_range": 0.02,
+  "intermediate_size": null,
+  "layer_norm_epsilon": 1e-05,
+  "max_position_embeddings": 2048,
+  "model_type": "gpt_neo",
+  "num_heads": 16,
+  "num_layers": 24,
+  "resid_dropout": 0,
+  "summary_activation": null,
+  "summary_first_dropout": 0.1,
+  "summary_proj_to_labels": true,
+  "summary_type": "cls_index",
+  "summary_use_proj": true,
+  "task_specific_params": {
+    "text-generation": {
+      "do_sample": true,
+      "max_length": 50,
+      "temperature": 0.9
+    }
+  },
+  "tokenizer_class": "GPT2Tokenizer",
+  "transformers_version": "4.28.1",
+  "use_cache": true,
+  "vocab_size": 50257,
+  "window_size": 256
+}
+
+loading weights file pytorch_model.bin from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/pytorch_model.bin
+loading weights file pytorch_model.bin from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/pytorch_model.bin
+loading weights file pytorch_model.bin from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/pytorch_model.bin
+loading weights file pytorch_model.bin from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/pytorch_model.bin
+All model checkpoint weights were used when initializing GPTNeoModel.
+
+All the weights of GPTNeoModel were initialized from the model checkpoint at EleutherAI/gpt-neo-1.3B.
+If your task is similar to the task the model of the checkpoint was trained on, you can already use GPTNeoModel for predictions without further training.
+All model checkpoint weights were used when initializing GPTNeoModel.
+
+All the weights of GPTNeoModel were initialized from the model checkpoint at EleutherAI/gpt-neo-1.3B.
+If your task is similar to the task the model of the checkpoint was trained on, you can already use GPTNeoModel for predictions without further training.
+PyTorch: setting up devices
+PyTorch: setting up devices
+All model checkpoint weights were used when initializing GPTNeoModel.
+
+All the weights of GPTNeoModel were initialized from the model checkpoint at EleutherAI/gpt-neo-1.3B.
+If your task is similar to the task the model of the checkpoint was trained on, you can already use GPTNeoModel for predictions without further training.
+Downloading builder script:   0%|          | 0.00/4.74k [00:00<?, ?B/s]Downloading builder script: 100%|██████████| 4.74k/4.74k [00:00<00:00, 5.02MB/s]
+PyTorch: setting up devices
+Downloading builder script:   0%|          | 0.00/4.74k [00:00<?, ?B/s]Downloading builder script: 100%|██████████| 4.74k/4.74k [00:00<00:00, 2.88MB/s]
+Downloading readme:   0%|          | 0.00/2.85k [00:00<?, ?B/s]Downloading readme: 100%|██████████| 2.85k/2.85k [00:00<00:00, 6.36MB/s]
+All model checkpoint weights were used when initializing GPTNeoModel.
+
+All the weights of GPTNeoModel were initialized from the model checkpoint at EleutherAI/gpt-neo-1.3B.
+If your task is similar to the task the model of the checkpoint was trained on, you can already use GPTNeoModel for predictions without further training.
+PyTorch: setting up devices
+Downloading data:   0%|          | 0.00/279M [00:00<?, ?B/s]Downloading data:   0%|          | 81.9k/279M [00:00<08:14, 563kB/s]Downloading data:   0%|          | 492k/279M [00:00<02:00, 2.31MB/s]Downloading data:   0%|          | 983k/279M [00:00<01:36, 2.86MB/s]Downloading data:   1%|          | 1.70M/279M [00:00<01:06, 4.14MB/s]Downloading data:   1%|          | 2.28M/279M [00:00<01:11, 3.85MB/s]Downloading data:   1%|          | 2.69M/279M [00:00<01:18, 3.51MB/s]Downloading data:   1%|          | 3.20M/279M [00:00<01:10, 3.93MB/s]Downloading data:   1%|▏         | 3.62M/279M [00:01<01:17, 3.55MB/s]Downloading data:   1%|▏         | 3.99M/279M [00:01<01:16, 3.59MB/s]Downloading data:   2%|▏         | 4.36M/279M [00:01<01:37, 2.81MB/s]Downloading data:   2%|▏         | 4.82M/279M [00:01<01:34, 2.91MB/s]Downloading data:   2%|▏         | 5.24M/279M [00:01<01:25, 3.21MB/s]Downloading data:   2%|▏         | 5.62M/279M [00:01<01:30, 3.02MB/s]Downloading data:   2%|▏         | 6.00M/279M [00:01<01:25, 3.20MB/s]Downloading data:   2%|▏         | 6.44M/279M [00:02<01:26, 3.15MB/s]Downloading data:   2%|▏         | 6.80M/279M [00:02<01:23, 3.26MB/s]Downloading data:   3%|▎         | 7.19M/279M [00:02<01:18, 3.44MB/s]Downloading data:   3%|▎         | 7.60M/279M [00:02<01:23, 3.25MB/s]Downloading data:   3%|▎         | 7.98M/279M [00:02<01:19, 3.39MB/s]Downloading data:   3%|▎         | 8.39M/279M [00:02<01:30, 2.98MB/s]Downloading data:   3%|▎         | 8.87M/279M [00:02<01:19, 3.41MB/s]Downloading data:   3%|▎         | 9.26M/279M [00:02<01:24, 3.18MB/s]Downloading data:   3%|▎         | 9.73M/279M [00:02<01:15, 3.57MB/s]Downloading data:   4%|▎         | 10.2M/279M [00:03<01:19, 3.37MB/s]Downloading data:   4%|▍         | 10.6M/279M [00:03<01:13, 3.66MB/s]Downloading data:   4%|▍         | 11.1M/279M [00:03<01:16, 3.48MB/s]Downloading data:   4%|▍         | 11.5M/279M [00:03<01:13, 3.63MB/s]Downloading data:   4%|▍         | 12.0M/279M [00:03<01:07, 3.97MB/s]Downloading data:   4%|▍         | 12.4M/279M [00:03<01:14, 3.58MB/s]Downloading data:   5%|▍         | 12.7M/279M [00:03<01:17, 3.44MB/s]Downloading data:   5%|▍         | 13.1M/279M [00:03<01:22, 3.21MB/s]Downloading data:   5%|▍         | 13.6M/279M [00:04<01:12, 3.66MB/s]Downloading data:   5%|▌         | 14.1M/279M [00:04<01:16, 3.45MB/s]Downloading data:   5%|▌         | 14.5M/279M [00:04<01:11, 3.69MB/s]Downloading data:   5%|▌         | 15.0M/279M [00:04<01:12, 3.64MB/s]Downloading data:   6%|▌         | 15.5M/279M [00:04<01:09, 3.80MB/s]Downloading data:   6%|▌         | 15.9M/279M [00:04<01:04, 4.09MB/s]Downloading data:   6%|▌         | 16.4M/279M [00:04<01:10, 3.72MB/s]Downloading data:   6%|▌         | 16.8M/279M [00:04<01:21, 3.20MB/s]Downloading data:   6%|▌         | 17.3M/279M [00:05<01:11, 3.67MB/s]Downloading data:   6%|▋         | 17.7M/279M [00:05<01:14, 3.49MB/s]Downloading data:   7%|▋         | 18.2M/279M [00:05<01:08, 3.82MB/s]Downloading data:   7%|▋         | 18.7M/279M [00:05<01:05, 3.97MB/s]Downloading data:   7%|▋         | 19.2M/279M [00:05<01:08, 3.79MB/s]Downloading data:   7%|▋         | 19.6M/279M [00:05<01:05, 3.95MB/s]Downloading data:   7%|▋         | 20.1M/279M [00:05<01:01, 4.22MB/s]Downloading data:   7%|▋         | 20.6M/279M [00:05<01:04, 4.00MB/s]Downloading data:   8%|▊         | 21.0M/279M [00:06<01:08, 3.79MB/s]Downloading data:   8%|▊         | 21.4M/279M [00:06<01:18, 3.27MB/s]Downloading data:   8%|▊         | 21.8M/279M [00:06<01:13, 3.48MB/s]Downloading data:   8%|▊         | 22.2M/279M [00:06<01:21, 3.16MB/s]Downloading data:   8%|▊         | 22.6M/279M [00:06<01:25, 3.01MB/s]Downloading data:   8%|▊         | 22.9M/279M [00:06<01:20, 3.16MB/s]Downloading data:   8%|▊         | 23.3M/279M [00:06<01:25, 2.97MB/s]Downloading data:   8%|▊         | 23.6M/279M [00:06<01:22, 3.08MB/s]Downloading data:   9%|▊         | 24.0M/279M [00:07<01:22, 3.10MB/s]Downloading data:   9%|▊         | 24.4M/279M [00:07<01:24, 3.00MB/s]Downloading data:   9%|▉         | 24.7M/279M [00:07<01:21, 3.10MB/s]Downloading data:   9%|▉         | 25.1M/279M [00:07<01:14, 3.40MB/s]Downloading data:   9%|▉         | 25.5M/279M [00:07<01:28, 2.85MB/s]Downloading data:   9%|▉         | 25.8M/279M [00:07<01:34, 2.67MB/s]Downloading data:   9%|▉         | 26.2M/279M [00:07<01:23, 3.02MB/s]Downloading data:  10%|▉         | 26.6M/279M [00:07<01:25, 2.93MB/s]Downloading data:  10%|▉         | 27.0M/279M [00:08<01:21, 3.10MB/s]Downloading data:  10%|▉         | 27.4M/279M [00:08<01:11, 3.50MB/s]Downloading data:  10%|▉         | 27.8M/279M [00:08<01:19, 3.16MB/s]Downloading data:  10%|█         | 28.2M/279M [00:08<01:11, 3.49MB/s]Downloading data:  10%|█         | 28.6M/279M [00:08<01:17, 3.22MB/s]Downloading data:  10%|█         | 29.0M/279M [00:08<01:15, 3.32MB/s]Downloading data:  11%|█         | 29.4M/279M [00:08<01:24, 2.96MB/s]Downloading data:  11%|█         | 29.8M/279M [00:08<01:14, 3.36MB/s]Downloading data:  11%|█         | 30.2M/279M [00:08<01:18, 3.18MB/s]Downloading data:  11%|█         | 30.7M/279M [00:09<01:10, 3.50MB/s]Downloading data:  11%|█         | 31.1M/279M [00:09<01:14, 3.32MB/s]Downloading data:  11%|█▏        | 31.5M/279M [00:09<01:11, 3.46MB/s]Downloading data:  11%|█▏        | 32.0M/279M [00:09<01:11, 3.46MB/s]Downloading data:  12%|█▏        | 32.4M/279M [00:09<01:09, 3.54MB/s]Downloading data:  12%|█▏        | 32.9M/279M [00:09<01:09, 3.54MB/s]Downloading data:  12%|█▏        | 33.2M/279M [00:09<01:08, 3.60MB/s]Downloading data:  12%|█▏        | 33.6M/279M [00:09<01:12, 3.37MB/s]Downloading data:  12%|█▏        | 34.1M/279M [00:10<01:12, 3.36MB/s]Downloading data:  12%|█▏        | 34.6M/279M [00:10<01:05, 3.70MB/s]Downloading data:  13%|█▎        | 35.0M/279M [00:10<01:04, 3.79MB/s]Downloading data:  13%|█▎        | 35.4M/279M [00:10<01:09, 3.52MB/s]Downloading data:  13%|█▎        | 35.8M/279M [00:10<01:06, 3.67MB/s]Downloading data:  13%|█▎        | 36.3M/279M [00:10<01:00, 4.01MB/s]Downloading data:  13%|█▎        | 36.7M/279M [00:10<01:05, 3.69MB/s]Downloading data:  13%|█▎        | 37.2M/279M [00:10<01:02, 3.84MB/s]Downloading data:  14%|█▎        | 37.7M/279M [00:10<00:57, 4.18MB/s]Downloading data:  14%|█▎        | 38.1M/279M [00:11<01:07, 3.58MB/s]Downloading data:  14%|█▍        | 38.5M/279M [00:11<01:10, 3.40MB/s]Downloading data:  14%|█▍        | 39.1M/279M [00:11<01:01, 3.86MB/s]Downloading data:  14%|█▍        | 39.6M/279M [00:11<01:04, 3.71MB/s]Downloading data:  14%|█▍        | 40.0M/279M [00:11<00:59, 4.01MB/s]Downloading data:  15%|█▍        | 40.6M/279M [00:11<01:00, 3.93MB/s]Downloading data:  15%|█▍        | 41.1M/279M [00:11<00:57, 4.14MB/s]Downloading data:  15%|█▍        | 41.5M/279M [00:11<00:56, 4.22MB/s]Downloading data:  15%|█▌        | 42.0M/279M [00:12<01:05, 3.59MB/s]Downloading data:  15%|█▌        | 42.3M/279M [00:12<01:12, 3.24MB/s]Downloading data:  15%|█▌        | 42.7M/279M [00:12<01:19, 2.97MB/s]Downloading data:  15%|█▌        | 43.1M/279M [00:12<01:12, 3.25MB/s]Downloading data:  16%|█▌        | 43.5M/279M [00:12<01:18, 3.00MB/s]Downloading data:  16%|█▌        | 43.9M/279M [00:12<01:10, 3.31MB/s]Downloading data:  16%|█▌        | 44.3M/279M [00:12<01:15, 3.09MB/s]Downloading data:  16%|█▌        | 44.6M/279M [00:13<01:11, 3.26MB/s]Downloading data:  16%|█▌        | 45.1M/279M [00:13<01:04, 3.62MB/s]Downloading data:  16%|█▋        | 45.5M/279M [00:13<01:11, 3.27MB/s]Downloading data:  16%|█▋        | 46.0M/279M [00:13<01:03, 3.67MB/s]Downloading data:  17%|█▋        | 46.3M/279M [00:13<01:13, 3.17MB/s]Downloading data:  17%|█▋        | 46.8M/279M [00:13<01:04, 3.59MB/s]Downloading data:  17%|█▋        | 47.2M/279M [00:13<01:09, 3.34MB/s]Downloading data:  17%|█▋        | 47.7M/279M [00:13<01:01, 3.75MB/s]Downloading data:  17%|█▋        | 48.2M/279M [00:14<01:05, 3.54MB/s]Downloading data:  17%|█▋        | 48.7M/279M [00:14<00:59, 3.89MB/s]Downloading data:  18%|█▊        | 49.2M/279M [00:14<01:02, 3.70MB/s]Downloading data:  18%|█▊        | 49.6M/279M [00:14<00:58, 3.92MB/s]Downloading data:  18%|█▊        | 50.1M/279M [00:14<00:53, 4.25MB/s]Downloading data:  18%|█▊        | 50.6M/279M [00:14<01:04, 3.54MB/s]Downloading data:  18%|█▊        | 51.0M/279M [00:14<01:09, 3.25MB/s]Downloading data:  18%|█▊        | 51.3M/279M [00:14<01:16, 2.99MB/s]Downloading data:  19%|█▊        | 51.7M/279M [00:15<01:17, 2.94MB/s]Downloading data:  19%|█▊        | 52.0M/279M [00:15<01:15, 3.02MB/s]Downloading data:  19%|█▉        | 52.4M/279M [00:15<01:17, 2.92MB/s]Downloading data:  19%|█▉        | 52.8M/279M [00:15<01:14, 3.03MB/s]Downloading data:  19%|█▉        | 53.1M/279M [00:15<01:18, 2.88MB/s]Downloading data:  19%|█▉        | 53.4M/279M [00:15<01:16, 2.93MB/s]Downloading data:  19%|█▉        | 53.8M/279M [00:15<01:10, 3.19MB/s]Downloading data:  19%|█▉        | 54.2M/279M [00:15<01:17, 2.89MB/s]Downloading data:  20%|█▉        | 54.5M/279M [00:16<01:15, 2.99MB/s]Downloading data:  20%|█▉        | 54.8M/279M [00:16<01:18, 2.86MB/s]Downloading data:  20%|█▉        | 55.1M/279M [00:16<01:17, 2.87MB/s]Downloading data:  20%|█▉        | 55.4M/279M [00:16<01:21, 2.74MB/s]Downloading data:  20%|██        | 55.8M/279M [00:16<01:17, 2.86MB/s]Downloading data:  20%|██        | 56.2M/279M [00:16<01:14, 2.99MB/s]Downloading data:  20%|██        | 56.6M/279M [00:16<01:12, 3.05MB/s]Downloading data:  20%|██        | 56.9M/279M [00:16<01:10, 3.16MB/s]Downloading data:  21%|██        | 57.3M/279M [00:16<01:09, 3.18MB/s]Downloading data:  21%|██        | 57.7M/279M [00:17<01:08, 3.23MB/s]Downloading data:  21%|██        | 58.2M/279M [00:17<01:01, 3.58MB/s]Downloading data:  21%|██        | 58.5M/279M [00:17<01:07, 3.27MB/s]Downloading data:  21%|██        | 58.9M/279M [00:17<01:12, 3.02MB/s]Downloading data:  21%|██▏       | 59.2M/279M [00:17<01:17, 2.84MB/s]Downloading data:  21%|██▏       | 59.6M/279M [00:17<01:08, 3.22MB/s]Downloading data:  22%|██▏       | 60.0M/279M [00:17<01:11, 3.07MB/s]Downloading data:  22%|██▏       | 60.4M/279M [00:17<01:06, 3.29MB/s]Downloading data:  22%|██▏       | 60.9M/279M [00:18<01:06, 3.25MB/s]Downloading data:  22%|██▏       | 61.3M/279M [00:18<01:03, 3.45MB/s]Downloading data:  22%|██▏       | 61.8M/279M [00:18<01:04, 3.34MB/s]Downloading data:  22%|██▏       | 62.1M/279M [00:18<01:02, 3.45MB/s]Downloading data:  22%|██▏       | 62.6M/279M [00:18<00:57, 3.75MB/s]Downloading data:  23%|██▎       | 63.0M/279M [00:18<01:07, 3.20MB/s]Downloading data:  23%|██▎       | 63.4M/279M [00:18<01:07, 3.21MB/s]Downloading data:  23%|██▎       | 63.9M/279M [00:18<01:00, 3.57MB/s]Downloading data:  23%|██▎       | 64.4M/279M [00:19<01:02, 3.41MB/s]Downloading data:  23%|██▎       | 64.8M/279M [00:19<00:57, 3.73MB/s]Downloading data:  23%|██▎       | 65.3M/279M [00:19<01:00, 3.52MB/s]Downloading data:  24%|██▎       | 65.7M/279M [00:19<00:58, 3.63MB/s]Downloading data:  24%|██▎       | 66.1M/279M [00:19<00:54, 3.92MB/s]Downloading data:  24%|██▍       | 66.6M/279M [00:19<00:57, 3.68MB/s]Downloading data:  24%|██▍       | 67.0M/279M [00:19<00:55, 3.79MB/s]Downloading data:  24%|██▍       | 67.4M/279M [00:19<01:00, 3.47MB/s]Downloading data:  24%|██▍       | 67.9M/279M [00:20<01:01, 3.42MB/s]Downloading data:  25%|██▍       | 68.4M/279M [00:20<00:54, 3.89MB/s]Downloading data:  25%|██▍       | 68.9M/279M [00:20<00:52, 4.02MB/s]Downloading data:  25%|██▍       | 69.3M/279M [00:20<00:56, 3.71MB/s]Downloading data:  25%|██▌       | 69.8M/279M [00:20<00:51, 4.03MB/s]Downloading data:  25%|██▌       | 70.3M/279M [00:20<00:48, 4.26MB/s]Downloading data:  25%|██▌       | 70.7M/279M [00:20<00:53, 3.91MB/s]Downloading data:  26%|██▌       | 71.2M/279M [00:20<00:49, 4.18MB/s]Downloading data:  26%|██▌       | 71.7M/279M [00:21<01:06, 3.12MB/s]Downloading data:  26%|██▌       | 72.0M/279M [00:21<01:10, 2.92MB/s]Downloading data:  26%|██▌       | 72.4M/279M [00:21<01:04, 3.19MB/s]Downloading data:  26%|██▌       | 72.8M/279M [00:21<01:09, 2.96MB/s]Downloading data:  26%|██▋       | 73.2M/279M [00:21<01:03, 3.24MB/s]Downloading data:  26%|██▋       | 73.6M/279M [00:21<01:07, 3.04MB/s]Downloading data:  27%|██▋       | 73.9M/279M [00:21<01:05, 3.14MB/s]Downloading data:  27%|██▋       | 74.3M/279M [00:21<01:01, 3.34MB/s]Downloading data:  27%|██▋       | 74.7M/279M [00:22<01:02, 3.27MB/s]Downloading data:  27%|██▋       | 75.1M/279M [00:22<01:00, 3.35MB/s]Downloading data:  27%|██▋       | 75.5M/279M [00:22<01:09, 2.91MB/s]Downloading data:  27%|██▋       | 76.0M/279M [00:22<01:00, 3.32MB/s]Downloading data:  27%|██▋       | 76.4M/279M [00:22<01:02, 3.23MB/s]Downloading data:  28%|██▊       | 76.9M/279M [00:22<00:55, 3.62MB/s]Downloading data:  28%|██▊       | 77.3M/279M [00:22<00:58, 3.42MB/s]Downloading data:  28%|██▊       | 77.8M/279M [00:22<00:53, 3.74MB/s]Downloading data:  28%|██▊       | 78.3M/279M [00:23<00:55, 3.61MB/s]Downloading data:  28%|██▊       | 78.7M/279M [00:23<00:51, 3.85MB/s]Downloading data:  28%|██▊       | 79.2M/279M [00:23<00:48, 4.14MB/s]Downloading data:  29%|██▊       | 79.6M/279M [00:23<00:52, 3.75MB/s]Downloading data:  29%|██▊       | 80.0M/279M [00:23<00:55, 3.60MB/s]Downloading data:  29%|██▉       | 80.5M/279M [00:23<00:57, 3.43MB/s]Downloading data:  29%|██▉       | 81.0M/279M [00:23<00:52, 3.77MB/s]Downloading data:  29%|██▉       | 81.5M/279M [00:23<00:48, 4.10MB/s]Downloading data:  29%|██▉       | 81.9M/279M [00:23<00:52, 3.75MB/s]Downloading data:  30%|██▉       | 82.3M/279M [00:24<00:51, 3.82MB/s]Downloading data:  30%|██▉       | 82.9M/279M [00:24<00:44, 4.40MB/s]Downloading data:  30%|██▉       | 83.4M/279M [00:24<00:49, 3.95MB/s]Downloading data:  30%|███       | 83.9M/279M [00:24<00:54, 3.55MB/s]Downloading data:  30%|███       | 84.4M/279M [00:24<00:48, 3.99MB/s]Downloading data:  30%|███       | 84.9M/279M [00:24<00:50, 3.80MB/s]Downloading data:  31%|███       | 85.4M/279M [00:24<00:46, 4.11MB/s]Downloading data:  31%|███       | 86.0M/279M [00:24<00:48, 4.00MB/s]Downloading data:  31%|███       | 86.4M/279M [00:25<00:45, 4.20MB/s]Downloading data:  31%|███       | 86.9M/279M [00:25<00:43, 4.37MB/s]Downloading data:  31%|███▏      | 87.4M/279M [00:25<00:46, 4.10MB/s]Downloading data:  32%|███▏      | 87.9M/279M [00:25<00:44, 4.31MB/s]Downloading data:  32%|███▏      | 88.4M/279M [00:25<00:57, 3.29MB/s]Downloading data:  32%|███▏      | 88.8M/279M [00:25<00:59, 3.17MB/s]Downloading data:  32%|███▏      | 89.2M/279M [00:25<00:55, 3.38MB/s]Downloading data:  32%|███▏      | 89.6M/279M [00:26<01:00, 3.12MB/s]Downloading data:  32%|███▏      | 90.0M/279M [00:26<00:57, 3.30MB/s]Downloading data:  32%|███▏      | 90.4M/279M [00:26<00:59, 3.16MB/s]Downloading data:  33%|███▎      | 90.8M/279M [00:26<00:56, 3.30MB/s]Downloading data:  33%|███▎      | 91.2M/279M [00:26<00:51, 3.67MB/s]Downloading data:  33%|███▎      | 91.6M/279M [00:26<00:56, 3.33MB/s]Downloading data:  33%|███▎      | 92.0M/279M [00:26<00:52, 3.52MB/s]Downloading data:  33%|███▎      | 92.4M/279M [00:26<00:55, 3.38MB/s]Downloading data:  33%|███▎      | 92.8M/279M [00:26<00:56, 3.26MB/s]Downloading data:  33%|███▎      | 93.3M/279M [00:27<00:50, 3.65MB/s]Downloading data:  34%|███▎      | 93.8M/279M [00:27<00:53, 3.48MB/s]Downloading data:  34%|███▍      | 94.2M/279M [00:27<00:49, 3.73MB/s]Downloading data:  34%|███▍      | 94.7M/279M [00:27<00:50, 3.67MB/s]Downloading data:  34%|███▍      | 95.1M/279M [00:27<00:47, 3.85MB/s]Downloading data:  34%|███▍      | 95.7M/279M [00:27<00:47, 3.83MB/s]Downloading data:  35%|███▍      | 96.1M/279M [00:27<00:45, 3.98MB/s]Downloading data:  35%|███▍      | 96.5M/279M [00:27<00:48, 3.75MB/s]Downloading data:  35%|███▍      | 97.1M/279M [00:28<00:48, 3.72MB/s]Downloading data:  35%|███▌      | 97.6M/279M [00:28<00:44, 4.06MB/s]Downloading data:  35%|███▌      | 98.1M/279M [00:28<00:46, 3.88MB/s]Downloading data:  35%|███▌      | 98.5M/279M [00:28<00:44, 4.08MB/s]Downloading data:  36%|███▌      | 99.1M/279M [00:28<00:40, 4.46MB/s]Downloading data:  36%|███▌      | 99.5M/279M [00:28<00:44, 4.02MB/s]Downloading data:  36%|███▌      | 100M/279M [00:28<00:43, 4.14MB/s] Downloading data:  36%|███▌      | 101M/279M [00:28<00:39, 4.52MB/s]Downloading data:  36%|███▋      | 101M/279M [00:29<00:56, 3.13MB/s]Downloading data:  36%|███▋      | 101M/279M [00:29<00:59, 2.98MB/s]Downloading data:  37%|███▋      | 102M/279M [00:29<00:54, 3.23MB/s]Downloading data:  37%|███▋      | 102M/279M [00:29<00:58, 3.01MB/s]Downloading data:  37%|███▋      | 103M/279M [00:29<01:00, 2.89MB/s]Downloading data:  37%|███▋      | 103M/279M [00:29<00:58, 3.02MB/s]Downloading data:  37%|███▋      | 103M/279M [00:29<00:59, 2.93MB/s]Downloading data:  37%|███▋      | 104M/279M [00:30<00:58, 3.01MB/s]Downloading data:  37%|███▋      | 104M/279M [00:30<00:58, 2.99MB/s]Downloading data:  37%|███▋      | 104M/279M [00:30<00:56, 3.07MB/s]Downloading data:  38%|███▊      | 105M/279M [00:30<00:56, 3.07MB/s]Downloading data:  38%|███▊      | 105M/279M [00:30<00:59, 2.92MB/s]Downloading data:  38%|███▊      | 105M/279M [00:30<01:02, 2.78MB/s]Downloading data:  38%|███▊      | 106M/279M [00:30<00:56, 3.04MB/s]Downloading data:  38%|███▊      | 106M/279M [00:30<00:57, 2.99MB/s]Downloading data:  38%|███▊      | 107M/279M [00:31<00:53, 3.22MB/s]Downloading data:  38%|███▊      | 107M/279M [00:31<00:55, 3.11MB/s]Downloading data:  39%|███▊      | 107M/279M [00:31<00:52, 3.23MB/s]Downloading data:  39%|███▊      | 108M/279M [00:31<00:49, 3.46MB/s]Downloading data:  39%|███▉      | 108M/279M [00:31<00:52, 3.26MB/s]Downloading data:  39%|███▉      | 109M/279M [00:31<00:50, 3.35MB/s]Downloading data:  39%|███▉      | 109M/279M [00:31<00:56, 3.00MB/s]Downloading data:  39%|███▉      | 110M/279M [00:31<00:49, 3.38MB/s]Downloading data:  39%|███▉      | 110M/279M [00:32<00:53, 3.17MB/s]Downloading data:  40%|███▉      | 110M/279M [00:32<00:48, 3.48MB/s]Downloading data:  40%|███▉      | 111M/279M [00:32<00:50, 3.31MB/s]Downloading data:  40%|███▉      | 111M/279M [00:32<00:48, 3.46MB/s]Downloading data:  40%|████      | 112M/279M [00:32<00:48, 3.44MB/s]Downloading data:  40%|████      | 112M/279M [00:32<00:45, 3.65MB/s]Downloading data:  40%|████      | 113M/279M [00:32<00:47, 3.49MB/s]Downloading data:  41%|████      | 113M/279M [00:32<00:45, 3.64MB/s]Downloading data:  41%|████      | 113M/279M [00:32<00:47, 3.49MB/s]Downloading data:  41%|████      | 114M/279M [00:33<00:48, 3.38MB/s]Downloading data:  41%|████      | 114M/279M [00:33<00:46, 3.50MB/s]Downloading data:  41%|████      | 115M/279M [00:33<00:41, 3.92MB/s]Downloading data:  41%|████▏     | 115M/279M [00:33<00:45, 3.57MB/s]Downloading data:  41%|████▏     | 115M/279M [00:33<00:44, 3.66MB/s]Downloading data:  42%|████▏     | 116M/279M [00:33<00:40, 3.99MB/s]Downloading data:  42%|████▏     | 116M/279M [00:33<00:43, 3.69MB/s]Downloading data:  42%|████▏     | 117M/279M [00:33<00:42, 3.80MB/s]Downloading data:  42%|████▏     | 117M/279M [00:33<00:39, 4.13MB/s]Downloading data:  42%|████▏     | 118M/279M [00:34<00:45, 3.50MB/s]Downloading data:  42%|████▏     | 118M/279M [00:34<00:46, 3.42MB/s]Downloading data:  43%|████▎     | 119M/279M [00:34<00:41, 3.82MB/s]Downloading data:  43%|████▎     | 119M/279M [00:34<00:42, 3.72MB/s]Downloading data:  43%|████▎     | 120M/279M [00:34<00:40, 3.96MB/s]Downloading data:  43%|████▎     | 120M/279M [00:34<00:37, 4.24MB/s]Downloading data:  43%|████▎     | 121M/279M [00:34<00:40, 3.89MB/s]Downloading data:  43%|████▎     | 121M/279M [00:34<00:39, 4.02MB/s]Downloading data:  44%|████▎     | 122M/279M [00:35<00:36, 4.25MB/s]Downloading data:  44%|████▍     | 122M/279M [00:35<00:49, 3.17MB/s]Downloading data:  44%|████▍     | 122M/279M [00:35<00:52, 2.97MB/s]Downloading data:  44%|████▍     | 123M/279M [00:35<00:52, 2.95MB/s]Downloading data:  44%|████▍     | 123M/279M [00:35<00:53, 2.88MB/s]Downloading data:  44%|████▍     | 124M/279M [00:35<00:48, 3.19MB/s]Downloading data:  44%|████▍     | 124M/279M [00:35<00:51, 3.02MB/s]Downloading data:  45%|████▍     | 124M/279M [00:36<00:46, 3.29MB/s]Downloading data:  45%|████▍     | 125M/279M [00:36<00:46, 3.31MB/s]Downloading data:  45%|████▍     | 125M/279M [00:36<00:47, 3.26MB/s]Downloading data:  45%|████▌     | 126M/279M [00:36<00:44, 3.48MB/s]Downloading data:  45%|████▌     | 126M/279M [00:36<00:47, 3.23MB/s]Downloading data:  45%|████▌     | 126M/279M [00:36<00:46, 3.25MB/s]Downloading data:  46%|████▌     | 127M/279M [00:36<00:41, 3.66MB/s]Downloading data:  46%|████▌     | 127M/279M [00:36<00:43, 3.47MB/s]Downloading data:  46%|████▌     | 128M/279M [00:37<00:39, 3.83MB/s]Downloading data:  46%|████▌     | 128M/279M [00:37<00:41, 3.62MB/s]Downloading data:  46%|████▌     | 129M/279M [00:37<00:38, 3.86MB/s]Downloading data:  46%|████▋     | 129M/279M [00:37<00:35, 4.21MB/s]Downloading data:  47%|████▋     | 130M/279M [00:37<00:39, 3.80MB/s]Downloading data:  47%|████▋     | 130M/279M [00:37<00:40, 3.65MB/s]Downloading data:  47%|████▋     | 131M/279M [00:37<00:36, 4.04MB/s]Downloading data:  47%|████▋     | 131M/279M [00:37<00:39, 3.72MB/s]Downloading data:  47%|████▋     | 131M/279M [00:37<00:37, 3.95MB/s]Downloading data:  47%|████▋     | 132M/279M [00:38<00:33, 4.36MB/s]Downloading data:  48%|████▊     | 132M/279M [00:38<00:37, 3.93MB/s]Downloading data:  48%|████▊     | 133M/279M [00:38<00:33, 4.31MB/s]Downloading data:  48%|████▊     | 133M/279M [00:38<00:36, 4.00MB/s]Downloading data:  48%|████▊     | 134M/279M [00:38<00:35, 4.10MB/s]Downloading data:  48%|████▊     | 134M/279M [00:38<00:46, 3.09MB/s]Downloading data:  48%|████▊     | 135M/279M [00:38<00:47, 3.02MB/s]Downloading data:  49%|████▊     | 135M/279M [00:39<00:43, 3.27MB/s]Downloading data:  49%|████▊     | 136M/279M [00:39<00:47, 3.01MB/s]Downloading data:  49%|████▉     | 136M/279M [00:39<00:48, 2.95MB/s]Downloading data:  49%|████▉     | 136M/279M [00:39<00:45, 3.10MB/s]Downloading data:  49%|████▉     | 137M/279M [00:39<00:48, 2.94MB/s]Downloading data:  49%|████▉     | 137M/279M [00:39<00:45, 3.10MB/s]Downloading data:  49%|████▉     | 137M/279M [00:39<00:47, 2.96MB/s]Downloading data:  49%|████▉     | 138M/279M [00:39<00:46, 3.00MB/s]Downloading data:  50%|████▉     | 138M/279M [00:40<00:43, 3.19MB/s]Downloading data:  50%|████▉     | 138M/279M [00:40<00:51, 2.73MB/s]Downloading data:  50%|████▉     | 139M/279M [00:40<00:49, 2.80MB/s]Downloading data:  50%|█████     | 139M/279M [00:40<00:43, 3.17MB/s]Downloading data:  50%|█████     | 140M/279M [00:40<00:46, 2.97MB/s]Downloading data:  50%|█████     | 140M/279M [00:40<00:42, 3.23MB/s]Downloading data:  50%|█████     | 140M/279M [00:40<00:44, 3.11MB/s]Downloading data:  51%|█████     | 141M/279M [00:40<00:42, 3.27MB/s]Downloading data:  51%|█████     | 141M/279M [00:41<00:39, 3.51MB/s]Downloading data:  51%|█████     | 142M/279M [00:41<00:42, 3.20MB/s]Downloading data:  51%|█████     | 142M/279M [00:41<00:40, 3.36MB/s]Downloading data:  51%|█████     | 142M/279M [00:41<00:37, 3.63MB/s]Downloading data:  51%|█████▏    | 143M/279M [00:41<00:43, 3.09MB/s]Downloading data:  51%|█████▏    | 143M/279M [00:41<00:43, 3.08MB/s]Downloading data:  52%|█████▏    | 144M/279M [00:41<00:38, 3.49MB/s]Downloading data:  52%|█████▏    | 144M/279M [00:41<00:41, 3.24MB/s]Downloading data:  52%|█████▏    | 145M/279M [00:42<00:37, 3.56MB/s]Downloading data:  52%|█████▏    | 145M/279M [00:42<00:40, 3.34MB/s]Downloading data:  52%|█████▏    | 145M/279M [00:42<00:38, 3.49MB/s]Downloading data:  52%|█████▏    | 146M/279M [00:42<00:38, 3.46MB/s]Downloading data:  53%|█████▎    | 146M/279M [00:42<00:36, 3.59MB/s]Downloading data:  53%|█████▎    | 147M/279M [00:42<00:33, 3.88MB/s]Downloading data:  53%|█████▎    | 147M/279M [00:42<00:39, 3.31MB/s]Downloading data:  53%|█████▎    | 148M/279M [00:42<00:35, 3.67MB/s]Downloading data:  53%|█████▎    | 148M/279M [00:43<00:38, 3.43MB/s]Downloading data:  53%|█████▎    | 149M/279M [00:43<00:35, 3.64MB/s]Downloading data:  53%|█████▎    | 149M/279M [00:43<00:32, 4.01MB/s]Downloading data:  54%|█████▎    | 149M/279M [00:43<00:35, 3.63MB/s]Downloading data:  54%|█████▍    | 150M/279M [00:43<00:33, 3.87MB/s]Downloading data:  54%|█████▍    | 150M/279M [00:43<00:34, 3.69MB/s]Downloading data:  54%|█████▍    | 151M/279M [00:43<00:32, 3.88MB/s]Downloading data:  54%|█████▍    | 151M/279M [00:43<00:38, 3.30MB/s]Downloading data:  54%|█████▍    | 152M/279M [00:43<00:33, 3.80MB/s]Downloading data:  55%|█████▍    | 152M/279M [00:44<00:35, 3.60MB/s]Downloading data:  55%|█████▍    | 153M/279M [00:44<00:31, 4.01MB/s]Downloading data:  55%|█████▌    | 153M/279M [00:44<00:32, 3.81MB/s]Downloading data:  55%|█████▌    | 154M/279M [00:44<00:30, 4.12MB/s]Downloading data:  55%|█████▌    | 154M/279M [00:44<00:31, 3.98MB/s]Downloading data:  56%|█████▌    | 155M/279M [00:44<00:29, 4.16MB/s]Downloading data:  56%|█████▌    | 155M/279M [00:44<00:33, 3.66MB/s]Downloading data:  56%|█████▌    | 156M/279M [00:45<00:37, 3.32MB/s]Downloading data:  56%|█████▌    | 156M/279M [00:45<00:40, 3.04MB/s]Downloading data:  56%|█████▌    | 156M/279M [00:45<00:36, 3.31MB/s]Downloading data:  56%|█████▋    | 157M/279M [00:45<00:40, 3.03MB/s]Downloading data:  56%|█████▋    | 157M/279M [00:45<00:37, 3.25MB/s]Downloading data:  57%|█████▋    | 158M/279M [00:45<00:38, 3.12MB/s]Downloading data:  57%|█████▋    | 158M/279M [00:45<00:35, 3.37MB/s]Downloading data:  57%|█████▋    | 158M/279M [00:45<00:36, 3.27MB/s]Downloading data:  57%|█████▋    | 159M/279M [00:45<00:34, 3.45MB/s]Downloading data:  57%|█████▋    | 159M/279M [00:46<00:31, 3.73MB/s]Downloading data:  57%|█████▋    | 160M/279M [00:46<00:37, 3.19MB/s]Downloading data:  57%|█████▋    | 160M/279M [00:46<00:32, 3.66MB/s]Downloading data:  58%|█████▊    | 160M/279M [00:46<00:35, 3.35MB/s]Downloading data:  58%|█████▊    | 161M/279M [00:46<00:31, 3.68MB/s]Downloading data:  58%|█████▊    | 161M/279M [00:46<00:32, 3.55MB/s]Downloading data:  58%|█████▊    | 162M/279M [00:46<00:29, 3.91MB/s]Downloading data:  58%|█████▊    | 162M/279M [00:46<00:31, 3.70MB/s]Downloading data:  58%|█████▊    | 163M/279M [00:47<00:30, 3.85MB/s]Downloading data:  59%|█████▊    | 163M/279M [00:47<00:27, 4.17MB/s]Downloading data:  59%|█████▉    | 164M/279M [00:47<00:28, 3.99MB/s]Downloading data:  59%|█████▉    | 164M/279M [00:47<00:31, 3.59MB/s]Downloading data:  59%|█████▉    | 165M/279M [00:47<00:28, 4.01MB/s]Downloading data:  59%|█████▉    | 165M/279M [00:47<00:29, 3.83MB/s]Downloading data:  59%|█████▉    | 166M/279M [00:47<00:26, 4.19MB/s]Downloading data:  60%|█████▉    | 166M/279M [00:47<00:28, 3.95MB/s]Downloading data:  60%|█████▉    | 167M/279M [00:48<00:27, 4.06MB/s]Downloading data:  60%|██████    | 167M/279M [00:48<00:25, 4.40MB/s]Downloading data:  60%|██████    | 168M/279M [00:48<00:27, 4.06MB/s]Downloading data:  60%|██████    | 168M/279M [00:48<00:35, 3.11MB/s]Downloading data:  60%|██████    | 168M/279M [00:48<00:37, 2.97MB/s]Downloading data:  61%|██████    | 169M/279M [00:48<00:36, 2.99MB/s]Downloading data:  61%|██████    | 169M/279M [00:48<00:33, 3.23MB/s]Downloading data:  61%|██████    | 170M/279M [00:49<00:36, 2.97MB/s]Downloading data:  61%|██████    | 170M/279M [00:49<00:33, 3.21MB/s]Downloading data:  61%|██████    | 170M/279M [00:49<00:36, 2.95MB/s]Downloading data:  61%|██████▏   | 171M/279M [00:49<00:36, 2.92MB/s]Downloading data:  61%|██████▏   | 171M/279M [00:49<00:35, 3.00MB/s]Downloading data:  62%|██████▏   | 172M/279M [00:49<00:35, 2.99MB/s]Downloading data:  62%|██████▏   | 172M/279M [00:49<00:39, 2.73MB/s]Downloading data:  62%|██████▏   | 172M/279M [00:49<00:35, 3.02MB/s]Downloading data:  62%|██████▏   | 173M/279M [00:50<00:36, 2.87MB/s]Downloading data:  62%|██████▏   | 173M/279M [00:50<00:32, 3.21MB/s]Downloading data:  62%|██████▏   | 174M/279M [00:50<00:34, 3.01MB/s]Downloading data:  62%|██████▏   | 174M/279M [00:50<00:31, 3.32MB/s]Downloading data:  63%|██████▎   | 174M/279M [00:50<00:33, 3.12MB/s]Downloading data:  63%|██████▎   | 175M/279M [00:50<00:31, 3.34MB/s]Downloading data:  63%|██████▎   | 175M/279M [00:50<00:31, 3.24MB/s]Downloading data:  63%|██████▎   | 176M/279M [00:50<00:30, 3.37MB/s]Downloading data:  63%|██████▎   | 176M/279M [00:51<00:29, 3.49MB/s]Downloading data:  63%|██████▎   | 176M/279M [00:51<00:30, 3.34MB/s]Downloading data:  63%|██████▎   | 177M/279M [00:51<00:33, 3.02MB/s]Downloading data:  64%|██████▎   | 177M/279M [00:51<00:29, 3.47MB/s]Downloading data:  64%|██████▎   | 178M/279M [00:51<00:31, 3.21MB/s]Downloading data:  64%|██████▍   | 178M/279M [00:51<00:28, 3.56MB/s]Downloading data:  64%|██████▍   | 178M/279M [00:51<00:30, 3.32MB/s]Downloading data:  64%|██████▍   | 179M/279M [00:51<00:28, 3.55MB/s]Downloading data:  64%|██████▍   | 179M/279M [00:51<00:28, 3.43MB/s]Downloading data:  65%|██████▍   | 180M/279M [00:52<00:27, 3.64MB/s]Downloading data:  65%|██████▍   | 180M/279M [00:52<00:28, 3.48MB/s]Downloading data:  65%|██████▍   | 181M/279M [00:52<00:29, 3.32MB/s]Downloading data:  65%|██████▍   | 181M/279M [00:52<00:31, 3.06MB/s]Downloading data:  65%|██████▌   | 181M/279M [00:52<00:28, 3.44MB/s]Downloading data:  65%|██████▌   | 182M/279M [00:52<00:28, 3.39MB/s]Downloading data:  65%|██████▌   | 182M/279M [00:52<00:25, 3.77MB/s]Downloading data:  66%|██████▌   | 183M/279M [00:52<00:27, 3.55MB/s]Downloading data:  66%|██████▌   | 183M/279M [00:53<00:25, 3.71MB/s]Downloading data:  66%|██████▌   | 184M/279M [00:53<00:23, 4.10MB/s]Downloading data:  66%|██████▌   | 184M/279M [00:53<00:25, 3.71MB/s]Downloading data:  66%|██████▋   | 185M/279M [00:53<00:24, 3.85MB/s]Downloading data:  66%|██████▋   | 185M/279M [00:53<00:25, 3.68MB/s]Downloading data:  67%|██████▋   | 185M/279M [00:53<00:27, 3.39MB/s]Downloading data:  67%|██████▋   | 186M/279M [00:53<00:24, 3.82MB/s]Downloading data:  67%|██████▋   | 186M/279M [00:53<00:24, 3.71MB/s]Downloading data:  67%|██████▋   | 187M/279M [00:54<00:22, 4.08MB/s]Downloading data:  67%|██████▋   | 187M/279M [00:54<00:23, 3.91MB/s]Downloading data:  67%|██████▋   | 188M/279M [00:54<00:21, 4.17MB/s]Downloading data:  68%|██████▊   | 188M/279M [00:54<00:19, 4.52MB/s]Downloading data:  68%|██████▊   | 189M/279M [00:54<00:28, 3.14MB/s]Downloading data:  68%|██████▊   | 189M/279M [00:54<00:28, 3.08MB/s]Downloading data:  68%|██████▊   | 190M/279M [00:54<00:26, 3.34MB/s]Downloading data:  68%|██████▊   | 190M/279M [00:55<00:29, 3.00MB/s]Downloading data:  68%|██████▊   | 191M/279M [00:55<00:28, 3.09MB/s]Downloading data:  69%|██████▊   | 191M/279M [00:55<00:28, 3.06MB/s]Downloading data:  69%|██████▊   | 191M/279M [00:55<00:25, 3.39MB/s]Downloading data:  69%|██████▉   | 192M/279M [00:55<00:27, 3.17MB/s]Downloading data:  69%|██████▉   | 192M/279M [00:55<00:24, 3.50MB/s]Downloading data:  69%|██████▉   | 193M/279M [00:55<00:24, 3.45MB/s]Downloading data:  69%|██████▉   | 193M/279M [00:55<00:27, 3.16MB/s]Downloading data:  69%|██████▉   | 193M/279M [00:56<00:23, 3.58MB/s]Downloading data:  70%|██████▉   | 194M/279M [00:56<00:25, 3.33MB/s]Downloading data:  70%|██████▉   | 194M/279M [00:56<00:23, 3.57MB/s]Downloading data:  70%|██████▉   | 195M/279M [00:56<00:21, 3.82MB/s]Downloading data:  70%|███████   | 195M/279M [00:56<00:23, 3.61MB/s]Downloading data:  70%|███████   | 196M/279M [00:56<00:22, 3.70MB/s]Downloading data:  70%|███████   | 196M/279M [00:56<00:21, 3.80MB/s]Downloading data:  71%|███████   | 196M/279M [00:56<00:19, 4.17MB/s]Downloading data:  71%|███████   | 197M/279M [00:56<00:21, 3.84MB/s]Downloading data:  71%|███████   | 197M/279M [00:57<00:22, 3.64MB/s]Downloading data:  71%|███████   | 198M/279M [00:57<00:21, 3.81MB/s]Downloading data:  71%|███████   | 198M/279M [00:57<00:19, 4.13MB/s]Downloading data:  71%|███████▏  | 199M/279M [00:57<00:20, 3.93MB/s]Downloading data:  72%|███████▏  | 199M/279M [00:57<00:19, 4.09MB/s]Downloading data:  72%|███████▏  | 200M/279M [00:57<00:17, 4.46MB/s]Downloading data:  72%|███████▏  | 200M/279M [00:57<00:19, 4.02MB/s]Downloading data:  72%|███████▏  | 201M/279M [00:57<00:18, 4.15MB/s]Downloading data:  72%|███████▏  | 201M/279M [00:58<00:21, 3.62MB/s]Downloading data:  72%|███████▏  | 202M/279M [00:58<00:22, 3.39MB/s]Downloading data:  73%|███████▎  | 202M/279M [00:58<00:24, 3.08MB/s]Downloading data:  73%|███████▎  | 202M/279M [00:58<00:25, 3.00MB/s]Downloading data:  73%|███████▎  | 203M/279M [00:58<00:24, 3.15MB/s]Downloading data:  73%|███████▎  | 203M/279M [00:58<00:25, 2.98MB/s]Downloading data:  73%|███████▎  | 204M/279M [00:58<00:24, 3.09MB/s]Downloading data:  73%|███████▎  | 204M/279M [00:58<00:23, 3.18MB/s]Downloading data:  73%|███████▎  | 204M/279M [00:59<00:23, 3.17MB/s]Downloading data:  73%|███████▎  | 205M/279M [00:59<00:25, 2.94MB/s]Downloading data:  74%|███████▎  | 205M/279M [00:59<00:23, 3.17MB/s]Downloading data:  74%|███████▎  | 205M/279M [00:59<00:22, 3.23MB/s]Downloading data:  74%|███████▍  | 206M/279M [00:59<00:26, 2.75MB/s]Downloading data:  74%|███████▍  | 206M/279M [00:59<00:27, 2.68MB/s]Downloading data:  74%|███████▍  | 206M/279M [00:59<00:23, 3.06MB/s]Downloading data:  74%|███████▍  | 207M/279M [00:59<00:24, 2.92MB/s]Downloading data:  74%|███████▍  | 207M/279M [01:00<00:22, 3.21MB/s]Downloading data:  75%|███████▍  | 208M/279M [01:00<00:22, 3.09MB/s]Downloading data:  75%|███████▍  | 208M/279M [01:00<00:21, 3.26MB/s]Downloading data:  75%|███████▍  | 208M/279M [01:00<00:21, 3.23MB/s]Downloading data:  75%|███████▍  | 209M/279M [01:00<00:20, 3.36MB/s]Downloading data:  75%|███████▌  | 209M/279M [01:00<00:19, 3.60MB/s]Downloading data:  75%|███████▌  | 210M/279M [01:00<00:20, 3.29MB/s]Downloading data:  75%|███████▌  | 210M/279M [01:00<00:21, 3.13MB/s]Downloading data:  76%|███████▌  | 210M/279M [01:01<00:21, 3.11MB/s]Downloading data:  76%|███████▌  | 211M/279M [01:01<00:19, 3.44MB/s]Downloading data:  76%|███████▌  | 211M/279M [01:01<00:19, 3.47MB/s]Downloading data:  76%|███████▌  | 212M/279M [01:01<00:20, 3.29MB/s]Downloading data:  76%|███████▌  | 212M/279M [01:01<00:19, 3.41MB/s]Downloading data:  76%|███████▋  | 212M/279M [01:01<00:18, 3.66MB/s]Downloading data:  76%|███████▋  | 213M/279M [01:01<00:19, 3.43MB/s]Downloading data:  77%|███████▋  | 213M/279M [01:01<00:18, 3.51MB/s]Downloading data:  77%|███████▋  | 214M/279M [01:01<00:17, 3.75MB/s]Downloading data:  77%|███████▋  | 214M/279M [01:02<00:18, 3.53MB/s]Downloading data:  77%|███████▋  | 214M/279M [01:02<00:19, 3.29MB/s]Downloading data:  77%|███████▋  | 215M/279M [01:02<00:17, 3.67MB/s]Downloading data:  77%|███████▋  | 215M/279M [01:02<00:18, 3.46MB/s]Downloading data:  77%|███████▋  | 216M/279M [01:02<00:17, 3.69MB/s]Downloading data:  78%|███████▊  | 216M/279M [01:02<00:17, 3.62MB/s]Downloading data:  78%|███████▊  | 217M/279M [01:02<00:16, 3.79MB/s]Downloading data:  78%|███████▊  | 217M/279M [01:02<00:15, 4.04MB/s]Downloading data:  78%|███████▊  | 218M/279M [01:02<00:16, 3.74MB/s]Downloading data:  78%|███████▊  | 218M/279M [01:03<00:15, 3.82MB/s]Downloading data:  78%|███████▊  | 218M/279M [01:03<00:16, 3.64MB/s]Downloading data:  79%|███████▊  | 219M/279M [01:03<00:20, 2.91MB/s]Downloading data:  79%|███████▊  | 219M/279M [01:03<00:18, 3.27MB/s]Downloading data:  79%|███████▉  | 220M/279M [01:03<00:19, 3.00MB/s]Downloading data:  79%|███████▉  | 220M/279M [01:03<00:20, 2.89MB/s]Downloading data:  79%|███████▉  | 220M/279M [01:03<00:18, 3.10MB/s]Downloading data:  79%|███████▉  | 221M/279M [01:04<00:20, 2.84MB/s]Downloading data:  79%|███████▉  | 221M/279M [01:04<00:20, 2.87MB/s]Downloading data:  79%|███████▉  | 221M/279M [01:04<00:20, 2.82MB/s]Downloading data:  80%|███████▉  | 222M/279M [01:04<00:19, 2.89MB/s]Downloading data:  80%|███████▉  | 222M/279M [01:04<00:19, 2.88MB/s]Downloading data:  80%|███████▉  | 222M/279M [01:04<00:20, 2.75MB/s]Downloading data:  80%|███████▉  | 223M/279M [01:04<00:21, 2.56MB/s]Downloading data:  80%|████████  | 223M/279M [01:04<00:19, 2.90MB/s]Downloading data:  80%|████████  | 223M/279M [01:05<00:19, 2.77MB/s]Downloading data:  80%|████████  | 224M/279M [01:05<00:18, 2.94MB/s]Downloading data:  80%|████████  | 224M/279M [01:05<00:18, 3.01MB/s]Downloading data:  81%|████████  | 225M/279M [01:05<00:18, 2.97MB/s]Downloading data:  81%|████████  | 225M/279M [01:05<00:17, 3.14MB/s]Downloading data:  81%|████████  | 225M/279M [01:05<00:17, 3.09MB/s]Downloading data:  81%|████████  | 226M/279M [01:05<00:16, 3.17MB/s]Downloading data:  81%|████████  | 226M/279M [01:05<00:14, 3.51MB/s]Downloading data:  81%|████████▏ | 226M/279M [01:06<00:18, 2.82MB/s]Downloading data:  81%|████████▏ | 227M/279M [01:06<00:15, 3.24MB/s]Downloading data:  82%|████████▏ | 227M/279M [01:06<00:17, 3.00MB/s]Downloading data:  82%|████████▏ | 228M/279M [01:06<00:15, 3.35MB/s]Downloading data:  82%|████████▏ | 228M/279M [01:06<00:16, 3.11MB/s]Downloading data:  82%|████████▏ | 229M/279M [01:06<00:15, 3.27MB/s]Downloading data:  82%|████████▏ | 229M/279M [01:06<00:15, 3.25MB/s]Downloading data:  82%|████████▏ | 229M/279M [01:06<00:14, 3.34MB/s]Downloading data:  82%|████████▏ | 230M/279M [01:06<00:13, 3.69MB/s]Downloading data:  83%|████████▎ | 230M/279M [01:07<00:14, 3.33MB/s]Downloading data:  83%|████████▎ | 231M/279M [01:07<00:13, 3.45MB/s]Downloading data:  83%|████████▎ | 231M/279M [01:07<00:15, 2.98MB/s]Downloading data:  83%|████████▎ | 231M/279M [01:07<00:15, 3.08MB/s]Downloading data:  83%|████████▎ | 232M/279M [01:07<00:13, 3.55MB/s]Downloading data:  83%|████████▎ | 232M/279M [01:07<00:14, 3.27MB/s]Downloading data:  84%|████████▎ | 233M/279M [01:07<00:13, 3.43MB/s]Downloading data:  84%|████████▎ | 233M/279M [01:07<00:11, 3.80MB/s]Downloading data:  84%|████████▍ | 234M/279M [01:08<00:12, 3.50MB/s]Downloading data:  84%|████████▍ | 234M/279M [01:08<00:12, 3.65MB/s]Downloading data:  84%|████████▍ | 234M/279M [01:08<00:11, 3.86MB/s]Downloading data:  84%|████████▍ | 235M/279M [01:08<00:12, 3.36MB/s]Downloading data:  85%|████████▍ | 235M/279M [01:08<00:11, 3.79MB/s]Downloading data:  85%|████████▍ | 236M/279M [01:08<00:12, 3.55MB/s]Downloading data:  85%|████████▍ | 236M/279M [01:08<00:10, 3.87MB/s]Downloading data:  85%|████████▌ | 237M/279M [01:08<00:11, 3.74MB/s]Downloading data:  85%|████████▌ | 237M/279M [01:09<00:10, 3.93MB/s]Downloading data:  85%|████████▌ | 238M/279M [01:09<00:09, 4.26MB/s]Downloading data:  86%|████████▌ | 238M/279M [01:09<00:10, 3.87MB/s]Downloading data:  86%|████████▌ | 239M/279M [01:09<00:09, 4.01MB/s]Downloading data:  86%|████████▌ | 239M/279M [01:09<00:12, 3.08MB/s]Downloading data:  86%|████████▌ | 239M/279M [01:09<00:11, 3.28MB/s]Downloading data:  86%|████████▌ | 240M/279M [01:09<00:12, 3.03MB/s]Downloading data:  86%|████████▋ | 240M/279M [01:09<00:11, 3.29MB/s]Downloading data:  86%|████████▋ | 241M/279M [01:10<00:12, 3.01MB/s]Downloading data:  87%|████████▋ | 241M/279M [01:10<00:12, 2.98MB/s]Downloading data:  87%|████████▋ | 241M/279M [01:10<00:11, 3.16MB/s]Downloading data:  87%|████████▋ | 242M/279M [01:10<00:11, 3.14MB/s]Downloading data:  87%|████████▋ | 242M/279M [01:10<00:10, 3.33MB/s]Downloading data:  87%|████████▋ | 243M/279M [01:10<00:10, 3.58MB/s]Downloading data:  87%|████████▋ | 243M/279M [01:10<00:10, 3.26MB/s]Downloading data:  87%|████████▋ | 243M/279M [01:10<00:11, 3.09MB/s]Downloading data:  88%|████████▊ | 244M/279M [01:11<00:11, 3.02MB/s]Downloading data:  88%|████████▊ | 244M/279M [01:11<00:09, 3.45MB/s]Downloading data:  88%|████████▊ | 245M/279M [01:11<00:10, 3.32MB/s]Downloading data:  88%|████████▊ | 245M/279M [01:11<00:09, 3.69MB/s]Downloading data:  88%|████████▊ | 246M/279M [01:11<00:09, 3.50MB/s]Downloading data:  88%|████████▊ | 246M/279M [01:11<00:08, 3.82MB/s]Downloading data:  89%|████████▊ | 247M/279M [01:11<00:08, 3.65MB/s]Downloading data:  89%|████████▊ | 247M/279M [01:11<00:08, 3.81MB/s]Downloading data:  89%|████████▉ | 247M/279M [01:12<00:09, 3.37MB/s]Downloading data:  89%|████████▉ | 248M/279M [01:12<00:08, 3.80MB/s]Downloading data:  89%|████████▉ | 248M/279M [01:12<00:08, 3.62MB/s]Downloading data:  89%|████████▉ | 249M/279M [01:12<00:07, 3.97MB/s]Downloading data:  90%|████████▉ | 249M/279M [01:12<00:07, 3.79MB/s]Downloading data:  90%|████████▉ | 250M/279M [01:12<00:06, 4.12MB/s]Downloading data:  90%|████████▉ | 250M/279M [01:12<00:07, 3.88MB/s]Downloading data:  90%|█████████ | 251M/279M [01:12<00:06, 4.06MB/s]Downloading data:  90%|█████████ | 251M/279M [01:13<00:06, 4.39MB/s]Downloading data:  90%|█████████ | 252M/279M [01:13<00:07, 3.66MB/s]Downloading data:  91%|█████████ | 252M/279M [01:13<00:06, 4.09MB/s]Downloading data:  91%|█████████ | 253M/279M [01:13<00:06, 3.75MB/s]Downloading data:  91%|█████████ | 253M/279M [01:13<00:06, 4.03MB/s]Downloading data:  91%|█████████ | 254M/279M [01:13<00:06, 3.94MB/s]Downloading data:  91%|█████████▏| 254M/279M [01:13<00:05, 4.27MB/s]Downloading data:  92%|█████████▏| 255M/279M [01:13<00:05, 4.02MB/s]Downloading data:  92%|█████████▏| 255M/279M [01:14<00:05, 4.21MB/s]Downloading data:  92%|█████████▏| 256M/279M [01:14<00:06, 3.62MB/s]Downloading data:  92%|█████████▏| 256M/279M [01:14<00:06, 3.66MB/s]Downloading data:  92%|█████████▏| 257M/279M [01:14<00:06, 3.31MB/s]Downloading data:  92%|█████████▏| 257M/279M [01:14<00:06, 3.13MB/s]Downloading data:  92%|█████████▏| 257M/279M [01:14<00:06, 3.23MB/s]Downloading data:  93%|█████████▎| 258M/279M [01:14<00:06, 3.16MB/s]Downloading data:  93%|█████████▎| 258M/279M [01:14<00:06, 3.20MB/s]Downloading data:  93%|█████████▎| 259M/279M [01:15<00:05, 3.34MB/s]Downloading data:  93%|█████████▎| 259M/279M [01:15<00:05, 3.32MB/s]Downloading data:  93%|█████████▎| 259M/279M [01:15<00:05, 3.56MB/s]Downloading data:  93%|█████████▎| 260M/279M [01:15<00:05, 3.38MB/s]Downloading data:  93%|█████████▎| 260M/279M [01:15<00:06, 2.90MB/s]Downloading data:  94%|█████████▎| 261M/279M [01:15<00:05, 3.34MB/s]Downloading data:  94%|█████████▎| 261M/279M [01:15<00:05, 3.22MB/s]Downloading data:  94%|█████████▍| 261M/279M [01:15<00:04, 3.57MB/s]Downloading data:  94%|█████████▍| 262M/279M [01:16<00:04, 3.51MB/s]Downloading data:  94%|█████████▍| 262M/279M [01:16<00:04, 3.59MB/s]Downloading data:  94%|█████████▍| 263M/279M [01:16<00:04, 3.90MB/s]Downloading data:  95%|█████████▍| 263M/279M [01:16<00:04, 3.74MB/s]Downloading data:  95%|█████████▍| 264M/279M [01:16<00:03, 3.87MB/s]Downloading data:  95%|█████████▍| 264M/279M [01:16<00:03, 4.24MB/s]Downloading data:  95%|█████████▌| 265M/279M [01:16<00:03, 3.68MB/s]Downloading data:  95%|█████████▌| 265M/279M [01:16<00:03, 3.39MB/s]Downloading data:  95%|█████████▌| 266M/279M [01:16<00:03, 3.73MB/s]Downloading data:  96%|█████████▌| 266M/279M [01:17<00:03, 4.08MB/s]Downloading data:  96%|█████████▌| 266M/279M [01:17<00:03, 3.78MB/s]Downloading data:  96%|█████████▌| 267M/279M [01:17<00:02, 3.89MB/s]Downloading data:  96%|█████████▌| 267M/279M [01:17<00:02, 4.12MB/s]Downloading data:  96%|█████████▌| 268M/279M [01:17<00:02, 4.43MB/s]Downloading data:  96%|█████████▋| 268M/279M [01:17<00:02, 4.02MB/s]Downloading data:  96%|█████████▋| 269M/279M [01:17<00:03, 3.06MB/s]Downloading data:  97%|█████████▋| 269M/279M [01:18<00:03, 2.95MB/s]Downloading data:  97%|█████████▋| 270M/279M [01:18<00:02, 3.21MB/s]Downloading data:  97%|█████████▋| 270M/279M [01:18<00:02, 2.96MB/s]Downloading data:  97%|█████████▋| 270M/279M [01:18<00:02, 3.17MB/s]Downloading data:  97%|█████████▋| 271M/279M [01:18<00:02, 2.90MB/s]Downloading data:  97%|█████████▋| 271M/279M [01:18<00:02, 3.05MB/s]Downloading data:  97%|█████████▋| 271M/279M [01:18<00:02, 2.87MB/s]Downloading data:  98%|█████████▊| 272M/279M [01:18<00:02, 3.01MB/s]Downloading data:  98%|█████████▊| 272M/279M [01:18<00:02, 2.96MB/s]Downloading data:  98%|█████████▊| 272M/279M [01:19<00:02, 2.99MB/s]Downloading data:  98%|█████████▊| 273M/279M [01:19<00:02, 2.90MB/s]Downloading data:  98%|█████████▊| 273M/279M [01:19<00:01, 2.85MB/s]Downloading data:  98%|█████████▊| 274M/279M [01:19<00:01, 3.22MB/s]Downloading data:  98%|█████████▊| 274M/279M [01:19<00:01, 2.96MB/s]Downloading data:  98%|█████████▊| 274M/279M [01:19<00:01, 3.17MB/s]Downloading data:  99%|█████████▊| 275M/279M [01:19<00:01, 3.10MB/s]Downloading data:  99%|█████████▊| 275M/279M [01:19<00:01, 3.18MB/s]Downloading data:  99%|█████████▉| 275M/279M [01:20<00:00, 3.23MB/s]Downloading data:  99%|█████████▉| 276M/279M [01:20<00:00, 3.32MB/s]Downloading data:  99%|█████████▉| 276M/279M [01:20<00:00, 3.63MB/s]Downloading data:  99%|█████████▉| 277M/279M [01:20<00:00, 3.29MB/s]Downloading data:  99%|█████████▉| 277M/279M [01:20<00:00, 3.26MB/s]Downloading data: 100%|█████████▉| 277M/279M [01:20<00:00, 3.52MB/s]Downloading data: 100%|█████████▉| 278M/279M [01:20<00:00, 3.25MB/s]Downloading data: 100%|█████████▉| 278M/279M [01:20<00:00, 3.45MB/s]Downloading data: 100%|██████████| 279M/279M [01:20<00:00, 3.44MB/s]
+Generating train split: 0 examples [00:00, ? examples/s]Generating train split: 1 examples [00:03,  3.06s/ examples]Generating train split: 148 examples [00:03, 65.83 examples/s]Generating train split: 273 examples [00:03, 136.67 examples/s]Generating train split: 397 examples [00:03, 214.88 examples/s]Generating train split: 511 examples [00:03, 290.48 examples/s]Generating train split: 615 examples [00:03, 356.45 examples/s]Generating train split: 737 examples [00:03, 442.17 examples/s]Generating train split: 857 examples [00:04, 518.08 examples/s]Generating train split: 948 examples [00:04, 582.83 examples/s]Generating train split: 1049 examples [00:04, 367.56 examples/s]Generating train split: 1132 examples [00:04, 428.68 examples/s]Generating train split: 1212 examples [00:04, 486.44 examples/s]Generating train split: 1289 examples [00:04, 536.91 examples/s]Generating train split: 1368 examples [00:05, 587.96 examples/s]Generating train split: 1446 examples [00:05, 630.95 examples/s]Generating train split: 1523 examples [00:05, 662.04 examples/s]Generating train split: 1599 examples [00:05, 686.19 examples/s]Generating train split: 1676 examples [00:05, 706.76 examples/s]Generating train split: 1760 examples [00:05, 740.79 examples/s]Generating train split: 1844 examples [00:05, 765.15 examples/s]Generating train split: 1935 examples [00:05, 805.10 examples/s]Generating train split: 2049 examples [00:05, 647.38 examples/s]Generating train split: 2141 examples [00:06, 707.16 examples/s]Generating train split: 2229 examples [00:06, 746.32 examples/s]Generating train split: 2320 examples [00:06, 785.06 examples/s]Generating train split: 2404 examples [00:06, 798.13 examples/s]Generating train split: 2522 examples [00:06, 791.03 examples/s]Generating train split: 2606 examples [00:06, 801.79 examples/s]Generating train split: 2691 examples [00:06, 811.92 examples/s]Generating train split: 2778 examples [00:06, 824.75 examples/s]Generating train split: 2864 examples [00:06, 833.69 examples/s]Generating train split: 2989 examples [00:07, 830.33 examples/s]Generating train split: 3083 examples [00:07, 649.89 examples/s]Generating train split: 3160 examples [00:07, 674.64 examples/s]Generating train split: 3245 examples [00:07, 713.30 examples/s]Generating train split: 3331 examples [00:07, 747.65 examples/s]Generating train split: 3412 examples [00:07, 762.35 examples/s]Generating train split: 3501 examples [00:07, 795.99 examples/s]Generating train split: 3586 examples [00:07, 808.79 examples/s]Generating train split: 3709 examples [00:08, 809.12 examples/s]Generating train split: 3795 examples [00:08, 821.17 examples/s]Generating train split: 3881 examples [00:08, 830.28 examples/s]Generating train split: 4000 examples [00:08, 650.74 examples/s]Generating train split: 4084 examples [00:08, 689.41 examples/s]Generating train split: 4164 examples [00:08, 715.28 examples/s]Generating train split: 4244 examples [00:08, 736.22 examples/s]Generating train split: 4329 examples [00:08, 763.92 examples/s]Generating train split: 4417 examples [00:09, 793.88 examples/s]Generating train split: 4509 examples [00:09, 824.61 examples/s]Generating train split: 4599 examples [00:09, 841.26 examples/s]Generating train split: 4725 examples [00:09, 838.66 examples/s]Generating train split: 4839 examples [00:09, 807.71 examples/s]Generating train split: 4962 examples [00:09, 808.84 examples/s]Generating train split: 5049 examples [00:09, 650.36 examples/s]Generating train split: 5141 examples [00:10, 707.32 examples/s]Generating train split: 5233 examples [00:10, 753.88 examples/s]Generating train split: 5320 examples [00:10, 780.93 examples/s]Generating train split: 5436 examples [00:10, 770.44 examples/s]Generating train split: 5518 examples [00:10, 780.25 examples/s]Generating train split: 5639 examples [00:10, 786.26 examples/s]Generating train split: 5756 examples [00:10, 780.79 examples/s]Generating train split: 5876 examples [00:10, 782.72 examples/s]Generating train split: 5959 examples [00:11, 791.11 examples/s]Generating train split: 6039 examples [00:11, 622.91 examples/s]Generating train split: 6108 examples [00:11, 630.86 examples/s]Generating train split: 6187 examples [00:11, 667.60 examples/s]Generating train split: 6266 examples [00:11, 697.17 examples/s]Generating train split: 6348 examples [00:11, 728.09 examples/s]Generating train split: 6432 examples [00:11, 754.52 examples/s]Generating train split: 6517 examples [00:11, 778.18 examples/s]Generating train split: 6602 examples [00:11, 797.65 examples/s]Generating train split: 6685 examples [00:12, 803.55 examples/s]Generating train split: 6805 examples [00:12, 799.83 examples/s]Generating train split: 6923 examples [00:12, 780.89 examples/s]Generating train split: 7040 examples [00:12, 621.65 examples/s]Generating train split: 7120 examples [00:12, 657.03 examples/s]Generating train split: 7196 examples [00:12, 678.86 examples/s]Generating train split: 7272 examples [00:12, 696.44 examples/s]Generating train split: 7348 examples [00:13, 710.41 examples/s]Generating train split: 7432 examples [00:13, 742.52 examples/s]Generating train split: 7515 examples [00:13, 762.02 examples/s]Generating train split: 7596 examples [00:13, 772.25 examples/s]Generating train split: 7709 examples [00:13, 762.98 examples/s]Generating train split: 7799 examples [00:14, 336.65 examples/s]Generating train split: 7879 examples [00:14, 398.20 examples/s]Generating train split: 7958 examples [00:14, 460.66 examples/s]Generating train split: 8040 examples [00:14, 428.34 examples/s]Generating train split: 8119 examples [00:14, 491.75 examples/s]Generating train split: 8199 examples [00:14, 553.35 examples/s]Generating train split: 8279 examples [00:14, 606.66 examples/s]Generating train split: 8361 examples [00:14, 657.82 examples/s]Generating train split: 8442 examples [00:15, 694.64 examples/s]Generating train split: 8522 examples [00:15, 721.59 examples/s]Generating train split: 8604 examples [00:15, 746.15 examples/s]Generating train split: 8685 examples [00:15, 763.39 examples/s]Generating train split: 8771 examples [00:15, 789.53 examples/s]Generating train split: 8891 examples [00:15, 790.72 examples/s]Generating train split: 8974 examples [00:15, 797.61 examples/s]Generating train split: 9083 examples [00:15, 621.74 examples/s]Generating train split: 9171 examples [00:16, 676.41 examples/s]Generating train split: 9259 examples [00:16, 721.52 examples/s]Generating train split: 9346 examples [00:16, 755.29 examples/s]Generating train split: 9432 examples [00:16, 780.20 examples/s]Generating train split: 9519 examples [00:16, 800.66 examples/s]Generating train split: 9606 examples [00:16, 817.44 examples/s]Generating train split: 9691 examples [00:16, 824.99 examples/s]Generating train split: 9779 examples [00:16, 838.11 examples/s]Generating train split: 9865 examples [00:16, 840.80 examples/s]Generating train split: 9951 examples [00:16, 843.86 examples/s]Generating train split: 10044 examples [00:17, 648.77 examples/s]Generating train split: 10127 examples [00:17, 688.59 examples/s]Generating train split: 10228 examples [00:17, 768.10 examples/s]Generating train split: 10328 examples [00:17, 827.08 examples/s]Generating train split: 10462 examples [00:17, 846.26 examples/s]Generating train split: 10554 examples [00:17, 860.98 examples/s]Generating train split: 10679 examples [00:17, 846.44 examples/s]Generating train split: 10804 examples [00:18, 839.42 examples/s]Generating train split: 10893 examples [00:18, 849.24 examples/s]Generating train split: 10998 examples [00:18, 898.24 examples/s]Generating train split: 11092 examples [00:18, 681.51 examples/s]Generating train split: 11178 examples [00:18, 720.01 examples/s]Generating train split: 11265 examples [00:18, 755.02 examples/s]Generating train split: 11348 examples [00:18, 772.32 examples/s]Generating train split: 11433 examples [00:18, 792.08 examples/s]Generating train split: 11520 examples [00:18, 811.70 examples/s]Generating train split: 11605 examples [00:19, 818.45 examples/s]Generating train split: 11696 examples [00:19, 842.49 examples/s]Generating train split: 11783 examples [00:19, 848.48 examples/s]Generating train split: 11875 examples [00:19, 864.03 examples/s]Generating train split: 11970 examples [00:19, 887.22 examples/s]Generating train split: 12078 examples [00:19, 670.07 examples/s]Generating train split: 12173 examples [00:19, 732.29 examples/s]Generating train split: 12264 examples [00:19, 773.56 examples/s]Generating train split: 12353 examples [00:20, 802.17 examples/s]Generating train split: 12440 examples [00:20, 818.62 examples/s]Generating train split: 12534 examples [00:20, 850.00 examples/s]Generating train split: 12625 examples [00:20, 862.01 examples/s]Generating train split: 12715 examples [00:20, 870.70 examples/s]Generating train split: 12845 examples [00:20, 865.21 examples/s]Generating train split: 12978 examples [00:20, 870.38 examples/s]Generating train split: 13087 examples [00:20, 697.32 examples/s]Generating train split: 13180 examples [00:21, 745.44 examples/s]Generating train split: 13296 examples [00:21, 751.31 examples/s]Generating train split: 13378 examples [00:21, 764.13 examples/s]Generating train split: 13459 examples [00:21, 771.69 examples/s]Generating train split: 13544 examples [00:21, 788.69 examples/s]Generating train split: 13633 examples [00:21, 813.97 examples/s]Generating train split: 13733 examples [00:21, 863.46 examples/s]Generating train split: 13821 examples [00:21, 864.64 examples/s]Generating train split: 13950 examples [00:21, 856.16 examples/s]Generating train split: 14051 examples [00:22, 607.61 examples/s]Generating train split: 14156 examples [00:22, 631.10 examples/s]Generating train split: 14258 examples [00:22, 640.98 examples/s]Generating train split: 14334 examples [00:22, 664.31 examples/s]Generating train split: 14410 examples [00:22, 684.11 examples/s]Generating train split: 14485 examples [00:22, 700.32 examples/s]Generating train split: 14566 examples [00:22, 726.16 examples/s]Generating train split: 14652 examples [00:23, 758.58 examples/s]Generating train split: 14738 examples [00:23, 782.51 examples/s]Generating train split: 14828 examples [00:23, 813.99 examples/s]Generating train split: 14917 examples [00:23, 832.72 examples/s]Generating train split: 15039 examples [00:23, 635.46 examples/s]Generating train split: 15123 examples [00:23, 678.50 examples/s]Generating train split: 15211 examples [00:23, 724.11 examples/s]Generating train split: 15312 examples [00:23, 793.27 examples/s]Generating train split: 15401 examples [00:24, 815.43 examples/s]Generating train split: 15488 examples [00:24, 828.69 examples/s]Generating train split: 15616 examples [00:24, 834.87 examples/s]Generating train split: 15702 examples [00:24, 839.83 examples/s]Generating train split: 15791 examples [00:24, 848.83 examples/s]Generating train split: 15878 examples [00:24, 851.80 examples/s]Generating train split: 15993 examples [00:24, 933.60 examples/s]Generating train split: 16122 examples [00:24, 780.22 examples/s]Generating train split: 16235 examples [00:25, 861.86 examples/s]Generating train split: 16351 examples [00:25, 934.42 examples/s]Generating train split: 16461 examples [00:25, 974.71 examples/s]Generating train split: 16571 examples [00:25, 1007.30 examples/s]Generating train split: 16680 examples [00:25, 1029.45 examples/s]Generating train split: 16822 examples [00:25, 992.87 examples/s] Generating train split: 16962 examples [00:25, 966.81 examples/s]Generating train split: 17090 examples [00:25, 778.35 examples/s]Generating train split: 17179 examples [00:26, 799.66 examples/s]Generating train split: 17272 examples [00:26, 826.66 examples/s]Generating train split: 17365 examples [00:26, 848.24 examples/s]Generating train split: 17457 examples [00:26, 864.92 examples/s]Generating train split: 17553 examples [00:26, 887.51 examples/s]slurmstepd: error: *** JOB 6023158 ON jagupard36 CANCELLED AT 2023-04-15T02:18:15 ***
+Generating train split: 17686 examples [00:26, 884.68 examples/s]Generating train split: 17815 examples [00:26, 872.51 examples/s]Generating train split: 17945 examples [00:26, 868.41 examples/s]
