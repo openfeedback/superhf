@@ -42,9 +42,16 @@ class CompletionFilterTopK(CompletionFilterBase):
 
         Returns both the scores and other things you want to filter (e.g. the text completions).
         """
+        zipped = zip(scores, *data)
+
+        # TODO Special case for top-k = 1
+        # if self.top_k == 1:
+        #     # Return the highest scoring completion, maxing by the first element as key
+        #     filtered_completions_packed = max(zipped, key=lambda x: float(x[0]))
+        # else:
         # Sort the completions by their scores
         sorted_completions_packed = sorted(
-            zip(scores, *data),
+            zipped,
             key=lambda x: float(x[0]),
             reverse=True,
         )
