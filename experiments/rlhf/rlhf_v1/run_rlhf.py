@@ -4,11 +4,15 @@ Script for running RLHF to compare with SuperHF.
 Utilizes hugging face pipelines for the reward model, and PPO trainer from TRL
 to train the language model.
 
+Implements LoRA based on this guide -
+https://github.com/lvwerra/trl/blob/52fecee8839ad826ad1e6c83a95c99a4116e98d2/
+examples/sentiment/scripts/gpt-neox-20b_peft/gpt-neo-20b_sentiment_peft.py
+
 Example usage:
     python run_rlhf.py \
-        --model_name "EleutherAI/gpt-neo-125M" \
-        --mini_batch_size 1 \
-        --log_with wandb
+        --config configs/rlhf_v1.yaml \
+        --notes "Testing RLHF with TRL"
+        --sweep_id xxxxx
 """
 
 import os
@@ -23,24 +27,24 @@ import torch
 from torch.optim import Adam
 
 from transformers import AutoTokenizer, HfArgumentParser, pipeline, get_scheduler
+from peft import LoraConfig, get_peft_model
 
 from datasets import Dataset
+
+from utils import separate_prompt_from_completion
 
 from trl import (
     PPOTrainer,
     PPOConfig,
     AutoModelForCausalLMWithValueHead,
-    set_seed,
 )
 
 # from trl.core import LengthSampler
-
-from utils import separate_prompt_from_completion
-
-import constants
 import wandb
 
+from superhf import constants
 from superhf.data import get_superhf_prompts
+from superhf.utils import set_seed, print_gpu_utilization
 
 T = TypeVar("T")
 
@@ -106,7 +110,7 @@ def build_dataset(
         prompts.extend(get_superhf_prompts(dataset))
 
     random.shuffle(prompts)
-    # print(f"Loaded {len(prompts)} prompts from {dataset}")
+
     # Filter out prompts that are too long
     old_prompt_count = len(prompts)
     prompts = [
@@ -140,11 +144,20 @@ def build_dataset(
     return dataset
 
 
+# def get_configs():
+#     """
+#     Organizes all the configs into one place, and returns all of them.
+#     """
+#     # TODO implement this to organize codes
+#     pass
+
+
 def main(script_args: ScriptArguments):
     """
     Main function
     """
     # pylint: disable=too-many-locals
+    # pylint: disable=too-many-statements
     wandb.init(
         entity=WANDB_ENTITY_NAME,
         project=WANDB_PROJECT_NAME,
@@ -169,10 +182,34 @@ def main(script_args: ScriptArguments):
     language_model = AutoModelForCausalLMWithValueHead.from_pretrained(
         ppo_config.model_name
     )
-    model_ref = AutoModelForCausalLMWithValueHead.from_pretrained(ppo_config.model_name)
+    model_ref = None
+    if wandb.config.lora_r != 0 and wandb.config.lora_alpha != 0:
+        # Set up low-rank adapters (LoRA)
+        target_modules = (
+            wandb.config.lora_target_modules
+            if len(wandb.config.lora_target_modules) > 0
+            else None
+        )
+        lora_config = LoraConfig(
+            r=wandb.config.lora_r,
+            lora_alpha=wandb.config.lora_alpha,
+            target_modules=target_modules,  # handled automatically by peft
+            lora_dropout=wandb.config.lora_dropout,
+            task_type="CAUSAL_LM",
+            fan_in_fan_out=False,
+        )
+        language_model = get_peft_model(language_model, lora_config)
+        language_model.print_trainable_parameters()
+    else:
+        # Copy the entire model in order to calculate the KL divergence
+        model_ref = AutoModelForCausalLMWithValueHead.from_pretrained(
+            ppo_config.model_name
+        )
     tokenizer = AutoTokenizer.from_pretrained(
         ppo_config.model_name, padding_side="left"
     )
+    print("After loading all models, GPU usage is:")
+    print_gpu_utilization()
     reward_model = wandb.config.reward_model_name
 
     reward_model_kwargs = {
@@ -180,6 +217,18 @@ def main(script_args: ScriptArguments):
         "function_to_apply": "none",
         "batch_size": wandb.config.batch_size,
     }  # arguments for the
+
+    # We then define the arguments to pass to the `generate` function. These arguments
+    # are passed to the `generate` function of the PPOTrainer, which is a wrapper around
+    # the `generate` function of the trained model.
+    generation_kwargs = {
+        "min_length": -1,
+        "top_k": 0.0,
+        "top_p": wandb.config.top_p,
+        "do_sample": True,
+        "pad_token_id": tokenizer.eos_token_id,
+        "max_new_tokens": wandb.config.max_new_tokens,
+    }
 
     # set seed before initializing value head for deterministic eval
     set_seed(ppo_config.seed)
@@ -193,17 +242,19 @@ def main(script_args: ScriptArguments):
     )
 
     def collator(data):
+        """
+        Collator for the dataset
+        """
         return dict((key, [d[key] for d in data]) for key in data[0])
 
     scheduler = None
-    optimizer = None
+    optimizer = Adam(
+        filter(lambda p: p.requires_grad, language_model.parameters()),
+        lr=wandb.config.learning_rate,
+    )
     if wandb.config.scheduler_name != "":
         num_training_steps = len(dataset) // (
             wandb.config.batch_size * wandb.config.gradient_accumulation_steps
-        )
-        optimizer = Adam(
-            filter(lambda p: p.requires_grad, language_model.parameters()),
-            lr=wandb.config.learning_rate,
         )
         scheduler = get_scheduler(
             wandb.config.scheduler_name,
@@ -212,19 +263,7 @@ def main(script_args: ScriptArguments):
             num_training_steps=num_training_steps,
         )
 
-        # We then define the arguments to pass to the `generate` function. These arguments
-    # are passed to the `generate` function of the PPOTrainer, which is a wrapper around
-    # the `generate` function of the trained model.
-    generation_kwargs = {
-        "min_length": -1,
-        "top_k": 0.0,
-        "top_p": wandb.config.top_p,
-        "do_sample": True,
-        "pad_token_id": tokenizer.eos_token_id,
-        "max_new_tokens": wandb.config.max_new_tokens,
-    }
-
-    # the ppo trainer deletes the wandb.config object for some reason on cpu.
+    # the ppo trainer deletes the wandb.config object for some reason (only verified problem on cpu)
     normalize_reward = wandb.config.normalize_reward
     run_name = wandb.run.name
     hub_repo_id = wandb.config.hub_repo_id

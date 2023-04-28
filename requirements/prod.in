@@ -8,3 +8,4 @@ torchtyping
 pynvml
 nvidia-ml-py
 deepspeed
+peft

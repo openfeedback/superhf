@@ -1,6 +1,6 @@
 model_name:
   desc: HuggingFace language model to use, or "mock" for testing
-  value: "theblackcat102/pythia-1b-deduped-sft"
+  value: "/juice5/scr5/nlp/llama_model/alpaca_7b"
 reward_model_name:
   desc: HuggingFace reward model to use, or "mock" for testing
   value: "OpenAssistant/reward-model-deberta-v3-large-v2"
@@ -25,6 +25,18 @@ max_new_tokens:
 max_prompt_char_length:
   desc: "The maximum number of characters in a prompt"
   value: 1024
+lora_r:
+  desc: The r dimension parameter for LoRA. Only takes effect if r and alpha are non-zero.
+  value: 4
+lora_alpha:
+  desc: The alpha parameter for LoRA. Only takes effect if r and alpha are non-zero.
+  value: 32
+lora_dropout:
+  desc: The dropout parameter for LoRA, or 0 to disable dropout.
+  value: 0.05
+lora_target_modules:
+  desc: The list of modules to apply LoRA to. See src/superhf/lora.py for available modules.
+  value: ["q_proj", "v_proj"]  # For LLaMa
 dataset_names:
   desc: The list of datasets to use for prompts. See src/superhf/data.py for available datasets.
   value: ["anthropic-red-team", "anthropic-helpful-base", "anthropic-harmless-base", "openai/webgpt_comparisons"]
