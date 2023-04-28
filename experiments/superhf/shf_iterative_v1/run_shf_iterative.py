@@ -133,7 +133,10 @@ def main(argparse_args: argparse.Namespace) -> None:
     print_gpu_utilization()
     if reward_model_name == "mock":
         reward_model = MockRewardModel()
-    elif "rm_combined" in reward_model_name:
+    elif (
+        "rm_combined" in reward_model_name
+        or "oliversssf2" in wandb.config.reward_model_name
+    ):
         reward_model = RewardModel.from_pretrained(reward_model_name).to(device)
     elif "SteamSHP-flan-t5" in reward_model_name:
         reward_model = AutoModelForSeq2SeqLM.from_pretrained(reward_model_name).to(
@@ -164,7 +167,10 @@ def main(argparse_args: argparse.Namespace) -> None:
     reward_tokenizer_name = wandb.config.reward_model_name
     if wandb.config.reward_model_name == "mock":
         reward_tokenizer_name = "gpt2"
-    elif "rm_combined" in wandb.config.reward_model_name:
+    elif (
+        "rm_combined" in wandb.config.reward_model_name
+        or "oliversssf2" in wandb.config.reward_model_name
+    ):
         reward_tokenizer_name = "EleutherAI/gpt-neo-1.3B"
 
     if "llama" in reward_tokenizer_name or "alpaca" in reward_tokenizer_name:
