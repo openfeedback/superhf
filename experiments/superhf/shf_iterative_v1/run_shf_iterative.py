@@ -112,7 +112,7 @@ def main(argparse_args: argparse.Namespace) -> None:
         MockLanguageModel()
         if language_model_name == "mock"
         else AutoModelForCausalLM.from_pretrained(
-            language_model_name, torch_dtype=dtype
+            language_model_name  # , torch_dtype=dtype
         ).to(device)
     )
     if wandb.config.lora_r != 0 and wandb.config.lora_alpha != 0:
@@ -195,6 +195,7 @@ def main(argparse_args: argparse.Namespace) -> None:
         minibatch_size_scoring=wandb.config.minibatch_size_scoring,
         minibatch_size_finetuning=wandb.config.minibatch_size_finetuning,
         mixed_precision=wandb.config.mixed_precision,
+        dtype=dtype,
         conversation_prompt=wandb.config.conversation_prompt,
         logits_processors=logits_processors,
         learning_rate=wandb.config.learning_rate,

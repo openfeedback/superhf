@@ -72,6 +72,7 @@ class SuperHFTrainingArguments:
     # Training
     inverse_loss_penalty: float = 0.0
     mixed_precision: str = "no"
+    dtype: torch.dtype = torch.float32
     learning_rate: float = 1e-5
     scheduler_name: str = "linear"
     scheduler_warmup_steps: int = 0
@@ -373,9 +374,9 @@ class SuperHFTrainer:
                 total=len(completion_dataloader),
             ):
                 encodings = minibatch
-                encodings.to(self.language_model.device)
-                completions_encoded.extend(
-                    self.language_model.generate(  # type: ignore
+                with torch.cuda.amp.autocast(dtype=self.training_args.dtype):  # type: ignore
+                    encodings.to(self.language_model.device)
+                    outputs = self.language_model.generate(  # type: ignore
                         **encodings,
                         max_new_tokens=self.training_args.max_new_tokens,
                         temperature=self.training_args.temperature,
@@ -384,10 +385,8 @@ class SuperHFTrainer:
                         num_return_sequences=1,
                         pad_token_id=self.language_tokenizer.pad_token_id,
                         logits_processor=self.training_args.logits_processors,
-                    ).to(  # type: ignore
-                        "cpu"
                     )
-                )
+                completions_encoded.extend(outputs.to("cpu"))
         # completions_gathered: list[str] = accelerator.gather(
         #     completions
         # )  # TODO Unclear whether this is needed?
