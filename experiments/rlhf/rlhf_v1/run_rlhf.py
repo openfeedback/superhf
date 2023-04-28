@@ -26,7 +26,13 @@ from tqdm import tqdm
 import torch
 from torch.optim import Adam
 
-from transformers import AutoTokenizer, HfArgumentParser, pipeline, get_scheduler
+from transformers import (
+    AutoTokenizer,
+    HfArgumentParser,
+    LlamaTokenizer,
+    pipeline,
+    get_scheduler,
+)
 from peft import LoraConfig, get_peft_model
 
 from datasets import Dataset
@@ -205,9 +211,19 @@ def main(script_args: ScriptArguments):
         model_ref = AutoModelForCausalLMWithValueHead.from_pretrained(
             ppo_config.model_name
         )
-    tokenizer = AutoTokenizer.from_pretrained(
-        ppo_config.model_name, padding_side="left"
-    )
+    language_tokenizer = None  # AutoTokenizer.from_pretrained(
+    #     ppo_config.model_name, padding_side="left"
+    # )
+    if "llama" in ppo_config.model_name or "alpaca" in ppo_config.model_name:
+        # Fix for misnamed class in the NLP Cluster's Alpaca tokenizer config
+        language_tokenizer = LlamaTokenizer.from_pretrained(
+            ppo_config.model_name, padding_side="left"
+        )
+    else:
+        language_tokenizer = AutoTokenizer.from_pretrained(
+            ppo_config.model_name, padding_side="left"
+        )
+
     print("After loading all models, GPU usage is:")
     print_gpu_utilization()
     reward_model = wandb.config.reward_model_name
@@ -226,7 +242,7 @@ def main(script_args: ScriptArguments):
         "top_k": 0.0,
         "top_p": wandb.config.top_p,
         "do_sample": True,
-        "pad_token_id": tokenizer.eos_token_id,
+        "pad_token_id": language_tokenizer.eos_token_id,
         "max_new_tokens": wandb.config.max_new_tokens,
     }
 
@@ -235,7 +251,7 @@ def main(script_args: ScriptArguments):
 
     dataset = build_dataset(
         wandb.config.dataset_names,
-        # tokenizer,
+        # language_tokenizer,
         max_prompt_char_length=wandb.config.max_prompt_char_length,
         debug_max_prompts=wandb.config.debug_max_prompts,
         conversation_prompt=wandb.config.conversation_prompt,
@@ -277,7 +293,7 @@ def main(script_args: ScriptArguments):
         ppo_config,
         language_model,
         model_ref,
-        tokenizer,
+        language_tokenizer,
         dataset=dataset,
         data_collator=collator,
         optimizer=optimizer,
@@ -296,12 +312,12 @@ def main(script_args: ScriptArguments):
     # output_min_length = 4
     # output_max_length = 16
     # output_length_sampler = LengthSampler(output_min_length, output_max_length)
-    tokenizer.pad_token = tokenizer.eos_token
+    language_tokenizer.pad_token = language_tokenizer.eos_token
     for epoch, batch in tqdm(
         enumerate(ppo_trainer.dataloader), total=len(ppo_trainer.dataloader)
     ):
         query_tensors = [
-            tokenizer(q, return_tensors="pt")["input_ids"].squeeze().to(device)
+            language_tokenizer(q, return_tensors="pt")["input_ids"].squeeze().to(device)
             for q in batch["query"]
         ]
 
@@ -313,7 +329,7 @@ def main(script_args: ScriptArguments):
             response = ppo_trainer.generate(query, **generation_kwargs)
             response_tensors.append(response.squeeze())
         batch["response"] = trim_generations(
-            [tokenizer.decode(r.squeeze()) for r in response_tensors]
+            [language_tokenizer.decode(r.squeeze()) for r in response_tensors]
         )
 
         # Compute sentiment score
