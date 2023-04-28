@@ -36,6 +36,7 @@ from superhf.metrics import (
 from superhf.mocking import MockLanguageModel, MockRewardModel
 from superhf.training import SuperHFTrainingArguments, SuperHFTrainer
 from superhf.utils import set_seed, print_gpu_utilization
+from reward_modelling.reward_model import RewardModel
 
 WANDB_ENTITY_NAME = "stanfordaialignment"
 WANDB_PROJECT_NAME = "superhf-v3"
@@ -47,6 +48,7 @@ def main(argparse_args: argparse.Namespace) -> None:
     """
     # pylint: disable=too-many-locals
     # pylint: disable=too-many-statements
+    # pylint: disable=too-many-branches
 
     # Attempt to fix too many open files issue on SLURM
     torch.multiprocessing.set_sharing_strategy("file_system")
@@ -128,17 +130,19 @@ def main(argparse_args: argparse.Namespace) -> None:
 
     print(f"Instantiated language model: {language_model_name}")
     print_gpu_utilization()
-    reward_model = (
-        MockRewardModel()
-        if reward_model_name == "mock"
-        else (
-            AutoModelForSequenceClassification.from_pretrained(reward_model_name).to(
-                device
-            )
-            if "SteamSHP-flan-t5" not in reward_model_name
-            else AutoModelForSeq2SeqLM.from_pretrained(reward_model_name).to(device)
+    if reward_model_name == "mock":
+        reward_model = MockRewardModel()
+    elif "rm_combined" in reward_model_name:
+        reward_model = RewardModel.from_pretrained(reward_model_name).to(device)
+    elif "SteamSHP-flan-t5" in reward_model_name:
+        reward_model = AutoModelForSeq2SeqLM.from_pretrained(reward_model_name).to(
+            device
         )
-    )
+    else:
+        reward_model = AutoModelForSequenceClassification.from_pretrained(
+            reward_model_name
+        ).to(device)
+
     print(f"Instantiated reward model: {reward_model_name}")
     print_gpu_utilization()
 
