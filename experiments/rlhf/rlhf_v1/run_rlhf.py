@@ -151,12 +151,77 @@ def build_dataset(
     return dataset
 
 
-# def get_configs():
-#     """
-#     Organizes all the configs into one place, and returns all of them.
-#     """
-#     # TODO implement this to organize codes
-#     pass
+def get_configs():
+    """
+    Organizes all the configs into one place, and returns all of them.
+    """
+    # TODO implement this to organize codes
+    ppo_config = PPOConfig(
+        model_name=wandb.config.model_name,
+        learning_rate=wandb.config.learning_rate,
+        mini_batch_size=wandb.config.mini_batch_size,
+        batch_size=wandb.config.batch_size,
+        gradient_accumulation_steps=wandb.config.gradient_accumulation_steps,
+        seed=66,
+        init_kl_coef=wandb.config.init_kl_coef,
+        log_with=wandb.config.log_with,
+    )
+
+    assert ppo_config.mini_batch_size <= ppo_config.batch_size
+
+    lora_config = None
+    if wandb.config.lora_r != 0 and wandb.config.lora_alpha != 0:
+        # Set up low-rank adapters (LoRA)
+        target_modules = (
+            wandb.config.lora_target_modules
+            if len(wandb.config.lora_target_modules) > 0
+            else None
+        )
+        lora_config = LoraConfig(
+            r=wandb.config.lora_r,
+            lora_alpha=wandb.config.lora_alpha,
+            target_modules=target_modules,  # handled automatically by peft
+            lora_dropout=wandb.config.lora_dropout,
+            task_type="CAUSAL_LM",
+            fan_in_fan_out=False,
+        )
+
+    reward_model_kwargs = {
+        "top_k": None,
+        "function_to_apply": "none",
+        "batch_size": wandb.config.batch_size,
+    }  # arguments for the reward pipeline.
+
+    language_tokenizer = None
+    if "llama" in ppo_config.model_name or "alpaca" in ppo_config.model_name:
+        # Fix for misnamed class in the NLP Cluster's Alpaca tokenizer config
+        language_tokenizer = LlamaTokenizer.from_pretrained(
+            ppo_config.model_name, padding_side="left"
+        )
+    else:
+        language_tokenizer = AutoTokenizer.from_pretrained(
+            ppo_config.model_name, padding_side="left"
+        )
+
+    # We then define the arguments to pass to the `generate` function. These arguments
+    # are passed to the `generate` function of the PPOTrainer, which is a wrapper around
+    # the `generate` function of the trained model.
+    generation_kwargs = {
+        "min_length": -1,
+        "top_k": 0.0,
+        "top_p": wandb.config.top_p,
+        "do_sample": True,
+        "pad_token_id": language_tokenizer.eos_token_id,
+        "max_new_tokens": wandb.config.max_new_tokens,
+    }
+
+    return (
+        ppo_config,
+        lora_config,
+        reward_model_kwargs,
+        language_tokenizer,
+        generation_kwargs,
+    )
 
 
 def main(script_args: ScriptArguments):
@@ -173,36 +238,35 @@ def main(script_args: ScriptArguments):
         config=script_args.config,
     )
 
-    ppo_config = PPOConfig(
-        model_name=wandb.config.model_name,
-        learning_rate=wandb.config.learning_rate,
-        mini_batch_size=wandb.config.mini_batch_size,
-        batch_size=wandb.config.batch_size,
-        gradient_accumulation_steps=wandb.config.gradient_accumulation_steps,
-        seed=66,
-        init_kl_coef=wandb.config.init_kl_coef,
-        log_with=wandb.config.log_with,
-    )
+    # Enable tf32 training if supported
+    if (
+        wandb.config.try_tf32_training
+        and torch.cuda.is_available()
+        and torch.cuda.get_device_capability()[0] >= 8
+    ):
+        print("Enabling tf32 training.")
+        torch.backends.cuda.matmul.allow_tf32 = True
+        torch.backends.cudnn.allow_tf32 = True
 
-    assert ppo_config.mini_batch_size <= ppo_config.batch_size
+    # the ppo trainer deletes the wandb.config object for some reason (only verified problem on cpu)
+    normalize_reward = wandb.config.normalize_reward
+    run_name = wandb.run.name
+    hub_repo_id = wandb.config.hub_repo_id
+    save_every = wandb.config.save_every
+    reward_mean = wandb.config.reward_mean
+
+    (
+        ppo_config,
+        lora_config,
+        reward_model_kwargs,
+        language_tokenizer,
+        generation_kwargs,
+    ) = get_configs()
 
     language_model = AutoModelForCausalLM.from_pretrained(ppo_config.model_name)
     model_ref = None
     if wandb.config.lora_r != 0 and wandb.config.lora_alpha != 0:
         # Set up low-rank adapters (LoRA)
-        target_modules = (
-            wandb.config.lora_target_modules
-            if len(wandb.config.lora_target_modules) > 0
-            else None
-        )
-        lora_config = LoraConfig(
-            r=wandb.config.lora_r,
-            lora_alpha=wandb.config.lora_alpha,
-            target_modules=target_modules,  # handled automatically by peft
-            lora_dropout=wandb.config.lora_dropout,
-            task_type="CAUSAL_LM",
-            fan_in_fan_out=False,
-        )
         language_model = get_peft_model(language_model, lora_config)
         language_model.print_trainable_parameters()
     else:
@@ -212,38 +276,7 @@ def main(script_args: ScriptArguments):
         )
     language_model = AutoModelForCausalLMWithValueHead.from_pretrained(language_model)
 
-    language_tokenizer = None
-    if "llama" in ppo_config.model_name or "alpaca" in ppo_config.model_name:
-        # Fix for misnamed class in the NLP Cluster's Alpaca tokenizer config
-        language_tokenizer = LlamaTokenizer.from_pretrained(
-            ppo_config.model_name, padding_side="left"
-        )
-    else:
-        language_tokenizer = AutoTokenizer.from_pretrained(
-            ppo_config.model_name, padding_side="left"
-        )
-
-    print("After loading all models, GPU usage is:")
-    print_gpu_utilization()
     reward_model = wandb.config.reward_model_name
-
-    reward_model_kwargs = {
-        "top_k": None,
-        "function_to_apply": "none",
-        "batch_size": wandb.config.batch_size,
-    }  # arguments for the reward pipeline.
-
-    # We then define the arguments to pass to the `generate` function. These arguments
-    # are passed to the `generate` function of the PPOTrainer, which is a wrapper around
-    # the `generate` function of the trained model.
-    generation_kwargs = {
-        "min_length": -1,
-        "top_k": 0.0,
-        "top_p": wandb.config.top_p,
-        "do_sample": True,
-        "pad_token_id": language_tokenizer.eos_token_id,
-        "max_new_tokens": wandb.config.max_new_tokens,
-    }
 
     # set seed before initializing value head for deterministic eval
     set_seed(ppo_config.seed)
@@ -278,16 +311,13 @@ def main(script_args: ScriptArguments):
             num_training_steps=num_training_steps,
         )
 
-    # the ppo trainer deletes the wandb.config object for some reason (only verified problem on cpu)
-    normalize_reward = wandb.config.normalize_reward
-    run_name = wandb.run.name
-    hub_repo_id = wandb.config.hub_repo_id
-    save_every = wandb.config.save_every
-    reward_mean = wandb.config.reward_mean
-
     # create a ppo trainer config, model, ref_model, tokenizer,
     # dataset=dataset, data_collator=collator)
     # the dataset and collator get bundled in a data loader together.
+    print(
+        "The language model has property peft?"
+        f" {getattr(language_model, 'is_peft_model', False)}"
+    )
     ppo_trainer = PPOTrainer(
         ppo_config,
         language_model,

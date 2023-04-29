@@ -9,13 +9,13 @@ log_with:
   value: "wandb"
 learning_rate:
   desc: "The learning rate"
-  value: 0.0000141 # 1.41e-5
+  value: 1.0e-6 # 1.41e-5
 mini_batch_size:
   desc: "The mini-batch size"
-  value: 8
+  value: 2
 batch_size:
   desc: "The batch size" # default 256 in og code
-  value: 32
+  value: 4
 gradient_accumulation_steps:
   desc: "The number of gradient accumulation steps"
   value: 1
@@ -27,13 +27,13 @@ max_prompt_char_length:
   value: 1024
 lora_r:
   desc: The r dimension parameter for LoRA. Only takes effect if r and alpha are non-zero.
-  value: 4
+  value: 8
 lora_alpha:
   desc: The alpha parameter for LoRA. Only takes effect if r and alpha are non-zero.
   value: 32
 lora_dropout:
   desc: The dropout parameter for LoRA, or 0 to disable dropout.
-  value: 0.05
+  value: 0.1
 lora_target_modules:
   desc: The list of modules to apply LoRA to. See src/superhf/lora.py for available modules.
   value: ["q_proj", "v_proj"]  # For LLaMa
@@ -70,3 +70,6 @@ reward_mean:
 top_p:
   desc: The top-p value for nucleus sampling
   value: 0.95
+try_tf32_training:
+  desc: Whether to try to use tf32 training
+  value: true

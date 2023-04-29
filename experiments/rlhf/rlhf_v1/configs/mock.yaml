@@ -70,3 +70,6 @@ reward_mean:
 top_p:
   desc: The top-p value for nucleus sampling
   value: 0.95
+try_tf32_training:
+  desc: Whether to try to use tf32 training
+  value: true
