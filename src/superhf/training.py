@@ -127,9 +127,9 @@ class SuperHFTrainer:
         ] = None,
     ) -> None:
         self.language_model = language_model
-        self.reward_model = reward_model_train
+        self.reward_model_train = reward_model_train
         self.language_tokenizer = language_tokenizer
-        self.reward_tokenizer = reward_tokenizer_train
+        self.reward_tokenizer_train = reward_tokenizer_train
         self.completion_filter = completion_filter
         self.training_args = training_args
         if report_metrics is None:
@@ -142,12 +142,14 @@ class SuperHFTrainer:
         if self.language_tokenizer.pad_token is None:
             self.language_tokenizer.pad_token = self.language_tokenizer.eos_token
             print("Added pad token to language tokenizer.")
-        if self.reward_tokenizer.pad_token is None:
-            self.reward_tokenizer.pad_token = self.reward_tokenizer.eos_token
+        if self.reward_tokenizer_train.pad_token is None:
+            self.reward_tokenizer_train.pad_token = (
+                self.reward_tokenizer_train.eos_token
+            )
             print("Added pad token to reward tokenizer.")
 
         # Reward model is always in eval mode
-        self.reward_model.eval()
+        self.reward_model_train.eval()
 
         # Initialize the accelerator
         self.accelerator = Accelerator(
@@ -437,13 +439,13 @@ class SuperHFTrainer:
 
         return (
             completions_for_lm,
-            self.reward_tokenizer(
+            self.reward_tokenizer_train(
                 completions_for_rm,
                 return_tensors="pt",
                 padding=True,
                 truncation=True,
                 max_length=self.training_args.max_length_rm,
-            ).to(self.reward_model.device),
+            ).to(self.reward_model_train.device),
             completion_lengths,
         )
 
@@ -481,7 +483,7 @@ class SuperHFTrainer:
                 ) = minibatch
                 if self.training_args.reward_model_is_steamshp:
                     # Handle the weird SteamSHP format
-                    outputs = self.reward_model.generate(
+                    outputs = self.reward_model_train.generate(
                         **completion_encodings,
                         return_dict_in_generate=True,
                         output_scores=True,
@@ -494,7 +496,7 @@ class SuperHFTrainer:
                         .cpu()
                     )
                 else:
-                    scores = self.reward_model(**completion_encodings)
+                    scores = self.reward_model_train(**completion_encodings)
                     if not isinstance(scores, torch.Tensor):
                         # Handle SequenceClassifierOutput
                         scores = scores.logits
