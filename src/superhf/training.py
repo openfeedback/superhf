@@ -21,7 +21,6 @@ from transformers import (
     get_scheduler,
 )
 from torchtyping import TensorType
-from peft import PeftModel
 
 from superhf import constants
 from superhf.data import ListDataset
@@ -171,8 +170,8 @@ class SuperHFTrainer:
 
         # Check that we're using a LoRA model if using a KL loss term
         if self.training_args.kl_coefficient > 0:
-            assert isinstance(
-                self.language_model, PeftModel
+            assert hasattr(
+                self.language_model, "disable_adapter"
             ), "KL loss term only supported for LoRA models."
             self.kl_loss = torch.nn.KLDivLoss(reduction="batchmean", log_target=True)
 
