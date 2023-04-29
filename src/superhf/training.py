@@ -5,6 +5,7 @@ from a reward model with expert iteration using supervised learning).
 
 from dataclasses import dataclass, field
 import re
+import sys
 from typing import Callable, Optional, Union
 
 import torch
@@ -214,6 +215,7 @@ class SuperHFTrainer:
             enumerate(prompts_dataloader),
             total=num_superbatches,
             desc="Superbatch",
+            file=sys.stdout,
         ):
             tqdm.write(
                 f"Before generation, on superbatch_index {superbatch_index} ", end=""
@@ -396,6 +398,7 @@ class SuperHFTrainer:
                 completion_dataloader,
                 desc="Generation",
                 total=len(completion_dataloader),
+                file=sys.stdout,
             ):
                 encodings = minibatch
                 # with torch.cuda.amp.autocast(dtype=self.training_args.dtype):  # type: ignore
@@ -512,7 +515,11 @@ class SuperHFTrainer:
 
         with torch.no_grad():
             iteration = 0
-            for minibatch in tqdm(score_dataloader, desc="Scoring"):
+            for minibatch in tqdm(
+                score_dataloader,
+                desc="Scoring",
+                file=sys.stdout,
+            ):
                 iteration += 1
                 (
                     completions_trimmed,
@@ -677,7 +684,11 @@ class SuperHFTrainer:
         self.language_model.train()
 
         sum_kl_divergence = 0
-        for minibatch in tqdm(finetuning_dataloader, desc="Fine-tuning"):
+        for minibatch in tqdm(
+            finetuning_dataloader,
+            desc="Fine-tuning",
+            file=sys.stdout,
+        ):
             self.optimizer.zero_grad()
             outputs = self.language_model(**minibatch)
             if outputs.loss is None:
