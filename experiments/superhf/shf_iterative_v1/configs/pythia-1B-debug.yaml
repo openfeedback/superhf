@@ -33,16 +33,16 @@ top_p:
   value: 0.95
 num_prompts:
   desc: Maximum number of prompts to use, or 0 for unlimited (up to the training set size).
-  value: 10
+  value: 17
 prompt_accumulation_steps:
   desc: Number of prompts to generate, score, and filter before finetuning, or 0 for num_prompts.
-  value: 1
+  value: 2
 superbatch_size:
   desc: Number of completions to generate with the current policy before filtering and fine-tuning.
-  value: 2
+  value: 3
 completion_filter_top_k:
   desc: Top-k completions to filter and train on.
-  value: 1
+  value: 2
 max_new_tokens:
   desc: Maximum new token length of language model completion.
   value: 64

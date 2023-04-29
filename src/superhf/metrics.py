@@ -47,11 +47,11 @@ def report_metrics_print(metrics: SuperHFMetrics) -> None:
     average_filtered_completion_length = np.mean(
         [len(c) for c in metrics.filtered_completions]
     )
-    scores_train_avg = np.mean(metrics.scores_train)
-    scores_train_std = np.std(metrics.scores_train)
-    scores_filtered_avg = np.mean(metrics.filtered_scores)
-    scores_val_avg = np.mean(metrics.scores_val) if metrics.scores_val else np.nan
-    scores_val_std = np.std(metrics.scores_val) if metrics.scores_val else np.nan
+    score_train_avg = np.mean(metrics.scores_train)
+    score_train_std = np.std(metrics.scores_train)
+    score_val_avg = np.mean(metrics.scores_val) if metrics.scores_val else np.nan
+    score_val_std = np.std(metrics.scores_val) if metrics.scores_val else np.nan
+    score_filtered_avg = np.mean(metrics.filtered_scores)
     print(
         f"\nMetrics at time {time.strftime('%H:%M:%S', time.localtime())}\nSuperbatch"
         f" {metrics.superbatch_index}/{metrics.superbatch_count} ({percent_complete:.3f}%):"
@@ -59,9 +59,9 @@ def report_metrics_print(metrics: SuperHFMetrics) -> None:
         f" {len(metrics.filtered_completions)} filtered completions, completion length"
         f" {average_completion_length:.3f}, filtered completion length"
         f" {average_filtered_completion_length:.3f}\ntrain score"
-        f" {scores_train_avg:.3f} ±{scores_train_std:.3f}, val score"
-        f" {scores_val_avg:.3f} ±{scores_val_std:.3f}, filtered score"
-        f" {scores_filtered_avg:.3f}\nloss {metrics.average_loss:.3f},  KL"
+        f" {score_train_avg:.3f} ±{score_train_std:.3f}, val score"
+        f" {score_val_avg:.3f} ±{score_val_std:.3f}, filtered score"
+        f" {score_filtered_avg:.3f}\nloss {metrics.average_loss:.3f},  KL"
         f" {metrics.average_kl_div:.3f}."
     )
 
@@ -74,9 +74,10 @@ def initialize_metrics_wandb() -> None:
     Defines metrics for a Weights and Biases run.
     """
     wandb.define_metric("average_loss", summary="min")
-    wandb.define_metric("average_score", summary="max")
-    wandb.define_metric("average_score", summary="last")
-    wandb.define_metric("average_score", summary="mean")
+    wandb.define_metric("score_train_avg", summary="last")
+    wandb.define_metric("score_train_avg", summary="mean")
+    wandb.define_metric("score_val_avg", summary="last")
+    wandb.define_metric("score_val_avg", summary="mean")
     wandb.define_metric("average_kl_div", summary="mean")
     wandb.define_metric("average_completion_length", summary="last")
 
@@ -99,9 +100,15 @@ def report_metrics_wandb(metrics: SuperHFMetrics) -> None:
     - Histogram of filtered score if we filtered different top-K numbers
     """
     percent_complete = (metrics.superbatch_index + 1) / metrics.superbatch_count * 100
-    average_score = np.mean(metrics.scores_train)
-    # TODO std as well
-    average_filtered_score = np.mean(metrics.filtered_scores)
+    score_train_avg = np.mean(metrics.scores_train)
+    score_train_std = np.std(metrics.scores_train)
+    score_train_hist = (
+        wandb.Histogram(metrics.scores_train) if metrics.scores_train else None
+    )
+    score_val_avg = np.mean(metrics.scores_val) if metrics.scores_val else None
+    score_val_std = np.std(metrics.scores_val) if metrics.scores_val else None
+    score_val_hist = wandb.Histogram(metrics.scores_val) if metrics.scores_val else None
+    score_filtered_avg = np.mean(metrics.filtered_scores)
     prompt_index = metrics.superbatch_index * len(metrics.filtered_completions)
 
     # # Create plot data of average score if we filtered different top-K numbers
@@ -120,9 +127,13 @@ def report_metrics_wandb(metrics: SuperHFMetrics) -> None:
         {
             "superbatch_index": metrics.superbatch_index,
             "percent_complete": percent_complete,
-            "average_score": average_score,
-            "score_histogram": wandb.Histogram(metrics.scores_train),
-            "average_filtered_score": average_filtered_score,
+            "score_train_avg": score_train_avg,
+            "score_train_std": score_train_std,
+            "score_train_histogram": score_train_hist,
+            "score_val_avg": score_val_avg,
+            "score_val_std": score_val_std,
+            "score_val_histogram": score_val_hist,
+            "average_filtered_score": score_filtered_avg,
             # "filtered_score_histogram": wandb.Histogram(metrics.filtered_scores),
             "average_loss": metrics.average_loss,
             "average_kl_div": metrics.average_kl_div,
