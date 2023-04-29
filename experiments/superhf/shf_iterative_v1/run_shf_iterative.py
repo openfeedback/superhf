@@ -126,7 +126,17 @@ def main(argparse_args: argparse.Namespace) -> None:
     # Check for unix
     if os.name == "posix":
         print("Compiling models...")
+        print(type(language_model))
+        try:
+            print(language_model.disable_adapter)
+        except RuntimeError:
+            pass
         language_model = torch.compile(language_model)
+        print(type(language_model))
+        try:
+            print(language_model.disable_adapter)
+        except RuntimeError:
+            pass
         reward_model_train = torch.compile(reward_model_train)
         reward_model_val = torch.compile(reward_model_val)
         print("Compiled models.")
