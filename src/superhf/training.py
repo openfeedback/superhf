@@ -115,9 +115,9 @@ class SuperHFTrainer:
     def __init__(
         self,
         language_model: PreTrainedModel,
-        reward_model: PreTrainedModel,
+        reward_model_train: PreTrainedModel,
         language_tokenizer: PreTrainedTokenizerBase,
-        reward_tokenizer: PreTrainedTokenizerBase,
+        reward_tokenizer_train: PreTrainedTokenizerBase,
         completion_filter: CompletionFilterBase,
         training_args: SuperHFTrainingArguments,
         report_metrics: Optional[
@@ -127,9 +127,9 @@ class SuperHFTrainer:
         ] = None,
     ) -> None:
         self.language_model = language_model
-        self.reward_model = reward_model
+        self.reward_model = reward_model_train
         self.language_tokenizer = language_tokenizer
-        self.reward_tokenizer = reward_tokenizer
+        self.reward_tokenizer = reward_tokenizer_train
         self.completion_filter = completion_filter
         self.training_args = training_args
         if report_metrics is None:

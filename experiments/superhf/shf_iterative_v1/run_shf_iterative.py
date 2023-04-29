@@ -131,18 +131,18 @@ def main(argparse_args: argparse.Namespace) -> None:
     print(f"Instantiated language model: {language_model_name}")
     print_gpu_utilization()
     if reward_model_name == "mock":
-        reward_model = MockRewardModel()
+        reward_model_train = MockRewardModel()
     elif (
         "rm_combined" in reward_model_name
         or "oliversssf2" in wandb.config.reward_model_name
     ):
-        reward_model = RewardModel.from_pretrained(reward_model_name).to(device)
+        reward_model_train = RewardModel.from_pretrained(reward_model_name).to(device)
     elif "SteamSHP-flan-t5" in reward_model_name:
-        reward_model = AutoModelForSeq2SeqLM.from_pretrained(reward_model_name).to(
-            device
-        )
+        reward_model_train = AutoModelForSeq2SeqLM.from_pretrained(
+            reward_model_name
+        ).to(device)
     else:
-        reward_model = AutoModelForSequenceClassification.from_pretrained(
+        reward_model_train = AutoModelForSequenceClassification.from_pretrained(
             reward_model_name
         ).to(device)
 
@@ -174,9 +174,9 @@ def main(argparse_args: argparse.Namespace) -> None:
 
     if "llama" in reward_tokenizer_name or "alpaca" in reward_tokenizer_name:
         # Fix for misnamed class in the NLP Cluster's Alpaca tokenizer config
-        reward_tokenizer = LlamaTokenizer.from_pretrained(reward_tokenizer_name)
+        reward_tokenizer_train = LlamaTokenizer.from_pretrained(reward_tokenizer_name)
     else:
-        reward_tokenizer = AutoTokenizer.from_pretrained(reward_tokenizer_name)
+        reward_tokenizer_train = AutoTokenizer.from_pretrained(reward_tokenizer_name)
     print("Instantiated tokenizers.")
     print_gpu_utilization()
 
@@ -225,10 +225,10 @@ def main(argparse_args: argparse.Namespace) -> None:
 
     # Instantiate our trainer
     trainer = SuperHFTrainer(
-        language_model=language_model,  # type: ignore
-        reward_model=reward_model,  # type: ignore
+        language_model=language_model,
+        reward_model_train=reward_model_train,
         language_tokenizer=language_tokenizer,
-        reward_tokenizer=reward_tokenizer,
+        reward_tokenizer_train=reward_tokenizer_train,
         completion_filter=completion_filter,
         training_args=training_args,
         report_metrics=metrics_functions,
