@@ -168,7 +168,11 @@ class SuperHFTrainer:
         )
 
         # Prepare with accelerator
-        self.language_model = self.accelerator.prepare(self.language_model)
+        self.language_model, self.reward_model_train, self.reward_model_val = (
+            self.accelerator.prepare(
+                self.language_model, self.reward_model_train, self.reward_model_val
+            )
+        )
 
         # Lazy-init optimizer and scheduler
         self.optimizer: Optional[torch.optim.Optimizer] = None
@@ -515,9 +519,7 @@ class SuperHFTrainer:
             collate_fn=self.collate_fn_rm_train,
         )
 
-        with torch.no_grad(), torch.cuda.amp.autocast(  # type: ignore
-            dtype=self.training_args.dtype
-        ):
+        with torch.no_grad():
             iteration = 0
             for minibatch in tqdm(
                 score_dataloader,
@@ -573,9 +575,7 @@ class SuperHFTrainer:
             batch_size=self.training_args.minibatch_size_scoring,
             collate_fn=self.collate_fn_rm_val,
         )
-        with torch.no_grad(), torch.cuda.amp.autocast(  # type: ignore
-            dtype=self.training_args.dtype
-        ):
+        with torch.no_grad():
             for minibatch in score_dataloader:
                 completion_encodings = minibatch
                 scores = self.reward_model_val(**completion_encodings)
