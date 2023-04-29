@@ -305,6 +305,7 @@ def main(script_args: ScriptArguments):
     # This pipelinle is for the reward model
     reward_model_pipe = pipeline(model=reward_model, device=device)
     print(f"The device is {device}")
+    print_gpu_utilization()
 
     # input_size = LengthSampler(input_min_text_length, input_max_text_length)
 
@@ -315,6 +316,9 @@ def main(script_args: ScriptArguments):
     for epoch, batch in tqdm(
         enumerate(ppo_trainer.dataloader), total=len(ppo_trainer.dataloader)
     ):
+        tqdm.write(f"Epoch {epoch}")
+        print_gpu_utilization()
+
         query_tensors = [
             language_tokenizer(q, return_tensors="pt")["input_ids"].squeeze().to(device)
             for q in batch["query"]
@@ -330,6 +334,9 @@ def main(script_args: ScriptArguments):
         batch["response"] = trim_generations(
             [language_tokenizer.decode(r.squeeze()) for r in response_tensors]
         )
+
+        tqdm.write("Finished generating responses. GPU usage is:")
+        print_gpu_utilization()
 
         # Compute sentiment score
         texts = [q + r for q, r in zip(batch["query"], batch["response"])]
@@ -351,6 +358,9 @@ def main(script_args: ScriptArguments):
         # Run PPO step
         stats = ppo_trainer.step(query_tensors, response_tensors, rewards)
         ppo_trainer.log_stats(stats, batch, original_rewards)
+
+        tqdm.write("Finished PPO step. GPU usage is:")
+        print_gpu_utilization()
 
         if len(hub_repo_id) > 0 and (
             epoch == len(ppo_trainer.dataloader) - 1
