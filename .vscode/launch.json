@@ -52,9 +52,10 @@
             "name": "SHF Iter (Pythia 1B Debug)",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/experiments/superhf/shf_iterative_v1/run_shf_iterative.py",
+            "module": "accelerate.commands.launch",
             "console": "integratedTerminal",
             "args": [
+                "${workspaceFolder}/experiments/superhf/shf_iterative_v1/run_shf_iterative.py",
                 "--config",
                 "${workspaceFolder}/experiments/superhf/shf_iterative_v1/configs/pythia-1B-debug.yaml",
             ],
