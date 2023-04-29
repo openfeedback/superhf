@@ -1,49 +1,0 @@
-Using custom data configuration Anthropic--hh-rlhf-c8cd8dc58ab67414
-Found cached dataset json (/sailhome/fongsu/.cache/huggingface/datasets/Anthropic___json/Anthropic--hh-rlhf-c8cd8dc58ab67414/0.0.0/0f7e3662623656454fcd2b650f34e886a7db4b9104504885bd462096cc7a9f51)
-  0%|          | 0/2 [00:00<?, ?it/s]100%|██████████| 2/2 [00:00<00:00, 204.76it/s]
-Using pad_token, but it is not set yet.
-Some weights of GPTNeoModel were not initialized from the model checkpoint at EleutherAI/gpt-neo-1.3B and are newly initialized: ['transformer.h.7.attn.attention.bias', 'transformer.h.11.attn.attention.bias', 'transformer.h.15.attn.attention.bias', 'transformer.h.17.attn.attention.bias', 'transformer.h.13.attn.attention.bias', 'transformer.h.1.attn.attention.bias', 'transformer.h.23.attn.attention.bias', 'transformer.h.5.attn.attention.bias', 'transformer.h.9.attn.attention.bias', 'transformer.h.19.attn.attention.bias', 'transformer.h.3.attn.attention.bias', 'transformer.h.21.attn.attention.bias']
-You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
-Using custom data configuration Anthropic--hh-rlhf-b971c05e85ce84ae
-Found cached dataset json (/sailhome/fongsu/.cache/huggingface/datasets/Anthropic___json/Anthropic--hh-rlhf-b971c05e85ce84ae/0.0.0/0f7e3662623656454fcd2b650f34e886a7db4b9104504885bd462096cc7a9f51)
-  0%|          | 0/2 [00:00<?, ?it/s]100%|██████████| 2/2 [00:00<00:00, 303.76it/s]
-Using custom data configuration Anthropic--hh-rlhf-b971c05e85ce84ae
-Found cached dataset json (/sailhome/fongsu/.cache/huggingface/datasets/Anthropic___json/Anthropic--hh-rlhf-b971c05e85ce84ae/0.0.0/0f7e3662623656454fcd2b650f34e886a7db4b9104504885bd462096cc7a9f51)
-  0%|          | 0/2 [00:00<?, ?it/s]100%|██████████| 2/2 [00:00<00:00, 500.69it/s]
-/sailhome/fongsu/rm/lib/python3.8/site-packages/transformers/optimization.py:306: FutureWarning: This implementation of AdamW is deprecated and will be removed in a future version. Use the PyTorch implementation torch.optim.AdamW instead, or set `no_deprecation_warning=True` to disable this warning
-  warnings.warn(
-***** Running training *****
-  Num examples = 43835
-  Num Epochs = 1
-  Instantaneous batch size per device = 2
-  Total train batch size (w. parallel, distributed & accumulation) = 2
-  Gradient Accumulation steps = 1
-  Total optimization steps = 21918
-  Number of trainable parameters = 1315577856
-Automatic Weights & Biases logging enabled, to disable set os.environ["WANDB_DISABLED"] = "true"
-wandb: Currently logged in as: oliversf (comprehelp). Use `wandb login --relogin` to force relogin
-wandb: wandb version 0.13.11 is available!  To upgrade, please run:
-wandb:  $ pip install wandb --upgrade
-wandb: Tracking run with wandb version 0.13.10
-wandb: Run data is saved locally in /sailhome/fongsu/superhf/wandb/run-20230313_191709-mlbj48n2
-wandb: Run `wandb offline` to turn off syncing.
-wandb: Syncing run cookies-n-cream-meringue-79
-wandb: ⭐️ View project at https://wandb.ai/comprehelp/huggingface
-wandb: 🚀 View run at https://wandb.ai/comprehelp/huggingface/runs/mlbj48n2
-  0%|          | 0/21918 [00:00<?, ?it/s][W reducer.cpp:1251] Warning: find_unused_parameters=True was specified in DDP constructor, but did not find any unused parameters in the forward pass. This flag results in an extra traversal of the autograd graph every iteration,  which can adversely affect performance. If your model indeed never has any unused parameters in the forward pass, consider turning this flag off. Note that this warning may be a false positive if your model has flow control causing later iterations to have unused parameters. (function operator())
-Traceback (most recent call last):
-  File "src/reward_modelling/reward_model.py", line 190, in <module>
-    trainer.train()
-  File "/sailhome/fongsu/rm/lib/python3.8/site-packages/transformers/trainer.py", line 1543, in train
-    return inner_training_loop(
-  File "/sailhome/fongsu/rm/lib/python3.8/site-packages/transformers/trainer.py", line 1791, in _inner_training_loop
-    tr_loss_step = self.training_step(model, inputs)
-  File "/sailhome/fongsu/rm/lib/python3.8/site-packages/transformers/trainer.py", line 2539, in training_step
-    loss = self.compute_loss(model, inputs)
-  File "src/reward_modelling/reward_model.py", line 84, in compute_loss
-    scores = outputs['logits']
-IndexError: too many indices for tensor of dimension 2
-wandb: Waiting for W&B process to finish... (failed 1). Press Control-C to abort syncing.
-wandb: - 0.011 MB of 0.011 MB uploaded (0.000 MB deduped)wandb: \ 0.011 MB of 0.018 MB uploaded (0.000 MB deduped)wandb: 🚀 View run cookies-n-cream-meringue-79 at: https://wandb.ai/comprehelp/huggingface/runs/mlbj48n2
-wandb: Synced 5 W&B file(s), 0 media file(s), 0 artifact file(s) and 0 other file(s)
-wandb: Find logs at: ./wandb/run-20230313_191709-mlbj48n2/logs
