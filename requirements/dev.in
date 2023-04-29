@@ -4,10 +4,11 @@ pre-commit
 black
 pylint
 mypy
-sphinx
-esbonio
 ipykernel
 ipython
 ipywidgets
 types-tqdm
+types-PyYAML
 wandb
+sentencepiece
+protobuf<4.0.0  # Fix an issue with loading the T5 tokenizer

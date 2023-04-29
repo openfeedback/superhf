@@ -3,73 +3,75 @@ language_model_name:
   value: "EleutherAI/gpt-neo-125M"
 reward_model_name:
   desc: HuggingFace reward model to use, or "mock" for testing
-  value: "OpenAssistant/reward-model-deberta-v3-base"
+  value: "stanfordnlp/SteamSHP-flan-t5-large"
 debug_max_prompts:
   desc: Maximum number of prompts to use, or 0 for unlimited
-  value: 0
+  value: 32000
 learning_rate:
   desc: Learning rate for fine-tuning the language model.
-  value: 1.0e-6
+  value: 3.0e-7
 scheduler_name:
   desc: Name of the scheduler to use for fine-tuning the language model.
-  value: "linear"
+  value: "cosine"
 scheduler_warmup_steps:
   desc: Number of warmup steps for the scheduler.
-  value: 20
+  value: 32
 inverse_loss_penalty:
   desc: Regularizes loss by C with loss' = loss + C / loss. Set to 0 to disable.
-  value: 0.1
+  value: 0.01
 max_prompt_char_length:
   desc: Maximum number of characters to truncate prompts to
   value: 1024
 temperature:
   desc: Temperature to use for completion sampling
-  value: 0.9
+  value: 1.0
 top_p:
   desc: Top-p to use for completion sampling
-  value: 0.9
+  value: 0.95
 superbatch_size:
   desc: Number of completions to generate with the current policy before filtering and fine-tuning.
-  value: 128
+  value: 32
 completion_filter_top_k:
   desc: Top-k completions to filter and train on.
-  value: 8
+  value: 1
 max_new_tokens:
   desc: Maximum new token length of language model completion.
-  value: 256
+  value: 64
 max_length_rm:
   desc: Maximum token length of reward model input.
-  value: 512
+  value: 1024
 minibatch_size_generating:
   desc: Size of minibatches for generating completions.
   value: 32
 minibatch_size_scoring:
   desc: Size of minibatches for scoring completions.
-  value: 64
+  value: 4
 minibatch_size_finetuning:
   desc: Size of minibatches for fine-tuning the language model.
-  value: 1
+  value: 8
 mixed_precision:
   desc: Whether to use lower precision fp16 optimization, or other representations.
   value: "no"
 conversation_prompt:
   desc: A prompt to prepend to every prompt before generation to get the model more on distribution.
-  value: "A human user asks a question or says a statement, and a helpful, polite, honest, sophisticated, emotionally aware, and humble-but-knowledgeable AI assistant responds:"
+  value: "A human user asks a question or says a statement, and a helpful, polite, honest, sophisticated, emotionally aware, and humble-but-knowledgeable AI assistant responds."
+  # value: "A human user asks a question or says a statement, and a helpful, polite, honest, sophisticated, emotionally aware, and humble-but-knowledgeable AI assistant responds."
 repetition_penalty:
   desc: Repetition penalty to use for completion sampling. 1.0 means no penalty (logits unchanged)
-  value: 1.2
+  value: 1.05
 no_repeat_ngram_size:
   desc: Prevents repeating of n-grams of this size during completion sampling. 0 means no constraint (logits unchanged)
   value: 0
 prompt_dataset_names:
-  desc: The list of datasets to use for prompts. One or both of "anthropic-red-team" and "openai/webgpt_comparisons"
-  value: ["anthropic-red-team"]
+  desc: The list of datasets to use for prompts. See src/superhf/data.py for available datasets.
+  value: ["anthropic-red-team", "anthropic-helpful-base", "anthropic-harmless-base", "openai/webgpt_comparisons"]
+  # value: ["anthropic-harmless-base", "anthropic-red-team", "openai/webgpt_comparisons"]
 same_prompt_per_superbatch:
   desc: Whether to duplicate each prompt so the superbatch is variations on the same prompt.
   value: True
 length_penalty:
   desc: Adds -length_penalty * char_length to the reward. 0 means no penalty.
-  value: 0.1
+  value: 0.01
 hub_repo_id:
   desc: The ID of the HuggingFace Hub repo to use for storing the model. If empty, no model will be stored.
   # value: "test-repo"
