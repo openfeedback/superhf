@@ -102,6 +102,7 @@ def build_dataset(
     max_prompt_char_length=1024,
     debug_max_prompts=0,
     conversation_prompt="",
+    seed=66,
 ):
     """
     Currentlty we don't use the tokenizer becauses the internal trainer
@@ -111,7 +112,9 @@ def build_dataset(
         a pytorch dataset that implements the __getitem__ and __len__ methods.
         PPO trainer converts this to a pytorch dataloader.
         torch.utils.data.Dataset
+    # TODO move into src/data.py
     """
+    set_seed(seed)
     prompts: list[str] = []
     for dataset in dataset_names:
         prompts.extend(get_superhf_prompts(dataset))
@@ -139,9 +142,9 @@ def build_dataset(
     def tokenize(sample):
         dictionized_example = {}
         # dictionized_example["input_ids"] = tokenizer.encode(sample)
-        dictionized_example[
-            "query"
-        ] = sample  # tokenizer.decode(dictionized_example["input_ids"])
+        dictionized_example["query"] = (
+            sample  # tokenizer.decode(dictionized_example["input_ids"])
+        )
         return dictionized_example
 
     prompts_2 = [tokenize(prompt) for prompt in prompts]
@@ -271,6 +274,7 @@ def main(script_args: ScriptArguments):
     hub_repo_id = wandb.config.hub_repo_id
     save_every = wandb.config.save_every
     reward_mean = wandb.config.reward_mean
+    reward_model_name = wandb.config.reward_model_name
 
     (
         ppo_config,
@@ -293,16 +297,14 @@ def main(script_args: ScriptArguments):
         )
     language_model = AutoModelForCausalLMWithValueHead.from_pretrained(language_model)
 
-    reward_model = wandb.config.reward_model_name
-
     # set seed before initializing value head for deterministic eval
-    set_seed(ppo_config.seed)
     dataset = build_dataset(
         wandb.config.dataset_names,
         # language_tokenizer,
         max_prompt_char_length=wandb.config.max_prompt_char_length,
         debug_max_prompts=wandb.config.debug_max_prompts,
         conversation_prompt=wandb.config.conversation_prompt,
+        seed=ppo_config.seed,
     )
 
     def collator(data):
@@ -349,7 +351,7 @@ def main(script_args: ScriptArguments):
     if ppo_trainer.accelerator.num_processes == 1:
         device = 0 if torch.cuda.is_available() else "cpu"  # to avoid a `pipeline` bug
     # This pipelinle is for the reward model
-    reward_model_pipe = pipeline(model=reward_model, device=device)
+    reward_model_pipe = pipeline(model=reward_model_name, device=device)
     print(f"The device is {device}")
     print_gpu_utilization()
 
