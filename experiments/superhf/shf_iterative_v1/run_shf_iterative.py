@@ -206,7 +206,9 @@ def main(argparse_args: argparse.Namespace) -> None:
     trainer.train(prompts)
 
     # Explicit finish to avoid wandb hanging
-    wandb.alert(title="FINISHED SuperHF run!", text="FINISHED SuperHF run!")
+    wandb.alert(
+        title="FINISHED SuperHF run!", text="FINISHED SuperHF run! <@Gabe Mukobi>"
+    )
     wandb.finish()
 
 
