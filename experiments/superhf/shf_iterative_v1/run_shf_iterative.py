@@ -16,6 +16,8 @@ from transformers import (
     NoRepeatNGramLogitsProcessor,
     RepetitionPenaltyLogitsProcessor,
     LlamaTokenizer,
+    PreTrainedTokenizerBase,
+    PreTrainedModel,
 )
 from peft import (
     LoraConfig,
@@ -103,81 +105,16 @@ def main(argparse_args: argparse.Namespace) -> None:
     print("Instantiating models...")
 
     # Instantiate our language and reward models and tokenizers
-    dtype = (
-        torch.float16
-        if wandb.config.mixed_precision == "fp16"
-        else torch.bfloat16 if wandb.config.mixed_precision == "bf16" else torch.float32
-    )
-    language_model = (
-        MockLanguageModel()
-        if language_model_name == "mock"
-        else AutoModelForCausalLM.from_pretrained(
-            language_model_name  # , torch_dtype=dtype
-        ).to(device)
-    )
-    if wandb.config.lora_r != 0 and wandb.config.lora_alpha != 0:
-        # Set up low-rank adapters (LoRA)
-        lora_config = LoraConfig(
-            r=wandb.config.lora_r,
-            lora_alpha=wandb.config.lora_alpha,
-            lora_dropout=wandb.config.lora_dropout,
-            target_modules=wandb.config.lora_target_modules,
-            task_type="CAUSAL_LM",
-            fan_in_fan_out=False,
-        )
-        language_model = get_peft_model(language_model, lora_config)
-        language_model.print_trainable_parameters()
-
-    print(f"Instantiated language model: {language_model_name}")
-    print_gpu_utilization()
-    if reward_model_name == "mock":
-        reward_model_train = MockRewardModel()
-    elif (
-        "rm_combined" in reward_model_name
-        or "oliversssf2" in wandb.config.reward_model_name
-    ):
-        reward_model_train = RewardModel.from_pretrained(reward_model_name).to(device)
-    elif "SteamSHP-flan-t5" in reward_model_name:
-        reward_model_train = AutoModelForSeq2SeqLM.from_pretrained(
-            reward_model_name
-        ).to(device)
-    else:
-        reward_model_train = AutoModelForSequenceClassification.from_pretrained(
-            reward_model_name
-        ).to(device)
-
-    print(f"Instantiated reward model: {reward_model_name}")
+    language_model = load_language_model(device, language_model_name)
     print_gpu_utilization()
 
-    language_tokenizer_name = (
-        "gpt2"
-        if wandb.config.language_model_name == "mock"
-        else wandb.config.language_model_name
-    )
-    if "llama" in language_tokenizer_name or "alpaca" in language_tokenizer_name:
-        # Fix for misnamed class in the NLP Cluster's Alpaca tokenizer config
-        language_tokenizer = LlamaTokenizer.from_pretrained(
-            language_tokenizer_name, padding_side="left"
-        )
-    else:
-        language_tokenizer = AutoTokenizer.from_pretrained(
-            language_tokenizer_name, padding_side="left"
-        )
+    reward_model_train = load_reward_model(device, reward_model_name)
+    print_gpu_utilization()
+
+    language_tokenizer = load_language_tokenizer(language_model_name)
+
     reward_tokenizer_name = wandb.config.reward_model_name
-    if wandb.config.reward_model_name == "mock":
-        reward_tokenizer_name = "gpt2"
-    elif (
-        "rm_combined" in wandb.config.reward_model_name
-        or "oliversssf2" in wandb.config.reward_model_name
-    ):
-        reward_tokenizer_name = "EleutherAI/gpt-neo-1.3B"
-
-    if "llama" in reward_tokenizer_name or "alpaca" in reward_tokenizer_name:
-        # Fix for misnamed class in the NLP Cluster's Alpaca tokenizer config
-        reward_tokenizer_train = LlamaTokenizer.from_pretrained(reward_tokenizer_name)
-    else:
-        reward_tokenizer_train = AutoTokenizer.from_pretrained(reward_tokenizer_name)
-    print("Instantiated tokenizers.")
+    reward_tokenizer_train = load_reward_tokenizer(reward_tokenizer_name)
     print_gpu_utilization()
 
     # Set our training arguments
@@ -191,6 +128,11 @@ def main(argparse_args: argparse.Namespace) -> None:
         logits_processors.append(
             RepetitionPenaltyLogitsProcessor(wandb.config.repetition_penalty)
         )
+    dtype = (
+        torch.float16
+        if wandb.config.mixed_precision == "fp16"
+        else torch.bfloat16 if wandb.config.mixed_precision == "bf16" else torch.float32
+    )
     training_args = SuperHFTrainingArguments(
         temperature=wandb.config.temperature,
         top_p=wandb.config.top_p,
@@ -246,6 +188,94 @@ def main(argparse_args: argparse.Namespace) -> None:
     # Explicit finish to avoid wandb hanging
     wandb.alert(title="FINISHED SuperHF run!", text="FINISHED SuperHF run!")
     wandb.finish()
+
+
+def load_language_model(
+    device: torch.device, language_model_name: str
+) -> PreTrainedModel:
+    """Load the language model."""
+    language_model = (
+        MockLanguageModel()
+        if language_model_name == "mock"
+        else AutoModelForCausalLM.from_pretrained(
+            language_model_name  # , torch_dtype=dtype
+        ).to(device)
+    )
+    if wandb.config.lora_r != 0 and wandb.config.lora_alpha != 0:
+        # Set up low-rank adapters (LoRA)
+        lora_config = LoraConfig(
+            r=wandb.config.lora_r,
+            lora_alpha=wandb.config.lora_alpha,
+            lora_dropout=wandb.config.lora_dropout,
+            target_modules=wandb.config.lora_target_modules,
+            task_type="CAUSAL_LM",
+            fan_in_fan_out=False,
+        )
+        language_model = get_peft_model(language_model, lora_config)
+        language_model.print_trainable_parameters()
+
+    print(f"Instantiated language model: {language_model_name}")
+    return language_model
+
+
+def load_reward_model(device: torch.device, reward_model_name: str) -> PreTrainedModel:
+    """Load the reward model."""
+    if reward_model_name == "mock":
+        reward_model_train = MockRewardModel()
+    elif (
+        "rm_combined" in reward_model_name
+        or "oliversssf2" in wandb.config.reward_model_name
+    ):
+        reward_model_train = RewardModel.from_pretrained(reward_model_name).to(device)
+    elif "SteamSHP-flan-t5" in reward_model_name:
+        reward_model_train = AutoModelForSeq2SeqLM.from_pretrained(
+            reward_model_name
+        ).to(device)
+    else:
+        reward_model_train = AutoModelForSequenceClassification.from_pretrained(
+            reward_model_name
+        ).to(device)
+
+    print(f"Instantiated reward model: {reward_model_name}")
+    return reward_model_train
+
+
+def load_language_tokenizer(language_model_name: str) -> PreTrainedTokenizerBase:
+    """Load the language model tokenizer."""
+    language_tokenizer_name = (
+        "gpt2" if language_model_name == "mock" else language_model_name
+    )
+    if "llama" in language_tokenizer_name or "alpaca" in language_tokenizer_name:
+        # Fix for misnamed class in the NLP Cluster's Alpaca tokenizer config
+        language_tokenizer = LlamaTokenizer.from_pretrained(
+            language_tokenizer_name, padding_side="left"
+        )
+    else:
+        language_tokenizer = AutoTokenizer.from_pretrained(
+            language_tokenizer_name, padding_side="left"
+        )
+
+    print(f"Instantiated language tokenizer {language_tokenizer_name}")
+    return language_tokenizer
+
+
+def load_reward_tokenizer(reward_tokenizer_name: str) -> PreTrainedTokenizerBase:
+    """Load the reward model's tokenizer."""
+    if reward_tokenizer_name == "mock":
+        reward_tokenizer_name = "gpt2"
+    elif (
+        "rm_combined" in reward_tokenizer_name or "oliversssf2" in reward_tokenizer_name
+    ):
+        reward_tokenizer_name = "EleutherAI/gpt-neo-1.3B"
+
+    if "llama" in reward_tokenizer_name or "alpaca" in reward_tokenizer_name:
+        # Fix for misnamed class in the NLP Cluster's Alpaca tokenizer config
+        reward_tokenizer_train = LlamaTokenizer.from_pretrained(reward_tokenizer_name)
+    else:
+        reward_tokenizer_train = AutoTokenizer.from_pretrained(reward_tokenizer_name)
+
+    print(f"Instantiated reward tokenizer {reward_tokenizer_name}")
+    return reward_tokenizer_train
 
 
 if __name__ == "__main__":
