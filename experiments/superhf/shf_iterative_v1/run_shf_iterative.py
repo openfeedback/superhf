@@ -247,7 +247,10 @@ def load_reward_model(device: torch.device, reward_model_name: str) -> PreTraine
     if reward_model_name == "mock":
         reward_model_train = MockRewardModel()
     elif "rm_combined" in reward_model_name or "oliversssf2" in reward_model_name:
-        reward_model_train = RewardModel.from_pretrained(reward_model_name).to(device)
+        reward_model_train = RewardModel.from_pretrained(
+            reward_model_name,
+            torch_dtype=torch.bfloat16,  # For now, force half precision
+        ).to(device)
     elif "SteamSHP-flan-t5" in reward_model_name:
         reward_model_train = AutoModelForSeq2SeqLM.from_pretrained(
             reward_model_name

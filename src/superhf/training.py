@@ -397,18 +397,18 @@ class SuperHFTrainer:
                 file=sys.stdout,
             ):
                 encodings = minibatch
-                # with torch.cuda.amp.autocast(dtype=self.training_args.dtype):  # type: ignore
-                encodings.to(self.language_model.device)
-                outputs = self.language_model.generate(  # type: ignore
-                    **encodings,
-                    max_new_tokens=self.training_args.max_new_tokens,
-                    temperature=self.training_args.temperature,
-                    top_p=self.training_args.top_p,
-                    do_sample=True,
-                    num_return_sequences=1,
-                    pad_token_id=self.language_tokenizer.pad_token_id,
-                    logits_processor=self.training_args.logits_processors,
-                )
+                with torch.cuda.amp.autocast(dtype=self.training_args.dtype):  # type: ignore
+                    encodings.to(self.language_model.device)
+                    outputs = self.language_model.generate(  # type: ignore
+                        **encodings,
+                        max_new_tokens=self.training_args.max_new_tokens,
+                        temperature=self.training_args.temperature,
+                        top_p=self.training_args.top_p,
+                        do_sample=True,
+                        num_return_sequences=1,
+                        pad_token_id=self.language_tokenizer.pad_token_id,
+                        logits_processor=self.training_args.logits_processors,
+                    )
                 completions_encoded.extend(outputs.to("cpu"))
         # completions_gathered: list[str] = accelerator.gather(
         #     completions
@@ -509,7 +509,9 @@ class SuperHFTrainer:
             collate_fn=self.collate_fn_rm_train,
         )
 
-        with torch.no_grad():
+        with torch.no_grad(), torch.cuda.amp.autocast(  # type: ignore
+            dtype=self.training_args.dtype
+        ):
             iteration = 0
             for minibatch in tqdm(
                 score_dataloader,
@@ -565,7 +567,9 @@ class SuperHFTrainer:
             batch_size=self.training_args.minibatch_size_scoring,
             collate_fn=self.collate_fn_rm_val,
         )
-        with torch.no_grad():
+        with torch.no_grad(), torch.cuda.amp.autocast(  # type: ignore
+            dtype=self.training_args.dtype
+        ):
             for minibatch in score_dataloader:
                 completion_encodings = minibatch
                 scores = self.reward_model_val(**completion_encodings)
