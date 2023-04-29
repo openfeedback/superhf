@@ -1,0 +1,627 @@
+{
+    "_version": "v0",
+    "source_type": "repo",
+    "source": {
+        "entrypoint": [
+            "python",
+            "src/reward_modelling/reward_model.py"
+        ],
+        "git": {
+            "remote": "https://github.com/openfeedback/superhf.git",
+            "commit": "4c626be19a21a2c808f4b28453f3d0fda8b1cb93"
+        }
+    },
+    "input_types": {
+        "wb_type": "typedDict",
+        "params": {
+            "type_map": {
+                "vocab_size": {
+                    "wb_type": "number"
+                },
+                "max_position_embeddings": {
+                    "wb_type": "number"
+                },
+                "hidden_size": {
+                    "wb_type": "number"
+                },
+                "num_layers": {
+                    "wb_type": "number"
+                },
+                "num_heads": {
+                    "wb_type": "number"
+                },
+                "intermediate_size": {
+                    "wb_type": "none"
+                },
+                "window_size": {
+                    "wb_type": "number"
+                },
+                "activation_function": {
+                    "wb_type": "string"
+                },
+                "resid_dropout": {
+                    "wb_type": "number"
+                },
+                "embed_dropout": {
+                    "wb_type": "number"
+                },
+                "attention_dropout": {
+                    "wb_type": "number"
+                },
+                "layer_norm_epsilon": {
+                    "wb_type": "number"
+                },
+                "initializer_range": {
+                    "wb_type": "number"
+                },
+                "summary_type": {
+                    "wb_type": "string"
+                },
+                "summary_use_proj": {
+                    "wb_type": "boolean"
+                },
+                "summary_activation": {
+                    "wb_type": "none"
+                },
+                "summary_first_dropout": {
+                    "wb_type": "number"
+                },
+                "summary_proj_to_labels": {
+                    "wb_type": "boolean"
+                },
+                "use_cache": {
+                    "wb_type": "boolean"
+                },
+                "bos_token_id": {
+                    "wb_type": "number"
+                },
+                "eos_token_id": {
+                    "wb_type": "number"
+                },
+                "attention_types": {
+                    "wb_type": "list",
+                    "params": {
+                        "element_type": {
+                            "wb_type": "list",
+                            "params": {
+                                "element_type": {
+                                    "wb_type": "invalid"
+                                },
+                                "length": 2
+                            }
+                        },
+                        "length": 1
+                    }
+                },
+                "attention_layers": {
+                    "wb_type": "list",
+                    "params": {
+                        "element_type": {
+                            "wb_type": "string"
+                        },
+                        "length": 12
+                    }
+                },
+                "return_dict": {
+                    "wb_type": "boolean"
+                },
+                "output_hidden_states": {
+                    "wb_type": "boolean"
+                },
+                "output_attentions": {
+                    "wb_type": "boolean"
+                },
+                "torchscript": {
+                    "wb_type": "boolean"
+                },
+                "torch_dtype": {
+                    "wb_type": "none"
+                },
+                "use_bfloat16": {
+                    "wb_type": "boolean"
+                },
+                "tf_legacy_loss": {
+                    "wb_type": "boolean"
+                },
+                "pruned_heads": {
+                    "wb_type": "typedDict",
+                    "params": {
+                        "type_map": {}
+                    }
+                },
+                "tie_word_embeddings": {
+                    "wb_type": "boolean"
+                },
+                "is_encoder_decoder": {
+                    "wb_type": "boolean"
+                },
+                "is_decoder": {
+                    "wb_type": "boolean"
+                },
+                "cross_attention_hidden_size": {
+                    "wb_type": "none"
+                },
+                "add_cross_attention": {
+                    "wb_type": "boolean"
+                },
+                "tie_encoder_decoder": {
+                    "wb_type": "boolean"
+                },
+                "max_length": {
+                    "wb_type": "number"
+                },
+                "min_length": {
+                    "wb_type": "number"
+                },
+                "do_sample": {
+                    "wb_type": "boolean"
+                },
+                "early_stopping": {
+                    "wb_type": "boolean"
+                },
+                "num_beams": {
+                    "wb_type": "number"
+                },
+                "num_beam_groups": {
+                    "wb_type": "number"
+                },
+                "diversity_penalty": {
+                    "wb_type": "number"
+                },
+                "temperature": {
+                    "wb_type": "number"
+                },
+                "top_k": {
+                    "wb_type": "number"
+                },
+                "top_p": {
+                    "wb_type": "number"
+                },
+                "typical_p": {
+                    "wb_type": "number"
+                },
+                "repetition_penalty": {
+                    "wb_type": "number"
+                },
+                "length_penalty": {
+                    "wb_type": "number"
+                },
+                "no_repeat_ngram_size": {
+                    "wb_type": "number"
+                },
+                "encoder_no_repeat_ngram_size": {
+                    "wb_type": "number"
+                },
+                "bad_words_ids": {
+                    "wb_type": "none"
+                },
+                "num_return_sequences": {
+                    "wb_type": "number"
+                },
+                "chunk_size_feed_forward": {
+                    "wb_type": "number"
+                },
+                "output_scores": {
+                    "wb_type": "boolean"
+                },
+                "return_dict_in_generate": {
+                    "wb_type": "boolean"
+                },
+                "forced_bos_token_id": {
+                    "wb_type": "none"
+                },
+                "forced_eos_token_id": {
+                    "wb_type": "none"
+                },
+                "remove_invalid_values": {
+                    "wb_type": "boolean"
+                },
+                "exponential_decay_length_penalty": {
+                    "wb_type": "none"
+                },
+                "suppress_tokens": {
+                    "wb_type": "none"
+                },
+                "begin_suppress_tokens": {
+                    "wb_type": "none"
+                },
+                "architectures": {
+                    "wb_type": "list",
+                    "params": {
+                        "element_type": {
+                            "wb_type": "string"
+                        },
+                        "length": 1
+                    }
+                },
+                "finetuning_task": {
+                    "wb_type": "none"
+                },
+                "id2label": {
+                    "wb_type": "typedDict",
+                    "params": {
+                        "type_map": {
+                            "0": {
+                                "wb_type": "string"
+                            },
+                            "1": {
+                                "wb_type": "string"
+                            }
+                        }
+                    }
+                },
+                "label2id": {
+                    "wb_type": "typedDict",
+                    "params": {
+                        "type_map": {
+                            "LABEL_0": {
+                                "wb_type": "number"
+                            },
+                            "LABEL_1": {
+                                "wb_type": "number"
+                            }
+                        }
+                    }
+                },
+                "tokenizer_class": {
+                    "wb_type": "none"
+                },
+                "prefix": {
+                    "wb_type": "none"
+                },
+                "pad_token_id": {
+                    "wb_type": "none"
+                },
+                "sep_token_id": {
+                    "wb_type": "none"
+                },
+                "decoder_start_token_id": {
+                    "wb_type": "none"
+                },
+                "task_specific_params": {
+                    "wb_type": "none"
+                },
+                "problem_type": {
+                    "wb_type": "none"
+                },
+                "_name_or_path": {
+                    "wb_type": "string"
+                },
+                "transformers_version": {
+                    "wb_type": "string"
+                },
+                "gradient_checkpointing": {
+                    "wb_type": "boolean"
+                },
+                "model_type": {
+                    "wb_type": "string"
+                },
+                "output_dir": {
+                    "wb_type": "string"
+                },
+                "overwrite_output_dir": {
+                    "wb_type": "boolean"
+                },
+                "do_train": {
+                    "wb_type": "boolean"
+                },
+                "do_eval": {
+                    "wb_type": "boolean"
+                },
+                "do_predict": {
+                    "wb_type": "boolean"
+                },
+                "evaluation_strategy": {
+                    "wb_type": "string"
+                },
+                "prediction_loss_only": {
+                    "wb_type": "boolean"
+                },
+                "per_device_train_batch_size": {
+                    "wb_type": "number"
+                },
+                "per_device_eval_batch_size": {
+                    "wb_type": "number"
+                },
+                "per_gpu_train_batch_size": {
+                    "wb_type": "string"
+                },
+                "per_gpu_eval_batch_size": {
+                    "wb_type": "string"
+                },
+                "gradient_accumulation_steps": {
+                    "wb_type": "number"
+                },
+                "eval_accumulation_steps": {
+                    "wb_type": "string"
+                },
+                "eval_delay": {
+                    "wb_type": "number"
+                },
+                "learning_rate": {
+                    "wb_type": "number"
+                },
+                "weight_decay": {
+                    "wb_type": "number"
+                },
+                "adam_beta1": {
+                    "wb_type": "number"
+                },
+                "adam_beta2": {
+                    "wb_type": "number"
+                },
+                "adam_epsilon": {
+                    "wb_type": "number"
+                },
+                "max_grad_norm": {
+                    "wb_type": "number"
+                },
+                "num_train_epochs": {
+                    "wb_type": "number"
+                },
+                "max_steps": {
+                    "wb_type": "number"
+                },
+                "lr_scheduler_type": {
+                    "wb_type": "string"
+                },
+                "warmup_ratio": {
+                    "wb_type": "number"
+                },
+                "warmup_steps": {
+                    "wb_type": "number"
+                },
+                "log_level": {
+                    "wb_type": "string"
+                },
+                "log_level_replica": {
+                    "wb_type": "string"
+                },
+                "log_on_each_node": {
+                    "wb_type": "boolean"
+                },
+                "logging_dir": {
+                    "wb_type": "string"
+                },
+                "logging_strategy": {
+                    "wb_type": "string"
+                },
+                "logging_first_step": {
+                    "wb_type": "boolean"
+                },
+                "logging_steps": {
+                    "wb_type": "number"
+                },
+                "logging_nan_inf_filter": {
+                    "wb_type": "boolean"
+                },
+                "save_strategy": {
+                    "wb_type": "string"
+                },
+                "save_steps": {
+                    "wb_type": "number"
+                },
+                "save_total_limit": {
+                    "wb_type": "number"
+                },
+                "save_on_each_node": {
+                    "wb_type": "boolean"
+                },
+                "no_cuda": {
+                    "wb_type": "boolean"
+                },
+                "use_mps_device": {
+                    "wb_type": "boolean"
+                },
+                "seed": {
+                    "wb_type": "number"
+                },
+                "data_seed": {
+                    "wb_type": "string"
+                },
+                "jit_mode_eval": {
+                    "wb_type": "boolean"
+                },
+                "use_ipex": {
+                    "wb_type": "boolean"
+                },
+                "bf16": {
+                    "wb_type": "boolean"
+                },
+                "fp16": {
+                    "wb_type": "boolean"
+                },
+                "fp16_opt_level": {
+                    "wb_type": "string"
+                },
+                "half_precision_backend": {
+                    "wb_type": "string"
+                },
+                "bf16_full_eval": {
+                    "wb_type": "boolean"
+                },
+                "fp16_full_eval": {
+                    "wb_type": "boolean"
+                },
+                "tf32": {
+                    "wb_type": "string"
+                },
+                "local_rank": {
+                    "wb_type": "number"
+                },
+                "xpu_backend": {
+                    "wb_type": "string"
+                },
+                "tpu_num_cores": {
+                    "wb_type": "string"
+                },
+                "tpu_metrics_debug": {
+                    "wb_type": "boolean"
+                },
+                "debug": {
+                    "wb_type": "string"
+                },
+                "dataloader_drop_last": {
+                    "wb_type": "boolean"
+                },
+                "eval_steps": {
+                    "wb_type": "number"
+                },
+                "dataloader_num_workers": {
+                    "wb_type": "number"
+                },
+                "past_index": {
+                    "wb_type": "number"
+                },
+                "run_name": {
+                    "wb_type": "string"
+                },
+                "disable_tqdm": {
+                    "wb_type": "boolean"
+                },
+                "remove_unused_columns": {
+                    "wb_type": "boolean"
+                },
+                "label_names": {
+                    "wb_type": "string"
+                },
+                "load_best_model_at_end": {
+                    "wb_type": "boolean"
+                },
+                "metric_for_best_model": {
+                    "wb_type": "string"
+                },
+                "greater_is_better": {
+                    "wb_type": "string"
+                },
+                "ignore_data_skip": {
+                    "wb_type": "boolean"
+                },
+                "sharded_ddp": {
+                    "wb_type": "string"
+                },
+                "fsdp": {
+                    "wb_type": "string"
+                },
+                "fsdp_min_num_params": {
+                    "wb_type": "number"
+                },
+                "fsdp_transformer_layer_cls_to_wrap": {
+                    "wb_type": "string"
+                },
+                "deepspeed": {
+                    "wb_type": "string"
+                },
+                "label_smoothing_factor": {
+                    "wb_type": "number"
+                },
+                "optim": {
+                    "wb_type": "string"
+                },
+                "optim_args": {
+                    "wb_type": "string"
+                },
+                "adafactor": {
+                    "wb_type": "boolean"
+                },
+                "group_by_length": {
+                    "wb_type": "boolean"
+                },
+                "length_column_name": {
+                    "wb_type": "string"
+                },
+                "report_to": {
+                    "wb_type": "string"
+                },
+                "ddp_find_unused_parameters": {
+                    "wb_type": "boolean"
+                },
+                "ddp_bucket_cap_mb": {
+                    "wb_type": "string"
+                },
+                "dataloader_pin_memory": {
+                    "wb_type": "boolean"
+                },
+                "skip_memory_metrics": {
+                    "wb_type": "boolean"
+                },
+                "use_legacy_prediction_loop": {
+                    "wb_type": "boolean"
+                },
+                "push_to_hub": {
+                    "wb_type": "boolean"
+                },
+                "resume_from_checkpoint": {
+                    "wb_type": "string"
+                },
+                "hub_model_id": {
+                    "wb_type": "string"
+                },
+                "hub_strategy": {
+                    "wb_type": "string"
+                },
+                "hub_token": {
+                    "wb_type": "string"
+                },
+                "hub_private_repo": {
+                    "wb_type": "boolean"
+                },
+                "include_inputs_for_metrics": {
+                    "wb_type": "boolean"
+                },
+                "fp16_backend": {
+                    "wb_type": "string"
+                },
+                "push_to_hub_model_id": {
+                    "wb_type": "string"
+                },
+                "push_to_hub_organization": {
+                    "wb_type": "string"
+                },
+                "push_to_hub_token": {
+                    "wb_type": "string"
+                },
+                "mp_parameters": {
+                    "wb_type": "string"
+                },
+                "auto_find_batch_size": {
+                    "wb_type": "boolean"
+                },
+                "full_determinism": {
+                    "wb_type": "boolean"
+                },
+                "torchdynamo": {
+                    "wb_type": "string"
+                },
+                "ray_scope": {
+                    "wb_type": "string"
+                },
+                "ddp_timeout": {
+                    "wb_type": "number"
+                },
+                "torch_compile": {
+                    "wb_type": "boolean"
+                },
+                "torch_compile_backend": {
+                    "wb_type": "string"
+                },
+                "torch_compile_mode": {
+                    "wb_type": "string"
+                },
+                "train_batch_size": {
+                    "wb_type": "number"
+                },
+                "eval_batch_size": {
+                    "wb_type": "number"
+                }
+            }
+        }
+    },
+    "output_types": {
+        "wb_type": "typedDict",
+        "params": {
+            "type_map": {}
+        }
+    },
+    "runtime": "3.8.10"
+}

@@ -1,0 +1,562 @@
+Downloading (…)okenizer_config.json:   0%|          | 0.00/28.0 [00:00<?, ?B/s]Downloading (…)okenizer_config.json: 100%|██████████| 28.0/28.0 [00:00<00:00, 4.49kB/s]
+Downloading (…)lve/main/config.json:   0%|          | 0.00/483 [00:00<?, ?B/s]Downloading (…)lve/main/config.json: 100%|██████████| 483/483 [00:00<00:00, 90.4kB/s]
+[INFO|configuration_utils.py:668] 2023-04-24 12:56:57,092 >> loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--distilbert-base-uncased/snapshots/1c4513b2eedbda136f57676a34eea67aba266e5c/config.json
+[INFO|configuration_utils.py:668] 2023-04-24 12:56:57,100 >> loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--distilbert-base-uncased/snapshots/1c4513b2eedbda136f57676a34eea67aba266e5c/config.json
+[INFO|configuration_utils.py:668] 2023-04-24 12:56:57,130 >> loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--distilbert-base-uncased/snapshots/1c4513b2eedbda136f57676a34eea67aba266e5c/config.json
+[INFO|configuration_utils.py:668] 2023-04-24 12:56:57,138 >> loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--distilbert-base-uncased/snapshots/1c4513b2eedbda136f57676a34eea67aba266e5c/config.json
+[INFO|configuration_utils.py:720] 2023-04-24 12:56:57,194 >> Model config DistilBertConfig {
+  "_name_or_path": "distilbert-base-uncased",
+  "activation": "gelu",
+  "architectures": [
+    "DistilBertForMaskedLM"
+  ],
+  "attention_dropout": 0.1,
+  "dim": 768,
+  "dropout": 0.1,
+  "hidden_dim": 3072,
+  "initializer_range": 0.02,
+  "max_position_embeddings": 512,
+  "model_type": "distilbert",
+  "n_heads": 12,
+  "n_layers": 6,
+  "pad_token_id": 0,
+  "qa_dropout": 0.1,
+  "seq_classif_dropout": 0.2,
+  "sinusoidal_pos_embds": false,
+  "tie_weights_": true,
+  "transformers_version": "4.28.1",
+  "vocab_size": 30522
+}
+
+[INFO|configuration_utils.py:720] 2023-04-24 12:56:57,195 >> Model config DistilBertConfig {
+  "_name_or_path": "distilbert-base-uncased",
+  "activation": "gelu",
+  "architectures": [
+    "DistilBertForMaskedLM"
+  ],
+  "attention_dropout": 0.1,
+  "dim": 768,
+  "dropout": 0.1,
+  "hidden_dim": 3072,
+  "initializer_range": 0.02,
+  "max_position_embeddings": 512,
+  "model_type": "distilbert",
+  "n_heads": 12,
+  "n_layers": 6,
+  "pad_token_id": 0,
+  "qa_dropout": 0.1,
+  "seq_classif_dropout": 0.2,
+  "sinusoidal_pos_embds": false,
+  "tie_weights_": true,
+  "transformers_version": "4.28.1",
+  "vocab_size": 30522
+}
+
+[INFO|configuration_utils.py:720] 2023-04-24 12:56:57,196 >> Model config DistilBertConfig {
+  "_name_or_path": "distilbert-base-uncased",
+  "activation": "gelu",
+  "architectures": [
+    "DistilBertForMaskedLM"
+  ],
+  "attention_dropout": 0.1,
+  "dim": 768,
+  "dropout": 0.1,
+  "hidden_dim": 3072,
+  "initializer_range": 0.02,
+  "max_position_embeddings": 512,
+  "model_type": "distilbert",
+  "n_heads": 12,
+  "n_layers": 6,
+  "pad_token_id": 0,
+  "qa_dropout": 0.1,
+  "seq_classif_dropout": 0.2,
+  "sinusoidal_pos_embds": false,
+  "tie_weights_": true,
+  "transformers_version": "4.28.1",
+  "vocab_size": 30522
+}
+
+[INFO|configuration_utils.py:720] 2023-04-24 12:56:57,196 >> Model config DistilBertConfig {
+  "_name_or_path": "distilbert-base-uncased",
+  "activation": "gelu",
+  "architectures": [
+    "DistilBertForMaskedLM"
+  ],
+  "attention_dropout": 0.1,
+  "dim": 768,
+  "dropout": 0.1,
+  "hidden_dim": 3072,
+  "initializer_range": 0.02,
+  "max_position_embeddings": 512,
+  "model_type": "distilbert",
+  "n_heads": 12,
+  "n_layers": 6,
+  "pad_token_id": 0,
+  "qa_dropout": 0.1,
+  "seq_classif_dropout": 0.2,
+  "sinusoidal_pos_embds": false,
+  "tie_weights_": true,
+  "transformers_version": "4.28.1",
+  "vocab_size": 30522
+}
+
+Downloading (…)solve/main/vocab.txt:   0%|          | 0.00/232k [00:00<?, ?B/s]Downloading (…)solve/main/vocab.txt: 100%|██████████| 232k/232k [00:00<00:00, 7.59MB/s]
+Downloading (…)/main/tokenizer.json:   0%|          | 0.00/466k [00:00<?, ?B/s]Downloading (…)/main/tokenizer.json: 100%|██████████| 466k/466k [00:00<00:00, 6.51MB/s]
+[INFO|tokenization_utils_base.py:1809] 2023-04-24 12:56:58,171 >> loading file vocab.txt from cache at /nlp/scr/fongsu/.cache/hub/models--distilbert-base-uncased/snapshots/1c4513b2eedbda136f57676a34eea67aba266e5c/vocab.txt
+[INFO|tokenization_utils_base.py:1809] 2023-04-24 12:56:58,171 >> loading file tokenizer.json from cache at /nlp/scr/fongsu/.cache/hub/models--distilbert-base-uncased/snapshots/1c4513b2eedbda136f57676a34eea67aba266e5c/tokenizer.json
+[INFO|tokenization_utils_base.py:1809] 2023-04-24 12:56:58,172 >> loading file added_tokens.json from cache at None
+[INFO|tokenization_utils_base.py:1809] 2023-04-24 12:56:58,172 >> loading file special_tokens_map.json from cache at None
+[INFO|tokenization_utils_base.py:1809] 2023-04-24 12:56:58,172 >> loading file tokenizer_config.json from cache at /nlp/scr/fongsu/.cache/hub/models--distilbert-base-uncased/snapshots/1c4513b2eedbda136f57676a34eea67aba266e5c/tokenizer_config.json
+[INFO|configuration_utils.py:668] 2023-04-24 12:56:58,173 >> loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--distilbert-base-uncased/snapshots/1c4513b2eedbda136f57676a34eea67aba266e5c/config.json
+[INFO|configuration_utils.py:720] 2023-04-24 12:56:58,174 >> Model config DistilBertConfig {
+  "_name_or_path": "distilbert-base-uncased",
+  "activation": "gelu",
+  "architectures": [
+    "DistilBertForMaskedLM"
+  ],
+  "attention_dropout": 0.1,
+  "dim": 768,
+  "dropout": 0.1,
+  "hidden_dim": 3072,
+  "initializer_range": 0.02,
+  "max_position_embeddings": 512,
+  "model_type": "distilbert",
+  "n_heads": 12,
+  "n_layers": 6,
+  "pad_token_id": 0,
+  "qa_dropout": 0.1,
+  "seq_classif_dropout": 0.2,
+  "sinusoidal_pos_embds": false,
+  "tie_weights_": true,
+  "transformers_version": "4.28.1",
+  "vocab_size": 30522
+}
+
+[INFO|tokenization_utils_base.py:1809] 2023-04-24 12:56:58,201 >> loading file vocab.txt from cache at /nlp/scr/fongsu/.cache/hub/models--distilbert-base-uncased/snapshots/1c4513b2eedbda136f57676a34eea67aba266e5c/vocab.txt
+[INFO|tokenization_utils_base.py:1809] 2023-04-24 12:56:58,201 >> loading file tokenizer.json from cache at /nlp/scr/fongsu/.cache/hub/models--distilbert-base-uncased/snapshots/1c4513b2eedbda136f57676a34eea67aba266e5c/tokenizer.json
+[INFO|tokenization_utils_base.py:1809] 2023-04-24 12:56:58,201 >> loading file added_tokens.json from cache at None
+[INFO|tokenization_utils_base.py:1809] 2023-04-24 12:56:58,201 >> loading file special_tokens_map.json from cache at None
+[INFO|tokenization_utils_base.py:1809] 2023-04-24 12:56:58,201 >> loading file tokenizer_config.json from cache at /nlp/scr/fongsu/.cache/hub/models--distilbert-base-uncased/snapshots/1c4513b2eedbda136f57676a34eea67aba266e5c/tokenizer_config.json
+[INFO|configuration_utils.py:668] 2023-04-24 12:56:58,202 >> loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--distilbert-base-uncased/snapshots/1c4513b2eedbda136f57676a34eea67aba266e5c/config.json
+[INFO|configuration_utils.py:720] 2023-04-24 12:56:58,203 >> Model config DistilBertConfig {
+  "_name_or_path": "distilbert-base-uncased",
+  "activation": "gelu",
+  "architectures": [
+    "DistilBertForMaskedLM"
+  ],
+  "attention_dropout": 0.1,
+  "dim": 768,
+  "dropout": 0.1,
+  "hidden_dim": 3072,
+  "initializer_range": 0.02,
+  "max_position_embeddings": 512,
+  "model_type": "distilbert",
+  "n_heads": 12,
+  "n_layers": 6,
+  "pad_token_id": 0,
+  "qa_dropout": 0.1,
+  "seq_classif_dropout": 0.2,
+  "sinusoidal_pos_embds": false,
+  "tie_weights_": true,
+  "transformers_version": "4.28.1",
+  "vocab_size": 30522
+}
+
+[INFO|tokenization_utils_base.py:1809] 2023-04-24 12:56:58,354 >> loading file vocab.txt from cache at /nlp/scr/fongsu/.cache/hub/models--distilbert-base-uncased/snapshots/1c4513b2eedbda136f57676a34eea67aba266e5c/vocab.txt
+[INFO|tokenization_utils_base.py:1809] 2023-04-24 12:56:58,354 >> loading file tokenizer.json from cache at /nlp/scr/fongsu/.cache/hub/models--distilbert-base-uncased/snapshots/1c4513b2eedbda136f57676a34eea67aba266e5c/tokenizer.json
+[INFO|tokenization_utils_base.py:1809] 2023-04-24 12:56:58,354 >> loading file added_tokens.json from cache at None
+[INFO|tokenization_utils_base.py:1809] 2023-04-24 12:56:58,355 >> loading file special_tokens_map.json from cache at None
+[INFO|tokenization_utils_base.py:1809] 2023-04-24 12:56:58,355 >> loading file tokenizer_config.json from cache at /nlp/scr/fongsu/.cache/hub/models--distilbert-base-uncased/snapshots/1c4513b2eedbda136f57676a34eea67aba266e5c/tokenizer_config.json
+[INFO|tokenization_utils_base.py:1809] 2023-04-24 12:56:58,355 >> loading file vocab.txt from cache at /nlp/scr/fongsu/.cache/hub/models--distilbert-base-uncased/snapshots/1c4513b2eedbda136f57676a34eea67aba266e5c/vocab.txt
+[INFO|tokenization_utils_base.py:1809] 2023-04-24 12:56:58,355 >> loading file tokenizer.json from cache at /nlp/scr/fongsu/.cache/hub/models--distilbert-base-uncased/snapshots/1c4513b2eedbda136f57676a34eea67aba266e5c/tokenizer.json
+[INFO|tokenization_utils_base.py:1809] 2023-04-24 12:56:58,355 >> loading file added_tokens.json from cache at None
+[INFO|tokenization_utils_base.py:1809] 2023-04-24 12:56:58,355 >> loading file special_tokens_map.json from cache at None
+[INFO|tokenization_utils_base.py:1809] 2023-04-24 12:56:58,355 >> loading file tokenizer_config.json from cache at /nlp/scr/fongsu/.cache/hub/models--distilbert-base-uncased/snapshots/1c4513b2eedbda136f57676a34eea67aba266e5c/tokenizer_config.json
+[INFO|configuration_utils.py:668] 2023-04-24 12:56:58,356 >> loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--distilbert-base-uncased/snapshots/1c4513b2eedbda136f57676a34eea67aba266e5c/config.json
+[INFO|configuration_utils.py:668] 2023-04-24 12:56:58,356 >> loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--distilbert-base-uncased/snapshots/1c4513b2eedbda136f57676a34eea67aba266e5c/config.json
+[INFO|configuration_utils.py:720] 2023-04-24 12:56:58,357 >> Model config DistilBertConfig {
+  "_name_or_path": "distilbert-base-uncased",
+  "activation": "gelu",
+  "architectures": [
+    "DistilBertForMaskedLM"
+  ],
+  "attention_dropout": 0.1,
+  "dim": 768,
+  "dropout": 0.1,
+  "hidden_dim": 3072,
+  "initializer_range": 0.02,
+  "max_position_embeddings": 512,
+  "model_type": "distilbert",
+  "n_heads": 12,
+  "n_layers": 6,
+  "pad_token_id": 0,
+  "qa_dropout": 0.1,
+  "seq_classif_dropout": 0.2,
+  "sinusoidal_pos_embds": false,
+  "tie_weights_": true,
+  "transformers_version": "4.28.1",
+  "vocab_size": 30522
+}
+
+[INFO|configuration_utils.py:720] 2023-04-24 12:56:58,357 >> Model config DistilBertConfig {
+  "_name_or_path": "distilbert-base-uncased",
+  "activation": "gelu",
+  "architectures": [
+    "DistilBertForMaskedLM"
+  ],
+  "attention_dropout": 0.1,
+  "dim": 768,
+  "dropout": 0.1,
+  "hidden_dim": 3072,
+  "initializer_range": 0.02,
+  "max_position_embeddings": 512,
+  "model_type": "distilbert",
+  "n_heads": 12,
+  "n_layers": 6,
+  "pad_token_id": 0,
+  "qa_dropout": 0.1,
+  "seq_classif_dropout": 0.2,
+  "sinusoidal_pos_embds": false,
+  "tie_weights_": true,
+  "transformers_version": "4.28.1",
+  "vocab_size": 30522
+}
+
+[INFO|configuration_utils.py:668] 2023-04-24 12:56:58,405 >> loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--distilbert-base-uncased/snapshots/1c4513b2eedbda136f57676a34eea67aba266e5c/config.json
+[INFO|configuration_utils.py:720] 2023-04-24 12:56:58,406 >> Model config DistilBertConfig {
+  "_name_or_path": "distilbert-base-uncased",
+  "activation": "gelu",
+  "architectures": [
+    "DistilBertForMaskedLM"
+  ],
+  "attention_dropout": 0.1,
+  "dim": 768,
+  "dropout": 0.1,
+  "hidden_dim": 3072,
+  "initializer_range": 0.02,
+  "max_position_embeddings": 512,
+  "model_type": "distilbert",
+  "n_heads": 12,
+  "n_layers": 6,
+  "pad_token_id": 0,
+  "qa_dropout": 0.1,
+  "seq_classif_dropout": 0.2,
+  "sinusoidal_pos_embds": false,
+  "tie_weights_": true,
+  "transformers_version": "4.28.1",
+  "vocab_size": 30522
+}
+
+[INFO|configuration_utils.py:668] 2023-04-24 12:56:58,493 >> loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--distilbert-base-uncased/snapshots/1c4513b2eedbda136f57676a34eea67aba266e5c/config.json
+[INFO|configuration_utils.py:668] 2023-04-24 12:56:58,494 >> loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--distilbert-base-uncased/snapshots/1c4513b2eedbda136f57676a34eea67aba266e5c/config.json
+[INFO|configuration_utils.py:720] 2023-04-24 12:56:58,495 >> Model config DistilBertConfig {
+  "_name_or_path": "distilbert-base-uncased",
+  "activation": "gelu",
+  "architectures": [
+    "DistilBertForMaskedLM"
+  ],
+  "attention_dropout": 0.1,
+  "dim": 768,
+  "dropout": 0.1,
+  "hidden_dim": 3072,
+  "initializer_range": 0.02,
+  "max_position_embeddings": 512,
+  "model_type": "distilbert",
+  "n_heads": 12,
+  "n_layers": 6,
+  "pad_token_id": 0,
+  "qa_dropout": 0.1,
+  "seq_classif_dropout": 0.2,
+  "sinusoidal_pos_embds": false,
+  "tie_weights_": true,
+  "transformers_version": "4.28.1",
+  "vocab_size": 30522
+}
+
+[INFO|configuration_utils.py:720] 2023-04-24 12:56:58,495 >> Model config DistilBertConfig {
+  "_name_or_path": "distilbert-base-uncased",
+  "activation": "gelu",
+  "architectures": [
+    "DistilBertForMaskedLM"
+  ],
+  "attention_dropout": 0.1,
+  "dim": 768,
+  "dropout": 0.1,
+  "hidden_dim": 3072,
+  "initializer_range": 0.02,
+  "max_position_embeddings": 512,
+  "model_type": "distilbert",
+  "n_heads": 12,
+  "n_layers": 6,
+  "pad_token_id": 0,
+  "qa_dropout": 0.1,
+  "seq_classif_dropout": 0.2,
+  "sinusoidal_pos_embds": false,
+  "tie_weights_": true,
+  "transformers_version": "4.28.1",
+  "vocab_size": 30522
+}
+
+[INFO|configuration_utils.py:668] 2023-04-24 12:56:58,526 >> loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--distilbert-base-uncased/snapshots/1c4513b2eedbda136f57676a34eea67aba266e5c/config.json
+[INFO|configuration_utils.py:720] 2023-04-24 12:56:58,527 >> Model config DistilBertConfig {
+  "_name_or_path": "distilbert-base-uncased",
+  "activation": "gelu",
+  "architectures": [
+    "DistilBertForMaskedLM"
+  ],
+  "attention_dropout": 0.1,
+  "dim": 768,
+  "dropout": 0.1,
+  "hidden_dim": 3072,
+  "initializer_range": 0.02,
+  "max_position_embeddings": 512,
+  "model_type": "distilbert",
+  "n_heads": 12,
+  "n_layers": 6,
+  "pad_token_id": 0,
+  "qa_dropout": 0.1,
+  "seq_classif_dropout": 0.2,
+  "sinusoidal_pos_embds": false,
+  "tie_weights_": true,
+  "transformers_version": "4.28.1",
+  "vocab_size": 30522
+}
+
+[INFO|configuration_utils.py:668] 2023-04-24 12:56:58,588 >> loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--distilbert-base-uncased/snapshots/1c4513b2eedbda136f57676a34eea67aba266e5c/config.json
+[INFO|configuration_utils.py:720] 2023-04-24 12:56:58,589 >> Model config DistilBertConfig {
+  "_name_or_path": "distilbert-base-uncased",
+  "activation": "gelu",
+  "architectures": [
+    "DistilBertForMaskedLM"
+  ],
+  "attention_dropout": 0.1,
+  "dim": 768,
+  "dropout": 0.1,
+  "hidden_dim": 3072,
+  "initializer_range": 0.02,
+  "max_position_embeddings": 512,
+  "model_type": "distilbert",
+  "n_heads": 12,
+  "n_layers": 6,
+  "pad_token_id": 0,
+  "qa_dropout": 0.1,
+  "seq_classif_dropout": 0.2,
+  "sinusoidal_pos_embds": false,
+  "tie_weights_": true,
+  "transformers_version": "4.28.1",
+  "vocab_size": 30522
+}
+
+[INFO|configuration_utils.py:668] 2023-04-24 12:56:58,615 >> loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--distilbert-base-uncased/snapshots/1c4513b2eedbda136f57676a34eea67aba266e5c/config.json
+[INFO|configuration_utils.py:720] 2023-04-24 12:56:58,616 >> Model config DistilBertConfig {
+  "_name_or_path": "distilbert-base-uncased",
+  "activation": "gelu",
+  "architectures": [
+    "DistilBertForMaskedLM"
+  ],
+  "attention_dropout": 0.1,
+  "dim": 768,
+  "dropout": 0.1,
+  "hidden_dim": 3072,
+  "initializer_range": 0.02,
+  "max_position_embeddings": 512,
+  "model_type": "distilbert",
+  "n_heads": 12,
+  "n_layers": 6,
+  "pad_token_id": 0,
+  "qa_dropout": 0.1,
+  "seq_classif_dropout": 0.2,
+  "sinusoidal_pos_embds": false,
+  "tie_weights_": true,
+  "transformers_version": "4.28.1",
+  "vocab_size": 30522
+}
+
+[INFO|configuration_utils.py:668] 2023-04-24 12:56:58,619 >> loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--distilbert-base-uncased/snapshots/1c4513b2eedbda136f57676a34eea67aba266e5c/config.json
+[INFO|configuration_utils.py:720] 2023-04-24 12:56:58,620 >> Model config DistilBertConfig {
+  "_name_or_path": "distilbert-base-uncased",
+  "activation": "gelu",
+  "architectures": [
+    "DistilBertForMaskedLM"
+  ],
+  "attention_dropout": 0.1,
+  "dim": 768,
+  "dropout": 0.1,
+  "hidden_dim": 3072,
+  "initializer_range": 0.02,
+  "max_position_embeddings": 512,
+  "model_type": "distilbert",
+  "n_heads": 12,
+  "n_layers": 6,
+  "pad_token_id": 0,
+  "qa_dropout": 0.1,
+  "seq_classif_dropout": 0.2,
+  "sinusoidal_pos_embds": false,
+  "tie_weights_": true,
+  "transformers_version": "4.28.1",
+  "vocab_size": 30522
+}
+
+[INFO|configuration_utils.py:668] 2023-04-24 12:56:58,714 >> loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--distilbert-base-uncased/snapshots/1c4513b2eedbda136f57676a34eea67aba266e5c/config.json
+[INFO|configuration_utils.py:720] 2023-04-24 12:56:58,715 >> Model config DistilBertConfig {
+  "_name_or_path": "distilbert-base-uncased",
+  "activation": "gelu",
+  "architectures": [
+    "DistilBertForMaskedLM"
+  ],
+  "attention_dropout": 0.1,
+  "dim": 768,
+  "dropout": 0.1,
+  "hidden_dim": 3072,
+  "initializer_range": 0.02,
+  "max_position_embeddings": 512,
+  "model_type": "distilbert",
+  "n_heads": 12,
+  "n_layers": 6,
+  "pad_token_id": 0,
+  "qa_dropout": 0.1,
+  "seq_classif_dropout": 0.2,
+  "sinusoidal_pos_embds": false,
+  "tie_weights_": true,
+  "transformers_version": "4.28.1",
+  "vocab_size": 30522
+}
+
+Downloading (…)"pytorch_model.bin";:   0%|          | 0.00/268M [00:00<?, ?B/s]Downloading (…)"pytorch_model.bin";:   4%|▍         | 10.5M/268M [00:00<00:04, 60.3MB/s]Downloading (…)"pytorch_model.bin";:  12%|█▏        | 31.5M/268M [00:00<00:02, 88.6MB/s]Downloading (…)"pytorch_model.bin";:  16%|█▌        | 41.9M/268M [00:00<00:02, 89.2MB/s]Downloading (…)"pytorch_model.bin";:  20%|█▉        | 52.4M/268M [00:00<00:02, 88.7MB/s]Downloading (…)"pytorch_model.bin";:  23%|██▎       | 62.9M/268M [00:00<00:02, 89.6MB/s]Downloading (…)"pytorch_model.bin";:  27%|██▋       | 73.4M/268M [00:00<00:02, 90.5MB/s]Downloading (…)"pytorch_model.bin";:  31%|███▏      | 83.9M/268M [00:00<00:02, 89.5MB/s]Downloading (…)"pytorch_model.bin";:  35%|███▌      | 94.4M/268M [00:01<00:02, 85.9MB/s]Downloading (…)"pytorch_model.bin";:  39%|███▉      | 105M/268M [00:01<00:01, 86.8MB/s] Downloading (…)"pytorch_model.bin";:  43%|████▎     | 115M/268M [00:01<00:01, 87.2MB/s]Downloading (…)"pytorch_model.bin";:  47%|████▋     | 126M/268M [00:01<00:01, 88.2MB/s]Downloading (…)"pytorch_model.bin";:  51%|█████     | 136M/268M [00:01<00:01, 85.7MB/s]Downloading (…)"pytorch_model.bin";:  55%|█████▍    | 147M/268M [00:01<00:01, 87.6MB/s]Downloading (…)"pytorch_model.bin";:  59%|█████▊    | 157M/268M [00:01<00:01, 86.1MB/s]Downloading (…)"pytorch_model.bin";:  63%|██████▎   | 168M/268M [00:01<00:01, 83.8MB/s]Downloading (…)"pytorch_model.bin";:  67%|██████▋   | 178M/268M [00:02<00:01, 82.2MB/s]Downloading (…)"pytorch_model.bin";:  70%|███████   | 189M/268M [00:02<00:00, 84.1MB/s]Downloading (…)"pytorch_model.bin";:  74%|███████▍  | 199M/268M [00:02<00:00, 86.7MB/s]Downloading (…)"pytorch_model.bin";:  78%|███████▊  | 210M/268M [00:02<00:00, 86.3MB/s]Downloading (…)"pytorch_model.bin";:  82%|████████▏ | 220M/268M [00:02<00:00, 85.3MB/s]Downloading (…)"pytorch_model.bin";:  86%|████████▌ | 231M/268M [00:02<00:00, 85.6MB/s]Downloading (…)"pytorch_model.bin";:  90%|█████████ | 241M/268M [00:02<00:00, 86.0MB/s]Downloading (…)"pytorch_model.bin";:  94%|█████████▍| 252M/268M [00:02<00:00, 83.4MB/s]Downloading (…)"pytorch_model.bin";:  98%|█████████▊| 262M/268M [00:03<00:00, 84.3MB/s]Downloading (…)"pytorch_model.bin";: 100%|██████████| 268M/268M [00:03<00:00, 85.7MB/s]
+[INFO|modeling_utils.py:2534] 2023-04-24 12:57:04,455 >> loading weights file pytorch_model.bin from cache at /nlp/scr/fongsu/.cache/hub/models--distilbert-base-uncased/snapshots/1c4513b2eedbda136f57676a34eea67aba266e5c/pytorch_model.bin
+[INFO|modeling_utils.py:2534] 2023-04-24 12:57:04,458 >> loading weights file pytorch_model.bin from cache at /nlp/scr/fongsu/.cache/hub/models--distilbert-base-uncased/snapshots/1c4513b2eedbda136f57676a34eea67aba266e5c/pytorch_model.bin
+[INFO|modeling_utils.py:2534] 2023-04-24 12:57:04,466 >> loading weights file pytorch_model.bin from cache at /nlp/scr/fongsu/.cache/hub/models--distilbert-base-uncased/snapshots/1c4513b2eedbda136f57676a34eea67aba266e5c/pytorch_model.bin
+[INFO|modeling_utils.py:2534] 2023-04-24 12:57:04,482 >> loading weights file pytorch_model.bin from cache at /nlp/scr/fongsu/.cache/hub/models--distilbert-base-uncased/snapshots/1c4513b2eedbda136f57676a34eea67aba266e5c/pytorch_model.bin
+[WARNING|modeling_utils.py:3180] 2023-04-24 12:57:08,937 >> Some weights of the model checkpoint at distilbert-base-uncased were not used when initializing DistilBertModel: ['vocab_projector.bias', 'vocab_transform.weight', 'vocab_layer_norm.weight', 'vocab_layer_norm.bias', 'vocab_transform.bias', 'vocab_projector.weight']
+- This IS expected if you are initializing DistilBertModel from the checkpoint of a model trained on another task or with another architecture (e.g. initializing a BertForSequenceClassification model from a BertForPreTraining model).
+- This IS NOT expected if you are initializing DistilBertModel from the checkpoint of a model that you expect to be exactly identical (initializing a BertForSequenceClassification model from a BertForSequenceClassification model).
+[INFO|modeling_utils.py:3198] 2023-04-24 12:57:08,937 >> All the weights of DistilBertModel were initialized from the model checkpoint at distilbert-base-uncased.
+If your task is similar to the task the model of the checkpoint was trained on, you can already use DistilBertModel for predictions without further training.
+[WARNING|modeling_utils.py:3180] 2023-04-24 12:57:09,129 >> Some weights of the model checkpoint at distilbert-base-uncased were not used when initializing DistilBertModel: ['vocab_projector.bias', 'vocab_layer_norm.weight', 'vocab_projector.weight', 'vocab_transform.weight', 'vocab_layer_norm.bias', 'vocab_transform.bias']
+- This IS expected if you are initializing DistilBertModel from the checkpoint of a model trained on another task or with another architecture (e.g. initializing a BertForSequenceClassification model from a BertForPreTraining model).
+- This IS NOT expected if you are initializing DistilBertModel from the checkpoint of a model that you expect to be exactly identical (initializing a BertForSequenceClassification model from a BertForSequenceClassification model).
+[INFO|modeling_utils.py:3198] 2023-04-24 12:57:09,129 >> All the weights of DistilBertModel were initialized from the model checkpoint at distilbert-base-uncased.
+If your task is similar to the task the model of the checkpoint was trained on, you can already use DistilBertModel for predictions without further training.
+[WARNING|modeling_utils.py:3180] 2023-04-24 12:57:09,182 >> Some weights of the model checkpoint at distilbert-base-uncased were not used when initializing DistilBertModel: ['vocab_transform.bias', 'vocab_transform.weight', 'vocab_projector.bias', 'vocab_layer_norm.weight', 'vocab_layer_norm.bias', 'vocab_projector.weight']
+- This IS expected if you are initializing DistilBertModel from the checkpoint of a model trained on another task or with another architecture (e.g. initializing a BertForSequenceClassification model from a BertForPreTraining model).
+- This IS NOT expected if you are initializing DistilBertModel from the checkpoint of a model that you expect to be exactly identical (initializing a BertForSequenceClassification model from a BertForSequenceClassification model).
+[INFO|modeling_utils.py:3198] 2023-04-24 12:57:09,183 >> All the weights of DistilBertModel were initialized from the model checkpoint at distilbert-base-uncased.
+If your task is similar to the task the model of the checkpoint was trained on, you can already use DistilBertModel for predictions without further training.
+[WARNING|modeling_utils.py:3180] 2023-04-24 12:57:09,208 >> Some weights of the model checkpoint at distilbert-base-uncased were not used when initializing DistilBertModel: ['vocab_projector.bias', 'vocab_projector.weight', 'vocab_transform.weight', 'vocab_layer_norm.bias', 'vocab_transform.bias', 'vocab_layer_norm.weight']
+- This IS expected if you are initializing DistilBertModel from the checkpoint of a model trained on another task or with another architecture (e.g. initializing a BertForSequenceClassification model from a BertForPreTraining model).
+- This IS NOT expected if you are initializing DistilBertModel from the checkpoint of a model that you expect to be exactly identical (initializing a BertForSequenceClassification model from a BertForSequenceClassification model).
+[INFO|modeling_utils.py:3198] 2023-04-24 12:57:09,208 >> All the weights of DistilBertModel were initialized from the model checkpoint at distilbert-base-uncased.
+If your task is similar to the task the model of the checkpoint was trained on, you can already use DistilBertModel for predictions without further training.
+  0%|          | 0/2 [00:00<?, ?it/s]  0%|          | 0/2 [00:00<?, ?it/s]  0%|          | 0/2 [00:00<?, ?it/s]  0%|          | 0/2 [00:00<?, ?it/s] 50%|█████     | 1/2 [00:01<00:01,  1.61s/it] 50%|█████     | 1/2 [00:01<00:01,  1.66s/it] 50%|█████     | 1/2 [00:01<00:01,  1.33s/it] 50%|█████     | 1/2 [00:01<00:01,  1.66s/it]100%|██████████| 2/2 [00:01<00:00,  1.41it/s]
+100%|██████████| 2/2 [00:01<00:00,  1.18it/s]100%|██████████| 2/2 [00:01<00:00,  1.14it/s]
+
+100%|██████████| 2/2 [00:01<00:00,  1.14it/s]
+  0%|          | 0/2 [00:00<?, ?it/s]  0%|          | 0/2 [00:00<?, ?it/s]  0%|          | 0/2 [00:00<?, ?it/s]  0%|          | 0/2 [00:00<?, ?it/s] 50%|█████     | 1/2 [00:00<00:00,  9.02it/s] 50%|█████     | 1/2 [00:00<00:00,  5.62it/s] 50%|█████     | 1/2 [00:00<00:00,  5.31it/s]100%|██████████| 2/2 [00:00<00:00,  6.22it/s]100%|██████████| 2/2 [00:00<00:00,  6.21it/s]100%|██████████| 2/2 [00:00<00:00,  9.48it/s]100%|██████████| 2/2 [00:00<00:00,  6.12it/s]
+100%|██████████| 2/2 [00:00<00:00,  6.05it/s]
+100%|██████████| 2/2 [00:00<00:00,  9.47it/s]
+100%|██████████| 2/2 [00:00<00:00,  7.34it/s]100%|██████████| 2/2 [00:00<00:00,  7.54it/s]
+  0%|          | 0/1 [00:00<?, ?it/s]  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 15.96it/s]
+100%|██████████| 1/1 [00:00<00:00, 28.14it/s]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 254.54it/s]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 382.97it/s]
+Using /sailhome/fongsu/.cache/torch_extensions/py38_cu117 as PyTorch extensions root...
+Using /sailhome/fongsu/.cache/torch_extensions/py38_cu117 as PyTorch extensions root...
+Using /sailhome/fongsu/.cache/torch_extensions/py38_cu117 as PyTorch extensions root...
+Using /sailhome/fongsu/.cache/torch_extensions/py38_cu117 as PyTorch extensions root...
+Detected CUDA files, patching ldflags
+Emitting ninja build file /sailhome/fongsu/.cache/torch_extensions/py38_cu117/cpu_adam/build.ninja...
+Building extension module cpu_adam...
+Allowing ninja to set a default number of workers... (overridable by setting the environment variable MAX_JOBS=N)
+Loading extension module cpu_adam...
+Loading extension module cpu_adam...
+Loading extension module cpu_adam...
+Loading extension module cpu_adam...
+Using /sailhome/fongsu/.cache/torch_extensions/py38_cu117 as PyTorch extensions root...
+Using /sailhome/fongsu/.cache/torch_extensions/py38_cu117 as PyTorch extensions root...
+Using /sailhome/fongsu/.cache/torch_extensions/py38_cu117 as PyTorch extensions root...
+Using /sailhome/fongsu/.cache/torch_extensions/py38_cu117 as PyTorch extensions root...
+Emitting ninja build file /sailhome/fongsu/.cache/torch_extensions/py38_cu117/utils/build.ninja...
+Building extension module utils...
+Allowing ninja to set a default number of workers... (overridable by setting the environment variable MAX_JOBS=N)
+Loading extension module utils...
+Loading extension module utils...
+Loading extension module utils...
+Loading extension module utils...
+Using /sailhome/fongsu/.cache/torch_extensions/py38_cu117 as PyTorch extensions root...
+No modifications detected for re-loaded extension module utils, skipping build step...
+Loading extension module utils...
+Using /sailhome/fongsu/.cache/torch_extensions/py38_cu117 as PyTorch extensions root...
+No modifications detected for re-loaded extension module utils, skipping build step...
+Loading extension module utils...
+Using /sailhome/fongsu/.cache/torch_extensions/py38_cu117 as PyTorch extensions root...
+No modifications detected for re-loaded extension module utils, skipping build step...
+Loading extension module utils...
+Using /sailhome/fongsu/.cache/torch_extensions/py38_cu117 as PyTorch extensions root...
+No modifications detected for re-loaded extension module utils, skipping build step...
+Loading extension module utils...
+[INFO|trainer.py:1769] 2023-04-24 12:57:53,996 >> ***** Running training *****
+[INFO|trainer.py:1770] 2023-04-24 12:57:53,996 >>   Num examples = 193,616
+[INFO|trainer.py:1771] 2023-04-24 12:57:53,996 >>   Num Epochs = 1
+[INFO|trainer.py:1772] 2023-04-24 12:57:53,996 >>   Instantaneous batch size per device = 32
+[INFO|trainer.py:1773] 2023-04-24 12:57:53,996 >>   Total train batch size (w. parallel, distributed & accumulation) = 128
+[INFO|trainer.py:1774] 2023-04-24 12:57:53,997 >>   Gradient Accumulation steps = 1
+[INFO|trainer.py:1775] 2023-04-24 12:57:53,997 >>   Total optimization steps = 1,513
+[INFO|trainer.py:1776] 2023-04-24 12:57:53,997 >>   Number of trainable parameters = 66,363,648
+[INFO|integrations.py:720] 2023-04-24 12:57:53,997 >> Automatic Weights & Biases logging enabled, to disable set os.environ["WANDB_DISABLED"] = "true"
+wandb: Currently logged in as: oliversf (comprehelp). Use `wandb login --relogin` to force relogin
+wandb: wandb version 0.15.0 is available!  To upgrade, please run:
+wandb:  $ pip install wandb --upgrade
+wandb: Tracking run with wandb version 0.13.10
+wandb: Run data is saved locally in /sailhome/fongsu/superhf/wandb/run-20230424_125756-yhanr6zd
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run fanciful-river-272
+wandb: ⭐️ View project at https://wandb.ai/comprehelp/huggingface
+wandb: 🚀 View run at https://wandb.ai/comprehelp/huggingface/runs/yhanr6zd
+  0%|          | 0/1513 [00:00<?, ?it/s]  0%|          | 1/1513 [00:01<29:44,  1.18s/it]  0%|          | 2/1513 [00:02<27:01,  1.07s/it]Traceback (most recent call last):
+  File "src/reward_modelling/reward_model.py", line 292, in <module>
+    result = trainer.train()
+  File "/sailhome/fongsu/rm/lib/python3.8/site-packages/transformers/trainer.py", line 1662, in train
+    return inner_training_loop(
+  File "/sailhome/fongsu/rm/lib/python3.8/site-packages/transformers/trainer.py", line 1929, in _inner_training_loop
+    tr_loss_step = self.training_step(model, inputs)
+  File "/sailhome/fongsu/rm/lib/python3.8/site-packages/transformers/trainer.py", line 2715, in training_step
+    loss = self.deepspeed.backward(loss)
+  File "/sailhome/fongsu/rm/lib/python3.8/site-packages/deepspeed/utils/nvtx.py", line 15, in wrapped_fn
+    ret_val = func(*args, **kwargs)
+  File "/sailhome/fongsu/rm/lib/python3.8/site-packages/deepspeed/runtime/engine.py", line 1816, in backward
+    self.optimizer.backward(loss, retain_graph=retain_graph)
+  File "/sailhome/fongsu/rm/lib/python3.8/site-packages/deepspeed/runtime/zero/stage_1_and_2.py", line 1890, in backward
+    self.loss_scaler.backward(loss.float(), retain_graph=retain_graph)
+  File "/sailhome/fongsu/rm/lib/python3.8/site-packages/deepspeed/runtime/fp16/loss_scaler.py", line 62, in backward
+    scaled_loss.backward(retain_graph=retain_graph)
+  File "/sailhome/fongsu/rm/lib/python3.8/site-packages/torch/_tensor.py", line 487, in backward
+    torch.autograd.backward(
+  File "/sailhome/fongsu/rm/lib/python3.8/site-packages/torch/autograd/__init__.py", line 200, in backward
+    Variable._execution_engine.run_backward(  # Calls into the C++ engine to run the backward pass
+torch.cuda.OutOfMemoryError: CUDA out of memory. Tried to allocate 768.00 MiB (GPU 2; 23.70 GiB total capacity; 20.74 GiB already allocated; 333.69 MiB free; 22.28 GiB reserved in total by PyTorch) If reserved memory is >> allocated memory try setting max_split_size_mb to avoid fragmentation.  See documentation for Memory Management and PYTORCH_CUDA_ALLOC_CONF
+Traceback (most recent call last):
+  File "src/reward_modelling/reward_model.py", line 292, in <module>
+    result = trainer.train()
+  File "/sailhome/fongsu/rm/lib/python3.8/site-packages/transformers/trainer.py", line 1662, in train
+    return inner_training_loop(
+  File "/sailhome/fongsu/rm/lib/python3.8/site-packages/transformers/trainer.py", line 1929, in _inner_training_loop
+    tr_loss_step = self.training_step(model, inputs)
+  File "/sailhome/fongsu/rm/lib/python3.8/site-packages/transformers/trainer.py", line 2715, in training_step
+    loss = self.deepspeed.backward(loss)
+  File "/sailhome/fongsu/rm/lib/python3.8/site-packages/deepspeed/utils/nvtx.py", line 15, in wrapped_fn
+    ret_val = func(*args, **kwargs)
+  File "/sailhome/fongsu/rm/lib/python3.8/site-packages/deepspeed/runtime/engine.py", line 1816, in backward
+    self.optimizer.backward(loss, retain_graph=retain_graph)
+  File "/sailhome/fongsu/rm/lib/python3.8/site-packages/deepspeed/runtime/zero/stage_1_and_2.py", line 1890, in backward
+    self.loss_scaler.backward(loss.float(), retain_graph=retain_graph)
+  File "/sailhome/fongsu/rm/lib/python3.8/site-packages/deepspeed/runtime/fp16/loss_scaler.py", line 62, in backward
+    scaled_loss.backward(retain_graph=retain_graph)
+  File "/sailhome/fongsu/rm/lib/python3.8/site-packages/torch/_tensor.py", line 487, in backward
+    torch.autograd.backward(
+  File "/sailhome/fongsu/rm/lib/python3.8/site-packages/torch/autograd/__init__.py", line 200, in backward
+    Variable._execution_engine.run_backward(  # Calls into the C++ engine to run the backward pass
+torch.cuda.OutOfMemoryError: CUDA out of memory. Tried to allocate 768.00 MiB (GPU 0; 23.70 GiB total capacity; 20.74 GiB already allocated; 333.69 MiB free; 22.28 GiB reserved in total by PyTorch) If reserved memory is >> allocated memory try setting max_split_size_mb to avoid fragmentation.  See documentation for Memory Management and PYTORCH_CUDA_ALLOC_CONF
+wandb: Waiting for W&B process to finish... (failed 1). Press Control-C to abort syncing.
+wandb: 🚀 View run fanciful-river-272 at: https://wandb.ai/comprehelp/huggingface/runs/yhanr6zd
+wandb: Synced 5 W&B file(s), 0 media file(s), 2 artifact file(s) and 0 other file(s)
+wandb: Find logs at: ./wandb/run-20230424_125756-yhanr6zd/logs

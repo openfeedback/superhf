@@ -1,0 +1,2820 @@
+[INFO|configuration_utils.py:668] 2023-04-25 15:45:07,736 >> loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/config.json
+[INFO|configuration_utils.py:668] 2023-04-25 15:45:07,736 >> loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/config.json
+[INFO|configuration_utils.py:668] 2023-04-25 15:45:07,736 >> loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/config.json
+[INFO|configuration_utils.py:668] 2023-04-25 15:45:07,736 >> loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/config.json
+[INFO|configuration_utils.py:668] 2023-04-25 15:45:07,736 >> loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/config.json
+[INFO|configuration_utils.py:668] 2023-04-25 15:45:07,737 >> loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/config.json
+[INFO|configuration_utils.py:668] 2023-04-25 15:45:07,738 >> loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/config.json
+[INFO|configuration_utils.py:720] 2023-04-25 15:45:07,839 >> Model config GPTNeoConfig {
+  "_name_or_path": "EleutherAI/gpt-neo-1.3B",
+  "activation_function": "gelu_new",
+  "architectures": [
+    "GPTNeoForCausalLM"
+  ],
+  "attention_dropout": 0,
+  "attention_layers": [
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local"
+  ],
+  "attention_types": [
+    [
+      [
+        "global",
+        "local"
+      ],
+      12
+    ]
+  ],
+  "bos_token_id": 50256,
+  "embed_dropout": 0,
+  "eos_token_id": 50256,
+  "gradient_checkpointing": false,
+  "hidden_size": 2048,
+  "initializer_range": 0.02,
+  "intermediate_size": null,
+  "layer_norm_epsilon": 1e-05,
+  "max_position_embeddings": 2048,
+  "model_type": "gpt_neo",
+  "num_heads": 16,
+  "num_layers": 24,
+  "resid_dropout": 0,
+  "summary_activation": null,
+  "summary_first_dropout": 0.1,
+  "summary_proj_to_labels": true,
+  "summary_type": "cls_index",
+  "summary_use_proj": true,
+  "task_specific_params": {
+    "text-generation": {
+      "do_sample": true,
+      "max_length": 50,
+      "temperature": 0.9
+    }
+  },
+  "tokenizer_class": "GPT2Tokenizer",
+  "transformers_version": "4.28.1",
+  "use_cache": true,
+  "vocab_size": 50257,
+  "window_size": 256
+}
+
+[INFO|configuration_utils.py:720] 2023-04-25 15:45:07,839 >> Model config GPTNeoConfig {
+  "_name_or_path": "EleutherAI/gpt-neo-1.3B",
+  "activation_function": "gelu_new",
+  "architectures": [
+    "GPTNeoForCausalLM"
+  ],
+  "attention_dropout": 0,
+  "attention_layers": [
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local"
+  ],
+  "attention_types": [
+    [
+      [
+        "global",
+        "local"
+      ],
+      12
+    ]
+  ],
+  "bos_token_id": 50256,
+  "embed_dropout": 0,
+  "eos_token_id": 50256,
+  "gradient_checkpointing": false,
+  "hidden_size": 2048,
+  "initializer_range": 0.02,
+  "intermediate_size": null,
+  "layer_norm_epsilon": 1e-05,
+  "max_position_embeddings": 2048,
+  "model_type": "gpt_neo",
+  "num_heads": 16,
+  "num_layers": 24,
+  "resid_dropout": 0,
+  "summary_activation": null,
+  "summary_first_dropout": 0.1,
+  "summary_proj_to_labels": true,
+  "summary_type": "cls_index",
+  "summary_use_proj": true,
+  "task_specific_params": {
+    "text-generation": {
+      "do_sample": true,
+      "max_length": 50,
+      "temperature": 0.9
+    }
+  },
+  "tokenizer_class": "GPT2Tokenizer",
+  "transformers_version": "4.28.1",
+  "use_cache": true,
+  "vocab_size": 50257,
+  "window_size": 256
+}
+
+[INFO|configuration_utils.py:720] 2023-04-25 15:45:07,839 >> Model config GPTNeoConfig {
+  "_name_or_path": "EleutherAI/gpt-neo-1.3B",
+  "activation_function": "gelu_new",
+  "architectures": [
+    "GPTNeoForCausalLM"
+  ],
+  "attention_dropout": 0,
+  "attention_layers": [
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local"
+  ],
+  "attention_types": [
+    [
+      [
+        "global",
+        "local"
+      ],
+      12
+    ]
+  ],
+  "bos_token_id": 50256,
+  "embed_dropout": 0,
+  "eos_token_id": 50256,
+  "gradient_checkpointing": false,
+  "hidden_size": 2048,
+  "initializer_range": 0.02,
+  "intermediate_size": null,
+  "layer_norm_epsilon": 1e-05,
+  "max_position_embeddings": 2048,
+  "model_type": "gpt_neo",
+  "num_heads": 16,
+  "num_layers": 24,
+  "resid_dropout": 0,
+  "summary_activation": null,
+  "summary_first_dropout": 0.1,
+  "summary_proj_to_labels": true,
+  "summary_type": "cls_index",
+  "summary_use_proj": true,
+  "task_specific_params": {
+    "text-generation": {
+      "do_sample": true,
+      "max_length": 50,
+      "temperature": 0.9
+    }
+  },
+  "tokenizer_class": "GPT2Tokenizer",
+  "transformers_version": "4.28.1",
+  "use_cache": true,
+  "vocab_size": 50257,
+  "window_size": 256
+}
+
+[INFO|configuration_utils.py:720] 2023-04-25 15:45:07,839 >> Model config GPTNeoConfig {
+  "_name_or_path": "EleutherAI/gpt-neo-1.3B",
+  "activation_function": "gelu_new",
+  "architectures": [
+    "GPTNeoForCausalLM"
+  ],
+  "attention_dropout": 0,
+  "attention_layers": [
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local"
+  ],
+  "attention_types": [
+    [
+      [
+        "global",
+        "local"
+      ],
+      12
+    ]
+  ],
+  "bos_token_id": 50256,
+  "embed_dropout": 0,
+  "eos_token_id": 50256,
+  "gradient_checkpointing": false,
+  "hidden_size": 2048,
+  "initializer_range": 0.02,
+  "intermediate_size": null,
+  "layer_norm_epsilon": 1e-05,
+  "max_position_embeddings": 2048,
+  "model_type": "gpt_neo",
+  "num_heads": 16,
+  "num_layers": 24,
+  "resid_dropout": 0,
+  "summary_activation": null,
+  "summary_first_dropout": 0.1,
+  "summary_proj_to_labels": true,
+  "summary_type": "cls_index",
+  "summary_use_proj": true,
+  "task_specific_params": {
+    "text-generation": {
+      "do_sample": true,
+      "max_length": 50,
+      "temperature": 0.9
+    }
+  },
+  "tokenizer_class": "GPT2Tokenizer",
+  "transformers_version": "4.28.1",
+  "use_cache": true,
+  "vocab_size": 50257,
+  "window_size": 256
+}
+
+[INFO|configuration_utils.py:720] 2023-04-25 15:45:07,840 >> Model config GPTNeoConfig {
+  "_name_or_path": "EleutherAI/gpt-neo-1.3B",
+  "activation_function": "gelu_new",
+  "architectures": [
+    "GPTNeoForCausalLM"
+  ],
+  "attention_dropout": 0,
+  "attention_layers": [
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local"
+  ],
+  "attention_types": [
+    [
+      [
+        "global",
+        "local"
+      ],
+      12
+    ]
+  ],
+  "bos_token_id": 50256,
+  "embed_dropout": 0,
+  "eos_token_id": 50256,
+  "gradient_checkpointing": false,
+  "hidden_size": 2048,
+  "initializer_range": 0.02,
+  "intermediate_size": null,
+  "layer_norm_epsilon": 1e-05,
+  "max_position_embeddings": 2048,
+  "model_type": "gpt_neo",
+  "num_heads": 16,
+  "num_layers": 24,
+  "resid_dropout": 0,
+  "summary_activation": null,
+  "summary_first_dropout": 0.1,
+  "summary_proj_to_labels": true,
+  "summary_type": "cls_index",
+  "summary_use_proj": true,
+  "task_specific_params": {
+    "text-generation": {
+      "do_sample": true,
+      "max_length": 50,
+      "temperature": 0.9
+    }
+  },
+  "tokenizer_class": "GPT2Tokenizer",
+  "transformers_version": "4.28.1",
+  "use_cache": true,
+  "vocab_size": 50257,
+  "window_size": 256
+}
+
+[INFO|configuration_utils.py:720] 2023-04-25 15:45:07,840 >> Model config GPTNeoConfig {
+  "_name_or_path": "EleutherAI/gpt-neo-1.3B",
+  "activation_function": "gelu_new",
+  "architectures": [
+    "GPTNeoForCausalLM"
+  ],
+  "attention_dropout": 0,
+  "attention_layers": [
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local"
+  ],
+  "attention_types": [
+    [
+      [
+        "global",
+        "local"
+      ],
+      12
+    ]
+  ],
+  "bos_token_id": 50256,
+  "embed_dropout": 0,
+  "eos_token_id": 50256,
+  "gradient_checkpointing": false,
+  "hidden_size": 2048,
+  "initializer_range": 0.02,
+  "intermediate_size": null,
+  "layer_norm_epsilon": 1e-05,
+  "max_position_embeddings": 2048,
+  "model_type": "gpt_neo",
+  "num_heads": 16,
+  "num_layers": 24,
+  "resid_dropout": 0,
+  "summary_activation": null,
+  "summary_first_dropout": 0.1,
+  "summary_proj_to_labels": true,
+  "summary_type": "cls_index",
+  "summary_use_proj": true,
+  "task_specific_params": {
+    "text-generation": {
+      "do_sample": true,
+      "max_length": 50,
+      "temperature": 0.9
+    }
+  },
+  "tokenizer_class": "GPT2Tokenizer",
+  "transformers_version": "4.28.1",
+  "use_cache": true,
+  "vocab_size": 50257,
+  "window_size": 256
+}
+
+[INFO|configuration_utils.py:720] 2023-04-25 15:45:07,840 >> Model config GPTNeoConfig {
+  "_name_or_path": "EleutherAI/gpt-neo-1.3B",
+  "activation_function": "gelu_new",
+  "architectures": [
+    "GPTNeoForCausalLM"
+  ],
+  "attention_dropout": 0,
+  "attention_layers": [
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local"
+  ],
+  "attention_types": [
+    [
+      [
+        "global",
+        "local"
+      ],
+      12
+    ]
+  ],
+  "bos_token_id": 50256,
+  "embed_dropout": 0,
+  "eos_token_id": 50256,
+  "gradient_checkpointing": false,
+  "hidden_size": 2048,
+  "initializer_range": 0.02,
+  "intermediate_size": null,
+  "layer_norm_epsilon": 1e-05,
+  "max_position_embeddings": 2048,
+  "model_type": "gpt_neo",
+  "num_heads": 16,
+  "num_layers": 24,
+  "resid_dropout": 0,
+  "summary_activation": null,
+  "summary_first_dropout": 0.1,
+  "summary_proj_to_labels": true,
+  "summary_type": "cls_index",
+  "summary_use_proj": true,
+  "task_specific_params": {
+    "text-generation": {
+      "do_sample": true,
+      "max_length": 50,
+      "temperature": 0.9
+    }
+  },
+  "tokenizer_class": "GPT2Tokenizer",
+  "transformers_version": "4.28.1",
+  "use_cache": true,
+  "vocab_size": 50257,
+  "window_size": 256
+}
+
+[INFO|tokenization_utils_base.py:1809] 2023-04-25 15:45:08,008 >> loading file vocab.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/vocab.json
+[INFO|tokenization_utils_base.py:1809] 2023-04-25 15:45:08,008 >> loading file merges.txt from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/merges.txt
+[INFO|tokenization_utils_base.py:1809] 2023-04-25 15:45:08,008 >> loading file vocab.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/vocab.json
+[INFO|tokenization_utils_base.py:1809] 2023-04-25 15:45:08,008 >> loading file tokenizer.json from cache at None
+[INFO|tokenization_utils_base.py:1809] 2023-04-25 15:45:08,008 >> loading file merges.txt from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/merges.txt
+[INFO|tokenization_utils_base.py:1809] 2023-04-25 15:45:08,008 >> loading file added_tokens.json from cache at None
+[INFO|tokenization_utils_base.py:1809] 2023-04-25 15:45:08,008 >> loading file vocab.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/vocab.json
+[INFO|tokenization_utils_base.py:1809] 2023-04-25 15:45:08,008 >> loading file vocab.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/vocab.json
+[INFO|tokenization_utils_base.py:1809] 2023-04-25 15:45:08,008 >> loading file special_tokens_map.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/special_tokens_map.json
+[INFO|tokenization_utils_base.py:1809] 2023-04-25 15:45:08,008 >> loading file tokenizer.json from cache at None
+[INFO|tokenization_utils_base.py:1809] 2023-04-25 15:45:08,008 >> loading file vocab.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/vocab.json
+[INFO|tokenization_utils_base.py:1809] 2023-04-25 15:45:08,008 >> loading file vocab.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/vocab.json
+[INFO|tokenization_utils_base.py:1809] 2023-04-25 15:45:08,008 >> loading file merges.txt from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/merges.txt
+[INFO|tokenization_utils_base.py:1809] 2023-04-25 15:45:08,008 >> loading file tokenizer_config.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/tokenizer_config.json
+[INFO|tokenization_utils_base.py:1809] 2023-04-25 15:45:08,008 >> loading file added_tokens.json from cache at None
+[INFO|tokenization_utils_base.py:1809] 2023-04-25 15:45:08,008 >> loading file merges.txt from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/merges.txt
+[INFO|tokenization_utils_base.py:1809] 2023-04-25 15:45:08,008 >> loading file vocab.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/vocab.json
+[INFO|tokenization_utils_base.py:1809] 2023-04-25 15:45:08,008 >> loading file merges.txt from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/merges.txt
+[INFO|tokenization_utils_base.py:1809] 2023-04-25 15:45:08,008 >> loading file tokenizer.json from cache at None
+[INFO|tokenization_utils_base.py:1809] 2023-04-25 15:45:08,008 >> loading file special_tokens_map.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/special_tokens_map.json
+[INFO|tokenization_utils_base.py:1809] 2023-04-25 15:45:08,008 >> loading file merges.txt from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/merges.txt
+[INFO|tokenization_utils_base.py:1809] 2023-04-25 15:45:08,008 >> loading file tokenizer.json from cache at None
+[INFO|tokenization_utils_base.py:1809] 2023-04-25 15:45:08,008 >> loading file added_tokens.json from cache at None
+[INFO|tokenization_utils_base.py:1809] 2023-04-25 15:45:08,008 >> loading file added_tokens.json from cache at None
+[INFO|tokenization_utils_base.py:1809] 2023-04-25 15:45:08,008 >> loading file tokenizer.json from cache at None
+[INFO|tokenization_utils_base.py:1809] 2023-04-25 15:45:08,008 >> loading file merges.txt from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/merges.txt
+[INFO|tokenization_utils_base.py:1809] 2023-04-25 15:45:08,008 >> loading file tokenizer_config.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/tokenizer_config.json
+[INFO|tokenization_utils_base.py:1809] 2023-04-25 15:45:08,008 >> loading file tokenizer.json from cache at None
+[INFO|tokenization_utils_base.py:1809] 2023-04-25 15:45:08,008 >> loading file special_tokens_map.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/special_tokens_map.json
+[INFO|tokenization_utils_base.py:1809] 2023-04-25 15:45:08,008 >> loading file special_tokens_map.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/special_tokens_map.json
+[INFO|tokenization_utils_base.py:1809] 2023-04-25 15:45:08,008 >> loading file added_tokens.json from cache at None
+[INFO|tokenization_utils_base.py:1809] 2023-04-25 15:45:08,008 >> loading file tokenizer.json from cache at None
+[INFO|tokenization_utils_base.py:1809] 2023-04-25 15:45:08,008 >> loading file added_tokens.json from cache at None
+[INFO|tokenization_utils_base.py:1809] 2023-04-25 15:45:08,008 >> loading file tokenizer_config.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/tokenizer_config.json
+[INFO|tokenization_utils_base.py:1809] 2023-04-25 15:45:08,008 >> loading file tokenizer_config.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/tokenizer_config.json
+[INFO|tokenization_utils_base.py:1809] 2023-04-25 15:45:08,008 >> loading file special_tokens_map.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/special_tokens_map.json
+[INFO|tokenization_utils_base.py:1809] 2023-04-25 15:45:08,008 >> loading file added_tokens.json from cache at None
+[INFO|tokenization_utils_base.py:1809] 2023-04-25 15:45:08,008 >> loading file special_tokens_map.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/special_tokens_map.json
+[INFO|tokenization_utils_base.py:1809] 2023-04-25 15:45:08,008 >> loading file tokenizer_config.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/tokenizer_config.json
+[INFO|tokenization_utils_base.py:1809] 2023-04-25 15:45:08,008 >> loading file special_tokens_map.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/special_tokens_map.json
+[INFO|tokenization_utils_base.py:1809] 2023-04-25 15:45:08,008 >> loading file tokenizer_config.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/tokenizer_config.json
+[INFO|tokenization_utils_base.py:1809] 2023-04-25 15:45:08,008 >> loading file tokenizer_config.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/tokenizer_config.json
+[INFO|configuration_utils.py:668] 2023-04-25 15:45:08,008 >> loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/config.json
+[INFO|configuration_utils.py:668] 2023-04-25 15:45:08,008 >> loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/config.json
+[INFO|configuration_utils.py:668] 2023-04-25 15:45:08,008 >> loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/config.json
+[INFO|configuration_utils.py:668] 2023-04-25 15:45:08,008 >> loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/config.json
+[INFO|configuration_utils.py:668] 2023-04-25 15:45:08,009 >> loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/config.json
+[INFO|configuration_utils.py:668] 2023-04-25 15:45:08,009 >> loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/config.json
+[INFO|configuration_utils.py:668] 2023-04-25 15:45:08,009 >> loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/config.json
+[INFO|configuration_utils.py:720] 2023-04-25 15:45:08,009 >> Model config GPTNeoConfig {
+  "_name_or_path": "EleutherAI/gpt-neo-1.3B",
+  "activation_function": "gelu_new",
+  "architectures": [
+    "GPTNeoForCausalLM"
+  ],
+  "attention_dropout": 0,
+  "attention_layers": [
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local"
+  ],
+  "attention_types": [
+    [
+      [
+        "global",
+        "local"
+      ],
+      12
+    ]
+  ],
+  "bos_token_id": 50256,
+  "embed_dropout": 0,
+  "eos_token_id": 50256,
+  "gradient_checkpointing": false,
+  "hidden_size": 2048,
+  "initializer_range": 0.02,
+  "intermediate_size": null,
+  "layer_norm_epsilon": 1e-05,
+  "max_position_embeddings": 2048,
+  "model_type": "gpt_neo",
+  "num_heads": 16,
+  "num_layers": 24,
+  "resid_dropout": 0,
+  "summary_activation": null,
+  "summary_first_dropout": 0.1,
+  "summary_proj_to_labels": true,
+  "summary_type": "cls_index",
+  "summary_use_proj": true,
+  "task_specific_params": {
+    "text-generation": {
+      "do_sample": true,
+      "max_length": 50,
+      "temperature": 0.9
+    }
+  },
+  "tokenizer_class": "GPT2Tokenizer",
+  "transformers_version": "4.28.1",
+  "use_cache": true,
+  "vocab_size": 50257,
+  "window_size": 256
+}
+
+[INFO|configuration_utils.py:720] 2023-04-25 15:45:08,009 >> Model config GPTNeoConfig {
+  "_name_or_path": "EleutherAI/gpt-neo-1.3B",
+  "activation_function": "gelu_new",
+  "architectures": [
+    "GPTNeoForCausalLM"
+  ],
+  "attention_dropout": 0,
+  "attention_layers": [
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local"
+  ],
+  "attention_types": [
+    [
+      [
+        "global",
+        "local"
+      ],
+      12
+    ]
+  ],
+  "bos_token_id": 50256,
+  "embed_dropout": 0,
+  "eos_token_id": 50256,
+  "gradient_checkpointing": false,
+  "hidden_size": 2048,
+  "initializer_range": 0.02,
+  "intermediate_size": null,
+  "layer_norm_epsilon": 1e-05,
+  "max_position_embeddings": 2048,
+  "model_type": "gpt_neo",
+  "num_heads": 16,
+  "num_layers": 24,
+  "resid_dropout": 0,
+  "summary_activation": null,
+  "summary_first_dropout": 0.1,
+  "summary_proj_to_labels": true,
+  "summary_type": "cls_index",
+  "summary_use_proj": true,
+  "task_specific_params": {
+    "text-generation": {
+      "do_sample": true,
+      "max_length": 50,
+      "temperature": 0.9
+    }
+  },
+  "tokenizer_class": "GPT2Tokenizer",
+  "transformers_version": "4.28.1",
+  "use_cache": true,
+  "vocab_size": 50257,
+  "window_size": 256
+}
+
+[INFO|configuration_utils.py:720] 2023-04-25 15:45:08,009 >> Model config GPTNeoConfig {
+  "_name_or_path": "EleutherAI/gpt-neo-1.3B",
+  "activation_function": "gelu_new",
+  "architectures": [
+    "GPTNeoForCausalLM"
+  ],
+  "attention_dropout": 0,
+  "attention_layers": [
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local"
+  ],
+  "attention_types": [
+    [
+      [
+        "global",
+        "local"
+      ],
+      12
+    ]
+  ],
+  "bos_token_id": 50256,
+  "embed_dropout": 0,
+  "eos_token_id": 50256,
+  "gradient_checkpointing": false,
+  "hidden_size": 2048,
+  "initializer_range": 0.02,
+  "intermediate_size": null,
+  "layer_norm_epsilon": 1e-05,
+  "max_position_embeddings": 2048,
+  "model_type": "gpt_neo",
+  "num_heads": 16,
+  "num_layers": 24,
+  "resid_dropout": 0,
+  "summary_activation": null,
+  "summary_first_dropout": 0.1,
+  "summary_proj_to_labels": true,
+  "summary_type": "cls_index",
+  "summary_use_proj": true,
+  "task_specific_params": {
+    "text-generation": {
+      "do_sample": true,
+      "max_length": 50,
+      "temperature": 0.9
+    }
+  },
+  "tokenizer_class": "GPT2Tokenizer",
+  "transformers_version": "4.28.1",
+  "use_cache": true,
+  "vocab_size": 50257,
+  "window_size": 256
+}
+
+[INFO|configuration_utils.py:720] 2023-04-25 15:45:08,009 >> Model config GPTNeoConfig {
+  "_name_or_path": "EleutherAI/gpt-neo-1.3B",
+  "activation_function": "gelu_new",
+  "architectures": [
+    "GPTNeoForCausalLM"
+  ],
+  "attention_dropout": 0,
+  "attention_layers": [
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local"
+  ],
+  "attention_types": [
+    [
+      [
+        "global",
+        "local"
+      ],
+      12
+    ]
+  ],
+  "bos_token_id": 50256,
+  "embed_dropout": 0,
+  "eos_token_id": 50256,
+  "gradient_checkpointing": false,
+  "hidden_size": 2048,
+  "initializer_range": 0.02,
+  "intermediate_size": null,
+  "layer_norm_epsilon": 1e-05,
+  "max_position_embeddings": 2048,
+  "model_type": "gpt_neo",
+  "num_heads": 16,
+  "num_layers": 24,
+  "resid_dropout": 0,
+  "summary_activation": null,
+  "summary_first_dropout": 0.1,
+  "summary_proj_to_labels": true,
+  "summary_type": "cls_index",
+  "summary_use_proj": true,
+  "task_specific_params": {
+    "text-generation": {
+      "do_sample": true,
+      "max_length": 50,
+      "temperature": 0.9
+    }
+  },
+  "tokenizer_class": "GPT2Tokenizer",
+  "transformers_version": "4.28.1",
+  "use_cache": true,
+  "vocab_size": 50257,
+  "window_size": 256
+}
+
+[INFO|configuration_utils.py:720] 2023-04-25 15:45:08,009 >> Model config GPTNeoConfig {
+  "_name_or_path": "EleutherAI/gpt-neo-1.3B",
+  "activation_function": "gelu_new",
+  "architectures": [
+    "GPTNeoForCausalLM"
+  ],
+  "attention_dropout": 0,
+  "attention_layers": [
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local"
+  ],
+  "attention_types": [
+    [
+      [
+        "global",
+        "local"
+      ],
+      12
+    ]
+  ],
+  "bos_token_id": 50256,
+  "embed_dropout": 0,
+  "eos_token_id": 50256,
+  "gradient_checkpointing": false,
+  "hidden_size": 2048,
+  "initializer_range": 0.02,
+  "intermediate_size": null,
+  "layer_norm_epsilon": 1e-05,
+  "max_position_embeddings": 2048,
+  "model_type": "gpt_neo",
+  "num_heads": 16,
+  "num_layers": 24,
+  "resid_dropout": 0,
+  "summary_activation": null,
+  "summary_first_dropout": 0.1,
+  "summary_proj_to_labels": true,
+  "summary_type": "cls_index",
+  "summary_use_proj": true,
+  "task_specific_params": {
+    "text-generation": {
+      "do_sample": true,
+      "max_length": 50,
+      "temperature": 0.9
+    }
+  },
+  "tokenizer_class": "GPT2Tokenizer",
+  "transformers_version": "4.28.1",
+  "use_cache": true,
+  "vocab_size": 50257,
+  "window_size": 256
+}
+
+[INFO|configuration_utils.py:720] 2023-04-25 15:45:08,009 >> Model config GPTNeoConfig {
+  "_name_or_path": "EleutherAI/gpt-neo-1.3B",
+  "activation_function": "gelu_new",
+  "architectures": [
+    "GPTNeoForCausalLM"
+  ],
+  "attention_dropout": 0,
+  "attention_layers": [
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local"
+  ],
+  "attention_types": [
+    [
+      [
+        "global",
+        "local"
+      ],
+      12
+    ]
+  ],
+  "bos_token_id": 50256,
+  "embed_dropout": 0,
+  "eos_token_id": 50256,
+  "gradient_checkpointing": false,
+  "hidden_size": 2048,
+  "initializer_range": 0.02,
+  "intermediate_size": null,
+  "layer_norm_epsilon": 1e-05,
+  "max_position_embeddings": 2048,
+  "model_type": "gpt_neo",
+  "num_heads": 16,
+  "num_layers": 24,
+  "resid_dropout": 0,
+  "summary_activation": null,
+  "summary_first_dropout": 0.1,
+  "summary_proj_to_labels": true,
+  "summary_type": "cls_index",
+  "summary_use_proj": true,
+  "task_specific_params": {
+    "text-generation": {
+      "do_sample": true,
+      "max_length": 50,
+      "temperature": 0.9
+    }
+  },
+  "tokenizer_class": "GPT2Tokenizer",
+  "transformers_version": "4.28.1",
+  "use_cache": true,
+  "vocab_size": 50257,
+  "window_size": 256
+}
+
+[INFO|configuration_utils.py:720] 2023-04-25 15:45:08,009 >> Model config GPTNeoConfig {
+  "_name_or_path": "EleutherAI/gpt-neo-1.3B",
+  "activation_function": "gelu_new",
+  "architectures": [
+    "GPTNeoForCausalLM"
+  ],
+  "attention_dropout": 0,
+  "attention_layers": [
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local"
+  ],
+  "attention_types": [
+    [
+      [
+        "global",
+        "local"
+      ],
+      12
+    ]
+  ],
+  "bos_token_id": 50256,
+  "embed_dropout": 0,
+  "eos_token_id": 50256,
+  "gradient_checkpointing": false,
+  "hidden_size": 2048,
+  "initializer_range": 0.02,
+  "intermediate_size": null,
+  "layer_norm_epsilon": 1e-05,
+  "max_position_embeddings": 2048,
+  "model_type": "gpt_neo",
+  "num_heads": 16,
+  "num_layers": 24,
+  "resid_dropout": 0,
+  "summary_activation": null,
+  "summary_first_dropout": 0.1,
+  "summary_proj_to_labels": true,
+  "summary_type": "cls_index",
+  "summary_use_proj": true,
+  "task_specific_params": {
+    "text-generation": {
+      "do_sample": true,
+      "max_length": 50,
+      "temperature": 0.9
+    }
+  },
+  "tokenizer_class": "GPT2Tokenizer",
+  "transformers_version": "4.28.1",
+  "use_cache": true,
+  "vocab_size": 50257,
+  "window_size": 256
+}
+
+[INFO|configuration_utils.py:668] 2023-04-25 15:45:08,211 >> loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/config.json
+[INFO|configuration_utils.py:720] 2023-04-25 15:45:08,212 >> Model config GPTNeoConfig {
+  "_name_or_path": "EleutherAI/gpt-neo-1.3B",
+  "activation_function": "gelu_new",
+  "architectures": [
+    "GPTNeoForCausalLM"
+  ],
+  "attention_dropout": 0,
+  "attention_layers": [
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local"
+  ],
+  "attention_types": [
+    [
+      [
+        "global",
+        "local"
+      ],
+      12
+    ]
+  ],
+  "bos_token_id": 50256,
+  "embed_dropout": 0,
+  "eos_token_id": 50256,
+  "gradient_checkpointing": false,
+  "hidden_size": 2048,
+  "initializer_range": 0.02,
+  "intermediate_size": null,
+  "layer_norm_epsilon": 1e-05,
+  "max_position_embeddings": 2048,
+  "model_type": "gpt_neo",
+  "num_heads": 16,
+  "num_layers": 24,
+  "resid_dropout": 0,
+  "summary_activation": null,
+  "summary_first_dropout": 0.1,
+  "summary_proj_to_labels": true,
+  "summary_type": "cls_index",
+  "summary_use_proj": true,
+  "task_specific_params": {
+    "text-generation": {
+      "do_sample": true,
+      "max_length": 50,
+      "temperature": 0.9
+    }
+  },
+  "tokenizer_class": "GPT2Tokenizer",
+  "transformers_version": "4.28.1",
+  "use_cache": true,
+  "vocab_size": 50257,
+  "window_size": 256
+}
+
+[INFO|configuration_utils.py:668] 2023-04-25 15:45:08,213 >> loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/config.json
+[INFO|configuration_utils.py:720] 2023-04-25 15:45:08,214 >> Model config GPTNeoConfig {
+  "_name_or_path": "EleutherAI/gpt-neo-1.3B",
+  "activation_function": "gelu_new",
+  "architectures": [
+    "GPTNeoForCausalLM"
+  ],
+  "attention_dropout": 0,
+  "attention_layers": [
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local"
+  ],
+  "attention_types": [
+    [
+      [
+        "global",
+        "local"
+      ],
+      12
+    ]
+  ],
+  "bos_token_id": 50256,
+  "embed_dropout": 0,
+  "eos_token_id": 50256,
+  "gradient_checkpointing": false,
+  "hidden_size": 2048,
+  "initializer_range": 0.02,
+  "intermediate_size": null,
+  "layer_norm_epsilon": 1e-05,
+  "max_position_embeddings": 2048,
+  "model_type": "gpt_neo",
+  "num_heads": 16,
+  "num_layers": 24,
+  "resid_dropout": 0,
+  "summary_activation": null,
+  "summary_first_dropout": 0.1,
+  "summary_proj_to_labels": true,
+  "summary_type": "cls_index",
+  "summary_use_proj": true,
+  "task_specific_params": {
+    "text-generation": {
+      "do_sample": true,
+      "max_length": 50,
+      "temperature": 0.9
+    }
+  },
+  "tokenizer_class": "GPT2Tokenizer",
+  "transformers_version": "4.28.1",
+  "use_cache": true,
+  "vocab_size": 50257,
+  "window_size": 256
+}
+
+[INFO|configuration_utils.py:668] 2023-04-25 15:45:08,216 >> loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/config.json
+[INFO|configuration_utils.py:668] 2023-04-25 15:45:08,216 >> loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/config.json
+[INFO|configuration_utils.py:720] 2023-04-25 15:45:08,217 >> Model config GPTNeoConfig {
+  "_name_or_path": "EleutherAI/gpt-neo-1.3B",
+  "activation_function": "gelu_new",
+  "architectures": [
+    "GPTNeoForCausalLM"
+  ],
+  "attention_dropout": 0,
+  "attention_layers": [
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local"
+  ],
+  "attention_types": [
+    [
+      [
+        "global",
+        "local"
+      ],
+      12
+    ]
+  ],
+  "bos_token_id": 50256,
+  "embed_dropout": 0,
+  "eos_token_id": 50256,
+  "gradient_checkpointing": false,
+  "hidden_size": 2048,
+  "initializer_range": 0.02,
+  "intermediate_size": null,
+  "layer_norm_epsilon": 1e-05,
+  "max_position_embeddings": 2048,
+  "model_type": "gpt_neo",
+  "num_heads": 16,
+  "num_layers": 24,
+  "resid_dropout": 0,
+  "summary_activation": null,
+  "summary_first_dropout": 0.1,
+  "summary_proj_to_labels": true,
+  "summary_type": "cls_index",
+  "summary_use_proj": true,
+  "task_specific_params": {
+    "text-generation": {
+      "do_sample": true,
+      "max_length": 50,
+      "temperature": 0.9
+    }
+  },
+  "tokenizer_class": "GPT2Tokenizer",
+  "transformers_version": "4.28.1",
+  "use_cache": true,
+  "vocab_size": 50257,
+  "window_size": 256
+}
+
+[INFO|configuration_utils.py:720] 2023-04-25 15:45:08,217 >> Model config GPTNeoConfig {
+  "_name_or_path": "EleutherAI/gpt-neo-1.3B",
+  "activation_function": "gelu_new",
+  "architectures": [
+    "GPTNeoForCausalLM"
+  ],
+  "attention_dropout": 0,
+  "attention_layers": [
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local"
+  ],
+  "attention_types": [
+    [
+      [
+        "global",
+        "local"
+      ],
+      12
+    ]
+  ],
+  "bos_token_id": 50256,
+  "embed_dropout": 0,
+  "eos_token_id": 50256,
+  "gradient_checkpointing": false,
+  "hidden_size": 2048,
+  "initializer_range": 0.02,
+  "intermediate_size": null,
+  "layer_norm_epsilon": 1e-05,
+  "max_position_embeddings": 2048,
+  "model_type": "gpt_neo",
+  "num_heads": 16,
+  "num_layers": 24,
+  "resid_dropout": 0,
+  "summary_activation": null,
+  "summary_first_dropout": 0.1,
+  "summary_proj_to_labels": true,
+  "summary_type": "cls_index",
+  "summary_use_proj": true,
+  "task_specific_params": {
+    "text-generation": {
+      "do_sample": true,
+      "max_length": 50,
+      "temperature": 0.9
+    }
+  },
+  "tokenizer_class": "GPT2Tokenizer",
+  "transformers_version": "4.28.1",
+  "use_cache": true,
+  "vocab_size": 50257,
+  "window_size": 256
+}
+
+[INFO|configuration_utils.py:668] 2023-04-25 15:45:08,221 >> loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/config.json
+[INFO|configuration_utils.py:720] 2023-04-25 15:45:08,222 >> Model config GPTNeoConfig {
+  "_name_or_path": "EleutherAI/gpt-neo-1.3B",
+  "activation_function": "gelu_new",
+  "architectures": [
+    "GPTNeoForCausalLM"
+  ],
+  "attention_dropout": 0,
+  "attention_layers": [
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local"
+  ],
+  "attention_types": [
+    [
+      [
+        "global",
+        "local"
+      ],
+      12
+    ]
+  ],
+  "bos_token_id": 50256,
+  "embed_dropout": 0,
+  "eos_token_id": 50256,
+  "gradient_checkpointing": false,
+  "hidden_size": 2048,
+  "initializer_range": 0.02,
+  "intermediate_size": null,
+  "layer_norm_epsilon": 1e-05,
+  "max_position_embeddings": 2048,
+  "model_type": "gpt_neo",
+  "num_heads": 16,
+  "num_layers": 24,
+  "resid_dropout": 0,
+  "summary_activation": null,
+  "summary_first_dropout": 0.1,
+  "summary_proj_to_labels": true,
+  "summary_type": "cls_index",
+  "summary_use_proj": true,
+  "task_specific_params": {
+    "text-generation": {
+      "do_sample": true,
+      "max_length": 50,
+      "temperature": 0.9
+    }
+  },
+  "tokenizer_class": "GPT2Tokenizer",
+  "transformers_version": "4.28.1",
+  "use_cache": true,
+  "vocab_size": 50257,
+  "window_size": 256
+}
+
+[INFO|configuration_utils.py:668] 2023-04-25 15:45:08,223 >> loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/config.json
+[INFO|configuration_utils.py:720] 2023-04-25 15:45:08,224 >> Model config GPTNeoConfig {
+  "_name_or_path": "EleutherAI/gpt-neo-1.3B",
+  "activation_function": "gelu_new",
+  "architectures": [
+    "GPTNeoForCausalLM"
+  ],
+  "attention_dropout": 0,
+  "attention_layers": [
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local"
+  ],
+  "attention_types": [
+    [
+      [
+        "global",
+        "local"
+      ],
+      12
+    ]
+  ],
+  "bos_token_id": 50256,
+  "embed_dropout": 0,
+  "eos_token_id": 50256,
+  "gradient_checkpointing": false,
+  "hidden_size": 2048,
+  "initializer_range": 0.02,
+  "intermediate_size": null,
+  "layer_norm_epsilon": 1e-05,
+  "max_position_embeddings": 2048,
+  "model_type": "gpt_neo",
+  "num_heads": 16,
+  "num_layers": 24,
+  "resid_dropout": 0,
+  "summary_activation": null,
+  "summary_first_dropout": 0.1,
+  "summary_proj_to_labels": true,
+  "summary_type": "cls_index",
+  "summary_use_proj": true,
+  "task_specific_params": {
+    "text-generation": {
+      "do_sample": true,
+      "max_length": 50,
+      "temperature": 0.9
+    }
+  },
+  "tokenizer_class": "GPT2Tokenizer",
+  "transformers_version": "4.28.1",
+  "use_cache": true,
+  "vocab_size": 50257,
+  "window_size": 256
+}
+
+[INFO|configuration_utils.py:668] 2023-04-25 15:45:08,224 >> loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/config.json
+[INFO|configuration_utils.py:720] 2023-04-25 15:45:08,225 >> Model config GPTNeoConfig {
+  "_name_or_path": "EleutherAI/gpt-neo-1.3B",
+  "activation_function": "gelu_new",
+  "architectures": [
+    "GPTNeoForCausalLM"
+  ],
+  "attention_dropout": 0,
+  "attention_layers": [
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local"
+  ],
+  "attention_types": [
+    [
+      [
+        "global",
+        "local"
+      ],
+      12
+    ]
+  ],
+  "bos_token_id": 50256,
+  "embed_dropout": 0,
+  "eos_token_id": 50256,
+  "gradient_checkpointing": false,
+  "hidden_size": 2048,
+  "initializer_range": 0.02,
+  "intermediate_size": null,
+  "layer_norm_epsilon": 1e-05,
+  "max_position_embeddings": 2048,
+  "model_type": "gpt_neo",
+  "num_heads": 16,
+  "num_layers": 24,
+  "resid_dropout": 0,
+  "summary_activation": null,
+  "summary_first_dropout": 0.1,
+  "summary_proj_to_labels": true,
+  "summary_type": "cls_index",
+  "summary_use_proj": true,
+  "task_specific_params": {
+    "text-generation": {
+      "do_sample": true,
+      "max_length": 50,
+      "temperature": 0.9
+    }
+  },
+  "tokenizer_class": "GPT2Tokenizer",
+  "transformers_version": "4.28.1",
+  "use_cache": true,
+  "vocab_size": 50257,
+  "window_size": 256
+}
+
+[ERROR|tokenization_utils_base.py:1042] 2023-04-25 15:45:08,282 >> Using pad_token, but it is not set yet.
+[ERROR|tokenization_utils_base.py:1042] 2023-04-25 15:45:08,282 >> Using pad_token, but it is not set yet.
+[ERROR|tokenization_utils_base.py:1042] 2023-04-25 15:45:08,284 >> Using pad_token, but it is not set yet.
+[ERROR|tokenization_utils_base.py:1042] 2023-04-25 15:45:08,284 >> Using pad_token, but it is not set yet.
+[ERROR|tokenization_utils_base.py:1042] 2023-04-25 15:45:08,284 >> Using pad_token, but it is not set yet.
+[ERROR|tokenization_utils_base.py:1042] 2023-04-25 15:45:08,284 >> Using pad_token, but it is not set yet.
+[ERROR|tokenization_utils_base.py:1042] 2023-04-25 15:45:08,292 >> Using pad_token, but it is not set yet.
+[INFO|configuration_utils.py:668] 2023-04-25 15:45:08,401 >> loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/config.json
+[INFO|configuration_utils.py:720] 2023-04-25 15:45:08,403 >> Model config GPTNeoConfig {
+  "_name_or_path": "EleutherAI/gpt-neo-1.3B",
+  "activation_function": "gelu_new",
+  "architectures": [
+    "GPTNeoForCausalLM"
+  ],
+  "attention_dropout": 0,
+  "attention_layers": [
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local"
+  ],
+  "attention_types": [
+    [
+      [
+        "global",
+        "local"
+      ],
+      12
+    ]
+  ],
+  "bos_token_id": 50256,
+  "embed_dropout": 0,
+  "eos_token_id": 50256,
+  "gradient_checkpointing": false,
+  "hidden_size": 2048,
+  "initializer_range": 0.02,
+  "intermediate_size": null,
+  "layer_norm_epsilon": 1e-05,
+  "max_position_embeddings": 2048,
+  "model_type": "gpt_neo",
+  "num_heads": 16,
+  "num_layers": 24,
+  "resid_dropout": 0,
+  "summary_activation": null,
+  "summary_first_dropout": 0.1,
+  "summary_proj_to_labels": true,
+  "summary_type": "cls_index",
+  "summary_use_proj": true,
+  "task_specific_params": {
+    "text-generation": {
+      "do_sample": true,
+      "max_length": 50,
+      "temperature": 0.9
+    }
+  },
+  "tokenizer_class": "GPT2Tokenizer",
+  "transformers_version": "4.28.1",
+  "use_cache": true,
+  "vocab_size": 50257,
+  "window_size": 256
+}
+
+[INFO|configuration_utils.py:668] 2023-04-25 15:45:08,404 >> loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/config.json
+[INFO|configuration_utils.py:668] 2023-04-25 15:45:08,405 >> loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/config.json
+[INFO|configuration_utils.py:668] 2023-04-25 15:45:08,405 >> loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/config.json
+[INFO|configuration_utils.py:720] 2023-04-25 15:45:08,405 >> Model config GPTNeoConfig {
+  "_name_or_path": "EleutherAI/gpt-neo-1.3B",
+  "activation_function": "gelu_new",
+  "architectures": [
+    "GPTNeoForCausalLM"
+  ],
+  "attention_dropout": 0,
+  "attention_layers": [
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local"
+  ],
+  "attention_types": [
+    [
+      [
+        "global",
+        "local"
+      ],
+      12
+    ]
+  ],
+  "bos_token_id": 50256,
+  "embed_dropout": 0,
+  "eos_token_id": 50256,
+  "gradient_checkpointing": false,
+  "hidden_size": 2048,
+  "initializer_range": 0.02,
+  "intermediate_size": null,
+  "layer_norm_epsilon": 1e-05,
+  "max_position_embeddings": 2048,
+  "model_type": "gpt_neo",
+  "num_heads": 16,
+  "num_layers": 24,
+  "resid_dropout": 0,
+  "summary_activation": null,
+  "summary_first_dropout": 0.1,
+  "summary_proj_to_labels": true,
+  "summary_type": "cls_index",
+  "summary_use_proj": true,
+  "task_specific_params": {
+    "text-generation": {
+      "do_sample": true,
+      "max_length": 50,
+      "temperature": 0.9
+    }
+  },
+  "tokenizer_class": "GPT2Tokenizer",
+  "transformers_version": "4.28.1",
+  "use_cache": true,
+  "vocab_size": 50257,
+  "window_size": 256
+}
+
+[INFO|configuration_utils.py:720] 2023-04-25 15:45:08,406 >> Model config GPTNeoConfig {
+  "_name_or_path": "EleutherAI/gpt-neo-1.3B",
+  "activation_function": "gelu_new",
+  "architectures": [
+    "GPTNeoForCausalLM"
+  ],
+  "attention_dropout": 0,
+  "attention_layers": [
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local"
+  ],
+  "attention_types": [
+    [
+      [
+        "global",
+        "local"
+      ],
+      12
+    ]
+  ],
+  "bos_token_id": 50256,
+  "embed_dropout": 0,
+  "eos_token_id": 50256,
+  "gradient_checkpointing": false,
+  "hidden_size": 2048,
+  "initializer_range": 0.02,
+  "intermediate_size": null,
+  "layer_norm_epsilon": 1e-05,
+  "max_position_embeddings": 2048,
+  "model_type": "gpt_neo",
+  "num_heads": 16,
+  "num_layers": 24,
+  "resid_dropout": 0,
+  "summary_activation": null,
+  "summary_first_dropout": 0.1,
+  "summary_proj_to_labels": true,
+  "summary_type": "cls_index",
+  "summary_use_proj": true,
+  "task_specific_params": {
+    "text-generation": {
+      "do_sample": true,
+      "max_length": 50,
+      "temperature": 0.9
+    }
+  },
+  "tokenizer_class": "GPT2Tokenizer",
+  "transformers_version": "4.28.1",
+  "use_cache": true,
+  "vocab_size": 50257,
+  "window_size": 256
+}
+
+[INFO|configuration_utils.py:720] 2023-04-25 15:45:08,406 >> Model config GPTNeoConfig {
+  "_name_or_path": "EleutherAI/gpt-neo-1.3B",
+  "activation_function": "gelu_new",
+  "architectures": [
+    "GPTNeoForCausalLM"
+  ],
+  "attention_dropout": 0,
+  "attention_layers": [
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local"
+  ],
+  "attention_types": [
+    [
+      [
+        "global",
+        "local"
+      ],
+      12
+    ]
+  ],
+  "bos_token_id": 50256,
+  "embed_dropout": 0,
+  "eos_token_id": 50256,
+  "gradient_checkpointing": false,
+  "hidden_size": 2048,
+  "initializer_range": 0.02,
+  "intermediate_size": null,
+  "layer_norm_epsilon": 1e-05,
+  "max_position_embeddings": 2048,
+  "model_type": "gpt_neo",
+  "num_heads": 16,
+  "num_layers": 24,
+  "resid_dropout": 0,
+  "summary_activation": null,
+  "summary_first_dropout": 0.1,
+  "summary_proj_to_labels": true,
+  "summary_type": "cls_index",
+  "summary_use_proj": true,
+  "task_specific_params": {
+    "text-generation": {
+      "do_sample": true,
+      "max_length": 50,
+      "temperature": 0.9
+    }
+  },
+  "tokenizer_class": "GPT2Tokenizer",
+  "transformers_version": "4.28.1",
+  "use_cache": true,
+  "vocab_size": 50257,
+  "window_size": 256
+}
+
+[INFO|configuration_utils.py:668] 2023-04-25 15:45:08,410 >> loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/config.json
+[INFO|configuration_utils.py:720] 2023-04-25 15:45:08,412 >> Model config GPTNeoConfig {
+  "_name_or_path": "EleutherAI/gpt-neo-1.3B",
+  "activation_function": "gelu_new",
+  "architectures": [
+    "GPTNeoForCausalLM"
+  ],
+  "attention_dropout": 0,
+  "attention_layers": [
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local"
+  ],
+  "attention_types": [
+    [
+      [
+        "global",
+        "local"
+      ],
+      12
+    ]
+  ],
+  "bos_token_id": 50256,
+  "embed_dropout": 0,
+  "eos_token_id": 50256,
+  "gradient_checkpointing": false,
+  "hidden_size": 2048,
+  "initializer_range": 0.02,
+  "intermediate_size": null,
+  "layer_norm_epsilon": 1e-05,
+  "max_position_embeddings": 2048,
+  "model_type": "gpt_neo",
+  "num_heads": 16,
+  "num_layers": 24,
+  "resid_dropout": 0,
+  "summary_activation": null,
+  "summary_first_dropout": 0.1,
+  "summary_proj_to_labels": true,
+  "summary_type": "cls_index",
+  "summary_use_proj": true,
+  "task_specific_params": {
+    "text-generation": {
+      "do_sample": true,
+      "max_length": 50,
+      "temperature": 0.9
+    }
+  },
+  "tokenizer_class": "GPT2Tokenizer",
+  "transformers_version": "4.28.1",
+  "use_cache": true,
+  "vocab_size": 50257,
+  "window_size": 256
+}
+
+[INFO|configuration_utils.py:668] 2023-04-25 15:45:08,525 >> loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/config.json
+[INFO|configuration_utils.py:720] 2023-04-25 15:45:08,526 >> Model config GPTNeoConfig {
+  "_name_or_path": "EleutherAI/gpt-neo-1.3B",
+  "activation_function": "gelu_new",
+  "architectures": [
+    "GPTNeoForCausalLM"
+  ],
+  "attention_dropout": 0,
+  "attention_layers": [
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local"
+  ],
+  "attention_types": [
+    [
+      [
+        "global",
+        "local"
+      ],
+      12
+    ]
+  ],
+  "bos_token_id": 50256,
+  "embed_dropout": 0,
+  "eos_token_id": 50256,
+  "gradient_checkpointing": false,
+  "hidden_size": 2048,
+  "initializer_range": 0.02,
+  "intermediate_size": null,
+  "layer_norm_epsilon": 1e-05,
+  "max_position_embeddings": 2048,
+  "model_type": "gpt_neo",
+  "num_heads": 16,
+  "num_layers": 24,
+  "resid_dropout": 0,
+  "summary_activation": null,
+  "summary_first_dropout": 0.1,
+  "summary_proj_to_labels": true,
+  "summary_type": "cls_index",
+  "summary_use_proj": true,
+  "task_specific_params": {
+    "text-generation": {
+      "do_sample": true,
+      "max_length": 50,
+      "temperature": 0.9
+    }
+  },
+  "tokenizer_class": "GPT2Tokenizer",
+  "transformers_version": "4.28.1",
+  "use_cache": true,
+  "vocab_size": 50257,
+  "window_size": 256
+}
+
+[INFO|configuration_utils.py:668] 2023-04-25 15:45:08,527 >> loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/config.json
+[INFO|configuration_utils.py:720] 2023-04-25 15:45:08,529 >> Model config GPTNeoConfig {
+  "_name_or_path": "EleutherAI/gpt-neo-1.3B",
+  "activation_function": "gelu_new",
+  "architectures": [
+    "GPTNeoForCausalLM"
+  ],
+  "attention_dropout": 0,
+  "attention_layers": [
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local"
+  ],
+  "attention_types": [
+    [
+      [
+        "global",
+        "local"
+      ],
+      12
+    ]
+  ],
+  "bos_token_id": 50256,
+  "embed_dropout": 0,
+  "eos_token_id": 50256,
+  "gradient_checkpointing": false,
+  "hidden_size": 2048,
+  "initializer_range": 0.02,
+  "intermediate_size": null,
+  "layer_norm_epsilon": 1e-05,
+  "max_position_embeddings": 2048,
+  "model_type": "gpt_neo",
+  "num_heads": 16,
+  "num_layers": 24,
+  "resid_dropout": 0,
+  "summary_activation": null,
+  "summary_first_dropout": 0.1,
+  "summary_proj_to_labels": true,
+  "summary_type": "cls_index",
+  "summary_use_proj": true,
+  "task_specific_params": {
+    "text-generation": {
+      "do_sample": true,
+      "max_length": 50,
+      "temperature": 0.9
+    }
+  },
+  "tokenizer_class": "GPT2Tokenizer",
+  "transformers_version": "4.28.1",
+  "use_cache": true,
+  "vocab_size": 50257,
+  "window_size": 256
+}
+
+[INFO|configuration_utils.py:668] 2023-04-25 15:45:08,529 >> loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/config.json
+[INFO|configuration_utils.py:720] 2023-04-25 15:45:08,531 >> Model config GPTNeoConfig {
+  "_name_or_path": "EleutherAI/gpt-neo-1.3B",
+  "activation_function": "gelu_new",
+  "architectures": [
+    "GPTNeoForCausalLM"
+  ],
+  "attention_dropout": 0,
+  "attention_layers": [
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local"
+  ],
+  "attention_types": [
+    [
+      [
+        "global",
+        "local"
+      ],
+      12
+    ]
+  ],
+  "bos_token_id": 50256,
+  "embed_dropout": 0,
+  "eos_token_id": 50256,
+  "gradient_checkpointing": false,
+  "hidden_size": 2048,
+  "initializer_range": 0.02,
+  "intermediate_size": null,
+  "layer_norm_epsilon": 1e-05,
+  "max_position_embeddings": 2048,
+  "model_type": "gpt_neo",
+  "num_heads": 16,
+  "num_layers": 24,
+  "resid_dropout": 0,
+  "summary_activation": null,
+  "summary_first_dropout": 0.1,
+  "summary_proj_to_labels": true,
+  "summary_type": "cls_index",
+  "summary_use_proj": true,
+  "task_specific_params": {
+    "text-generation": {
+      "do_sample": true,
+      "max_length": 50,
+      "temperature": 0.9
+    }
+  },
+  "tokenizer_class": "GPT2Tokenizer",
+  "transformers_version": "4.28.1",
+  "use_cache": true,
+  "vocab_size": 50257,
+  "window_size": 256
+}
+
+[INFO|configuration_utils.py:668] 2023-04-25 15:45:08,534 >> loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/config.json
+[INFO|configuration_utils.py:720] 2023-04-25 15:45:08,536 >> Model config GPTNeoConfig {
+  "_name_or_path": "EleutherAI/gpt-neo-1.3B",
+  "activation_function": "gelu_new",
+  "architectures": [
+    "GPTNeoForCausalLM"
+  ],
+  "attention_dropout": 0,
+  "attention_layers": [
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local"
+  ],
+  "attention_types": [
+    [
+      [
+        "global",
+        "local"
+      ],
+      12
+    ]
+  ],
+  "bos_token_id": 50256,
+  "embed_dropout": 0,
+  "eos_token_id": 50256,
+  "gradient_checkpointing": false,
+  "hidden_size": 2048,
+  "initializer_range": 0.02,
+  "intermediate_size": null,
+  "layer_norm_epsilon": 1e-05,
+  "max_position_embeddings": 2048,
+  "model_type": "gpt_neo",
+  "num_heads": 16,
+  "num_layers": 24,
+  "resid_dropout": 0,
+  "summary_activation": null,
+  "summary_first_dropout": 0.1,
+  "summary_proj_to_labels": true,
+  "summary_type": "cls_index",
+  "summary_use_proj": true,
+  "task_specific_params": {
+    "text-generation": {
+      "do_sample": true,
+      "max_length": 50,
+      "temperature": 0.9
+    }
+  },
+  "tokenizer_class": "GPT2Tokenizer",
+  "transformers_version": "4.28.1",
+  "use_cache": true,
+  "vocab_size": 50257,
+  "window_size": 256
+}
+
+[INFO|configuration_utils.py:668] 2023-04-25 15:45:08,544 >> loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/config.json
+[INFO|configuration_utils.py:720] 2023-04-25 15:45:08,546 >> Model config GPTNeoConfig {
+  "_name_or_path": "EleutherAI/gpt-neo-1.3B",
+  "activation_function": "gelu_new",
+  "architectures": [
+    "GPTNeoForCausalLM"
+  ],
+  "attention_dropout": 0,
+  "attention_layers": [
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local"
+  ],
+  "attention_types": [
+    [
+      [
+        "global",
+        "local"
+      ],
+      12
+    ]
+  ],
+  "bos_token_id": 50256,
+  "embed_dropout": 0,
+  "eos_token_id": 50256,
+  "gradient_checkpointing": false,
+  "hidden_size": 2048,
+  "initializer_range": 0.02,
+  "intermediate_size": null,
+  "layer_norm_epsilon": 1e-05,
+  "max_position_embeddings": 2048,
+  "model_type": "gpt_neo",
+  "num_heads": 16,
+  "num_layers": 24,
+  "resid_dropout": 0,
+  "summary_activation": null,
+  "summary_first_dropout": 0.1,
+  "summary_proj_to_labels": true,
+  "summary_type": "cls_index",
+  "summary_use_proj": true,
+  "task_specific_params": {
+    "text-generation": {
+      "do_sample": true,
+      "max_length": 50,
+      "temperature": 0.9
+    }
+  },
+  "tokenizer_class": "GPT2Tokenizer",
+  "transformers_version": "4.28.1",
+  "use_cache": true,
+  "vocab_size": 50257,
+  "window_size": 256
+}
+
+[INFO|configuration_utils.py:668] 2023-04-25 15:45:08,586 >> loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/config.json
+[INFO|configuration_utils.py:720] 2023-04-25 15:45:08,588 >> Model config GPTNeoConfig {
+  "_name_or_path": "EleutherAI/gpt-neo-1.3B",
+  "activation_function": "gelu_new",
+  "architectures": [
+    "GPTNeoForCausalLM"
+  ],
+  "attention_dropout": 0,
+  "attention_layers": [
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local"
+  ],
+  "attention_types": [
+    [
+      [
+        "global",
+        "local"
+      ],
+      12
+    ]
+  ],
+  "bos_token_id": 50256,
+  "embed_dropout": 0,
+  "eos_token_id": 50256,
+  "gradient_checkpointing": false,
+  "hidden_size": 2048,
+  "initializer_range": 0.02,
+  "intermediate_size": null,
+  "layer_norm_epsilon": 1e-05,
+  "max_position_embeddings": 2048,
+  "model_type": "gpt_neo",
+  "num_heads": 16,
+  "num_layers": 24,
+  "resid_dropout": 0,
+  "summary_activation": null,
+  "summary_first_dropout": 0.1,
+  "summary_proj_to_labels": true,
+  "summary_type": "cls_index",
+  "summary_use_proj": true,
+  "task_specific_params": {
+    "text-generation": {
+      "do_sample": true,
+      "max_length": 50,
+      "temperature": 0.9
+    }
+  },
+  "tokenizer_class": "GPT2Tokenizer",
+  "transformers_version": "4.28.1",
+  "use_cache": true,
+  "vocab_size": 50257,
+  "window_size": 256
+}
+
+[INFO|configuration_utils.py:668] 2023-04-25 15:45:08,603 >> loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/config.json
+[INFO|configuration_utils.py:720] 2023-04-25 15:45:08,604 >> Model config GPTNeoConfig {
+  "_name_or_path": "EleutherAI/gpt-neo-1.3B",
+  "activation_function": "gelu_new",
+  "architectures": [
+    "GPTNeoForCausalLM"
+  ],
+  "attention_dropout": 0,
+  "attention_layers": [
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local"
+  ],
+  "attention_types": [
+    [
+      [
+        "global",
+        "local"
+      ],
+      12
+    ]
+  ],
+  "bos_token_id": 50256,
+  "embed_dropout": 0,
+  "eos_token_id": 50256,
+  "gradient_checkpointing": false,
+  "hidden_size": 2048,
+  "initializer_range": 0.02,
+  "intermediate_size": null,
+  "layer_norm_epsilon": 1e-05,
+  "max_position_embeddings": 2048,
+  "model_type": "gpt_neo",
+  "num_heads": 16,
+  "num_layers": 24,
+  "resid_dropout": 0,
+  "summary_activation": null,
+  "summary_first_dropout": 0.1,
+  "summary_proj_to_labels": true,
+  "summary_type": "cls_index",
+  "summary_use_proj": true,
+  "task_specific_params": {
+    "text-generation": {
+      "do_sample": true,
+      "max_length": 50,
+      "temperature": 0.9
+    }
+  },
+  "tokenizer_class": "GPT2Tokenizer",
+  "transformers_version": "4.28.1",
+  "use_cache": true,
+  "vocab_size": 50257,
+  "window_size": 256
+}
+
+[INFO|configuration_utils.py:668] 2023-04-25 15:45:08,714 >> loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/config.json
+[INFO|configuration_utils.py:720] 2023-04-25 15:45:08,715 >> Model config GPTNeoConfig {
+  "_name_or_path": "EleutherAI/gpt-neo-1.3B",
+  "activation_function": "gelu_new",
+  "architectures": [
+    "GPTNeoForCausalLM"
+  ],
+  "attention_dropout": 0,
+  "attention_layers": [
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local"
+  ],
+  "attention_types": [
+    [
+      [
+        "global",
+        "local"
+      ],
+      12
+    ]
+  ],
+  "bos_token_id": 50256,
+  "embed_dropout": 0,
+  "eos_token_id": 50256,
+  "gradient_checkpointing": false,
+  "hidden_size": 2048,
+  "initializer_range": 0.02,
+  "intermediate_size": null,
+  "layer_norm_epsilon": 1e-05,
+  "max_position_embeddings": 2048,
+  "model_type": "gpt_neo",
+  "num_heads": 16,
+  "num_layers": 24,
+  "resid_dropout": 0,
+  "summary_activation": null,
+  "summary_first_dropout": 0.1,
+  "summary_proj_to_labels": true,
+  "summary_type": "cls_index",
+  "summary_use_proj": true,
+  "task_specific_params": {
+    "text-generation": {
+      "do_sample": true,
+      "max_length": 50,
+      "temperature": 0.9
+    }
+  },
+  "tokenizer_class": "GPT2Tokenizer",
+  "transformers_version": "4.28.1",
+  "use_cache": true,
+  "vocab_size": 50257,
+  "window_size": 256
+}
+
+[INFO|configuration_utils.py:668] 2023-04-25 15:45:08,727 >> loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/config.json
+[INFO|configuration_utils.py:720] 2023-04-25 15:45:08,729 >> Model config GPTNeoConfig {
+  "_name_or_path": "EleutherAI/gpt-neo-1.3B",
+  "activation_function": "gelu_new",
+  "architectures": [
+    "GPTNeoForCausalLM"
+  ],
+  "attention_dropout": 0,
+  "attention_layers": [
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local",
+    "global",
+    "local"
+  ],
+  "attention_types": [
+    [
+      [
+        "global",
+        "local"
+      ],
+      12
+    ]
+  ],
+  "bos_token_id": 50256,
+  "embed_dropout": 0,
+  "eos_token_id": 50256,
+  "gradient_checkpointing": false,
+  "hidden_size": 2048,
+  "initializer_range": 0.02,
+  "intermediate_size": null,
+  "layer_norm_epsilon": 1e-05,
+  "max_position_embeddings": 2048,
+  "model_type": "gpt_neo",
+  "num_heads": 16,
+  "num_layers": 24,
+  "resid_dropout": 0,
+  "summary_activation": null,
+  "summary_first_dropout": 0.1,
+  "summary_proj_to_labels": true,
+  "summary_type": "cls_index",
+  "summary_use_proj": true,
+  "task_specific_params": {
+    "text-generation": {
+      "do_sample": true,
+      "max_length": 50,
+      "temperature": 0.9
+    }
+  },
+  "tokenizer_class": "GPT2Tokenizer",
+  "transformers_version": "4.28.1",
+  "use_cache": true,
+  "vocab_size": 50257,
+  "window_size": 256
+}
+
+[INFO|modeling_utils.py:2534] 2023-04-25 15:45:09,061 >> loading weights file pytorch_model.bin from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/pytorch_model.bin
+[INFO|modeling_utils.py:2534] 2023-04-25 15:45:09,061 >> loading weights file pytorch_model.bin from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/pytorch_model.bin
+[INFO|modeling_utils.py:2534] 2023-04-25 15:45:09,061 >> loading weights file pytorch_model.bin from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/pytorch_model.bin
+[INFO|modeling_utils.py:2534] 2023-04-25 15:45:09,061 >> loading weights file pytorch_model.bin from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/pytorch_model.bin
+[INFO|modeling_utils.py:2534] 2023-04-25 15:45:09,061 >> loading weights file pytorch_model.bin from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/pytorch_model.bin
+[INFO|modeling_utils.py:2534] 2023-04-25 15:45:09,061 >> loading weights file pytorch_model.bin from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/pytorch_model.bin
+[INFO|modeling_utils.py:2534] 2023-04-25 15:45:09,061 >> loading weights file pytorch_model.bin from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/pytorch_model.bin
+[INFO|modeling_utils.py:2623] 2023-04-25 15:46:00,073 >> Detected DeepSpeed ZeRO-3: activating zero.init() for this model
+[INFO|modeling_utils.py:2623] 2023-04-25 15:46:00,073 >> Detected DeepSpeed ZeRO-3: activating zero.init() for this model
+[INFO|modeling_utils.py:2623] 2023-04-25 15:46:00,073 >> Detected DeepSpeed ZeRO-3: activating zero.init() for this model
+[INFO|modeling_utils.py:2623] 2023-04-25 15:46:00,073 >> Detected DeepSpeed ZeRO-3: activating zero.init() for this model
+[INFO|modeling_utils.py:2623] 2023-04-25 15:46:00,073 >> Detected DeepSpeed ZeRO-3: activating zero.init() for this model
+[INFO|modeling_utils.py:2623] 2023-04-25 15:46:00,076 >> Detected DeepSpeed ZeRO-3: activating zero.init() for this model
+[INFO|modeling_utils.py:2623] 2023-04-25 15:46:00,076 >> Detected DeepSpeed ZeRO-3: activating zero.init() for this model
+[INFO|modeling_utils.py:3190] 2023-04-25 15:46:34,709 >> All model checkpoint weights were used when initializing GPTNeoModel.
+
+[INFO|modeling_utils.py:3190] 2023-04-25 15:46:34,709 >> All model checkpoint weights were used when initializing GPTNeoModel.
+
+[INFO|modeling_utils.py:3190] 2023-04-25 15:46:34,709 >> All model checkpoint weights were used when initializing GPTNeoModel.
+
+[INFO|modeling_utils.py:3198] 2023-04-25 15:46:34,710 >> All the weights of GPTNeoModel were initialized from the model checkpoint at EleutherAI/gpt-neo-1.3B.
+If your task is similar to the task the model of the checkpoint was trained on, you can already use GPTNeoModel for predictions without further training.
+[INFO|modeling_utils.py:3190] 2023-04-25 15:46:34,709 >> All model checkpoint weights were used when initializing GPTNeoModel.
+
+[INFO|modeling_utils.py:3198] 2023-04-25 15:46:34,710 >> All the weights of GPTNeoModel were initialized from the model checkpoint at EleutherAI/gpt-neo-1.3B.
+If your task is similar to the task the model of the checkpoint was trained on, you can already use GPTNeoModel for predictions without further training.
+[INFO|modeling_utils.py:3190] 2023-04-25 15:46:34,709 >> All model checkpoint weights were used when initializing GPTNeoModel.
+
+[INFO|modeling_utils.py:3198] 2023-04-25 15:46:34,710 >> All the weights of GPTNeoModel were initialized from the model checkpoint at EleutherAI/gpt-neo-1.3B.
+If your task is similar to the task the model of the checkpoint was trained on, you can already use GPTNeoModel for predictions without further training.
+[INFO|modeling_utils.py:3190] 2023-04-25 15:46:34,709 >> All model checkpoint weights were used when initializing GPTNeoModel.
+
+[INFO|modeling_utils.py:3198] 2023-04-25 15:46:34,710 >> All the weights of GPTNeoModel were initialized from the model checkpoint at EleutherAI/gpt-neo-1.3B.
+If your task is similar to the task the model of the checkpoint was trained on, you can already use GPTNeoModel for predictions without further training.
+[INFO|modeling_utils.py:3190] 2023-04-25 15:46:34,709 >> All model checkpoint weights were used when initializing GPTNeoModel.
+
+[INFO|modeling_utils.py:3198] 2023-04-25 15:46:34,710 >> All the weights of GPTNeoModel were initialized from the model checkpoint at EleutherAI/gpt-neo-1.3B.
+If your task is similar to the task the model of the checkpoint was trained on, you can already use GPTNeoModel for predictions without further training.
+[INFO|modeling_utils.py:3198] 2023-04-25 15:46:34,710 >> All the weights of GPTNeoModel were initialized from the model checkpoint at EleutherAI/gpt-neo-1.3B.
+If your task is similar to the task the model of the checkpoint was trained on, you can already use GPTNeoModel for predictions without further training.
+[INFO|modeling_utils.py:3198] 2023-04-25 15:46:34,710 >> All the weights of GPTNeoModel were initialized from the model checkpoint at EleutherAI/gpt-neo-1.3B.
+If your task is similar to the task the model of the checkpoint was trained on, you can already use GPTNeoModel for predictions without further training.
+  0%|          | 0/2 [00:00<?, ?it/s]  0%|          | 0/2 [00:00<?, ?it/s]  0%|          | 0/2 [00:00<?, ?it/s]  0%|          | 0/2 [00:00<?, ?it/s]  0%|          | 0/2 [00:00<?, ?it/s]  0%|          | 0/2 [00:00<?, ?it/s]  0%|          | 0/2 [00:00<?, ?it/s] 50%|█████     | 1/2 [00:01<00:01,  1.67s/it] 50%|█████     | 1/2 [00:01<00:01,  1.57s/it] 50%|█████     | 1/2 [00:01<00:01,  1.51s/it] 50%|█████     | 1/2 [00:01<00:01,  1.62s/it] 50%|█████     | 1/2 [00:01<00:01,  1.55s/it] 50%|█████     | 1/2 [00:01<00:01,  1.63s/it] 50%|█████     | 1/2 [00:01<00:01,  1.61s/it]100%|██████████| 2/2 [00:01<00:00,  1.24it/s]100%|██████████| 2/2 [00:01<00:00,  1.13it/s]
+
+100%|██████████| 2/2 [00:01<00:00,  1.22it/s]
+100%|██████████| 2/2 [00:01<00:00,  1.20it/s]
+100%|██████████| 2/2 [00:01<00:00,  1.17it/s]
+100%|██████████| 2/2 [00:01<00:00,  1.18it/s]100%|██████████| 2/2 [00:01<00:00,  1.16it/s]
+
+  0%|          | 0/2 [00:00<?, ?it/s]  0%|          | 0/2 [00:00<?, ?it/s]  0%|          | 0/2 [00:00<?, ?it/s]  0%|          | 0/2 [00:00<?, ?it/s]  0%|          | 0/2 [00:00<?, ?it/s]  0%|          | 0/2 [00:00<?, ?it/s]  0%|          | 0/2 [00:00<?, ?it/s] 50%|█████     | 1/2 [00:00<00:00,  7.39it/s] 50%|█████     | 1/2 [00:00<00:00,  5.26it/s] 50%|█████     | 1/2 [00:00<00:00,  8.76it/s]100%|██████████| 2/2 [00:00<00:00,  8.49it/s]100%|██████████| 2/2 [00:00<00:00,  8.08it/s]100%|██████████| 2/2 [00:00<00:00,  6.84it/s]100%|██████████| 2/2 [00:00<00:00, 10.15it/s]100%|██████████| 2/2 [00:00<00:00,  8.85it/s]100%|██████████| 2/2 [00:00<00:00,  8.48it/s]
+100%|██████████| 2/2 [00:00<00:00,  8.07it/s]
+100%|██████████| 2/2 [00:00<00:00,  6.91it/s]
+100%|██████████| 2/2 [00:00<00:00, 10.14it/s]
+100%|██████████| 2/2 [00:00<00:00,  8.84it/s]
+100%|██████████| 2/2 [00:00<00:00,  7.64it/s]100%|██████████| 2/2 [00:00<00:00,  6.15it/s]100%|██████████| 2/2 [00:00<00:00,  7.78it/s]
+100%|██████████| 2/2 [00:00<00:00,  5.99it/s]
+  0%|          | 0/1 [00:00<?, ?it/s]  0%|          | 0/1 [00:00<?, ?it/s]  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 34.26it/s]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 16.51it/s]
+100%|██████████| 1/1 [00:00<00:00, 19.94it/s]
+100%|██████████| 1/1 [00:00<00:00, 328.84it/s]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 268.59it/s]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 486.92it/s]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 227.91it/s]
+Using /sailhome/fongsu/.cache/torch_extensions/py38_cu117 as PyTorch extensions root...
+Using /sailhome/fongsu/.cache/torch_extensions/py38_cu117 as PyTorch extensions root...
+Using /sailhome/fongsu/.cache/torch_extensions/py38_cu117 as PyTorch extensions root...
+Using /sailhome/fongsu/.cache/torch_extensions/py38_cu117 as PyTorch extensions root...
+Using /sailhome/fongsu/.cache/torch_extensions/py38_cu117 as PyTorch extensions root...
+Using /sailhome/fongsu/.cache/torch_extensions/py38_cu117 as PyTorch extensions root...
+Using /sailhome/fongsu/.cache/torch_extensions/py38_cu117 as PyTorch extensions root...
+Detected CUDA files, patching ldflags
+Emitting ninja build file /sailhome/fongsu/.cache/torch_extensions/py38_cu117/cpu_adam/build.ninja...
+Building extension module cpu_adam...
+Allowing ninja to set a default number of workers... (overridable by setting the environment variable MAX_JOBS=N)
+Loading extension module cpu_adam...
+Loading extension module cpu_adam...
+Loading extension module cpu_adam...
+Loading extension module cpu_adam...
+Loading extension module cpu_adam...
+Loading extension module cpu_adam...
+Loading extension module cpu_adam...
+Using /sailhome/fongsu/.cache/torch_extensions/py38_cu117 as PyTorch extensions root...Using /sailhome/fongsu/.cache/torch_extensions/py38_cu117 as PyTorch extensions root...Using /sailhome/fongsu/.cache/torch_extensions/py38_cu117 as PyTorch extensions root...
+
+
+Using /sailhome/fongsu/.cache/torch_extensions/py38_cu117 as PyTorch extensions root...
+Using /sailhome/fongsu/.cache/torch_extensions/py38_cu117 as PyTorch extensions root...
+Using /sailhome/fongsu/.cache/torch_extensions/py38_cu117 as PyTorch extensions root...
+Using /sailhome/fongsu/.cache/torch_extensions/py38_cu117 as PyTorch extensions root...
+Emitting ninja build file /sailhome/fongsu/.cache/torch_extensions/py38_cu117/utils/build.ninja...
+Building extension module utils...
+Allowing ninja to set a default number of workers... (overridable by setting the environment variable MAX_JOBS=N)
+Loading extension module utils...
+Loading extension module utils...
+Loading extension module utils...
+Loading extension module utils...
+Loading extension module utils...
+Loading extension module utils...
+Loading extension module utils...
+Using /sailhome/fongsu/.cache/torch_extensions/py38_cu117 as PyTorch extensions root...
+Using /sailhome/fongsu/.cache/torch_extensions/py38_cu117 as PyTorch extensions root...
+Using /sailhome/fongsu/.cache/torch_extensions/py38_cu117 as PyTorch extensions root...
+Using /sailhome/fongsu/.cache/torch_extensions/py38_cu117 as PyTorch extensions root...Using /sailhome/fongsu/.cache/torch_extensions/py38_cu117 as PyTorch extensions root...
+
+Using /sailhome/fongsu/.cache/torch_extensions/py38_cu117 as PyTorch extensions root...
+No modifications detected for re-loaded extension module utils, skipping build step...
+Loading extension module utils...
+No modifications detected for re-loaded extension module utils, skipping build step...No modifications detected for re-loaded extension module utils, skipping build step...
+
+Loading extension module utils...Loading extension module utils...
+
+No modifications detected for re-loaded extension module utils, skipping build step...
+Loading extension module utils...
+No modifications detected for re-loaded extension module utils, skipping build step...
+Loading extension module utils...
+No modifications detected for re-loaded extension module utils, skipping build step...
+Loading extension module utils...
+Using /sailhome/fongsu/.cache/torch_extensions/py38_cu117 as PyTorch extensions root...
+No modifications detected for re-loaded extension module utils, skipping build step...
+Loading extension module utils...
+[INFO|trainer.py:1769] 2023-04-25 15:47:42,862 >> ***** Running training *****
+[INFO|trainer.py:1770] 2023-04-25 15:47:42,862 >>   Num examples = 193,617
+[INFO|trainer.py:1771] 2023-04-25 15:47:42,862 >>   Num Epochs = 1
+[INFO|trainer.py:1772] 2023-04-25 15:47:42,862 >>   Instantaneous batch size per device = 4
+[INFO|trainer.py:1773] 2023-04-25 15:47:42,862 >>   Total train batch size (w. parallel, distributed & accumulation) = 112
+[INFO|trainer.py:1774] 2023-04-25 15:47:42,862 >>   Gradient Accumulation steps = 4
+[INFO|trainer.py:1775] 2023-04-25 15:47:42,862 >>   Total optimization steps = 1,728
+[INFO|trainer.py:1776] 2023-04-25 15:47:42,863 >>   Number of trainable parameters = 1,315,577,856
+[INFO|integrations.py:720] 2023-04-25 15:47:42,864 >> Automatic Weights & Biases logging enabled, to disable set os.environ["WANDB_DISABLED"] = "true"
+wandb: Currently logged in as: oliversf (comprehelp). Use `wandb login --relogin` to force relogin
+wandb: wandb version 0.15.0 is available!  To upgrade, please run:
+wandb:  $ pip install wandb --upgrade
+wandb: Tracking run with wandb version 0.13.10
+wandb: Run data is saved locally in /sailhome/fongsu/superhf/wandb/run-20230425_154746-vg367mhj
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run playful-gorge-289
+wandb: ⭐️ View project at https://wandb.ai/comprehelp/huggingface
+wandb: 🚀 View run at https://wandb.ai/comprehelp/huggingface/runs/vg367mhj
+  0%|          | 0/1728 [00:00<?, ?it/s][WARNING|logging.py:295] 2023-04-25 15:47:48,644 >> `use_cache=True` is incompatible with gradient checkpointing. Setting `use_cache=False`...
+[WARNING|logging.py:295] 2023-04-25 15:47:48,644 >> `use_cache=True` is incompatible with gradient checkpointing. Setting `use_cache=False`...
+[WARNING|logging.py:295] 2023-04-25 15:47:48,644 >> `use_cache=True` is incompatible with gradient checkpointing. Setting `use_cache=False`...
+[WARNING|logging.py:295] 2023-04-25 15:47:48,644 >> `use_cache=True` is incompatible with gradient checkpointing. Setting `use_cache=False`...
+[WARNING|logging.py:295] 2023-04-25 15:47:48,644 >> `use_cache=True` is incompatible with gradient checkpointing. Setting `use_cache=False`...
+[WARNING|logging.py:295] 2023-04-25 15:47:48,644 >> `use_cache=True` is incompatible with gradient checkpointing. Setting `use_cache=False`...
+[WARNING|logging.py:295] 2023-04-25 15:47:48,645 >> `use_cache=True` is incompatible with gradient checkpointing. Setting `use_cache=False`...
+  0%|          | 1/1728 [01:29<42:52:31, 89.38s/it]  0%|          | 2/1728 [02:40<37:45:27, 78.75s/it]  0%|          | 3/1728 [03:52<36:13:44, 75.61s/it]  0%|          | 4/1728 [05:07<36:04:11, 75.32s/it]  0%|          | 5/1728 [06:18<35:15:56, 73.68s/it]  0%|          | 6/1728 [07:32<35:16:00, 73.73s/it]  0%|          | 7/1728 [08:44<34:58:38, 73.17s/it]  0%|          | 8/1728 [09:57<34:59:02, 73.22s/it]slurmstepd: error: *** JOB 6043601 ON jagupard29 CANCELLED AT 2023-04-25T15:58:57 ***
+  1%|          | 9/1728 [11:09<34:47:04, 72.85s/it]

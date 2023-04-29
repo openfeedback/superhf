@@ -1,0 +1,20 @@
+SLURM_JOBID=6023083
+SLURM_JOB_NODELIST=jagupard35
+SLURM_NNODES=1
+SLURMTMPDIR=
+working directory = /sailhome/fongsu/superhf
+[2023-04-15 01:19:01,597] [WARNING] [runner.py:190:fetch_hostfile] Unable to find hostfile, will proceed with training with local resources only.
+Detected CUDA_VISIBLE_DEVICES=0,1,2,3: setting --include=localhost:0,1,2,3
+[2023-04-15 01:19:01,630] [INFO] [runner.py:540:main] cmd = /sailhome/fongsu/rm/bin/python -u -m deepspeed.launcher.launch --world_info=eyJsb2NhbGhvc3QiOiBbMCwgMSwgMiwgM119 --master_addr=127.0.0.1 --master_port=29500 --enable_each_rank_log=None src/reward_modelling/reward_model.py --output_dir . --deepspeed src/reward_modelling/ds_configs/base_config.json
+[2023-04-15 01:19:06,883] [INFO] [launch.py:222:main] 0 NCCL_P2P_DISABLE=1
+[2023-04-15 01:19:06,883] [INFO] [launch.py:229:main] WORLD INFO DICT: {'localhost': [0, 1, 2, 3]}
+[2023-04-15 01:19:06,883] [INFO] [launch.py:235:main] nnodes=1, num_local_procs=4, node_rank=0
+[2023-04-15 01:19:06,883] [INFO] [launch.py:246:main] global_rank_mapping=defaultdict(<class 'list'>, {'localhost': [0, 1, 2, 3]})
+[2023-04-15 01:19:06,883] [INFO] [launch.py:247:main] dist_world_size=4
+[2023-04-15 01:19:06,883] [INFO] [launch.py:249:main] Setting CUDA_VISIBLE_DEVICES=0,1,2,3
+[2023-04-15 01:19:11,836] [INFO] [comm.py:586:init_distributed] Initializing TorchBackend in DeepSpeed with backend nccl
+[2023-04-15 01:19:14,932] [INFO] [launch.py:428:sigkill_handler] Killing subprocess 1751637
+[2023-04-15 01:19:14,933] [INFO] [launch.py:428:sigkill_handler] Killing subprocess 1751638
+[2023-04-15 01:19:14,950] [INFO] [launch.py:428:sigkill_handler] Killing subprocess 1751639
+[2023-04-15 01:19:14,958] [INFO] [launch.py:428:sigkill_handler] Killing subprocess 1751640
+[2023-04-15 01:19:14,964] [ERROR] [launch.py:434:sigkill_handler] ['/sailhome/fongsu/rm/bin/python', '-u', 'src/reward_modelling/reward_model.py', '--local_rank=3', '--output_dir', '.', '--deepspeed', 'src/reward_modelling/ds_configs/base_config.json'] exits with return code = 1

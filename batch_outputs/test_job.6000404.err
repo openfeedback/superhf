@@ -1,0 +1,30 @@
+Downloading (…)okenizer_config.json:   0%|          | 0.00/28.0 [00:00<?, ?B/s]Downloading (…)okenizer_config.json: 100%|██████████| 28.0/28.0 [00:00<00:00, 4.65kB/s]
+Downloading (…)lve/main/config.json:   0%|          | 0.00/483 [00:00<?, ?B/s]Downloading (…)lve/main/config.json: 100%|██████████| 483/483 [00:00<00:00, 93.4kB/s]
+Downloading (…)solve/main/vocab.txt:   0%|          | 0.00/232k [00:00<?, ?B/s]Downloading (…)solve/main/vocab.txt: 100%|██████████| 232k/232k [00:00<00:00, 1.11MB/s]Downloading (…)solve/main/vocab.txt: 100%|██████████| 232k/232k [00:00<00:00, 1.10MB/s]
+Downloading (…)/main/tokenizer.json:   0%|          | 0.00/466k [00:00<?, ?B/s]Downloading (…)/main/tokenizer.json: 100%|██████████| 466k/466k [00:00<00:00, 1.70MB/s]Downloading (…)/main/tokenizer.json: 100%|██████████| 466k/466k [00:00<00:00, 1.69MB/s]
+Downloading (…)"pytorch_model.bin";:   0%|          | 0.00/268M [00:00<?, ?B/s]Downloading (…)"pytorch_model.bin";:   4%|▍         | 10.5M/268M [00:00<00:03, 66.9MB/s]Downloading (…)"pytorch_model.bin";:   8%|▊         | 21.0M/268M [00:00<00:03, 71.5MB/s]Downloading (…)"pytorch_model.bin";:  12%|█▏        | 31.5M/268M [00:00<00:02, 80.7MB/s]Downloading (…)"pytorch_model.bin";:  16%|█▌        | 41.9M/268M [00:00<00:02, 86.0MB/s]Downloading (…)"pytorch_model.bin";:  20%|█▉        | 52.4M/268M [00:00<00:02, 88.6MB/s]Downloading (…)"pytorch_model.bin";:  23%|██▎       | 62.9M/268M [00:00<00:02, 91.0MB/s]Downloading (…)"pytorch_model.bin";:  27%|██▋       | 73.4M/268M [00:00<00:02, 90.5MB/s]Downloading (…)"pytorch_model.bin";:  31%|███▏      | 83.9M/268M [00:00<00:02, 91.3MB/s]Downloading (…)"pytorch_model.bin";:  35%|███▌      | 94.4M/268M [00:01<00:01, 92.7MB/s]Downloading (…)"pytorch_model.bin";:  39%|███▉      | 105M/268M [00:01<00:01, 92.6MB/s] Downloading (…)"pytorch_model.bin";:  43%|████▎     | 115M/268M [00:01<00:01, 83.6MB/s]Downloading (…)"pytorch_model.bin";:  47%|████▋     | 126M/268M [00:01<00:01, 87.1MB/s]Downloading (…)"pytorch_model.bin";:  51%|█████     | 136M/268M [00:01<00:01, 89.3MB/s]Downloading (…)"pytorch_model.bin";:  55%|█████▍    | 147M/268M [00:01<00:01, 89.2MB/s]Downloading (…)"pytorch_model.bin";:  59%|█████▊    | 157M/268M [00:01<00:01, 82.1MB/s]Downloading (…)"pytorch_model.bin";:  63%|██████▎   | 168M/268M [00:01<00:01, 82.8MB/s]Downloading (…)"pytorch_model.bin";:  67%|██████▋   | 178M/268M [00:02<00:01, 86.9MB/s]Downloading (…)"pytorch_model.bin";:  70%|███████   | 189M/268M [00:02<00:00, 81.2MB/s]Downloading (…)"pytorch_model.bin";:  74%|███████▍  | 199M/268M [00:02<00:00, 85.1MB/s]Downloading (…)"pytorch_model.bin";:  78%|███████▊  | 210M/268M [00:02<00:00, 81.8MB/s]Downloading (…)"pytorch_model.bin";:  82%|████████▏ | 220M/268M [00:02<00:00, 80.7MB/s]Downloading (…)"pytorch_model.bin";:  90%|█████████ | 241M/268M [00:02<00:00, 88.0MB/s]Downloading (…)"pytorch_model.bin";:  94%|█████████▍| 252M/268M [00:02<00:00, 88.9MB/s]Downloading (…)"pytorch_model.bin";:  98%|█████████▊| 262M/268M [00:03<00:00, 90.9MB/s]Downloading (…)"pytorch_model.bin";: 100%|██████████| 268M/268M [00:03<00:00, 86.6MB/s]
+Some weights of the model checkpoint at distilbert-base-uncased were not used when initializing DistilBertModel: ['vocab_transform.weight', 'vocab_projector.weight', 'vocab_projector.bias', 'vocab_layer_norm.weight', 'vocab_layer_norm.bias', 'vocab_transform.bias']
+- This IS expected if you are initializing DistilBertModel from the checkpoint of a model trained on another task or with another architecture (e.g. initializing a BertForSequenceClassification model from a BertForPreTraining model).
+- This IS NOT expected if you are initializing DistilBertModel from the checkpoint of a model that you expect to be exactly identical (initializing a BertForSequenceClassification model from a BertForSequenceClassification model).
+[W socket.cpp:401] [c10d] The server socket has failed to bind to [::]:29500 (errno: 98 - Address already in use).
+[W socket.cpp:401] [c10d] The server socket has failed to bind to 0.0.0.0:29500 (errno: 98 - Address already in use).
+[E socket.cpp:435] [c10d] The server socket has failed to listen on any local network address.
+Traceback (most recent call last):
+  File "src/reward_modelling/reward_model.py", line 183, in <module>
+    arguments = TrainingArguments(
+  File "<string>", line 108, in __init__
+  File "/sailhome/fongsu/rm/lib/python3.8/site-packages/transformers/training_args.py", line 1172, in __post_init__
+    and (self.device.type != "cuda")
+  File "/sailhome/fongsu/rm/lib/python3.8/site-packages/transformers/training_args.py", line 1556, in device
+    return self._setup_devices
+  File "/sailhome/fongsu/rm/lib/python3.8/site-packages/transformers/utils/generic.py", line 57, in __get__
+    cached = self.fget(obj)
+  File "/sailhome/fongsu/rm/lib/python3.8/site-packages/transformers/training_args.py", line 1541, in _setup_devices
+    torch.distributed.init_process_group(backend="nccl", timeout=self.ddp_timeout_delta)
+  File "/sailhome/fongsu/rm/lib/python3.8/site-packages/torch/distributed/distributed_c10d.py", line 595, in init_process_group
+    store, rank, world_size = next(rendezvous_iterator)
+  File "/sailhome/fongsu/rm/lib/python3.8/site-packages/torch/distributed/rendezvous.py", line 257, in _env_rendezvous_handler
+    store = _create_c10d_store(master_addr, master_port, rank, world_size, timeout)
+  File "/sailhome/fongsu/rm/lib/python3.8/site-packages/torch/distributed/rendezvous.py", line 188, in _create_c10d_store
+    return TCPStore(
+RuntimeError: The server socket has failed to listen on any local network address. The server socket has failed to bind to [::]:29500 (errno: 98 - Address already in use). The server socket has failed to bind to 0.0.0.0:29500 (errno: 98 - Address already in use).
