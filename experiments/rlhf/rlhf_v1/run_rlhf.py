@@ -165,6 +165,7 @@ def get_configs():
         learning_rate=wandb.config.learning_rate,
         adap_kl_ctrl=True,
         init_kl_coef=wandb.config.init_kl_coef,
+        clip_kl=wandb.config.clip_kl,
         target=6,
         horizon=10000,
         gamma=1,
