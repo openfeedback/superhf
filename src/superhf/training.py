@@ -152,6 +152,12 @@ class SuperHFTrainer:
                 self.reward_tokenizer_train.eos_token
             )
             print("Added pad token to reward tokenizer.")
+        if (
+            self.reward_tokenizer_val is not None
+            and self.reward_tokenizer_val.pad_token is None
+        ):
+            self.reward_tokenizer_val.pad_token = self.reward_tokenizer_val.eos_token
+            print("Added pad token to val tokenizer.")
 
         # Reward model is always in eval mode
         self.reward_model_train.eval()
