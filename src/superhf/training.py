@@ -182,9 +182,6 @@ class SuperHFTrainer:
         """
         # pylint: disable=too-many-locals
 
-        # FIXME hack
-        # self.training_args.prompt_accumulation_steps = 16
-
         # First, put all the prompts into a Dataset and DataLoader
         prompt_batch_size = self.training_args.prompt_accumulation_steps
         if prompt_batch_size == 0:
@@ -416,7 +413,7 @@ class SuperHFTrainer:
                 completions_encoded.extend(outputs.to("cpu"))
         # completions_gathered: list[str] = accelerator.gather(
         #     completions
-        # )  # TODO Unclear whether this is needed?
+        # )  # Not needed on single GPU
         completions_text: list[str] = self.language_tokenizer.batch_decode(
             completions_encoded, skip_special_tokens=True
         )
@@ -717,7 +714,7 @@ class SuperHFTrainer:
                             logp_original_model.logits, dim=2
                         )
                     except Exception as exc:
-                        # Hack to fix https://github.com/huggingface/peft/issues/367 until merged.
+                        # Fix for https://github.com/huggingface/peft/issues/367 until released.
                         # Manually fix the peft context adapter not re-enabling the adapter.
                         self.language_model.base_model.enable_adapter_layers()
                         raise exc
