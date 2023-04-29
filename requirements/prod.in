@@ -9,3 +9,4 @@ pynvml
 nvidia-ml-py
 deepspeed
 peft
+sentencepiece

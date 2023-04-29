@@ -30,6 +30,7 @@ from transformers import (
     AutoTokenizer,
     HfArgumentParser,
     LlamaTokenizer,
+    AutoModelForCausalLM,
     pipeline,
     get_scheduler,
 )
@@ -185,9 +186,7 @@ def main(script_args: ScriptArguments):
 
     assert ppo_config.mini_batch_size <= ppo_config.batch_size
 
-    language_model = AutoModelForCausalLMWithValueHead.from_pretrained(
-        ppo_config.model_name
-    )
+    language_model = AutoModelForCausalLM.from_pretrained(ppo_config.model_name)
     model_ref = None
     if wandb.config.lora_r != 0 and wandb.config.lora_alpha != 0:
         # Set up low-rank adapters (LoRA)
@@ -211,9 +210,9 @@ def main(script_args: ScriptArguments):
         model_ref = AutoModelForCausalLMWithValueHead.from_pretrained(
             ppo_config.model_name
         )
-    language_tokenizer = None  # AutoTokenizer.from_pretrained(
-    #     ppo_config.model_name, padding_side="left"
-    # )
+    language_model = AutoModelForCausalLMWithValueHead.from_pretrained(language_model)
+
+    language_tokenizer = None
     if "llama" in ppo_config.model_name or "alpaca" in ppo_config.model_name:
         # Fix for misnamed class in the NLP Cluster's Alpaca tokenizer config
         language_tokenizer = LlamaTokenizer.from_pretrained(
@@ -232,7 +231,7 @@ def main(script_args: ScriptArguments):
         "top_k": None,
         "function_to_apply": "none",
         "batch_size": wandb.config.batch_size,
-    }  # arguments for the
+    }  # arguments for the reward pipeline.
 
     # We then define the arguments to pass to the `generate` function. These arguments
     # are passed to the `generate` function of the PPOTrainer, which is a wrapper around
