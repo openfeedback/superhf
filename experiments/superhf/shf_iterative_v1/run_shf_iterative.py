@@ -4,7 +4,6 @@ Client code showing how to call the training loop for the iterative version of t
 
 import argparse
 import random
-import sys
 import os
 import yaml
 
@@ -244,8 +243,9 @@ def main(argparse_args: argparse.Namespace) -> None:
     wandb.alert(title="Beginning SuperHF run", text="Beginning SuperHF run...")
     trainer.train(prompts)
 
-    # Force exit to avoid wandb hanging
-    sys.exit(0)
+    # Explicit finish to avoid wandb hanging
+    wandb.alert(title="FINISHED SuperHF run!", text="FINISHED SuperHF run!")
+    wandb.finish()
 
 
 if __name__ == "__main__":
