@@ -67,8 +67,6 @@ def initialize_metrics_wandb() -> None:
     """
     Defines metrics for a Weights and Biases run.
     """
-    wandb.define_metric("prompt_index")
-    wandb.define_metric("*", step_metric="prompt_index")
     wandb.define_metric("average_loss", summary="min")
     wandb.define_metric("average_score", summary="max")
     wandb.define_metric("average_score", summary="last")
@@ -97,6 +95,7 @@ def report_metrics_wandb(metrics: SuperHFMetrics) -> None:
     percent_complete = (metrics.superbatch_index + 1) / metrics.superbatch_count * 100
     average_score = np.mean(metrics.scores)
     average_filtered_score = np.mean(metrics.filtered_scores)
+    prompt_index = metrics.superbatch_index * len(metrics.filtered_completions)
 
     # # Create plot data of average score if we filtered different top-K numbers
     # max_top_k_to_explore = 48
@@ -113,9 +112,6 @@ def report_metrics_wandb(metrics: SuperHFMetrics) -> None:
     wandb.log(
         {
             "superbatch_index": metrics.superbatch_index,
-            "prompt_index": metrics.superbatch_index * len(
-                metrics.filtered_completions
-            ),
             "percent_complete": percent_complete,
             "average_score": average_score,
             "score_histogram": wandb.Histogram(metrics.scores),
@@ -157,7 +153,8 @@ def report_metrics_wandb(metrics: SuperHFMetrics) -> None:
             #     stroke="Variance",
             #     title="Scores Per Top-K (Latest)",
             # ),
-        }
+        },
+        step=prompt_index,
     )
 
 
