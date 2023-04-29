@@ -105,7 +105,7 @@ def build_dataset(
 ):
     """
     Currentlty we don't use the tokenizer becauses the internal trainer
-    for some reason throws away the tokenized exmples.s
+    for some reason throws away the tokenized exmples.
 
     Returns:
         a pytorch dataset that implements the __getitem__ and __len__ methods.
@@ -158,13 +158,30 @@ def get_configs():
     # TODO implement this to organize codes
     ppo_config = PPOConfig(
         model_name=wandb.config.model_name,
+        steps=20000,
         learning_rate=wandb.config.learning_rate,
-        mini_batch_size=wandb.config.mini_batch_size,
-        batch_size=wandb.config.batch_size,
-        gradient_accumulation_steps=wandb.config.gradient_accumulation_steps,
-        seed=66,
+        adap_kl_ctrl=True,
         init_kl_coef=wandb.config.init_kl_coef,
+        target=6,
+        horizon=10000,
+        gamma=1,
+        lam=0.95,
+        cliprange=0.2,
+        cliprange_value=0.2,
+        vf_coef=0.1,
+        batch_size=wandb.config.batch_size,
+        forward_batch_size=None,
+        mini_batch_size=wandb.config.mini_batch_size,
+        gradient_accumulation_steps=wandb.config.gradient_accumulation_steps,
+        ppo_epochs=4,
+        remove_unused_columns=True,
         log_with=wandb.config.log_with,
+        tracker_kwargs={},
+        accelerator_kwargs={},
+        tracker_project_name="trl",
+        max_grad_norm=None,
+        seed=66,
+        optimize_cuda_cache=False,
     )
 
     assert ppo_config.mini_batch_size <= ppo_config.batch_size
@@ -280,7 +297,6 @@ def main(script_args: ScriptArguments):
 
     # set seed before initializing value head for deterministic eval
     set_seed(ppo_config.seed)
-
     dataset = build_dataset(
         wandb.config.dataset_names,
         # language_tokenizer,

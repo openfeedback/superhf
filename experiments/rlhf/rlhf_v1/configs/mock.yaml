@@ -45,7 +45,7 @@ debug_max_prompts:
   value: 16
 conversation_prompt:
   desc: A prompt to prepend to every prompt before generation to get the model more on distribution.
-  value: "A human user asks a question or says a statement, and a helpful, polite, honest, sophisticated, emotionally aware, and humble-but-knowledgeable AI assistant responds:"
+  value: "A human user sends a message, and a helpful and harmless AI assistant responds."
 save_every:
     desc: "Save the model every n epochs"
     value: 2
