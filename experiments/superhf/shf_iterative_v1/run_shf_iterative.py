@@ -123,6 +123,15 @@ def main(argparse_args: argparse.Namespace) -> None:
     reward_tokenizer_val = load_reward_tokenizer(reward_tokenizer_val_name)
     print_gpu_utilization()
 
+    # Check for unix
+    if os.name == "posix":
+        print("Compiling models...")
+        language_model = torch.compile(language_model)
+        reward_model_train = torch.compile(reward_model_train)
+        reward_model_val = torch.compile(reward_model_val)
+        print("Compiled models.")
+        print_gpu_utilization()
+
     # Set our training arguments
     print("Setting up trainer...")
     logits_processors = LogitsProcessorList()
