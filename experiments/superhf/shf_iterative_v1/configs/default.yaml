@@ -33,13 +33,13 @@ top_p:
   value: 0.95
 num_prompts:
   desc: Maximum number of prompts to use, or 0 for unlimited (up to the training set size).
-  value: 4096
+  value: 2048
 prompt_accumulation_steps:
   desc: Number of prompts to generate, score, and filter before finetuning, or 0 for num_prompts.
   value: 1
 superbatch_size:
   desc: Number of completions to generate with the current policy before filtering and fine-tuning.
-  value: 16
+  value: 32
 completion_filter_top_k:
   desc: Top-k completions to filter and train on.
   value: 1
@@ -60,7 +60,7 @@ minibatch_size_finetuning:
   value: 8
 mixed_precision:
   desc: Whether to use lower precision fp16 optimization, or other representations.
-  value: "no"
+  value: "bf16"
 lora_r:
   desc: The r dimension parameter for LoRA. Only takes effect if r and alpha are non-zero.
   value: 4
