@@ -117,10 +117,10 @@ class SuperHFTrainer:
         self,
         language_model: PreTrainedModel,
         reward_model_train: PreTrainedModel,
-        reward_model_val: PreTrainedModel,
+        reward_model_val: Optional[PreTrainedModel],
         language_tokenizer: PreTrainedTokenizerBase,
         reward_tokenizer_train: PreTrainedTokenizerBase,
-        reward_tokenizer_val: PreTrainedTokenizerBase,
+        reward_tokenizer_val: Optional[PreTrainedTokenizerBase],
         completion_filter: CompletionFilterBase,
         training_args: SuperHFTrainingArguments,
         report_metrics: Optional[
@@ -230,15 +230,25 @@ class SuperHFTrainer:
             # Score the completions
             try:
                 (
-                    scores,
+                    scores_train,
                     completions_trimmed,
                     completion_lengths,
                 ) = find_executable_batch_size(
-                    self.score_completions,
+                    self.score_completions_train,
                     self.training_args.minibatch_size_scoring,
                 )(
                     completions_raw
                 )
+
+                if (
+                    superbatch_index % self.training_args.validation_interval == 0
+                    and self.reward_model_val is not None
+                    and self.reward_tokenizer_val is not None
+                ):
+                    # Score the completions with the validation reward model
+                    scores_val = self.score_completions_val(completions_trimmed)
+                else:
+                    scores_val = []
             except (IndexError, KeyError) as exc:
                 print("Error during scoring completions:")
                 print(exc)
@@ -255,7 +265,10 @@ class SuperHFTrainer:
                 filtered_completions,
                 filtered_completion_lengths,
             ) = self.filter_completions(
-                len(superbatch_prompts), scores, completions_trimmed, completion_lengths
+                len(superbatch_prompts),
+                scores_train,
+                completions_trimmed,
+                completion_lengths,
             )
 
             # Fine-tune the language model on the filtered completions
@@ -270,7 +283,8 @@ class SuperHFTrainer:
                 superbatch_count=num_superbatches,
                 completions=completions_trimmed,
                 filtered_completions=filtered_completions,
-                scores=scores,
+                scores_train=scores_train,
+                scores_val=scores_val,
                 filtered_scores=filtered_scores,
                 average_loss=average_loss,
                 average_kl_div=average_kl_div,
@@ -402,7 +416,7 @@ class SuperHFTrainer:
         )
         return completions_text
 
-    def collate_fn_rm(
+    def collate_fn_rm_train(
         self, completions: list[str]
     ) -> tuple[list[str], BatchEncoding, list[int]]:
         """
@@ -454,11 +468,27 @@ class SuperHFTrainer:
             completion_lengths,
         )
 
-    def score_completions(
+    def collate_fn_rm_val(self, completions: list[str]) -> BatchEncoding:
+        """
+        Collate function for the reward model's dataloader.
+
+        Simply tokenizes the completions for the val reward model.
+        """
+        assert self.reward_model_val is not None
+        assert self.reward_tokenizer_val is not None
+        return self.reward_tokenizer_val(
+            completions,
+            return_tensors="pt",
+            padding=True,
+            truncation=True,
+            max_length=self.training_args.max_length_rm,
+        ).to(self.reward_model_val.device)
+
+    def score_completions_train(
         self,
         minibatch_size: int,
         completions_encoded: list[TensorType["batch", "seq_len"]],
-    ) -> tuple[list[TensorType[1]], list[str], list[int]]:
+    ) -> tuple[list[float], list[str], list[int]]:
         """
         Score the completions.
 
@@ -467,14 +497,14 @@ class SuperHFTrainer:
         If using accelerate for this step, will need to update collate_fn_rm to not set device.
         """
         self.training_args.minibatch_size_scoring = minibatch_size
-        all_scores: list[TensorType[1]] = []
+        all_scores: list[float] = []
         all_completions_trimmed: list[str] = []
         all_completion_lengths: list[int] = []
 
         score_dataloader = DataLoader(
             ListDataset(completions_encoded),
             batch_size=minibatch_size,
-            collate_fn=self.collate_fn_rm,
+            collate_fn=self.collate_fn_rm_train,
         )
 
         with torch.no_grad():
@@ -515,6 +545,30 @@ class SuperHFTrainer:
                 all_completions_trimmed.extend(completions_trimmed)
                 all_completion_lengths.extend(completion_lengths)
         return all_scores, all_completions_trimmed, all_completion_lengths
+
+    def score_completions_val(
+        self,
+        trimmed_completions: list[str],
+    ) -> list[float]:
+        """Use the validation reward mode to score the trimmed completions."""
+        assert self.reward_model_val is not None
+
+        all_scores: list[float] = []
+        score_dataloader = DataLoader(
+            ListDataset(trimmed_completions),
+            batch_size=self.training_args.minibatch_size_scoring,
+            collate_fn=self.collate_fn_rm_val,
+        )
+        with torch.no_grad():
+            for minibatch in score_dataloader:
+                completion_encodings = minibatch
+                scores = self.reward_model_val(**completion_encodings)
+                if not isinstance(scores, torch.Tensor):
+                    # Handle SequenceClassifierOutput
+                    scores = scores.logits
+                scores = scores.flatten().cpu()
+                all_scores.extend(scores.tolist())
+        return all_scores
 
     def filter_completions(
         self,

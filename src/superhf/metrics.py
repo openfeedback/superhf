@@ -25,7 +25,8 @@ class SuperHFMetrics:
     superbatch_count: int
     completions: list[str]
     filtered_completions: list[str]
-    scores: list[float]
+    scores_train: list[float]
+    scores_val: list[float]
     filtered_scores: list[float]
     average_loss: float
     average_kl_div: float
@@ -46,17 +47,22 @@ def report_metrics_print(metrics: SuperHFMetrics) -> None:
     average_filtered_completion_length = np.mean(
         [len(c) for c in metrics.filtered_completions]
     )
-    average_score = np.mean(metrics.scores)
-    average_filtered_score = np.mean(metrics.filtered_scores)
+    scores_train_avg = np.mean(metrics.scores_train)
+    scores_train_std = np.std(metrics.scores_train)
+    scores_filtered_avg = np.mean(metrics.filtered_scores)
+    scores_val_avg = np.mean(metrics.scores_val) if metrics.scores_val else np.nan
+    scores_val_std = np.std(metrics.scores_val) if metrics.scores_val else np.nan
     print(
         f"\nMetrics at time {time.strftime('%H:%M:%S', time.localtime())}\nSuperbatch"
         f" {metrics.superbatch_index}/{metrics.superbatch_count} ({percent_complete:.3f}%):"
         f" {len(metrics.completions)} completions,"
-        f" {len(metrics.filtered_completions)} filtered completions\naverage completion"
-        f" length {average_completion_length:.3f}, average filtered completion length"
-        f" {average_filtered_completion_length:.3f}\naverage score {average_score:.3f},"
-        f" average filtered score {average_filtered_score:.3f}, average loss"
-        f" {metrics.average_loss:.3f}, average KL {metrics.average_kl_div:.3f}."
+        f" {len(metrics.filtered_completions)} filtered completions, completion length"
+        f" {average_completion_length:.3f}, filtered completion length"
+        f" {average_filtered_completion_length:.3f}\ntrain score"
+        f" {scores_train_avg:.3f} ±{scores_train_std:.3f}, val score"
+        f" {scores_val_avg:.3f} ±{scores_val_std:.3f}, filtered score"
+        f" {scores_filtered_avg:.3f}\nloss {metrics.average_loss:.3f},  KL"
+        f" {metrics.average_kl_div:.3f}."
     )
 
 
@@ -93,7 +99,8 @@ def report_metrics_wandb(metrics: SuperHFMetrics) -> None:
     - Histogram of filtered score if we filtered different top-K numbers
     """
     percent_complete = (metrics.superbatch_index + 1) / metrics.superbatch_count * 100
-    average_score = np.mean(metrics.scores)
+    average_score = np.mean(metrics.scores_train)
+    # TODO std as well
     average_filtered_score = np.mean(metrics.filtered_scores)
     prompt_index = metrics.superbatch_index * len(metrics.filtered_completions)
 
@@ -114,7 +121,7 @@ def report_metrics_wandb(metrics: SuperHFMetrics) -> None:
             "superbatch_index": metrics.superbatch_index,
             "percent_complete": percent_complete,
             "average_score": average_score,
-            "score_histogram": wandb.Histogram(metrics.scores),
+            "score_histogram": wandb.Histogram(metrics.scores_train),
             "average_filtered_score": average_filtered_score,
             # "filtered_score_histogram": wandb.Histogram(metrics.filtered_scores),
             "average_loss": metrics.average_loss,
