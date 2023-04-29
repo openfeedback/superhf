@@ -77,6 +77,7 @@ class SuperHFTrainingArguments:
     scheduler_name: str = "linear"
     scheduler_warmup_steps: int = 0
     kl_coefficient: float = 0.0
+    validation_interval: int = 0
 
     # Dataset settings
     prompt_delimiter: str = constants.PROMPT_DELIMITER
@@ -116,8 +117,10 @@ class SuperHFTrainer:
         self,
         language_model: PreTrainedModel,
         reward_model_train: PreTrainedModel,
+        reward_model_val: PreTrainedModel,
         language_tokenizer: PreTrainedTokenizerBase,
         reward_tokenizer_train: PreTrainedTokenizerBase,
+        reward_tokenizer_val: PreTrainedTokenizerBase,
         completion_filter: CompletionFilterBase,
         training_args: SuperHFTrainingArguments,
         report_metrics: Optional[
@@ -128,8 +131,10 @@ class SuperHFTrainer:
     ) -> None:
         self.language_model = language_model
         self.reward_model_train = reward_model_train
+        self.reward_model_val = reward_model_val
         self.language_tokenizer = language_tokenizer
         self.reward_tokenizer_train = reward_tokenizer_train
+        self.reward_tokenizer_val = reward_tokenizer_val
         self.completion_filter = completion_filter
         self.training_args = training_args
         if report_metrics is None:

@@ -75,8 +75,6 @@ def main(argparse_args: argparse.Namespace) -> None:
         config=argparse_args.config,
     )
     assert run is not None
-    language_model_name = wandb.config.language_model_name
-    reward_model_name = wandb.config.reward_model_name
 
     # Get the prompt dataset
     prompts: list[str] = []
@@ -105,16 +103,24 @@ def main(argparse_args: argparse.Namespace) -> None:
     print("Instantiating models...")
 
     # Instantiate our language and reward models and tokenizers
+    language_model_name = wandb.config.language_model_name
+    reward_model_train_name = wandb.config.reward_model_train_name
+    reward_model_val_name = wandb.config.reward_model_val_name
+    reward_tokenizer_train_name = wandb.config.reward_model_train_name
+    reward_tokenizer_val_name = wandb.config.reward_model_val_name
+
     language_model = load_language_model(device, language_model_name)
     print_gpu_utilization()
 
-    reward_model_train = load_reward_model(device, reward_model_name)
+    reward_model_train = load_reward_model(device, reward_model_train_name)
+    print_gpu_utilization()
+
+    reward_model_val = load_reward_model(device, reward_model_val_name)
     print_gpu_utilization()
 
     language_tokenizer = load_language_tokenizer(language_model_name)
-
-    reward_tokenizer_name = wandb.config.reward_model_name
-    reward_tokenizer_train = load_reward_tokenizer(reward_tokenizer_name)
+    reward_tokenizer_train = load_reward_tokenizer(reward_tokenizer_train_name)
+    reward_tokenizer_val = load_reward_tokenizer(reward_tokenizer_val_name)
     print_gpu_utilization()
 
     # Set our training arguments
@@ -152,7 +158,8 @@ def main(argparse_args: argparse.Namespace) -> None:
         scheduler_warmup_steps=wandb.config.scheduler_warmup_steps,
         inverse_loss_penalty=wandb.config.inverse_loss_penalty,
         kl_coefficient=wandb.config.kl_coefficient,
-        reward_model_is_steamshp=("SteamSHP" in wandb.config.reward_model_name),
+        validation_interval=wandb.config.validation_interval,
+        reward_model_is_steamshp=("SteamSHP" in reward_model_train_name),
         length_penalty=wandb.config.length_penalty,
         hub_repo_id=wandb.config.hub_repo_id,
         push_to_hub_interval=wandb.config.push_to_hub_interval,
@@ -169,8 +176,10 @@ def main(argparse_args: argparse.Namespace) -> None:
     trainer = SuperHFTrainer(
         language_model=language_model,
         reward_model_train=reward_model_train,
+        reward_model_val=reward_model_val,
         language_tokenizer=language_tokenizer,
         reward_tokenizer_train=reward_tokenizer_train,
+        reward_tokenizer_val=reward_tokenizer_val,
         completion_filter=completion_filter,
         training_args=training_args,
         report_metrics=metrics_functions,
@@ -222,10 +231,7 @@ def load_reward_model(device: torch.device, reward_model_name: str) -> PreTraine
     """Load the reward model."""
     if reward_model_name == "mock":
         reward_model_train = MockRewardModel()
-    elif (
-        "rm_combined" in reward_model_name
-        or "oliversssf2" in wandb.config.reward_model_name
-    ):
+    elif "rm_combined" in reward_model_name or "oliversssf2" in reward_model_name:
         reward_model_train = RewardModel.from_pretrained(reward_model_name).to(device)
     elif "SteamSHP-flan-t5" in reward_model_name:
         reward_model_train = AutoModelForSeq2SeqLM.from_pretrained(
