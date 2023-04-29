@@ -415,7 +415,7 @@ class SuperHFTrainer:
         completion_lengths: list[int] = []
         for prompt, completion in prompts_and_completions:
             stripped_completion = re.split(
-                constants.PROMPT_DELIMITER_REGEX_COMPLEX, completion, maxsplit=1
+                constants.PROMPT_DELIMITER_REGEX_MEDIUM, completion, maxsplit=1
             )[0].strip()
             completion_lengths.append(len(stripped_completion))
             joined_completion_normal = prompt + " " + stripped_completion
