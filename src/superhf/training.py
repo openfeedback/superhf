@@ -241,7 +241,10 @@ class SuperHFTrainer:
                 )
 
                 if (
-                    superbatch_index % self.training_args.validation_interval == 0
+                    (
+                        superbatch_index % self.training_args.validation_interval == 0
+                        or superbatch_index == num_superbatches - 1
+                    )
                     and self.reward_model_val is not None
                     and self.reward_tokenizer_val is not None
                 ):
