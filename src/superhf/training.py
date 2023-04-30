@@ -91,6 +91,7 @@ class SuperHFTrainingArguments:
     # Push to hub (set to 0 to disable)
     hub_repo_id: Optional[str] = None
     push_to_hub_interval: int = 0
+    sweep_param_name: str = ""
 
 
 class SuperHFTrainer:
@@ -313,7 +314,9 @@ class SuperHFTrainer:
             # Optionally, push the model to the hub
             self.consider_pushing_to_hub(superbatch_index, num_superbatches)
 
-    def consider_pushing_to_hub(self, superbatch_index: int, num_prompts: int) -> None:
+    def consider_pushing_to_hub(
+        self, superbatch_index: int, total_prompts: int
+    ) -> None:
         """Pushes the model to the hub if it's appropriate to do so."""
         if (  # pylint: disable=too-many-boolean-expressions
             # User must specify a hub repo
@@ -327,14 +330,40 @@ class SuperHFTrainer:
                 # every N superbatches
                 superbatch_index % self.training_args.push_to_hub_interval == 0
                 # last superbatch
-                or superbatch_index == num_prompts - 1
+                or superbatch_index == total_prompts - 1
             )
         ):
+            # pylint: disable=protected-access
+            repo_name = self.training_args.hub_repo_id
+            if self.training_args.sweep_param_name != "":
+                assert (
+                    self.training_args.sweep_param_name == "pythia"
+                    or "pythia" in self.language_model.config._name_or_path
+                ), (
+                    "Must use a pythia model to add a pythia model size to the repo"
+                    " name."
+                )
+                param_name_to_value = {
+                    "accum": self.training_args.prompt_accumulation_steps,
+                    "kl": self.training_args.kl_coefficient,
+                    "invloss": self.training_args.inverse_loss_penalty,
+                    "lr": self.training_args.learning_rate,
+                    "sbs": self.training_args.superbatch_size,
+                    # Get the size of a pythia model
+                    "pythia": self.language_model.config._name_or_path.split("-")[1],
+                }
+                param_value = param_name_to_value[self.training_args.sweep_param_name]
+                repo_name += f"-{self.training_args.sweep_param_name}-{param_value}"
+            # Add the number of processed prompts to the title
+            prompt_index = (
+                superbatch_index * self.training_args.prompt_accumulation_steps
+            )
+            repo_name += f"-step-{prompt_index}"
             tqdm.write("Pushing model and tokenizer to the Hub!")
             tqdm.write(
                 str(
                     self.language_model.push_to_hub(
-                        repo_id=self.training_args.hub_repo_id,
+                        repo_id=repo_name,
                         commit_message=(
                             f"Upload model from superbatch {superbatch_index}"
                         ),
@@ -344,7 +373,7 @@ class SuperHFTrainer:
             tqdm.write(
                 str(
                     self.language_tokenizer.push_to_hub(
-                        repo_id=self.training_args.hub_repo_id,
+                        repo_id=repo_name,
                         commit_message=(
                             f"Upload tokenizer from superbatch {superbatch_index}"
                         ),

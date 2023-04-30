@@ -102,4 +102,7 @@ hub_repo_id:
 push_to_hub_interval:
   desc: The number of superbatches to train before pushing to the HuggingFace Hub. If 0, no model will be stored.
   # value: 1
-  value: 0
+  value: 2
+sweep_param_name:
+  desc: If running a sweep, one of the a list of short parameter names to add to the saved hub repo name.
+  value: "kl"

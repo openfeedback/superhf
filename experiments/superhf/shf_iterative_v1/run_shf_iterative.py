@@ -174,6 +174,7 @@ def main(argparse_args: argparse.Namespace) -> None:
         length_penalty=wandb.config.length_penalty,
         hub_repo_id=wandb.config.hub_repo_id,
         push_to_hub_interval=wandb.config.push_to_hub_interval,
+        sweep_param_name=wandb.config.sweep_param_name,
     )
     completion_filter_top_k = wandb.config.completion_filter_top_k
     completion_filter = CompletionFilterTopK(completion_filter_top_k)
