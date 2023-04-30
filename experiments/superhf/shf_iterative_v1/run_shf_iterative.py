@@ -137,16 +137,16 @@ def main(argparse_args: argparse.Namespace, extra_args: list[str]) -> None:
     reward_tokenizer_val = load_reward_tokenizer(reward_tokenizer_val_name)
     print_gpu_utilization()
 
-    # Check for unix
-    if os.name == "posix":
-        print("Compiling models...")
-        print(type(language_model))
-        language_model = torch.compile(language_model)
-        print(type(language_model))
-        reward_model_train = torch.compile(reward_model_train)
-        reward_model_val = torch.compile(reward_model_val)
-        print("Compiled models.")
-        print_gpu_utilization()
+    # # Check for unix before compiling models
+    # if os.name == "posix":
+    #     print("Compiling models...")
+    #     print(type(language_model))
+    #     language_model = torch.compile(language_model)
+    #     print(type(language_model))
+    #     reward_model_train = torch.compile(reward_model_train)
+    #     reward_model_val = torch.compile(reward_model_val)
+    #     print("Compiled models.")
+    #     print_gpu_utilization()
 
     # Set our training arguments
     print("Setting up trainer...")
@@ -246,7 +246,6 @@ def load_language_model(language_model_name: str) -> PreTrainedModel:
             task_type="CAUSAL_LM",
             fan_in_fan_out=False,
         )
-        # For now, force half precision
         language_model = get_peft_model(language_model, lora_config)
         language_model.print_trainable_parameters()
 
