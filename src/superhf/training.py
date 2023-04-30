@@ -165,7 +165,8 @@ class SuperHFTrainer:
 
         # Initialize the accelerator
         self.accelerator = Accelerator(
-            mixed_precision=self.training_args.mixed_precision
+            mixed_precision=self.training_args.mixed_precision,
+            split_batches=True,  # Because our RM collator returns a tuple
         )
 
         # Prepare with accelerator
@@ -426,6 +427,7 @@ class SuperHFTrainer:
             collate_fn=self.collate_fn_lm_completions,
             pin_memory=True,
         )
+        completion_dataloader = self.accelerator.prepare(completion_dataloader)
 
         completions_encoded: list[TensorType["batch", "seq_len"]] = []
         with torch.no_grad():
@@ -437,7 +439,6 @@ class SuperHFTrainer:
             ):
                 encodings = minibatch
                 with torch.cuda.amp.autocast(dtype=self.training_args.dtype):  # type: ignore
-                    encodings.to(self.language_model.device)
                     outputs = self.language_model.generate(  # type: ignore
                         **encodings,
                         max_new_tokens=self.training_args.max_new_tokens,
@@ -459,7 +460,7 @@ class SuperHFTrainer:
 
     def collate_fn_rm_train(
         self, completions: list[str]
-    ) -> tuple[list[str], BatchEncoding, list[int]]:
+    ) -> tuple[BatchEncoding, list[str], list[int]]:
         """
         Collate function for the reward model's dataloader.
 
@@ -498,14 +499,14 @@ class SuperHFTrainer:
                 completions_for_rm.append(joined_completion_normal)
 
         return (
-            completions_for_lm,
             self.reward_tokenizer_train(
                 completions_for_rm,
                 return_tensors="pt",
                 padding=True,
                 truncation=True,
                 max_length=self.training_args.max_length_rm,
-            ).to(self.reward_model_train.device),
+            ),
+            completions_for_lm,
             completion_lengths,
         )
 
@@ -523,7 +524,7 @@ class SuperHFTrainer:
             padding=True,
             truncation=True,
             max_length=self.training_args.max_length_rm,
-        ).to(self.reward_model_val.device)
+        )
 
     def score_completions_train(
         self,
@@ -547,6 +548,9 @@ class SuperHFTrainer:
             batch_size=minibatch_size,
             collate_fn=self.collate_fn_rm_train,
         )
+        score_dataloader = self.accelerator.prepare(
+            score_dataloader,
+        )
 
         with torch.no_grad():
             iteration = 0
@@ -557,8 +561,8 @@ class SuperHFTrainer:
             ):
                 iteration += 1
                 (
-                    completions_trimmed,
                     completion_encodings,
+                    completions_trimmed,
                     completion_lengths,
                 ) = minibatch
                 if self.training_args.reward_model_is_steamshp:
@@ -604,6 +608,8 @@ class SuperHFTrainer:
             batch_size=self.training_args.minibatch_size_scoring,
             collate_fn=self.collate_fn_rm_val,
         )
+        score_dataloader = self.accelerator.prepare(score_dataloader)
+
         with torch.no_grad():
             for minibatch in score_dataloader:
                 completion_encodings = minibatch

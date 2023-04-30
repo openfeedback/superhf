@@ -54,10 +54,7 @@ def main(argparse_args: argparse.Namespace) -> None:
     # Attempt to fix too many open files issue on SLURM
     torch.multiprocessing.set_sharing_strategy("file_system")
 
-    # Configure device and seed
-    device = torch.device(
-        torch.cuda.current_device() if torch.cuda.is_available() else "cpu"
-    )
+    # Configure seed
     set_seed(66)
 
     # Enable tf32 training if supported
@@ -109,13 +106,13 @@ def main(argparse_args: argparse.Namespace) -> None:
     reward_tokenizer_train_name = wandb.config.reward_model_train_name
     reward_tokenizer_val_name = wandb.config.reward_model_val_name
 
-    language_model = load_language_model(device, language_model_name)
+    language_model = load_language_model(language_model_name)
     print_gpu_utilization()
 
-    reward_model_train = load_reward_model(device, reward_model_train_name)
+    reward_model_train = load_reward_model(reward_model_train_name)
     print_gpu_utilization()
 
-    reward_model_val = load_reward_model(device, reward_model_val_name)
+    reward_model_val = load_reward_model(reward_model_val_name)
     print_gpu_utilization()
 
     language_tokenizer = load_language_tokenizer(language_model_name)
@@ -213,16 +210,14 @@ def main(argparse_args: argparse.Namespace) -> None:
     wandb.finish()
 
 
-def load_language_model(
-    device: torch.device, language_model_name: str
-) -> PreTrainedModel:
+def load_language_model(language_model_name: str) -> PreTrainedModel:
     """Load the language model."""
     language_model = (
         MockLanguageModel()
         if language_model_name == "mock"
         else AutoModelForCausalLM.from_pretrained(
             language_model_name,
-        ).to(device)
+        )
     )
     if wandb.config.lora_r != 0 and wandb.config.lora_alpha != 0:
         # Set up low-rank adapters (LoRA)
@@ -242,22 +237,20 @@ def load_language_model(
     return language_model
 
 
-def load_reward_model(device: torch.device, reward_model_name: str) -> PreTrainedModel:
+def load_reward_model(reward_model_name: str) -> PreTrainedModel:
     """Load the reward model."""
     if reward_model_name == "mock":
         reward_model_train = MockRewardModel()
     elif "rm_combined" in reward_model_name or "oliversssf2" in reward_model_name:
         reward_model_train = RewardModel.from_pretrained(
             reward_model_name,
-        ).to(device)
+        )
     elif "SteamSHP-flan-t5" in reward_model_name:
-        reward_model_train = AutoModelForSeq2SeqLM.from_pretrained(
-            reward_model_name
-        ).to(device)
+        reward_model_train = AutoModelForSeq2SeqLM.from_pretrained(reward_model_name)
     else:
         reward_model_train = AutoModelForSequenceClassification.from_pretrained(
             reward_model_name
-        ).to(device)
+        )
 
     print(f"Instantiated reward model: {reward_model_name}")
     return reward_model_train
