@@ -352,6 +352,7 @@ def main(script_args: ScriptArguments):
     if ppo_trainer.accelerator.num_processes == 1:
         device = 0 if torch.cuda.is_available() else "cpu"  # to avoid a `pipeline` bug
     # This pipelinle is for the reward model
+    # TODO: look at superhf code to load the reward model and then
     reward_model_pipe = pipeline(model=reward_model_name, device=device)
     print(f"The device is {device}")
     print_gpu_utilization()
@@ -469,3 +470,6 @@ if __name__ == "__main__":
         )
     else:
         main(args)
+    wandb.alert(
+        title="FINISHED SuperHF run!", text="FINISHED SuperHF run! <@W011580CVSN>"
+    )  # Peter's member ID
