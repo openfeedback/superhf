@@ -234,6 +234,7 @@ def load_language_model(language_model_name: str) -> PreTrainedModel:
         if language_model_name == "mock"
         else AutoModelForCausalLM.from_pretrained(
             language_model_name,
+            low_cpu_mem_usage=True,
         )
     )
     if wandb.config.lora_r != 0 and wandb.config.lora_alpha != 0:
@@ -260,12 +261,16 @@ def load_reward_model(reward_model_name: str) -> PreTrainedModel:
     elif "rm_combined" in reward_model_name or "oliversssf2" in reward_model_name:
         reward_model_train = RewardModel.from_pretrained(
             reward_model_name,
+            low_cpu_mem_usage=True,
+            torch_dtype=torch.bfloat16,  # Force half for these large RMs
         )
     elif "SteamSHP-flan-t5" in reward_model_name:
         reward_model_train = AutoModelForSeq2SeqLM.from_pretrained(reward_model_name)
     else:
         reward_model_train = AutoModelForSequenceClassification.from_pretrained(
-            reward_model_name
+            reward_model_name,
+            low_cpu_mem_usage=True,
+            torch_dtype=torch.bfloat16,
         )
 
     print(f"Instantiated reward model: {reward_model_name}")
