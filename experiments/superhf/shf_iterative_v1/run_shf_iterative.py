@@ -88,7 +88,7 @@ def main(argparse_args: argparse.Namespace, extra_args: list[str]) -> None:
         elif value.isdigit():
             value = int(value)
         extra_args_dict[key] = value
-    wandb.config.update(extra_args_dict)
+    wandb.config.update(extra_args_dict, allow_val_change=True)
 
     # Get the prompt dataset
     prompts: list[str] = []

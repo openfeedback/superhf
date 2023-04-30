@@ -69,7 +69,7 @@
             "args": [
                 "--config",
                 "${workspaceFolder}/experiments/superhf/shf_iterative_v1/configs/pythia-1B-debug.yaml",
-                "sweep_param_name=kl",
+                "language_model_name=theblackcat102/pythia-3b-deduped-sft-r1",
                 "cpu_offload=True",
             ],
             "justMyCode": false
