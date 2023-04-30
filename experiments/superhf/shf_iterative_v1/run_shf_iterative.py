@@ -129,12 +129,19 @@ def main(argparse_args: argparse.Namespace, extra_args: list[str]) -> None:
     reward_model_train = load_reward_model(reward_model_train_name)
     print_gpu_utilization()
 
-    reward_model_val = load_reward_model(reward_model_val_name)
-    print_gpu_utilization()
+    if reward_model_val_name != "" and reward_model_val_name.lower() != "none":
+        reward_model_val = load_reward_model(reward_model_val_name)
+        print_gpu_utilization()
+    else:
+        print("No validation reward model specified.")
+        reward_model_val = None
 
     language_tokenizer = load_language_tokenizer(language_model_name)
     reward_tokenizer_train = load_reward_tokenizer(reward_tokenizer_train_name)
-    reward_tokenizer_val = load_reward_tokenizer(reward_tokenizer_val_name)
+    if reward_model_val_name != "" and reward_model_val_name.lower() != "none":
+        reward_tokenizer_val = load_reward_tokenizer(reward_tokenizer_val_name)
+    else:
+        reward_tokenizer_val = None
     print_gpu_utilization()
 
     # # Check for unix before compiling models
