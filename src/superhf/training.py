@@ -438,17 +438,17 @@ class SuperHFTrainer:
                 file=sys.stdout,
             ):
                 encodings = minibatch
-                # with torch.cuda.amp.autocast(dtype=self.training_args.dtype):  # type: ignore
-                outputs = self.language_model.generate(  # type: ignore
-                    **encodings,
-                    max_new_tokens=self.training_args.max_new_tokens,
-                    temperature=self.training_args.temperature,
-                    top_p=self.training_args.top_p,
-                    do_sample=True,
-                    num_return_sequences=1,
-                    pad_token_id=self.language_tokenizer.pad_token_id,
-                    logits_processor=self.training_args.logits_processors,
-                )
+                with torch.cuda.amp.autocast(dtype=self.training_args.dtype):  # type: ignore
+                    outputs = self.language_model.generate(  # type: ignore
+                        **encodings,
+                        max_new_tokens=self.training_args.max_new_tokens,
+                        temperature=self.training_args.temperature,
+                        top_p=self.training_args.top_p,
+                        do_sample=True,
+                        num_return_sequences=1,
+                        pad_token_id=self.language_tokenizer.pad_token_id,
+                        logits_processor=self.training_args.logits_processors,
+                    )
                 completions_encoded.extend(outputs.to("cpu"))
         # completions_gathered: list[str] = accelerator.gather(
         #     completions

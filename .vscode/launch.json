@@ -75,21 +75,6 @@
             "justMyCode": false
         },
         {
-            "name": "SHF Iter (Pythia 3B AccLaunch Offload)",
-            "type": "python",
-            "request": "launch",
-            "module": "accelerate.commands.launch",
-            "console": "integratedTerminal",
-            "args": [
-                "${workspaceFolder}/experiments/superhf/shf_iterative_v1/run_shf_iterative.py",
-                "--config",
-                "${workspaceFolder}/experiments/superhf/shf_iterative_v1/configs/pythia-1B-debug.yaml",
-                "language_model_name=theblackcat102/pythia-3b-deduped-sft-r1",
-                "cpu_offload=True",
-            ],
-            "justMyCode": false
-        },
-        {
             "name": "SHF Iter (Sweep)",
             "type": "python",
             "request": "launch",

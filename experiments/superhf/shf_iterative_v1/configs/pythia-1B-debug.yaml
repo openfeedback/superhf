@@ -3,7 +3,7 @@ language_model_name:
   value: "theblackcat102/pythia-1b-deduped-sft"
 reward_model_train_name:
   desc: HuggingFace reward model to use, or "mock" for testing
-  value: "vincentmin/opt-125m-eli5-reward"
+  value: "OpenAssistant/reward-model-deberta-v3-base"
 reward_model_val_name:
   desc: HuggingFace reward model to use, or "mock" for testing, or blank for no validation.
   value: "vincentmin/opt-125m-eli5-reward"
