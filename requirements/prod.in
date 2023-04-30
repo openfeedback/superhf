@@ -11,3 +11,4 @@ nvidia-ml-py
 peft
 sentencepiece
 # deepspeed # Breaks windows, install manually
+# install trl from openfeedback in pip install -e .
