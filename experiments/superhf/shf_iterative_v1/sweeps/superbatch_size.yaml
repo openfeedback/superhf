@@ -1,0 +1,23 @@
+program: experiments/superhf/shf_iterative_v1/run_shf_iterative.py
+method: grid
+metric:
+  goal: maximize
+  name: score_train_avg.mean
+parameters:
+  superbatch_size:
+    values:
+      - 32
+      - 2
+      - 16
+      - 1
+      - 24
+      - 8
+      - 4
+      - 64
+      - 128
+  push_to_hub_interval:
+    value:
+      - 99999  # Set high to only save at the end
+  sweep_param_name:
+    value:
+      - "sbs"

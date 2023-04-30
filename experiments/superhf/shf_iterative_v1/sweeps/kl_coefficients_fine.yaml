@@ -2,7 +2,7 @@ program: experiments/superhf/shf_iterative_v1/run_shf_iterative.py
 method: grid
 metric:
   goal: maximize
-  name: average_score.mean
+  name: score_train_avg.mean
 parameters:
   # conversation_prompt:
     # values:

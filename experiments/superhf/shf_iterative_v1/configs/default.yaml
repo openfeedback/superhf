@@ -18,7 +18,7 @@ scheduler_warmup_steps:
   value: 32
 kl_coefficient:
   desc: Coefficient for the KL loss term added to the CLM loss. Requires LoRA. Set to 0 to disable.
-  value: 0.175
+  value: 0.225
 inverse_loss_penalty:
   desc: Regularizes loss by C with loss' = loss + C / loss. Set to 0 to disable.
   value: 0.0
@@ -33,7 +33,7 @@ top_p:
   value: 0.95
 num_prompts:
   desc: Maximum number of prompts to use, or 0 for unlimited (up to the training set size).
-  value: 2048
+  value: 1024
 prompt_accumulation_steps:
   desc: Number of prompts to generate, score, and filter before finetuning, or 0 for num_prompts.
   value: 1
@@ -96,7 +96,7 @@ validation_interval:
 hub_repo_id:
   desc: The ID of the HuggingFace Hub repo to use for storing the model. If empty, no model will be stored.
   # value: "test-repo"
-  value: ""
+  value: "shf-7b"
 push_to_hub_interval:
   desc: The number of superbatches to train before pushing to the HuggingFace Hub. If 0, no model will be stored.
   value: 0
