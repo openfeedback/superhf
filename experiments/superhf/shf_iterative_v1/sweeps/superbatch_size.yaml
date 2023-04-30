@@ -15,9 +15,6 @@ parameters:
       - 4
       - 64
       - 128
-  push_to_hub_interval:
-    value:
-      - 99999  # Set high to only save at the end
   sweep_param_name:
     value:
       - "sbs"
