@@ -19,6 +19,8 @@ from transformers import (
     PreTrainedTokenizerBase,
     PreTrainedModel,
 )
+from accelerate import dispatch_model, infer_auto_device_map
+from accelerate.utils import get_max_memory
 from peft import (
     LoraConfig,
     get_peft_model,
@@ -234,6 +236,7 @@ def load_language_model(language_model_name: str) -> PreTrainedModel:
         if language_model_name == "mock"
         else AutoModelForCausalLM.from_pretrained(
             language_model_name,
+            low_cpu_mem_usage=True,
         )
     )
     if wandb.config.lora_r != 0 and wandb.config.lora_alpha != 0:
@@ -246,9 +249,17 @@ def load_language_model(language_model_name: str) -> PreTrainedModel:
             task_type="CAUSAL_LM",
             fan_in_fan_out=False,
         )
-        # For now, force half precision
         language_model = get_peft_model(language_model, lora_config)
         language_model.print_trainable_parameters()
+
+    # Add device hooks after adding LoRA
+    max_memory = get_max_memory()
+    max_memory[0] = int(max_memory[0] * 0.5)
+    device_map = infer_auto_device_map(language_model, max_memory=max_memory)
+    language_model = dispatch_model(
+        language_model,
+        device_map=device_map,
+    )
 
     print(f"Instantiated language model: {language_model_name}")
     return language_model
@@ -261,12 +272,17 @@ def load_reward_model(reward_model_name: str) -> PreTrainedModel:
     elif "rm_combined" in reward_model_name or "oliversssf2" in reward_model_name:
         reward_model_train = RewardModel.from_pretrained(
             reward_model_name,
+            device_map="auto",
         )
     elif "SteamSHP-flan-t5" in reward_model_name:
-        reward_model_train = AutoModelForSeq2SeqLM.from_pretrained(reward_model_name)
+        reward_model_train = AutoModelForSeq2SeqLM.from_pretrained(
+            reward_model_name,
+            device_map="auto",
+        )
     else:
         reward_model_train = AutoModelForSequenceClassification.from_pretrained(
-            reward_model_name
+            reward_model_name,
+            device_map="auto",
         )
 
     print(f"Instantiated reward model: {reward_model_name}")
