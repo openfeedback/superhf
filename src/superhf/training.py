@@ -338,7 +338,7 @@ class SuperHFTrainer:
             repo_name = self.training_args.hub_repo_id
             if self.training_args.sweep_param_name != "":
                 assert (
-                    self.training_args.sweep_param_name == "pythia"
+                    self.training_args.sweep_param_name != "pythia"
                     or "pythia" in self.language_model.config._name_or_path
                 ), (
                     "Must use a pythia model to add a pythia model size to the repo"
