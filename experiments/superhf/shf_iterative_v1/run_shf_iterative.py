@@ -208,7 +208,7 @@ def main(argparse_args: argparse.Namespace) -> None:
 
     # Explicit finish to avoid wandb hanging
     wandb.alert(
-        title="FINISHED SuperHF run!", text="FINISHED SuperHF run! <@Gabe Mukobi>"
+        title="FINISHED SuperHF run!", text="FINISHED SuperHF run! <@WGPFRK13K>"
     )
     wandb.finish()
 
