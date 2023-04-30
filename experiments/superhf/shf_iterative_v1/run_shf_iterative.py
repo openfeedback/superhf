@@ -221,7 +221,6 @@ def load_language_model(
         if language_model_name == "mock"
         else AutoModelForCausalLM.from_pretrained(
             language_model_name,
-            torch_dtype=torch.bfloat16,  # For now, force half precision
         ).to(device)
     )
     if wandb.config.lora_r != 0 and wandb.config.lora_alpha != 0:
@@ -235,7 +234,7 @@ def load_language_model(
             fan_in_fan_out=False,
         )
         # For now, force half precision
-        language_model = get_peft_model(language_model, lora_config).half()
+        language_model = get_peft_model(language_model, lora_config)
         language_model.print_trainable_parameters()
 
     print(f"Instantiated language model: {language_model_name}")
@@ -249,7 +248,6 @@ def load_reward_model(device: torch.device, reward_model_name: str) -> PreTraine
     elif "rm_combined" in reward_model_name or "oliversssf2" in reward_model_name:
         reward_model_train = RewardModel.from_pretrained(
             reward_model_name,
-            torch_dtype=torch.bfloat16,  # For now, force half precision
         ).to(device)
     elif "SteamSHP-flan-t5" in reward_model_name:
         reward_model_train = AutoModelForSeq2SeqLM.from_pretrained(
