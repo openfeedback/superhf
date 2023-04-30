@@ -52,12 +52,25 @@
             "name": "SHF Iter (Pythia 1B Debug)",
             "type": "python",
             "request": "launch",
-            "module": "accelerate.commands.launch",
+            "program": "${workspaceFolder}/experiments/superhf/shf_iterative_v1/run_shf_iterative.py",
             "console": "integratedTerminal",
             "args": [
-                "${workspaceFolder}/experiments/superhf/shf_iterative_v1/run_shf_iterative.py",
                 "--config",
                 "${workspaceFolder}/experiments/superhf/shf_iterative_v1/configs/pythia-1B-debug.yaml",
+            ],
+            "justMyCode": false
+        },
+        {
+            "name": "SHF Iter (Pythia 3B Debug Offload)",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/experiments/superhf/shf_iterative_v1/run_shf_iterative.py",
+            "console": "integratedTerminal",
+            "args": [
+                "--config",
+                "${workspaceFolder}/experiments/superhf/shf_iterative_v1/configs/pythia-1B-debug.yaml",
+                "sweep_param_name=kl",
+                "cpu_offload=True",
             ],
             "justMyCode": false
         },

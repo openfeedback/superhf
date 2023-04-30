@@ -5,7 +5,7 @@ Client code showing how to call the training loop for the iterative version of t
 import argparse
 import random
 import os
-import yaml
+from typing import Any
 
 from transformers import (
     AutoTokenizer,
@@ -24,6 +24,7 @@ from peft import (
     get_peft_model,
 )
 import torch
+import yaml
 import wandb
 
 from superhf.data import get_superhf_prompts
@@ -43,7 +44,7 @@ WANDB_ENTITY_NAME = "stanfordaialignment"
 WANDB_PROJECT_NAME = "superhf-v3"
 
 
-def main(argparse_args: argparse.Namespace) -> None:
+def main(argparse_args: argparse.Namespace, extra_args: list[str]) -> None:
     """
     Instantiate and train the SuperHF model.
     """
@@ -72,6 +73,22 @@ def main(argparse_args: argparse.Namespace) -> None:
         config=argparse_args.config,
     )
     assert run is not None
+
+    # Process any extra arguments, converting values to appropriate types
+    extra_args_dict = {}
+    for arg in extra_args:
+        value: Any
+        key, value = arg.split("=")
+        if value == "True":
+            value = True
+        elif value == "False":
+            value = False
+        elif "." in value:
+            value = float(value)
+        elif value.isdigit():
+            value = int(value)
+        extra_args_dict[key] = value
+    wandb.config.update(extra_args_dict)
 
     # Get the prompt dataset
     prompts: list[str] = []
@@ -319,18 +336,18 @@ if __name__ == "__main__":
             " ../sweeps/params.yaml"
         ),
     )
-    args = parser.parse_args()
+    known_args, unknown_args = parser.parse_known_args()
 
-    if args.sweep != "":
+    if known_args.sweep != "":
         # Run sweeps
-        with open(args.sweep, mode="r", encoding="utf-8") as f:
+        with open(known_args.sweep, mode="r", encoding="utf-8") as f:
             sweep_params = yaml.load(f, Loader=yaml.FullLoader)
         wandb.agent(
             sweep_params["id"],
-            function=lambda: main(args),
+            function=lambda: main(known_args, unknown_args),
             entity=WANDB_ENTITY_NAME,
             project=WANDB_PROJECT_NAME,
             count=sweep_params["count"],
         )
     else:
-        main(args)
+        main(known_args, unknown_args)
