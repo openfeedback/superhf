@@ -92,18 +92,6 @@ def main(argparse_args: argparse.Namespace, extra_args: list[str]) -> None:
         extra_args_dict[key] = value
     wandb.config.update(extra_args_dict, allow_val_change=True)
 
-    # Unwrap string args turned into lists if included in sweeps (why wandb?)
-    new_args = {}
-    if isinstance(wandb.config.language_model_name, list):
-        new_args["language_model_name"] = wandb.config.language_model_name[0]
-    if isinstance(wandb.config.reward_model_val_name, list):
-        new_args["reward_model_val_name"] = wandb.config.reward_model_val_name[0]
-    if isinstance(wandb.config.sweep_param_name, list):
-        new_args["sweep_param_name"] = wandb.config.sweep_param_name[0]
-    if isinstance(wandb.config.hub_repo_id, list):
-        new_args["hub_repo_id"] = wandb.config.hub_repo_id[0]
-    wandb.config.update(new_args, allow_val_change=True)
-
     # Get the prompt dataset
     prompts: list[str] = []
     for dataset_name in wandb.config.prompt_dataset_names:
