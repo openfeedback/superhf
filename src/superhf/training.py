@@ -355,14 +355,22 @@ class SuperHFTrainer:
                     "Must use a pythia model to add a pythia model size to the repo"
                     " name."
                 )
+
+                model_size_or_name = self.language_model.config._name_or_path
+                try:
+                    # Get the size of a pythia model
+                    model_size_or_name = model_size_or_name.split("-")[1]
+                except IndexError:
+                    # If it's not a pythia model, use the name
+                    assert "pythia" not in model_size_or_name
+
                 param_name_to_value = {
                     "accum": self.training_args.prompt_accumulation_steps,
                     "kl": self.training_args.kl_coefficient,
                     "invloss": self.training_args.inverse_loss_penalty,
                     "lr": self.training_args.learning_rate,
                     "sbs": self.training_args.superbatch_size,
-                    # Get the size of a pythia model
-                    "pythia": self.language_model.config._name_or_path.split("-")[1],
+                    "pythia": model_size_or_name,
                 }
                 param_value = param_name_to_value[self.training_args.sweep_param_name]
                 repo_name += f"-{self.training_args.sweep_param_name}-{param_value}"

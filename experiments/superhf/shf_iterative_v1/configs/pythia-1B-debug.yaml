@@ -2,6 +2,7 @@ language_model_name:
   desc: HuggingFace language model to use, or "mock" for testing
   # value: "theblackcat102/pythia-1b-deduped-sft"
   value: "EleutherAI/pythia-70m-deduped"  # Faster
+  # value: "facebook/opt-125m" # Closer to LLaMA
 reward_model_train_name:
   desc: HuggingFace reward model to use, or "mock" for testing
   value: "OpenAssistant/reward-model-deberta-v3-base"
@@ -73,8 +74,8 @@ lora_dropout:
   desc: The dropout parameter for LoRA, or 0 to disable dropout.
   value: 0.05
 lora_target_modules:
-  desc: The list of modules to apply LoRA to. See src/superhf/lora.py for available modules.
-  # value: ["q_proj", "v_proj"]  # For LLaMa
+  desc: The list of modules to apply LoRA to. See lora.py for available modules.
+  # value: ["q_proj", "v_proj"]  # For LLaMa or OPT
   value: ["query_key_value"]  # For GPT-NeoX
 conversation_prompt:
   desc: A prompt to prepend to every prompt before generation to get the model more on distribution.

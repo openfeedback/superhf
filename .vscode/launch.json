@@ -86,5 +86,19 @@
             ],
             "justMyCode": false
         },
+        {
+            "name": "SHF Debug (Sweep)",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/experiments/superhf/shf_iterative_v1/run_shf_iterative.py",
+            "console": "integratedTerminal",
+            "args": [
+                "--config",
+                "${workspaceFolder}/experiments/superhf/shf_iterative_v1/configs/pythia-1B-debug.yaml",
+                "--sweep",
+                "${workspaceFolder}/experiments/superhf/shf_iterative_v1/sweeps/params.yaml",
+            ],
+            "justMyCode": false
+        },
     ]
 }
