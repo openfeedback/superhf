@@ -52,6 +52,8 @@ def main(argparse_args: argparse.Namespace, extra_args: list[str]) -> None:
     # pylint: disable=too-many-statements
     # pylint: disable=too-many-branches
 
+    print_memory_utilization()
+
     # Attempt to fix too many open files issue on SLURM
     torch.multiprocessing.set_sharing_strategy("file_system")
 
