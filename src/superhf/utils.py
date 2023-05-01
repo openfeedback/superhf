@@ -60,7 +60,7 @@ def print_memory_utilization() -> None:
     # Also print CPU RAM usage
     ram_percent = psutil.virtual_memory().percent
     ram_gb = psutil.virtual_memory().used / 1024**3
-    output = f"CPU RAM Usage: {ram_gb:.2f} GB ({ram_percent:.2f}%)"
+    output = f"💾 CPU RAM Usage: {ram_gb:.2f} GB ({ram_percent:.2f}%)"
 
     # for each GPU, get the name and the memory occupied
     output += " | GPU VRAM Usage:"

@@ -226,7 +226,7 @@ class SuperHFTrainer:
         for superbatch_index, superbatch_prompts in tqdm(
             enumerate(prompts_dataloader),
             total=num_superbatches,
-            desc="Superbatch",
+            desc="🍰 Superbatch",
             file=sys.stdout,
         ):
             tqdm.write(
@@ -239,7 +239,7 @@ class SuperHFTrainer:
                 self.training_args.minibatch_size_generating,
             )(superbatch_prompts)
 
-            tqdm.write("Before scoring ", end="")
+            # tqdm.write("Before scoring ", end="")
             print_memory_utilization()
             # Score the completions
             try:
@@ -364,7 +364,7 @@ class SuperHFTrainer:
                 superbatch_index * self.training_args.prompt_accumulation_steps
             )
             repo_name += f"-step-{prompt_index}"
-            tqdm.write("Pushing model and tokenizer to the Hub!")
+            tqdm.write("🚀 Pushing model and tokenizer to the Hub!")
             tqdm.write(
                 str(
                     self.language_model.push_to_hub(
@@ -437,7 +437,7 @@ class SuperHFTrainer:
         with torch.no_grad():
             for minibatch in tqdm(
                 completion_dataloader,
-                desc="Generation",
+                desc="🌱 Generation",
                 total=len(completion_dataloader),
                 file=sys.stdout,
             ):
@@ -711,7 +711,7 @@ class SuperHFTrainer:
         assert self.scheduler is not None
 
         tqdm.write(f"Trying finetuning with batch size {minibatch_size}")
-        print_memory_utilization()
+        # print_memory_utilization()
         self.training_args.minibatch_size_finetuning = minibatch_size
 
         finetuning_dataloader = DataLoader(
@@ -722,8 +722,8 @@ class SuperHFTrainer:
 
         finetuning_dataloader = self.accelerator.prepare(finetuning_dataloader)
 
-        tqdm.write("After accelerator prepare, ", end="")
-        print_memory_utilization()
+        # tqdm.write("After accelerator prepare, ", end="")
+        # print_memory_utilization()
         sum_loss = 0
         num_invalid_losses = 0
         self.language_model.train()
