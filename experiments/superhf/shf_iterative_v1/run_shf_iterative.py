@@ -37,7 +37,7 @@ from superhf.metrics import (
 )
 from superhf.mocking import MockLanguageModel, MockRewardModel
 from superhf.training import SuperHFTrainingArguments, SuperHFTrainer
-from superhf.utils import set_seed, print_gpu_utilization
+from superhf.utils import set_seed, print_memory_utilization
 from reward_modelling.reward_model import RewardModel
 
 WANDB_ENTITY_NAME = "stanfordaialignment"
@@ -113,7 +113,7 @@ def main(argparse_args: argparse.Namespace, extra_args: list[str]) -> None:
         prompts = prompts[: wandb.config.num_prompts]
 
     print(f"Loaded {len(prompts)} prompts.")
-    print_gpu_utilization()
+    print_memory_utilization()
     print("Instantiating models...")
 
     # Instantiate our language and reward models and tokenizers
@@ -124,14 +124,14 @@ def main(argparse_args: argparse.Namespace, extra_args: list[str]) -> None:
     reward_tokenizer_val_name = wandb.config.reward_model_val_name
 
     language_model = load_language_model(language_model_name)
-    print_gpu_utilization()
+    print_memory_utilization()
 
     reward_model_train = load_reward_model(reward_model_train_name)
-    print_gpu_utilization()
+    print_memory_utilization()
 
     if reward_model_val_name != "" and reward_model_val_name.lower() != "none":
         reward_model_val = load_reward_model(reward_model_val_name)
-        print_gpu_utilization()
+        print_memory_utilization()
     else:
         print("No validation reward model specified.")
         reward_model_val = None
@@ -142,7 +142,7 @@ def main(argparse_args: argparse.Namespace, extra_args: list[str]) -> None:
         reward_tokenizer_val = load_reward_tokenizer(reward_tokenizer_val_name)
     else:
         reward_tokenizer_val = None
-    print_gpu_utilization()
+    print_memory_utilization()
 
     # # Check for unix before compiling models
     # if os.name == "posix":

@@ -26,7 +26,7 @@ from superhf import constants
 from superhf.data import ListDataset
 from superhf.filtering import CompletionFilterBase
 from superhf.metrics import SuperHFMetrics, report_metrics_print
-from superhf.utils import print_gpu_utilization, separate_prompt_from_completion
+from superhf.utils import print_memory_utilization, separate_prompt_from_completion
 
 
 @dataclass
@@ -160,8 +160,10 @@ class SuperHFTrainer:
             self.reward_tokenizer_val.pad_token = self.reward_tokenizer_val.eos_token
             print("Added pad token to val tokenizer.")
 
-        # Reward model is always in eval mode
+        # Reward models are always in eval mode
         self.reward_model_train.eval()
+        if self.reward_model_val is not None:
+            self.reward_model_val.eval()
 
         # Initialize the accelerator
         self.accelerator = Accelerator(
@@ -175,6 +177,8 @@ class SuperHFTrainer:
                 self.language_model, self.reward_model_train, self.reward_model_val
             )
         )
+        print("After accelerator model preparation.")
+        print_memory_utilization()
 
         # Lazy-init optimizer and scheduler
         self.optimizer: Optional[torch.optim.Optimizer] = None
@@ -228,7 +232,7 @@ class SuperHFTrainer:
             tqdm.write(
                 f"Before generation, on superbatch_index {superbatch_index} ", end=""
             )
-            print_gpu_utilization()
+            print_memory_utilization()
             # Generate completions for each prompt in the superbatch
             completions_raw = find_executable_batch_size(
                 self.generate_completions,
@@ -236,7 +240,7 @@ class SuperHFTrainer:
             )(superbatch_prompts)
 
             tqdm.write("Before scoring ", end="")
-            print_gpu_utilization()
+            print_memory_utilization()
             # Score the completions
             try:
                 (
@@ -270,7 +274,7 @@ class SuperHFTrainer:
                 continue
 
             tqdm.write("Before filtering ", end="")
-            print_gpu_utilization()
+            print_memory_utilization()
 
             # Filter the completions
             (
@@ -411,7 +415,7 @@ class SuperHFTrainer:
         self.training_args.minibatch_size_generating = minibatch_size
 
         tqdm.write(f"Trying generation with batch size {minibatch_size}")
-        print_gpu_utilization()
+        print_memory_utilization()
 
         # Duplicate each prompt superbatch_size numbers time with system prompt
         system_prompt = self.training_args.conversation_prompt
@@ -707,7 +711,7 @@ class SuperHFTrainer:
         assert self.scheduler is not None
 
         tqdm.write(f"Trying finetuning with batch size {minibatch_size}")
-        print_gpu_utilization()
+        print_memory_utilization()
         self.training_args.minibatch_size_finetuning = minibatch_size
 
         finetuning_dataloader = DataLoader(
@@ -719,7 +723,7 @@ class SuperHFTrainer:
         finetuning_dataloader = self.accelerator.prepare(finetuning_dataloader)
 
         tqdm.write("After accelerator prepare, ", end="")
-        print_gpu_utilization()
+        print_memory_utilization()
         sum_loss = 0
         num_invalid_losses = 0
         self.language_model.train()
