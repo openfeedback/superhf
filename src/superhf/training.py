@@ -91,6 +91,7 @@ class SuperHFTrainingArguments:
     # Push to hub (set to 0 to disable)
     hub_repo_id: Optional[str] = None
     push_to_hub_interval: int = 0
+    push_to_hub_additional_indices: list[int] = field(default_factory=list)
     sweep_param_name: str = ""
 
 
@@ -323,20 +324,26 @@ class SuperHFTrainer:
         self, superbatch_index: int, total_prompts: int
     ) -> None:
         """Pushes the model to the hub if it's appropriate to do so."""
+        is_push_index = (
+            # Every N superbatches
+            superbatch_index % self.training_args.push_to_hub_interval == 0
+            # Last superbatch
+            or superbatch_index == total_prompts - 1
+            # Manually specified indices
+            or superbatch_index in self.training_args.push_to_hub_additional_indices
+        )
         if (  # pylint: disable=too-many-boolean-expressions
             # User must specify a hub repo
             self.training_args.hub_repo_id is not None
             and self.training_args.hub_repo_id != ""
             # User must specify a push interval
             and self.training_args.push_to_hub_interval > 0
-            # Don't push on the first superbatch
-            and superbatch_index > 0
+            # Don't push on the first superbatch (unless specified)
             and (
-                # every N superbatches
-                superbatch_index % self.training_args.push_to_hub_interval == 0
-                # last superbatch
-                or superbatch_index == total_prompts - 1
+                superbatch_index > 0
+                or 0 in self.training_args.push_to_hub_additional_indices
             )
+            and is_push_index
         ):
             # pylint: disable=protected-access
             repo_name = self.training_args.hub_repo_id
@@ -365,26 +372,29 @@ class SuperHFTrainer:
             )
             repo_name += f"-step-{prompt_index}"
             tqdm.write("🚀 Pushing model and tokenizer to the Hub!")
-            tqdm.write(
-                str(
-                    self.language_model.push_to_hub(
-                        repo_id=repo_name,
-                        commit_message=(
-                            f"Upload model from superbatch {superbatch_index}"
-                        ),
+            if "debug" in self.training_args.hub_repo_id:
+                tqdm.write(repo_name + " (not actually pushed due to 'debug' in name)")
+            else:
+                tqdm.write(
+                    str(
+                        self.language_model.push_to_hub(
+                            repo_id=repo_name,
+                            commit_message=(
+                                f"Upload model from superbatch {superbatch_index}"
+                            ),
+                        )
                     )
                 )
-            )
-            tqdm.write(
-                str(
-                    self.language_tokenizer.push_to_hub(
-                        repo_id=repo_name,
-                        commit_message=(
-                            f"Upload tokenizer from superbatch {superbatch_index}"
-                        ),
+                tqdm.write(
+                    str(
+                        self.language_tokenizer.push_to_hub(
+                            repo_id=repo_name,
+                            commit_message=(
+                                f"Upload tokenizer from superbatch {superbatch_index}"
+                            ),
+                        )
                     )
                 )
-            )
 
     def collate_fn_lm_completions(self, batch: list[str]) -> BatchEncoding:
         """

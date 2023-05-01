@@ -1,6 +1,7 @@
 language_model_name:
   desc: HuggingFace language model to use, or "mock" for testing
-  value: "theblackcat102/pythia-1b-deduped-sft"
+  # value: "theblackcat102/pythia-1b-deduped-sft"
+  value: "EleutherAI/pythia-70m-deduped"  # Faster
 reward_model_train_name:
   desc: HuggingFace reward model to use, or "mock" for testing
   value: "OpenAssistant/reward-model-deberta-v3-base"
@@ -34,13 +35,13 @@ top_p:
   value: 0.95
 num_prompts:
   desc: Maximum number of prompts to use, or 0 for unlimited (up to the training set size).
-  value: 2
+  value: 25
 prompt_accumulation_steps:
   desc: Number of prompts to generate, score, and filter before finetuning, or 0 for num_prompts.
   value: 1
 superbatch_size:
   desc: Number of completions to generate with the current policy before filtering and fine-tuning.
-  value: 64
+  value: 2
 completion_filter_top_k:
   desc: Top-k completions to filter and train on.
   value: 1
@@ -98,12 +99,15 @@ validation_interval:
   value: 2
 hub_repo_id:
   desc: The ID of the HuggingFace Hub repo to use for storing the model. If empty, no model will be stored.
-  # value: "test-repo"
-  value: ""
+  # value: ""
+  value: "debug-repo"
 push_to_hub_interval:
   desc: The number of superbatches to train before pushing to the HuggingFace Hub. If 0, no model will be stored.
   # value: 1
-  value: 2
+  value: 7
+push_to_hub_additional_indices:
+  desc: A list of additional superbatch indices to push to the hub in addition to every push_to_hub_interval.
+  value: [0,1,2,4,8,16,32,64,128,256,512]
 sweep_param_name:
   desc: If running a sweep, one of the a list of short parameter names to add to the saved hub repo name.
   value: "kl"
