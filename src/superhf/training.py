@@ -378,7 +378,7 @@ class SuperHFTrainer:
                     " name."
                 )
 
-                model_size_or_name = self.language_model.config._name_or_path
+                model_size_or_name = self.language_model.config._name_or_path.lower()
                 try:
                     # Get the size of a pythia model
                     model_size_or_name = model_size_or_name.split("-")[1]
