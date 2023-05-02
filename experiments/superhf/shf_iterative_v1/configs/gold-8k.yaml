@@ -6,7 +6,7 @@ reward_model_train_name:
   value: "/nlp/scr/fongsu/rm_combined/gptneo_1.3B_first_half"
 reward_model_val_name:
   desc: HuggingFace reward model to use, or "mock" for testing, or blank for no validation.
-  value: ""
+  value: "/nlp/scr/fongsu/rm_combined/gptneo_1.3B_second_half"
 learning_rate:
   desc: Learning rate for fine-tuning the language model.
   value: 3.0e-5
