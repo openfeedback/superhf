@@ -429,7 +429,7 @@ class SuperHFTrainer:
                     str(
                         self.hf_api.create_branch(
                             repo_id=hf_username + "/" + repo_name,
-                            branch=f"step-{prompt_index}",
+                            branch=f"step-{prompt_index:04}",
                         )
                     )
                 )
