@@ -64,7 +64,7 @@ init_kl_coef:
   value: 0.2
 clip_kl:
   desc: Whether to clip the KL-divergence to always be greater than zero.
-  value: true
+  value: false
 normalize_reward:
   desc: Whether to normalize the reward to have mean zero
   value: true

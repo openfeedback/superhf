@@ -28,11 +28,15 @@ from torch.optim import Adam
 
 from transformers import (
     AutoTokenizer,
+    AutoModelForSequenceClassification,
+    AutoModelForSeq2SeqLM,
     HfArgumentParser,
     LlamaTokenizer,
     AutoModelForCausalLM,
     pipeline,
     get_scheduler,
+    PreTrainedTokenizerBase,
+    PreTrainedModel,
 )
 from peft import LoraConfig, get_peft_model
 
@@ -52,6 +56,8 @@ import wandb
 from superhf import constants
 from superhf.data import get_superhf_prompts
 from superhf.utils import set_seed, print_gpu_utilization
+from superhf.mocking import MockRewardModel
+from reward_modelling.reward_model import RewardModel
 
 T = TypeVar("T")
 
@@ -152,6 +158,48 @@ def build_dataset(
     dataset = Dataset.from_dict(prompts_3)
     dataset.set_format(type="torch")
     return dataset
+
+
+def load_reward_tokenizer(reward_tokenizer_name: str) -> PreTrainedTokenizerBase:
+    """Load the reward model's tokenizer."""
+    if reward_tokenizer_name == "mock":
+        reward_tokenizer_name = "gpt2"
+    elif (
+        "rm_combined" in reward_tokenizer_name or "oliversssf2" in reward_tokenizer_name
+    ):
+        reward_tokenizer_name = "EleutherAI/gpt-neo-1.3B"
+
+    if "llama" in reward_tokenizer_name or "alpaca" in reward_tokenizer_name:
+        # Fix for misnamed class in the NLP Cluster's Alpaca tokenizer config
+        reward_tokenizer_train = LlamaTokenizer.from_pretrained(reward_tokenizer_name)
+    else:
+        reward_tokenizer_train = AutoTokenizer.from_pretrained(reward_tokenizer_name)
+
+    print(f"Instantiated reward tokenizer {reward_tokenizer_name}")
+    return reward_tokenizer_train
+
+
+def load_reward_model(reward_model_name: str) -> PreTrainedModel:
+    """Load the reward model."""
+    if reward_model_name == "mock":
+        reward_model_train = MockRewardModel()
+    elif "rm_combined" in reward_model_name or "oliversssf2" in reward_model_name:
+        reward_model_train = RewardModel.from_pretrained(
+            reward_model_name,
+            low_cpu_mem_usage=True,
+            torch_dtype=torch.bfloat16,  # Force half for these large RMs
+        )
+    elif "SteamSHP-flan-t5" in reward_model_name:
+        reward_model_train = AutoModelForSeq2SeqLM.from_pretrained(reward_model_name)
+    else:
+        reward_model_train = AutoModelForSequenceClassification.from_pretrained(
+            reward_model_name,
+            low_cpu_mem_usage=True,
+            torch_dtype=torch.bfloat16,
+        )
+
+    print(f"Instantiated reward model: {reward_model_name}")
+    return reward_model_train
 
 
 def get_configs():
@@ -353,8 +401,12 @@ def main(script_args: ScriptArguments):
         device = 0 if torch.cuda.is_available() else "cpu"  # to avoid a `pipeline` bug
     # This pipelinle is for the reward model
     # TODO: look at superhf code to load the reward model and then
-    reward_model_pipe = pipeline(model=reward_model_name, device=device)
-    print(f"The device is {device}")
+    reward_model_tokenizer = load_reward_tokenizer(reward_model_name)
+    reward_model = load_reward_model(reward_model_name)
+    reward_model_pipe = pipeline(
+        model=reward_model, tokenizer=reward_model_tokenizer, device=device
+    )
+    print(f"The device is {device}, with reward model placed on device.")
     print_gpu_utilization()
 
     # input_size = LengthSampler(input_min_text_length, input_max_text_length)
@@ -427,6 +479,11 @@ def main(script_args: ScriptArguments):
                 repo_id=hub_repo_id,
                 commit_message=f"Upload tokenizer from batch {epoch}, run {run_name}",
             )
+    # Explicit finish to avoid wandb hanging
+    wandb.alert(
+        title="FINISHED SuperHF run!", text="FINISHED SuperHF run! <@W011580CVSN>"
+    )  # Peter's member ID
+    wandb.finish()
 
 
 def trim_generations(raw_completions: list[str]) -> list[str]:
@@ -470,6 +527,3 @@ if __name__ == "__main__":
         )
     else:
         main(args)
-    wandb.alert(
-        title="FINISHED SuperHF run!", text="FINISHED SuperHF run! <@W011580CVSN>"
-    )  # Peter's member ID

@@ -1,17 +1,13 @@
-program: experiments/superhf/rlhf/rlhf_v1/run_rlhf.py
 method: grid
 metric:
   goal: maximize
-  name: average_score.max
+  name: env/reward_mean
 parameters:
-  conversation_prompt:
+  batch_size:
     values:
-      - "A human user asks a question or says a statement, and an AI assistant responds."
-      - ""
-      - "You are a helpful assistant."
-  init_kl_coef:
-    values:
-      - 0.1
-      - 0.2
-      - 0.4
-      - 0.6
+      - 2
+      - 4
+      - 8
+      - 16
+      - 32
+program: experiments/superhf/rlhf/rlhf_v1/run_rlhf.py
