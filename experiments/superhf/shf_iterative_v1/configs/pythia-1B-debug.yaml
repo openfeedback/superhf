@@ -36,7 +36,7 @@ top_p:
   value: 0.95
 num_prompts:
   desc: Maximum number of prompts to use, or 0 for unlimited (up to the training set size).
-  value: 25
+  value: 11
 prompt_accumulation_steps:
   desc: Number of prompts to generate, score, and filter before finetuning, or 0 for num_prompts.
   value: 1
@@ -108,7 +108,7 @@ push_to_hub_interval:
   value: 7
 push_to_hub_additional_indices:
   desc: A list of additional superbatch indices to push to the hub in addition to every push_to_hub_interval.
-  value: [0,1,2,4,8,16,32,64,128,256,512]
+  value: [1,2,4,8,16,32,64,128,256,512]
 sweep_param_name:
   desc: If running a sweep, one of the a list of short parameter names to add to the saved hub repo name.
   value: "kl"

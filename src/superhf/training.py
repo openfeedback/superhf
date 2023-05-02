@@ -312,7 +312,7 @@ class SuperHFTrainer:
 
             # Optionally report metrics
             metrics = SuperHFMetrics(
-                superbatch_index=superbatch_index,
+                superbatches_complete=superbatch_index + 1,  # the number complete
                 superbatch_count=num_superbatches,
                 completions=completions_trimmed,
                 filtered_completions=filtered_completions,
@@ -333,17 +333,22 @@ class SuperHFTrainer:
             # self.save_model()
 
             # Optionally, push the model to the hub
-            self.consider_pushing_to_hub(superbatch_index, num_superbatches)
+            self.consider_pushing_to_hub(superbatch_index + 1, num_superbatches)
 
     def consider_pushing_to_hub(
-        self, superbatch_index: int, total_prompts: int
+        self, superbatch_index: int, total_superbatches: int
     ) -> None:
-        """Pushes the model to the hub if it's appropriate to do so."""
+        """
+        Pushes the model to the hub if it's appropriate to do so.
+
+        superbatch_index is the index of the _just completed_ superbatch
+        (i.e. after superbatch 0 finished, 1 is passed in).
+        """
         is_push_index = (
             # Every N superbatches
             superbatch_index % self.training_args.push_to_hub_interval == 0
             # Last superbatch
-            or superbatch_index == total_prompts - 1
+            or superbatch_index == total_superbatches
             # Manually specified indices
             or superbatch_index in self.training_args.push_to_hub_additional_indices
         )

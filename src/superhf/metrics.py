@@ -21,7 +21,7 @@ class SuperHFMetrics:
 
     # pylint: disable=too-many-instance-attributes
 
-    superbatch_index: int
+    superbatches_complete: int
     superbatch_count: int
     completions: list[str]
     filtered_completions: list[str]
@@ -42,7 +42,9 @@ def report_metrics_print(metrics: SuperHFMetrics) -> None:
     """
     Print basic metrics to STD out.
     """
-    percent_complete = (metrics.superbatch_index + 1) / metrics.superbatch_count * 100
+    percent_complete = (
+        (metrics.superbatches_complete + 1) / metrics.superbatch_count * 100
+    )
     average_completion_length = np.mean([len(c) for c in metrics.completions])
     average_filtered_completion_length = np.mean(
         [len(c) for c in metrics.filtered_completions]
@@ -55,7 +57,7 @@ def report_metrics_print(metrics: SuperHFMetrics) -> None:
     print(
         "\n📊 Metrics at time"
         f" {time.strftime('%H:%M:%S', time.localtime())}\nSuperbatch"
-        f" {metrics.superbatch_index}/{metrics.superbatch_count} ({percent_complete:.3f}%):"
+        f" {metrics.superbatches_complete}/{metrics.superbatch_count} ({percent_complete:.3f}%):"
         f" {len(metrics.completions)} completions,"
         f" {len(metrics.filtered_completions)} filtered completions, completion length"
         f" {average_completion_length:.3f}, filtered completion length"
@@ -100,7 +102,9 @@ def report_metrics_wandb(metrics: SuperHFMetrics) -> None:
     - Filtered completions table
     - Histogram of filtered score if we filtered different top-K numbers
     """
-    percent_complete = (metrics.superbatch_index + 1) / metrics.superbatch_count * 100
+    percent_complete = (
+        (metrics.superbatches_complete + 1) / metrics.superbatch_count * 100
+    )
     score_train_avg = np.mean(metrics.scores_train)
     score_train_std = np.std(metrics.scores_train)
     score_train_hist = (
@@ -110,7 +114,7 @@ def report_metrics_wandb(metrics: SuperHFMetrics) -> None:
     score_val_std = np.std(metrics.scores_val) if metrics.scores_val else None
     score_val_hist = wandb.Histogram(metrics.scores_val) if metrics.scores_val else None
     score_filtered_avg = np.mean(metrics.filtered_scores)
-    prompt_index = metrics.superbatch_index * len(metrics.filtered_completions)
+    prompt_index = metrics.superbatches_complete * len(metrics.filtered_completions)
 
     # # Create plot data of average score if we filtered different top-K numbers
     # max_top_k_to_explore = 48
@@ -126,7 +130,7 @@ def report_metrics_wandb(metrics: SuperHFMetrics) -> None:
 
     wandb.log(
         {
-            "superbatch_index": metrics.superbatch_index,
+            "superbatch_index": metrics.superbatches_complete,
             "percent_complete": percent_complete,
             "score_train_avg": score_train_avg,
             "score_train_std": score_train_std,
@@ -157,7 +161,7 @@ def report_metrics_wandb(metrics: SuperHFMetrics) -> None:
             "filtered_completions": wandb.Table(
                 columns=["superbatch", "completion", "score"],
                 data=[
-                    [metrics.superbatch_index, completion, score]
+                    [metrics.superbatches_complete, completion, score]
                     for completion, score in zip(
                         metrics.filtered_completions, metrics.filtered_scores
                     )
