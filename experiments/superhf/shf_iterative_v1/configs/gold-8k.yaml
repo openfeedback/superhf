@@ -99,10 +99,10 @@ hub_repo_id:
   value: "shf-7b-gold-v1"
 push_to_hub_interval:
   desc: The number of superbatches to train before pushing to the HuggingFace Hub. If 0, no model will be stored.
-  value: 512  # Set high to only save at the end
+  value: 128  # Set high to only save at the end
 push_to_hub_additional_indices:
   desc: A list of additional superbatch indices to push to the hub in addition to every push_to_hub_interval.
-  value: [0,1,2,4,8,16,32,64,128,256]  # From Pythia
+  value: [1,2,4,8,16,32,64,128]  # From Pythia
 sweep_param_name:
   desc: If running a sweep, one of the a list of short parameter names to add to the saved hub repo name.
   value: ""
