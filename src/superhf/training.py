@@ -13,6 +13,7 @@ from torch.utils.data import DataLoader
 
 from accelerate import Accelerator, find_executable_batch_size
 from tqdm import tqdm
+from huggingface_hub import HfApi
 from transformers import (
     PreTrainedTokenizerBase,
     BatchEncoding,
@@ -144,6 +145,20 @@ class SuperHFTrainer:
         elif not isinstance(report_metrics, list):
             report_metrics = [report_metrics]
         self.report_metrics = report_metrics
+
+        # Make sure we're logged in to the hub if intending to push
+        if (
+            self.training_args.hub_repo_id is not None
+            and self.training_args.hub_repo_id != ""
+            and self.training_args.push_to_hub_interval > 0
+        ):
+            self.hf_api = HfApi()
+            assert self.hf_api.whoami(), (
+                "Must be logged in to the Hugging Face Hub to push models to the hub. "
+                "Run `huggingface-cli login` to log in."
+            )
+        else:
+            self.hf_api = None
 
         # Add padding tokens if they are not already there
         if self.language_tokenizer.pad_token is None:
@@ -347,6 +362,7 @@ class SuperHFTrainer:
         ):
             # pylint: disable=protected-access
             repo_name = self.training_args.hub_repo_id
+            assert self.hf_api is not None
             if self.training_args.sweep_param_name != "":
                 assert (
                     self.training_args.sweep_param_name != "pythia"
@@ -378,7 +394,6 @@ class SuperHFTrainer:
             prompt_index = (
                 superbatch_index * self.training_args.prompt_accumulation_steps
             )
-            repo_name += f"-step-{prompt_index}"
             tqdm.write("🚀 Pushing model and tokenizer to the Hub!")
             if "debug" in self.training_args.hub_repo_id:
                 tqdm.write(repo_name + " (not actually pushed due to 'debug' in name)")
@@ -400,6 +415,16 @@ class SuperHFTrainer:
                             commit_message=(
                                 f"Upload tokenizer from superbatch {superbatch_index}"
                             ),
+                        )
+                    )
+                )
+                # Create a new branch with the superbatch index as the name
+                hf_username = self.hf_api.whoami()["name"]
+                tqdm.write(
+                    str(
+                        self.hf_api.create_branch(
+                            repo_id=hf_username + "/" + repo_name,
+                            branch=f"step-{prompt_index}",
                         )
                     )
                 )
