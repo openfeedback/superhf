@@ -14,6 +14,7 @@ from torch.utils.data import DataLoader
 from accelerate import Accelerator, find_executable_batch_size
 from tqdm import tqdm
 from huggingface_hub import HfApi
+from huggingface_hub.utils import HfHubHTTPError
 from transformers import (
     PreTrainedTokenizerBase,
     BatchEncoding,
@@ -425,14 +426,15 @@ class SuperHFTrainer:
                 )
                 # Create a new branch with the superbatch index as the name
                 hf_username = self.hf_api.whoami()["name"]
-                tqdm.write(
-                    str(
-                        self.hf_api.create_branch(
-                            repo_id=hf_username + "/" + repo_name,
-                            branch=f"step-{prompt_index:04}",
-                        )
-                    )
-                )
+                repo_id = hf_username + "/" + repo_name
+                branch = f"step-{prompt_index:04}"
+                try:
+                    result = self.hf_api.create_branch(repo_id=repo_id, branch=branch)
+                except HfHubHTTPError:
+                    # Delete the branch first
+                    self.hf_api.delete_branch(repo_id=repo_id, branch=branch)
+                    result = self.hf_api.create_branch(repo_id=repo_id, branch=branch)
+                tqdm.write(str(result))
 
     def collate_fn_lm_completions(self, batch: list[str]) -> BatchEncoding:
         """
