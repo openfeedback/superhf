@@ -409,6 +409,7 @@ def main(script_args: ScriptArguments):
         device=device,
         task="text-classification",
     )
+    reward_model_pipe.tokenizer.pad_token_id = reward_model.config.eos_token_id
     print(f"The device is {device}, with reward model placed on device.")
     print_gpu_utilization()
 
