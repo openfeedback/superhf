@@ -404,7 +404,10 @@ def main(script_args: ScriptArguments):
     reward_model_tokenizer = load_reward_tokenizer(reward_model_name)
     reward_model = load_reward_model(reward_model_name)
     reward_model_pipe = pipeline(
-        model=reward_model, tokenizer=reward_model_tokenizer, device=device
+        model=reward_model,
+        tokenizer=reward_model_tokenizer,
+        device=device,
+        task="text-classification",
     )
     print(f"The device is {device}, with reward model placed on device.")
     print_gpu_utilization()
