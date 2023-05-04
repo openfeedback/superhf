@@ -249,7 +249,6 @@ class SuperHFTrainer:
             tqdm.write(
                 f"Before generation, on superbatch_index {superbatch_index} ", end=""
             )
-            print_memory_utilization()
             # Generate completions for each prompt in the superbatch
             completions_raw = find_executable_batch_size(
                 self.generate_completions,
@@ -257,7 +256,6 @@ class SuperHFTrainer:
             )(superbatch_prompts)
 
             # tqdm.write("Before scoring ", end="")
-            print_memory_utilization()
             # Score the completions
             try:
                 (
@@ -289,9 +287,6 @@ class SuperHFTrainer:
                 print("completions_raw:")
                 print(completions_raw)
                 continue
-
-            tqdm.write("Before filtering ", end="")
-            print_memory_utilization()
 
             # Filter the completions
             (
@@ -465,7 +460,6 @@ class SuperHFTrainer:
         self.training_args.minibatch_size_generating = minibatch_size
 
         tqdm.write(f"Trying generation with batch size {minibatch_size}")
-        print_memory_utilization()
 
         # Duplicate each prompt superbatch_size numbers time with system prompt
         system_prompt = self.training_args.conversation_prompt
@@ -510,6 +504,7 @@ class SuperHFTrainer:
         completions_text: list[str] = self.language_tokenizer.batch_decode(
             completions_encoded, skip_special_tokens=True
         )
+        print_memory_utilization()
         return completions_text
 
     def collate_fn_rm_train(
@@ -761,7 +756,6 @@ class SuperHFTrainer:
         assert self.scheduler is not None
 
         tqdm.write(f"Trying finetuning with batch size {minibatch_size}")
-        # print_memory_utilization()
         self.training_args.minibatch_size_finetuning = minibatch_size
 
         finetuning_dataloader = DataLoader(
@@ -773,7 +767,6 @@ class SuperHFTrainer:
         finetuning_dataloader = self.accelerator.prepare(finetuning_dataloader)
 
         # tqdm.write("After accelerator prepare, ", end="")
-        # print_memory_utilization()
         sum_loss = 0
         num_invalid_losses = 0
         self.language_model.train()
@@ -844,6 +837,8 @@ class SuperHFTrainer:
                 f"WARNING: {num_invalid_losses} minibatches had nan, inf, or negative"
                 " loss."
             )
+
+        print_memory_utilization()
 
         num_valid_losses = len(finetuning_dataloader) - num_invalid_losses
         return sum_loss / num_valid_losses if num_valid_losses > 0 else 0, (
