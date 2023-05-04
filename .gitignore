@@ -22,6 +22,8 @@ __pycache__/*
 .settings
 .idea
 tags
+artifact
+artifacts
 
 # Package files
 *.egg
