@@ -80,6 +80,7 @@ class SuperHFTrainingArguments:
     scheduler_warmup_steps: int = 0
     kl_coefficient: float = 0.0
     validation_interval: int = 0
+    max_oom_count: int = 5
 
     # Dataset settings
     prompt_delimiter: str = constants.PROMPT_DELIMITER
@@ -239,6 +240,12 @@ class SuperHFTrainer:
         )
         assert self.scheduler is not None
 
+        # Track how many times we OOM and starting batch sizes
+        oom_count = 0
+        batch_size_generating_initial = self.training_args.minibatch_size_generating
+        batch_size_scoring_initial = self.training_args.minibatch_size_scoring
+        batch_size_finetuning_initial = self.training_args.minibatch_size_finetuning
+
         # Then, iterate over group of prompts in superbatches
         for superbatch_index, superbatch_prompts in tqdm(
             enumerate(prompts_dataloader),
@@ -246,90 +253,111 @@ class SuperHFTrainer:
             desc="🍰 Superbatch",
             file=sys.stdout,
         ):
-            tqdm.write(
-                f"Before generation, on superbatch_index {superbatch_index} ", end=""
-            )
-            # Generate completions for each prompt in the superbatch
-            completions_raw = find_executable_batch_size(
-                self.generate_completions,
-                self.training_args.minibatch_size_generating,
-            )(superbatch_prompts)
-
-            # tqdm.write("Before scoring ", end="")
-            # Score the completions
             try:
+                tqdm.write(
+                    f"Before generation, on superbatch_index {superbatch_index} ",
+                    end="",
+                )
+                # Generate completions for each prompt in the superbatch
+                completions_raw = find_executable_batch_size(
+                    self.generate_completions,
+                    self.training_args.minibatch_size_generating,
+                )(superbatch_prompts)
+
+                # tqdm.write("Before scoring ", end="")
+                # Score the completions
+                try:
+                    (
+                        scores_train,
+                        completions_trimmed,
+                        completion_lengths,
+                    ) = find_executable_batch_size(
+                        self.score_completions_train,
+                        self.training_args.minibatch_size_scoring,
+                    )(
+                        completions_raw
+                    )
+
+                    if (
+                        (
+                            superbatch_index % self.training_args.validation_interval
+                            == 0
+                            or superbatch_index == num_superbatches - 1
+                        )
+                        and self.reward_model_val is not None
+                        and self.reward_tokenizer_val is not None
+                    ):
+                        # Score the completions with the validation reward model
+                        scores_val = self.score_completions_val(completions_trimmed)
+                    else:
+                        scores_val = []
+                except (IndexError, KeyError) as exc:
+                    print("Error during scoring completions:")
+                    print(exc)
+                    print("completions_raw:")
+                    print(completions_raw)
+                    continue
+
+                # Filter the completions
                 (
+                    filtered_scores,
+                    filtered_completions,
+                    filtered_completion_lengths,
+                ) = self.filter_completions(
+                    len(superbatch_prompts),
                     scores_train,
                     completions_trimmed,
                     completion_lengths,
-                ) = find_executable_batch_size(
-                    self.score_completions_train,
-                    self.training_args.minibatch_size_scoring,
-                )(
-                    completions_raw
                 )
 
-                if (
-                    (
-                        superbatch_index % self.training_args.validation_interval == 0
-                        or superbatch_index == num_superbatches - 1
-                    )
-                    and self.reward_model_val is not None
-                    and self.reward_tokenizer_val is not None
-                ):
-                    # Score the completions with the validation reward model
-                    scores_val = self.score_completions_val(completions_trimmed)
-                else:
-                    scores_val = []
-            except (IndexError, KeyError) as exc:
-                print("Error during scoring completions:")
+                # Fine-tune the language model on the filtered completions
+                average_loss, average_kl_div = find_executable_batch_size(
+                    self.finetune_language_model,
+                    self.training_args.minibatch_size_finetuning,
+                )(filtered_completions)
+
+                # Optionally report metrics
+                metrics = SuperHFMetrics(
+                    superbatches_complete=superbatch_index + 1,  # the number complete
+                    superbatch_count=num_superbatches,
+                    completions=completions_trimmed,
+                    filtered_completions=filtered_completions,
+                    scores_train=scores_train,
+                    scores_val=scores_val,
+                    filtered_scores=filtered_scores,
+                    average_loss=average_loss,
+                    average_kl_div=average_kl_div,
+                    scheduler_lr=self.scheduler.get_last_lr()[0],
+                    completion_lengths=completion_lengths,
+                    filtered_completion_lengths=filtered_completion_lengths,
+                )
+                if self.report_metrics is not None:
+                    for report_metrics_function in self.report_metrics:
+                        report_metrics_function(metrics)
+
+                # Optionally, save the model
+                # self.save_model()
+
+                # Optionally, push the model to the hub
+                self.consider_pushing_to_hub(superbatch_index + 1, num_superbatches)
+            except RuntimeError as exc:
+                oom_count += 1
                 print(exc)
-                print("completions_raw:")
-                print(completions_raw)
-                continue
+                print(
+                    "⚠️ WARNING: Error during this training iteration. Total OOM count:"
+                    f" {oom_count}/{self.training_args.max_oom_count}"
+                )
+                if oom_count > self.training_args.max_oom_count:
+                    raise exc
 
-            # Filter the completions
-            (
-                filtered_scores,
-                filtered_completions,
-                filtered_completion_lengths,
-            ) = self.filter_completions(
-                len(superbatch_prompts),
-                scores_train,
-                completions_trimmed,
-                completion_lengths,
-            )
-
-            # Fine-tune the language model on the filtered completions
-            average_loss, average_kl_div = find_executable_batch_size(
-                self.finetune_language_model,
-                self.training_args.minibatch_size_finetuning,
-            )(filtered_completions)
-
-            # Optionally report metrics
-            metrics = SuperHFMetrics(
-                superbatches_complete=superbatch_index + 1,  # the number complete
-                superbatch_count=num_superbatches,
-                completions=completions_trimmed,
-                filtered_completions=filtered_completions,
-                scores_train=scores_train,
-                scores_val=scores_val,
-                filtered_scores=filtered_scores,
-                average_loss=average_loss,
-                average_kl_div=average_kl_div,
-                scheduler_lr=self.scheduler.get_last_lr()[0],
-                completion_lengths=completion_lengths,
-                filtered_completion_lengths=filtered_completion_lengths,
-            )
-            if self.report_metrics is not None:
-                for report_metrics_function in self.report_metrics:
-                    report_metrics_function(metrics)
-
-            # Optionally, save the model
-            # self.save_model()
-
-            # Optionally, push the model to the hub
-            self.consider_pushing_to_hub(superbatch_index + 1, num_superbatches)
+                # Reset batch sizes to starting values
+                self.training_args.minibatch_size_generating = (
+                    batch_size_generating_initial
+                )
+                self.training_args.minibatch_size_scoring = batch_size_scoring_initial
+                self.training_args.minibatch_size_finetuning = (
+                    batch_size_finetuning_initial
+                )
 
     def consider_pushing_to_hub(
         self, superbatch_index: int, total_superbatches: int
