@@ -330,9 +330,13 @@ def score_completions(
         completions, padding=True, truncation=True, return_tensors="pt"
     )
     completions_tokenized = completions_tokenized.to(reward_model.device)
-    print(f"Moved completions to {reward_model.device}")
+    print(
+        f"Moved completions to {reward_model.device}. THey are on device"
+        f" {completions_tokenized.device}."
+    )
     assert reward_model.device != "cpu", "Reward model must be on GPU."
     with torch.no_grad():
+        print("Scoring completions.")
         scores = reward_model(**completions_tokenized)
     if not isinstance(scores, torch.Tensor):
         scores: torch.Tensor = scores.logits
