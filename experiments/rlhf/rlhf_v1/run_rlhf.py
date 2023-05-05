@@ -212,6 +212,7 @@ def load_reward_model(
 
     if not isinstance(reward_model_name, str):
         reward_model_train.to(device)
+        reward_model_train.device = device
     print(f"Instantiated reward model: {reward_model_name} on device {device}")
     return reward_model_train, reward_model_pipe
 
@@ -330,6 +331,7 @@ def score_completions(
     )
     completions_tokenized = completions_tokenized.to(reward_model.device)
     print(f"Moved completions to {reward_model.device}")
+    assert reward_model.device != "cpu", "Reward model must be on GPU."
     with torch.no_grad():
         scores = reward_model(**completions_tokenized)
     if not isinstance(scores, torch.Tensor):
@@ -343,6 +345,7 @@ def main(script_args: ScriptArguments):
     """
     # pylint: disable=too-many-locals
     # pylint: disable=too-many-statements
+    # pylint: disable=too-many-branches
     wandb.init(
         entity=WANDB_ENTITY_NAME,
         project=WANDB_PROJECT_NAME,
@@ -449,6 +452,12 @@ def main(script_args: ScriptArguments):
     reward_model, reward_model_pipe = load_reward_model(
         reward_model_name, device=device
     )
+    if "llama" in reward_model_name or "alpaca" in reward_model_name:
+        assert device == 0, "LLAMA and Alpaca models only work on GPU 0"
+        if not isinstance(reward_model, str):
+            assert (
+                reward_model.device == 0
+            ), "LLAMA and Alpaca models only work on GPU 0"
     # reward_model.to(device) # TODO Might be redundant
     # reward_model_pipe.tokenizer.pad_token_id = reward_model.config.eos_token_id
     print(f"The device is {device}, with reward model placed on device.")
