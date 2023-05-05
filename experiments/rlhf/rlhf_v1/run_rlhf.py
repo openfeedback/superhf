@@ -20,6 +20,7 @@ import random
 import re
 from typing import Optional, TypeVar, List, Union, Tuple
 from dataclasses import dataclass, field
+import time
 
 from tqdm import tqdm
 
@@ -470,6 +471,7 @@ def main(script_args: ScriptArguments):
 
         # Get response from the model
         response_tensors = []
+        start_time = time.time()
         for query in query_tensors:
             # gen_len = output_length_sampler()
             # generation_kwargs["max_new_tokens"] = gen_len
@@ -478,11 +480,11 @@ def main(script_args: ScriptArguments):
         batch["response"] = trim_generations(
             [language_tokenizer.decode(r.squeeze()) for r in response_tensors]
         )
-
-        tqdm.write("Finished generating responses. GPU usage is:")
+        tqdm.write(f"Finished generating responses. took {time.time() - start_time}")
         print_gpu_utilization()
 
         # Compute sentiment score
+        start_time = time.time()
         texts = [q + r for q, r in zip(batch["query"], batch["response"])]
         if reward_model_pipe is not None:
             pipe_outputs = reward_model_pipe(texts, **reward_model_kwargs)
@@ -497,6 +499,7 @@ def main(script_args: ScriptArguments):
                 completions=texts,
             )
             original_rewards = [datum.item() for datum in rewards]
+        print(f"Time to score completions: {time.time() - start_time}")
 
         # add the negative of the mean to every reward so that the mean is zero
         # and then add reward_mean to every reward so that the mean is reward_mean
@@ -505,10 +508,11 @@ def main(script_args: ScriptArguments):
             rewards = [r - curr_mean_reward + reward_mean for r in rewards]
 
         # Run PPO step
+        start_time = time.time()
         stats = ppo_trainer.step(query_tensors, response_tensors, rewards)
         ppo_trainer.log_stats(stats, batch, original_rewards)
 
-        tqdm.write("Finished PPO step. GPU usage is:")
+        tqdm.write("Finished PPO step. Took {time.time() - start_time} seconds.")
         print_gpu_utilization()
 
         if len(hub_repo_id) > 0 and (
