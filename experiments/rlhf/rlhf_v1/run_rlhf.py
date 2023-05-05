@@ -326,9 +326,7 @@ def score_completions(
     )
     completions_tokenized = completions_tokenized.to(reward_model.device)
     with torch.no_grad():
-        scores = reward_model(
-            **completions_tokenized, batch_size=len(completions_tokenized)
-        )
+        scores = reward_model(**completions_tokenized)
     if not isinstance(scores, torch.Tensor):
         scores = scores.logits
     return scores
