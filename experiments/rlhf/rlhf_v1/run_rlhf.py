@@ -512,7 +512,7 @@ def main(script_args: ScriptArguments):
         stats = ppo_trainer.step(query_tensors, response_tensors, rewards)
         ppo_trainer.log_stats(stats, batch, original_rewards)
 
-        tqdm.write("Finished PPO step. Took {time.time() - start_time} seconds.")
+        tqdm.write(f"Finished PPO step. Took {time.time() - start_time} seconds.")
         print_gpu_utilization()
 
         if len(hub_repo_id) > 0 and (
