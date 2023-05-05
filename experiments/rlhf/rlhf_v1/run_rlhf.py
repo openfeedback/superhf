@@ -320,15 +320,15 @@ def score_completions(
         A list of scores (logits) for each completion.
     """
     reward_model_tokenizer.pad_token = reward_model_tokenizer.eos_token
-    print(f"We are scoring {len(completions)} completions.")
+    tqdm.write(f"We are scoring {len(completions)} completions.")
     completions_tokenized = reward_model_tokenizer(
         completions, padding=True, truncation=True, return_tensors="pt"
     )
     completions_tokenized = completions_tokenized.to(reward_model.device)
-    print(f"Moved completions to {reward_model.device}.")
+    tqdm.write(f"Moved completions to {reward_model.device}.")
     assert reward_model.device != "cpu", "Reward model must be on GPU."
     with torch.no_grad():
-        print("Scoring completions.")
+        tqdm.write("Scoring completions.")
         scores = reward_model(**completions_tokenized)
     if not isinstance(scores, torch.Tensor):
         scores: torch.Tensor = scores.logits
@@ -513,7 +513,7 @@ def main(script_args: ScriptArguments):
                 completions=texts,
             )
             original_rewards = [datum.item() for datum in rewards]
-        print(f"Time to score completions: {time.time() - start_time}")
+        tqdm.write(f"Time to score completions: {time.time() - start_time}")
 
         # add the negative of the mean to every reward so that the mean is zero
         # and then add reward_mean to every reward so that the mean is reward_mean
@@ -523,6 +523,7 @@ def main(script_args: ScriptArguments):
 
         # Run PPO step
         start_time = time.time()
+        tqdm.write("Running PPO step")
         stats = ppo_trainer.step(query_tensors, response_tensors, rewards)
         ppo_trainer.log_stats(stats, batch, original_rewards)
 
@@ -564,12 +565,12 @@ def trim_generations(raw_completions: list[str]) -> list[str]:
     model_completion_lengths: list[int] = []
     for prompt, completion in prompts_and_completions:
         if completion == "":
-            print("WARNING: Completion is empty.")
+            tqdm.write("WARNING: Completion is empty.")
         stripped_completion = re.split(
             constants.PROMPT_DELIMITER_REGEX_MEDIUM, completion, maxsplit=1
         )[0].strip()
         if stripped_completion == "":
-            print("WARNING: Stripped completion is empty.")
+            tqdm.write("WARNING: Stripped completion is empty.")
         trimmed_completions.append(prompt + " " + stripped_completion)
         model_completion_lengths.append(len(stripped_completion))
 
