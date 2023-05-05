@@ -158,15 +158,15 @@ def report_metrics_wandb(metrics: SuperHFMetrics) -> None:
             #         for completion, score in zip(metrics.completions, metrics.scores)
             #     ],
             # ),
-            "filtered_completions": wandb.Table(
-                columns=["superbatch", "completion", "score"],
-                data=[
-                    [metrics.superbatches_complete, completion, score]
-                    for completion, score in zip(
-                        metrics.filtered_completions, metrics.filtered_scores
-                    )
-                ],
-            ),
+            # "filtered_completions": wandb.Table(
+            #     columns=["superbatch", "completion", "score"],
+            #     data=[
+            #         [metrics.superbatches_complete, completion, score]
+            #         for completion, score in zip(
+            #             metrics.filtered_completions, metrics.filtered_scores
+            #         )
+            #     ],
+            # ),
             # "scores_per_top_k": wandb.plot.line(  # type: ignore
             #     wandb.Table(
             #         columns=["Top-K", "Score", "Variance"], data=scores_per_top_k
