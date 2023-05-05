@@ -3,7 +3,7 @@ model_name:
   value: "EleutherAI/pythia-70m-deduped"
 reward_model_name:
   desc: HuggingFace reward model to use, or "mock" for testing
-  value: "OpenAssistant/reward-model-deberta-v3-base"
+  value: "mock" #  "OpenAssistant/reward-model-deberta-v3-base"
 log_with:
   desc: "The logger to use"
   value: "wandb"
@@ -60,10 +60,10 @@ scheduler_warmup_steps:
   value: 20
 init_kl_coef:
   desc: The initial KL coefficient for the KL-divergence loss. Adaptive kl is performed. Originial code sets this to 0.2
-  value: 0.4
+  value: 0.2
 clip_kl:
   desc: Whether to clip the KL-divergence to always be greater than zero.
-  value: true
+  value: false
 normalize_reward:
   desc: Whether to normalize the reward to have mean zero
   value: true

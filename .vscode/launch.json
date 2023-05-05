@@ -73,7 +73,7 @@
             "justMyCode": false
         },
         {
-            "name": "RLHF Iter (Mock)",
+            "name": "RLHF (Mock)",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/experiments/rlhf/rlhf_v1/run_rlhf.py",
@@ -82,6 +82,15 @@
                 "--config",
                 "${workspaceFolder}/experiments//rlhf/rlhf_v1/configs/mock.yaml",
             ],
+            "justMyCode": false
+        },
+        {
+            "name": "Score Completions",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/experiments/score_completions.py",
+            "console": "integratedTerminal",
+            "args": [],
             "justMyCode": false
         },
     ]

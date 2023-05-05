@@ -18,7 +18,7 @@ Example usage:
 import os
 import random
 import re
-from typing import Optional, TypeVar
+from typing import Optional, TypeVar, Dict, Any, List, Union, Tuple
 from dataclasses import dataclass, field
 
 from tqdm import tqdm
@@ -28,10 +28,10 @@ from torch.optim import Adam
 
 from transformers import (
     AutoTokenizer,
-    AutoModelForSequenceClassification,
     AutoModelForSeq2SeqLM,
     HfArgumentParser,
     LlamaTokenizer,
+    PreTrainedTokenizer,
     AutoModelForCausalLM,
     pipeline,
     get_scheduler,
@@ -179,8 +179,14 @@ def load_reward_tokenizer(reward_tokenizer_name: str) -> PreTrainedTokenizerBase
     return reward_tokenizer_train
 
 
-def load_reward_model(reward_model_name: str) -> PreTrainedModel:
-    """Load the reward model."""
+def load_reward_model(
+    reward_model_name: str, device: torch.device
+) -> Tuple[PreTrainedModel, Union[pipeline, None]]:
+    """Load the reward model.
+
+    Returns either None for pipeline if using oliver's rm, otherwise returns a pipeline object.
+    """
+    reward_model_pipe = None
     if reward_model_name == "mock":
         reward_model_train = MockRewardModel()
     elif "rm_combined" in reward_model_name or "oliversssf2" in reward_model_name:
@@ -192,14 +198,19 @@ def load_reward_model(reward_model_name: str) -> PreTrainedModel:
     elif "SteamSHP-flan-t5" in reward_model_name:
         reward_model_train = AutoModelForSeq2SeqLM.from_pretrained(reward_model_name)
     else:
-        reward_model_train = AutoModelForSequenceClassification.from_pretrained(
-            reward_model_name,
-            low_cpu_mem_usage=True,
-            torch_dtype=torch.bfloat16,
+        # reward_model_train = AutoModelForSequenceClassification.from_pretrained(
+        #     reward_model_name,
+        #     low_cpu_mem_usage=True,
+        #     torch_dtype=torch.bfloat16,
+        # )
+        reward_model_train = reward_model_name
+        reward_model_pipe = pipeline(
+            model=reward_model_name,
+            device=device,  # TODO move device out of here for style reasons.
         )
 
     print(f"Instantiated reward model: {reward_model_name}")
-    return reward_model_train
+    return reward_model_train, reward_model_pipe
 
 
 def get_configs():
@@ -291,6 +302,36 @@ def get_configs():
         language_tokenizer,
         generation_kwargs,
     )
+
+
+def score_completions(
+    reward_model: PreTrainedModel,
+    reward_model_tokenizer: PreTrainedTokenizer,
+    completions: List[str],
+    reward_model_kwargs: Dict[str, Any],
+) -> torch.Tensor:
+    """
+    Scores the completions from the reward model.
+
+    Args:
+        reward_model: The reward model to use.
+        reward_model_tokenizer: The tokenizer for the reward model.
+        completions: The completions to score, in text format.
+        reward_model_kwargs: The arguments to pass to the reward model.
+
+    Returns:
+        A list of scores (logits) for each completion.
+    """
+    reward_model_tokenizer.pad_token = reward_model_tokenizer.eos_token
+    completions_tokenized = reward_model_tokenizer(
+        completions, padding=True, truncation=True, return_tensors="pt"
+    )
+    completions_tokenized = completions_tokenized.to(reward_model.device)
+    with torch.no_grad():
+        scores = reward_model(**completions_tokenized, **reward_model_kwargs)
+    if not isinstance(scores, torch.Tensor):
+        scores = scores.logits
+    return scores
 
 
 def main(script_args: ScriptArguments):
@@ -402,14 +443,11 @@ def main(script_args: ScriptArguments):
     # This pipelinle is for the reward model
     # TODO: look at superhf code to load the reward model and then
     reward_model_tokenizer = load_reward_tokenizer(reward_model_name)
-    reward_model = load_reward_model(reward_model_name)
-    reward_model_pipe = pipeline(
-        model=reward_model,
-        tokenizer=reward_model_tokenizer,
-        device=device,
-        task="text-classification",
+    reward_model, reward_model_pipe = load_reward_model(
+        reward_model_name, device=device
     )
-    reward_model_pipe.tokenizer.pad_token_id = reward_model.config.eos_token_id
+    # reward_model.to(device) # TODO Might be redundant
+    # reward_model_pipe.tokenizer.pad_token_id = reward_model.config.eos_token_id
     print(f"The device is {device}, with reward model placed on device.")
     print_gpu_utilization()
 
@@ -446,19 +484,25 @@ def main(script_args: ScriptArguments):
 
         # Compute sentiment score
         texts = [q + r for q, r in zip(batch["query"], batch["response"])]
-        pipe_outputs = reward_model_pipe(texts, **reward_model_kwargs)
-        if len(pipe_outputs[0]) > 1:
-            print(
-                f"len of output is {len(pipe_outputs[0])}, so maybe it should be"
-                " output[1]['score'] instead?"
+        if reward_model_pipe is not None:
+            pipe_outputs = reward_model_pipe(texts, **reward_model_kwargs)
+            original_rewards = [
+                torch.tensor(output[0]["score"]) for output in pipe_outputs
+            ]
+            rewards = torch.stack(original_rewards)
+        else:
+            rewards = score_completions(
+                reward_model=reward_model,
+                reward_model_tokenizer=reward_model_tokenizer,
+                completions=texts,
+                reward_model_kwargs=reward_model_kwargs,
             )
-        original_rewards = [torch.tensor(output[0]["score"]) for output in pipe_outputs]
-        rewards = original_rewards
+            original_rewards = [datum.item() for datum in rewards]
 
         # add the negative of the mean to every reward so that the mean is zero
         # and then add reward_mean to every reward so that the mean is reward_mean
         if normalize_reward:
-            curr_mean_reward = torch.mean(torch.stack(rewards))
+            curr_mean_reward = torch.mean(rewards)
             rewards = [r - curr_mean_reward + reward_mean for r in rewards]
 
         # Run PPO step
@@ -502,17 +546,20 @@ def trim_generations(raw_completions: list[str]) -> list[str]:
     trimmed_completions: list[str] = []
     model_completion_lengths: list[int] = []
     for prompt, completion in prompts_and_completions:
+        if completion == "":
+            print("WARNING: Completion is empty.")
         stripped_completion = re.split(
-            constants.PROMPT_DELIMITER_REGEX_COMPLEX, completion, maxsplit=1
+            constants.PROMPT_DELIMITER_REGEX_MEDIUM, completion, maxsplit=1
         )[0].strip()
-        # if stripped_completion == "":
-        #     continue
+        if stripped_completion == "":
+            print("WARNING: Stripped completion is empty.")
         trimmed_completions.append(prompt + " " + stripped_completion)
         model_completion_lengths.append(len(stripped_completion))
 
-    assert (
-        len(trimmed_completions) == original_length
-    ), "Trimmed completions should have the same length as the original completions."
+    assert len(trimmed_completions) == original_length, (
+        "The number of Trimmed completions should be the same as the number of original"
+        " completions."
+    )
     return trimmed_completions
 
 
