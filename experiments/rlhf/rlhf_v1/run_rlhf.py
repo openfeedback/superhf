@@ -209,11 +209,6 @@ def load_reward_model(
             model=reward_model_name,
             device=device,  # TODO move device out of here for style reasons.
         )
-
-    if not isinstance(reward_model_name, str):
-        reward_model_train.to(device)
-        reward_model_train.device = device
-    print(f"Instantiated reward model: {reward_model_name} on device {device}")
     return reward_model_train, reward_model_pipe
 
 
@@ -330,10 +325,7 @@ def score_completions(
         completions, padding=True, truncation=True, return_tensors="pt"
     )
     completions_tokenized = completions_tokenized.to(reward_model.device)
-    print(
-        f"Moved completions to {reward_model.device}. THey are on device"
-        f" {completions_tokenized.device}."
-    )
+    print(f"Moved completions to {reward_model.device}.")
     assert reward_model.device != "cpu", "Reward model must be on GPU."
     with torch.no_grad():
         print("Scoring completions.")
@@ -455,6 +447,13 @@ def main(script_args: ScriptArguments):
     reward_model_tokenizer = load_reward_tokenizer(reward_model_name)
     reward_model, reward_model_pipe = load_reward_model(
         reward_model_name, device=device
+    )
+
+    if not isinstance(reward_model, str):
+        reward_model = ppo_trainer.accelerator.prepare(reward_model)
+    print(
+        f"Instantiated reward model: {reward_model_name} on device"
+        f" {reward_model.device}"
     )
     if "llama" in reward_model_name or "alpaca" in reward_model_name:
         assert device == 0, "LLAMA and Alpaca models only work on GPU 0"
