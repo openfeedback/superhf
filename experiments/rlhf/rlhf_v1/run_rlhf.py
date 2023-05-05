@@ -64,6 +64,7 @@ T = TypeVar("T")
 
 WANDB_ENTITY_NAME = "stanfordaialignment"
 WANDB_PROJECT_NAME = "rlhf-trl-v1"
+MAX_OOM_ALLOWED = 5
 
 
 # We first define the configuration of the experiment, defining the model, the dataset,
@@ -471,64 +472,80 @@ def main(script_args: ScriptArguments):
     # output_min_length = 4
     # output_max_length = 16
     # output_length_sampler = LengthSampler(output_min_length, output_max_length)
+    oom_count = 0
     language_tokenizer.pad_token = language_tokenizer.eos_token
     for epoch, batch in tqdm(
         enumerate(ppo_trainer.dataloader), total=len(ppo_trainer.dataloader)
     ):
-        tqdm.write(f"Epoch {epoch}")
-        print_gpu_utilization()
+        try:
+            tqdm.write(f"Epoch {epoch}")
+            print_gpu_utilization()
 
-        query_tensors = [
-            language_tokenizer(q, return_tensors="pt")["input_ids"].squeeze().to(device)
-            for q in batch["query"]
-        ]
-
-        # Get response from the model
-        response_tensors = []
-        start_time = time.time()
-        for query in query_tensors:
-            # gen_len = output_length_sampler()
-            # generation_kwargs["max_new_tokens"] = gen_len
-            response = ppo_trainer.generate(query, **generation_kwargs)
-            response_tensors.append(response.squeeze())
-        batch["response"] = trim_generations(
-            [language_tokenizer.decode(r.squeeze()) for r in response_tensors]
-        )
-        tqdm.write(f"Finished generating responses. took {time.time() - start_time}")
-        print_gpu_utilization()
-
-        # Compute sentiment score
-        start_time = time.time()
-        texts = [q + r for q, r in zip(batch["query"], batch["response"])]
-        if reward_model_pipe is not None:
-            pipe_outputs = reward_model_pipe(texts, **reward_model_kwargs)
-            original_rewards = [
-                torch.tensor(output[0]["score"]) for output in pipe_outputs
+            query_tensors = [
+                language_tokenizer(q, return_tensors="pt")["input_ids"]
+                .squeeze()
+                .to(device)
+                for q in batch["query"]
             ]
-            rewards = torch.stack(original_rewards)
-        else:
-            rewards = score_completions(
-                reward_model=reward_model,
-                reward_model_tokenizer=reward_model_tokenizer,
-                completions=texts,
+
+            # Get response from the model
+            response_tensors = []
+            start_time = time.time()
+            for query in query_tensors:
+                # gen_len = output_length_sampler()
+                # generation_kwargs["max_new_tokens"] = gen_len
+                response = ppo_trainer.generate(query, **generation_kwargs)
+                response_tensors.append(response.squeeze())
+            batch["response"] = trim_generations(
+                [language_tokenizer.decode(r.squeeze()) for r in response_tensors]
             )
-            original_rewards = [datum.item() for datum in rewards]
-        tqdm.write(f"Time to score completions: {time.time() - start_time}")
+            tqdm.write(
+                f"Finished generating responses. took {time.time() - start_time}"
+            )
+            print_gpu_utilization()
 
-        # add the negative of the mean to every reward so that the mean is zero
-        # and then add reward_mean to every reward so that the mean is reward_mean
-        if normalize_reward:
-            curr_mean_reward = torch.mean(rewards)
-            rewards = [r - curr_mean_reward + reward_mean for r in rewards]
+            # Compute sentiment score
+            start_time = time.time()
+            texts = [q + r for q, r in zip(batch["query"], batch["response"])]
+            if reward_model_pipe is not None:
+                pipe_outputs = reward_model_pipe(texts, **reward_model_kwargs)
+                original_rewards = [
+                    torch.tensor(output[0]["score"]) for output in pipe_outputs
+                ]
+                rewards = torch.stack(original_rewards)
+            else:
+                rewards = score_completions(
+                    reward_model=reward_model,
+                    reward_model_tokenizer=reward_model_tokenizer,
+                    completions=texts,
+                )
+                original_rewards = [datum.item() for datum in rewards]
+            tqdm.write(f"Time to score completions: {time.time() - start_time}")
 
-        # Run PPO step
-        start_time = time.time()
-        tqdm.write("Running PPO step")
-        stats = ppo_trainer.step(query_tensors, response_tensors, rewards)
-        ppo_trainer.log_stats(stats, batch, original_rewards)
+            # add the negative of the mean to every reward so that the mean is zero
+            # and then add reward_mean to every reward so that the mean is reward_mean
+            if normalize_reward:
+                curr_mean_reward = torch.mean(rewards)
+                rewards = [r - curr_mean_reward + reward_mean for r in rewards]
 
-        tqdm.write(f"Finished PPO step. Took {time.time() - start_time} seconds.")
-        print_gpu_utilization()
+            # Run PPO step
+            start_time = time.time()
+            tqdm.write("Running PPO step")
+            stats = ppo_trainer.step(query_tensors, response_tensors, rewards)
+            ppo_trainer.log_stats(stats, batch, original_rewards)
+
+            tqdm.write(f"Finished PPO step. Took {time.time() - start_time} seconds.")
+            print_gpu_utilization()
+        # catch cuda OOM exception
+        except RuntimeError as exc:
+            oom_count += 1
+            print(exc)
+            print(
+                "⚠️ WARNING: Error during this training iteration. Total OOM count:"
+                f" {oom_count}/{MAX_OOM_ALLOWED}"
+            )
+            if oom_count > MAX_OOM_ALLOWED:
+                raise exc
 
         if len(hub_repo_id) > 0 and (
             epoch == len(ppo_trainer.dataloader) - 1
