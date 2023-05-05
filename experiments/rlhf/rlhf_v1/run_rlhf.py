@@ -324,14 +324,16 @@ def score_completions(
         A list of scores (logits) for each completion.
     """
     reward_model_tokenizer.pad_token = reward_model_tokenizer.eos_token
+    print(f"We are scoring {len(completions)} completions.")
     completions_tokenized = reward_model_tokenizer(
         completions, padding=True, truncation=True, return_tensors="pt"
     )
     completions_tokenized = completions_tokenized.to(reward_model.device)
+    print(f"Moved completions to {reward_model.device}")
     with torch.no_grad():
         scores = reward_model(**completions_tokenized)
     if not isinstance(scores, torch.Tensor):
-        scores = scores.logits
+        scores: torch.Tensor = scores.logits
     return scores
 
 
