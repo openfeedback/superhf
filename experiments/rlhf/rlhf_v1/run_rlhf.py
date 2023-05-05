@@ -209,7 +209,9 @@ def load_reward_model(
             device=device,  # TODO move device out of here for style reasons.
         )
 
-    print(f"Instantiated reward model: {reward_model_name}")
+    if not isinstance(reward_model_name, str):
+        reward_model_train.to(device)
+    print(f"Instantiated reward model: {reward_model_name} on device {device}")
     return reward_model_train, reward_model_pipe
 
 
