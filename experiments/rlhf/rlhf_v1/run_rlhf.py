@@ -18,7 +18,7 @@ Example usage:
 import os
 import random
 import re
-from typing import Optional, TypeVar, Dict, Any, List, Union, Tuple
+from typing import Optional, TypeVar, List, Union, Tuple
 from dataclasses import dataclass, field
 
 from tqdm import tqdm
@@ -267,7 +267,6 @@ def get_configs():
         )
 
     reward_model_kwargs = {
-        "top_k": None,
         "function_to_apply": "none",
         "batch_size": wandb.config.batch_size,
     }  # arguments for the reward pipeline.
@@ -308,7 +307,6 @@ def score_completions(
     reward_model: PreTrainedModel,
     reward_model_tokenizer: PreTrainedTokenizer,
     completions: List[str],
-    reward_model_kwargs: Dict[str, Any],
 ) -> torch.Tensor:
     """
     Scores the completions from the reward model.
@@ -328,7 +326,9 @@ def score_completions(
     )
     completions_tokenized = completions_tokenized.to(reward_model.device)
     with torch.no_grad():
-        scores = reward_model(**completions_tokenized, **reward_model_kwargs)
+        scores = reward_model(
+            **completions_tokenized, batch_size=len(completions_tokenized)
+        )
     if not isinstance(scores, torch.Tensor):
         scores = scores.logits
     return scores
@@ -495,7 +495,6 @@ def main(script_args: ScriptArguments):
                 reward_model=reward_model,
                 reward_model_tokenizer=reward_model_tokenizer,
                 completions=texts,
-                reward_model_kwargs=reward_model_kwargs,
             )
             original_rewards = [datum.item() for datum in rewards]
 
