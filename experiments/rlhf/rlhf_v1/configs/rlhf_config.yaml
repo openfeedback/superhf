@@ -13,7 +13,7 @@ learning_rate:
   value: 1.0e-4 # 1.41e-5
 mini_batch_size:
   desc: "The mini-batch size"
-  value: 2
+  value: 1 # 2 causes oom
 batch_size:
   desc: "The batch size" # default 256 in og code
   value: 4
