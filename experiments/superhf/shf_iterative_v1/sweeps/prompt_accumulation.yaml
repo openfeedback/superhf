@@ -16,6 +16,8 @@ parameters:
       - 32
       - 64
       - 128
+  scheduler_warmup_steps:
+    # No warmup since variable num steps
+    value: 0
   sweep_param_name:
-    values:
-      - "accum"
+    value: "accum"
