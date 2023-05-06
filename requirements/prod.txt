@@ -5,7 +5,9 @@
 #    pip-compile requirements/prod.in
 #
 accelerate==0.18.0
-    # via -r requirements/prod.in
+    # via
+    #   -r requirements/prod.in
+    #   peft
 aiohttp==3.8.4
     # via
     #   datasets
@@ -24,7 +26,7 @@ charset-normalizer==3.1.0
     #   requests
 colorama==0.4.6
     # via tqdm
-datasets==2.11.0
+datasets==2.12.0
     # via -r requirements/prod.in
 dill==0.3.6
     # via
@@ -40,8 +42,10 @@ frozenlist==1.3.3
     #   aiohttp
     #   aiosignal
 fsspec[http]==2023.4.0
-    # via datasets
-huggingface-hub==0.13.4
+    # via
+    #   datasets
+    #   huggingface-hub
+huggingface-hub==0.14.1
     # via
     #   datasets
     #   transformers
@@ -63,12 +67,13 @@ multiprocess==0.70.14
     # via datasets
 networkx==3.1
     # via torch
-numpy==1.24.2
+numpy==1.24.3
     # via
     #   -r requirements/prod.in
     #   accelerate
     #   datasets
     #   pandas
+    #   peft
     #   pyarrow
     #   transformers
 nvidia-ml-py==11.525.112
@@ -78,12 +83,17 @@ packaging==23.1
     #   accelerate
     #   datasets
     #   huggingface-hub
+    #   peft
     #   transformers
-pandas==2.0.0
+pandas==2.0.1
     # via datasets
+peft==0.2.0
+    # via -r requirements/prod.in
 psutil==5.9.5
-    # via accelerate
-pyarrow==11.0.0
+    # via
+    #   accelerate
+    #   peft
+pyarrow==12.0.0
     # via datasets
 pynvml==11.5.0
     # via -r requirements/prod.in
@@ -96,10 +106,11 @@ pyyaml==6.0
     #   accelerate
     #   datasets
     #   huggingface-hub
+    #   peft
     #   transformers
-regex==2023.3.23
+regex==2023.5.5
     # via transformers
-requests==2.28.2
+requests==2.30.0
     # via
     #   datasets
     #   fsspec
@@ -118,6 +129,7 @@ torch==2.0.0
     # via
     #   -r requirements/prod.in
     #   accelerate
+    #   peft
     #   torchtyping
 torchtyping==0.1.4
     # via -r requirements/prod.in
@@ -127,7 +139,9 @@ tqdm==4.65.0
     #   huggingface-hub
     #   transformers
 transformers==4.28.1
-    # via -r requirements/prod.in
+    # via
+    #   -r requirements/prod.in
+    #   peft
 typeguard==3.0.2
     # via torchtyping
 typing-extensions==4.5.0
@@ -137,11 +151,11 @@ typing-extensions==4.5.0
     #   typeguard
 tzdata==2023.3
     # via pandas
-urllib3==1.26.15
+urllib3==2.0.2
     # via
     #   requests
     #   responses
 xxhash==3.2.0
     # via datasets
-yarl==1.8.2
+yarl==1.9.2
     # via aiohttp
