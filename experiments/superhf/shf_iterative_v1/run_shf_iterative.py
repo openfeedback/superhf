@@ -193,6 +193,7 @@ def main(argparse_args: argparse.Namespace, extra_args: list[str]) -> None:
         inverse_loss_penalty=wandb.config.inverse_loss_penalty,
         kl_coefficient=wandb.config.kl_coefficient,
         validation_interval=wandb.config.validation_interval,
+        max_oom_count=wandb.config.max_oom_count,
         reward_model_is_steamshp=("SteamSHP" in reward_model_train_name),
         length_penalty=wandb.config.length_penalty,
         hub_repo_id=wandb.config.hub_repo_id,

@@ -80,7 +80,7 @@ class SuperHFTrainingArguments:
     scheduler_warmup_steps: int = 0
     kl_coefficient: float = 0.0
     validation_interval: int = 0
-    max_oom_count: int = 5
+    max_oom_count: int = 0
 
     # Dataset settings
     prompt_delimiter: str = constants.PROMPT_DELIMITER
