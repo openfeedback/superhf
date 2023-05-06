@@ -63,7 +63,7 @@ def load_eval_model_and_tokenizer(
     else:
         # If we don't have a previous model, or it's different from the one we want to load, reload
         if verbose:
-            tqdm.write("Loading model and tokenizer from scratch.")
+            tqdm.write(f"Loading model and tokenizer from scratch for {model_path}.")
         model = AutoModelForCausalLM.from_pretrained(base_model_path, **model_kwargs)
         # Fix for misnamed class in the NLP Cluster's Alpaca tokenizer config
         tokenizer_class = (
@@ -72,12 +72,16 @@ def load_eval_model_and_tokenizer(
             else AutoTokenizer
         )
         tokenizer = tokenizer_class.from_pretrained(tokenizer_path)
+        if tokenizer.pad_token is None:
+            tokenizer.pad_token = tokenizer.eos_token
+            if verbose:
+                print(f"Added pad token to tokenizer for {model_path}.")
 
     if peft_config is not None:
         assert peft_config.base_model_name_or_path == model.config._name_or_path  # type: ignore
 
         if verbose:
-            tqdm.write("Loading PEFT adapters.")
+            tqdm.write(f"Loading PEFT adapters for {model_path}.")
         model = PeftModel.from_pretrained(
             model, model_path, revision=revision, **model_kwargs
         )
