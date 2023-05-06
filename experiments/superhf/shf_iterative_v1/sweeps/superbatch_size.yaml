@@ -6,15 +6,20 @@ metric:
 parameters:
   superbatch_size:
     values:
-      - 32
-      - 2
-      - 16
       - 1
-      - 24
-      - 8
+      - 2
       - 4
+      - 6
+      - 8
+      - 16
+      - 24
+      - 32
       - 64
+      - 96
       - 128
+  reward_model_val_name:
+    value: "/nlp/scr/fongsu/rm_combined/gptneo_1.3B_second_half"
+  max_oom_count:
+    value: 20
   sweep_param_name:
-    value:
-      - "sbs"
+    value: "sbs"
