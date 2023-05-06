@@ -8,4 +8,7 @@ torchtyping
 peft<=0.2.0
 pynvml
 nvidia-ml-py
+huggingface-hub>=0.14.1
+urllib3>=1.26.15
+wandb
 # deepspeed # Breaks windows, install manually
