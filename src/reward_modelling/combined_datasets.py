@@ -62,6 +62,20 @@ class CombinedDataset:
             "val_indices": self.val_indices
         }, path)
 
+    @classmethod
+    def load(cls, path):
+        data = torch.load(path)
+        dataset = cls([])
+        dataset.train_winner_pairs = data["train_winner_pairs"]
+        dataset.train_loser_pairs = data["train_loser_pairs"]
+        dataset.val_winner_pairs = data["val_winner_pairs"]
+        dataset.val_loser_pairs = data["val_loser_pairs"]
+        dataset.train_indices = data["train_indices"]
+        dataset.val_indices = data["val_indices"]
+        return dataset
+        
+
+
 
 # Instantiate your dataset classes here
 # web_gpt_comparisons = WebGPTComparisons()

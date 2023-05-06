@@ -60,3 +60,4 @@ MANIFEST
 # experiments/**/output
 wandb
 checkpoints
+batch_outputs
