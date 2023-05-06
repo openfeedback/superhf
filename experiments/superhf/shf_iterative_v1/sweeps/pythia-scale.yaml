@@ -14,6 +14,8 @@ parameters:
       - "EleutherAI/pythia-2.8B-deduped"
       - "EleutherAI/pythia-6.9B-deduped"
       - "EleutherAI/pythia-12B-deduped"
+  hub_repo_id:
+    value: "shf"
   sweep_param_name:
     value: "pythia"
   lora_target_modules:
