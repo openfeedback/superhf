@@ -100,5 +100,23 @@
             ],
             "justMyCode": false
         },
+        {
+            "name": "LM Evals Debug",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/experiments/evaluations/run_lm_evals.py",
+            "console": "integratedTerminal",
+            "args": [
+                "--models",
+                "gmukobi/model-test-pythia-70m-A",
+                // "EleutherAI/pythia-70m-deduped",
+                // "gmukobi/model-test-pythia-70m-B",
+                // "facebook/opt-125m",
+                // "gmukobi/model-test-opt-125m-C",
+                "--evals",
+                "boolq"
+            ],
+            "justMyCode": false
+        },
     ]
 }
