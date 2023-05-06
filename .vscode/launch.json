@@ -56,7 +56,7 @@
             "console": "integratedTerminal",
             "args": [
                 "--config",
-                "${workspaceFolder}/experiments/superhf/shf_iterative_v1/configs/pythia-1B-debug.yaml",
+                "${workspaceFolder}/experiments/superhf/shf_iterative_v1/configs/debug.yaml",
             ],
             "justMyCode": false
         },
@@ -68,7 +68,7 @@
             "console": "integratedTerminal",
             "args": [
                 "--config",
-                "${workspaceFolder}/experiments/superhf/shf_iterative_v1/configs/pythia-1B-debug.yaml",
+                "${workspaceFolder}/experiments/superhf/shf_iterative_v1/configs/debug.yaml",
                 "language_model_name=theblackcat102/pythia-3b-deduped-sft-r1",
                 "cpu_offload=True",
             ],
@@ -94,7 +94,7 @@
             "console": "integratedTerminal",
             "args": [
                 "--config",
-                "${workspaceFolder}/experiments/superhf/shf_iterative_v1/configs/pythia-1B-debug.yaml",
+                "${workspaceFolder}/experiments/superhf/shf_iterative_v1/configs/debug.yaml",
                 "--sweep",
                 "${workspaceFolder}/experiments/superhf/shf_iterative_v1/sweeps/params.yaml",
             ],
