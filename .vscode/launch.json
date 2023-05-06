@@ -10,7 +10,7 @@
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
-            "justMyCode": true
+            "justMyCode": false
         },
         {
             "name": "SHF Iter (Mock)",
@@ -49,7 +49,7 @@
             "justMyCode": false
         },
         {
-            "name": "SHF Iter (Pythia 1B Debug)",
+            "name": "SHF Iter (Debug)",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/experiments/superhf/shf_iterative_v1/run_shf_iterative.py",
