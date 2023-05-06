@@ -6,7 +6,12 @@ import numpy as np
 from peft import PeftConfig, PeftModel
 from peft.tuners.lora import LoraLayer
 import torch
-from transformers import AutoModelForCausalLM, AutoTokenizer, PreTrainedTokenizerBase
+from transformers import (
+    AutoModelForCausalLM,
+    AutoTokenizer,
+    PreTrainedTokenizerBase,
+    LlamaTokenizer,
+)
 from tqdm import tqdm
 
 
@@ -50,7 +55,7 @@ def load_eval_model_and_tokenizer(
         and peft_config is not None
         and peft_config.base_model_name_or_path == prev_model.config._name_or_path  # type: ignore
     ):
-        # We know we have the right base model, remove the old PEFT adapters if they have them
+        # We know we have the right base model, reuse it.
         model = prev_model
         if isinstance(model, PeftModel):
             model = model.get_base_model()
@@ -60,7 +65,13 @@ def load_eval_model_and_tokenizer(
         if verbose:
             tqdm.write("Loading model and tokenizer from scratch.")
         model = AutoModelForCausalLM.from_pretrained(base_model_path, **model_kwargs)
-        tokenizer = AutoTokenizer.from_pretrained(tokenizer_path)
+        # Fix for misnamed class in the NLP Cluster's Alpaca tokenizer config
+        tokenizer_class = (
+            LlamaTokenizer
+            if "llama" in tokenizer_path or "alpaca" in tokenizer_path
+            else AutoTokenizer
+        )
+        tokenizer = tokenizer_class.from_pretrained(tokenizer_path)
 
     if peft_config is not None:
         assert peft_config.base_model_name_or_path == model.config._name_or_path  # type: ignore
