@@ -15,6 +15,7 @@ def load_eval_model_and_tokenizer(
     prev_model: Optional[torch.nn.Module] = None,
     prev_tokenizer: Optional[PreTrainedTokenizerBase] = None,
     verbose: bool = False,
+    revision: str = "main",
     **model_kwargs: Any,
 ) -> tuple[torch.nn.Module, PreTrainedTokenizerBase]:
     """
@@ -44,27 +45,31 @@ def load_eval_model_and_tokenizer(
         base_model_path = model_path
         tokenizer_path = model_path
 
-    if prev_model is None or (
-        peft_config is not None
-        and peft_config.base_model_name_or_path != prev_model.config._name_or_path  # type: ignore
+    if (
+        prev_model is not None
+        and peft_config is not None
+        and peft_config.base_model_name_or_path == prev_model.config._name_or_path  # type: ignore
     ):
-        if verbose:
-            tqdm.write("Loading model and tokenizer from scratch.")
-        model = AutoModelForCausalLM.from_pretrained(base_model_path, **model_kwargs)
-        tokenizer = AutoTokenizer.from_pretrained(tokenizer_path)
-    else:
         # We know we have the right base model, remove the old PEFT adapters if they have them
         model = prev_model
         if isinstance(model, PeftModel):
             model = model.get_base_model()
         tokenizer = prev_tokenizer
+    else:
+        # If we don't have a previous model, or it's different from the one we want to load, reload
+        if verbose:
+            tqdm.write("Loading model and tokenizer from scratch.")
+        model = AutoModelForCausalLM.from_pretrained(base_model_path, **model_kwargs)
+        tokenizer = AutoTokenizer.from_pretrained(tokenizer_path)
 
     if peft_config is not None:
-        assert peft_config.base_model_name_or_path == model.config._name_or_path
+        assert peft_config.base_model_name_or_path == model.config._name_or_path  # type: ignore
 
         if verbose:
             tqdm.write("Loading PEFT adapters.")
-        model = PeftModel.from_pretrained(model, model_path, **model_kwargs)
+        model = PeftModel.from_pretrained(
+            model, model_path, revision=revision, **model_kwargs
+        )
 
     # Set eval mode
     # HACK for peft==0.2.0: manually disable merge_weights. Otherwise, .eval() will error.
@@ -72,6 +77,9 @@ def load_eval_model_and_tokenizer(
         if isinstance(layer, LoraLayer):
             layer.merge_weights = False
     model.eval()
+
+    # Set device
+    model = model.to(torch.device("cuda" if torch.cuda.is_available() else "cpu"))
 
     return model, tokenizer
 
@@ -87,15 +95,15 @@ def run_tests() -> None:
     model: Optional[torch.nn.Module] = None
     tokenizer: Optional[PreTrainedTokenizerBase] = None
 
-    # tqdm.write("\n### Testing loading pretrained models alone.")
-    # model_paths = [
-    #     "EleutherAI/pythia-70m-deduped",
-    #     "facebook/opt-125m",
-    # ]
-    # for model_path in tqdm(model_paths):
-    #     model, tokenizer = load_eval_model_and_tokenizer(model_path, verbose=verbose)
-    #     assert model is not None
-    #     assert tokenizer is not None
+    tqdm.write("\n### Testing loading pretrained models alone.")
+    model_paths = [
+        "EleutherAI/pythia-70m-deduped",
+        "facebook/opt-125m",
+    ]
+    for model_path in tqdm(model_paths):
+        model, tokenizer = load_eval_model_and_tokenizer(model_path, verbose=verbose)
+        assert model is not None
+        assert tokenizer is not None
 
     tqdm.write("\n### Testing loading adapter models alone.")
     model_paths = [
@@ -127,7 +135,10 @@ def run_tests() -> None:
         assert model is not None
         assert tokenizer is not None
         outputs.append(
-            model(**tokenizer(test_prompt, return_tensors="pt")).logits.detach().numpy()
+            model(**tokenizer(test_prompt, return_tensors="pt").to(model.device))
+            .logits.detach()
+            .cpu()
+            .numpy()
         )
     # Check that all the outputs are distinct
     for i, output in enumerate(outputs):
@@ -155,7 +166,10 @@ def run_tests() -> None:
         assert model is not None
         assert tokenizer is not None
         outputs.append(
-            model(**tokenizer(test_prompt, return_tensors="pt")).logits.detach().numpy()
+            model(**tokenizer(test_prompt, return_tensors="pt").to(model.device))
+            .logits.detach()
+            .cpu()
+            .numpy()
         )
     # Check that all the outputs are distinct
     for i, output in enumerate(outputs):
@@ -180,9 +194,9 @@ def run_tests() -> None:
         "step-0008",
         "step-0011",
     ]
-    for model_path in tqdm(model_paths):
-        previous_model_weights = None
-        for revision in revisions:
+    for model_path in model_paths:
+        for revision in tqdm(revisions):
+            previous_model_weights = None
             model, tokenizer = load_eval_model_and_tokenizer(
                 model_path, model, tokenizer, verbose=verbose, revision=revision
             )
@@ -209,7 +223,9 @@ def run_tests() -> None:
             assert model is not None
             assert tokenizer is not None
             assert next(model.parameters()).is_cuda
-            # assert "cuda" in model.device.type # TODO
+            assert "cuda" in str(model.device.type)  # TODO
+
+    tqdm.write("\n### All tests passed! 😊 🚀 ✅")
 
 
 if __name__ == "__main__":
