@@ -367,6 +367,7 @@ def main(script_args: ScriptArguments):
     hub_repo_id = wandb.config.hub_repo_id
     save_every = wandb.config.save_every
     reward_mean = wandb.config.reward_mean
+    offset_reward = wandb.config.offset_reward
     reward_model_name = wandb.config.reward_model_name
 
     (
@@ -527,6 +528,7 @@ def main(script_args: ScriptArguments):
             if normalize_reward:
                 curr_mean_reward = torch.mean(rewards)
                 rewards = [r - curr_mean_reward + reward_mean for r in rewards]
+            rewards = [r + offset_reward for r in rewards]
 
             # Run PPO step
             start_time = time.time()
