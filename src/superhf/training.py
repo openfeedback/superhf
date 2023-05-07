@@ -341,6 +341,7 @@ class SuperHFTrainer:
                 # Optionally, push the model to the hub
                 self.consider_pushing_to_hub(superbatch_index + 1, num_superbatches)
             except RuntimeError as exc:
+                # TODO also catch ValueError (e.g. for filtering sbs 1) and rename more generically
                 oom_count += 1
                 print(exc)
                 print(
