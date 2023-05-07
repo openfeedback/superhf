@@ -1,15 +1,15 @@
 {
   "results": {
     "cb": {
-      "acc": 0.08928571428571429,
-      "acc_stderr": 0.038450387280282494,
-      "f1": 0.054644808743169404
+      "acc": 0.21428571428571427,
+      "acc_stderr": 0.05532833351724884,
+      "f1": 0.21317471317471315
     },
     "hendrycksTest-global_facts": {
-      "acc": 0.31,
-      "acc_stderr": 0.04648231987117316,
-      "acc_norm": 0.28,
-      "acc_norm_stderr": 0.04512608598542127
+      "acc": 0.19,
+      "acc_stderr": 0.039427724440366255,
+      "acc_norm": 0.22,
+      "acc_norm_stderr": 0.041633319989322674
     }
   },
   "versions": {
@@ -17,7 +17,7 @@
     "hendrycksTest-global_facts": 0
   },
   "config": {
-    "model": "gmukobi/model-test-pythia-70m-A",
+    "model": "facebook/opt-125m",
     "model_args": null,
     "num_fewshot": 0,
     "batch_size": 16,

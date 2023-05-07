@@ -107,7 +107,7 @@ def run_evaluations(args: argparse.Namespace) -> None:
         raw_model, tokenizer = load_eval_model_and_tokenizer(
             model_path, raw_model, tokenizer, verbose=True
         )
-        eval_model = CustomEvalModel(raw_model, tokenizer)
+        eval_model = CustomEvalModel(raw_model, tokenizer, batch_size=args.batch_size)
 
         results = evaluator.simple_evaluate(
             model=eval_model,
@@ -155,5 +155,5 @@ if __name__ == "__main__":
         choices=MultiChoice(tasks.ALL_TASKS),
     )
     parser.add_argument("--output_folder", type=str, required=True)
-    parser.add_argument("--batch_size", type=str, default=8)
+    parser.add_argument("--batch_size", type=int, default=16)
     run_evaluations(parser.parse_args())

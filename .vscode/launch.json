@@ -108,10 +108,10 @@
             "console": "integratedTerminal",
             "args": [
                 "--models",
-                "gmukobi/model-test-pythia-70m-A",
                 "EleutherAI/pythia-70m-deduped",
+                "gmukobi/model-test-pythia-70m-A",
                 // "gmukobi/model-test-pythia-70m-B",
-                // "facebook/opt-125m",
+                "facebook/opt-125m",
                 // "gmukobi/model-test-opt-125m-C",
                 "--tasks",
                 "hendrycksTest-global_facts",
@@ -119,7 +119,7 @@
                 "--output_folder",
                 "debug",
                 "--batch_size",
-                "1",
+                "16",
             ],
             "justMyCode": false
         },

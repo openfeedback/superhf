@@ -20,7 +20,7 @@
     "model": "EleutherAI/pythia-70m-deduped",
     "model_args": null,
     "num_fewshot": 0,
-    "batch_size": "1",
+    "batch_size": 16,
     "device": null,
     "no_cache": true,
     "limit": null,
