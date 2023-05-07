@@ -1,5 +1,7 @@
 """Functions for efficiently loading the models, taking advantage of LoRA."""
 
+import gc
+import time
 from typing import Any, Optional
 
 import numpy as np
@@ -13,6 +15,8 @@ from transformers import (
     LlamaTokenizer,
 )
 from tqdm import tqdm
+
+from superhf.utils import print_memory_utilization
 
 
 def load_eval_model_and_tokenizer(
@@ -62,6 +66,17 @@ def load_eval_model_and_tokenizer(
         tokenizer = prev_tokenizer
     else:
         # If we don't have a previous model, or it's different from the one we want to load, reload
+        if prev_model is not None:
+            # Free memory first
+            tqdm.write(f"Freeing memory for {model_path}.")
+            print_memory_utilization()
+            prev_model.cpu()
+            del prev_model
+            gc.collect()
+            torch.cuda.empty_cache()
+            time.sleep(1)
+            print_memory_utilization()
+
         if verbose:
             tqdm.write(f"Loading model and tokenizer from scratch for {model_path}.")
         model = AutoModelForCausalLM.from_pretrained(base_model_path, **model_kwargs)
