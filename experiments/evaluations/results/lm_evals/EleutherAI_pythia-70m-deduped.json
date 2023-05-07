@@ -1,0 +1,24 @@
+{
+  "results": {
+    "hendrycksTest-global_facts": {
+      "acc": 0.19,
+      "acc_stderr": 0.03942772444036625,
+      "acc_norm": 0.17,
+      "acc_norm_stderr": 0.03775251680686371
+    }
+  },
+  "versions": {
+    "hendrycksTest-global_facts": 0
+  },
+  "config": {
+    "model": "EleutherAI/pythia-70m-deduped",
+    "model_args": null,
+    "num_fewshot": 0,
+    "batch_size": "1",
+    "device": null,
+    "no_cache": true,
+    "limit": null,
+    "bootstrap_iters": 100000,
+    "description_dict": null
+  }
+}

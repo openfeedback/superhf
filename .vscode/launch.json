@@ -109,12 +109,14 @@
             "args": [
                 "--models",
                 "gmukobi/model-test-pythia-70m-A",
-                // "EleutherAI/pythia-70m-deduped",
+                "EleutherAI/pythia-70m-deduped",
                 // "gmukobi/model-test-pythia-70m-B",
                 // "facebook/opt-125m",
                 // "gmukobi/model-test-opt-125m-C",
-                "--evals",
-                "boolq"
+                "--tasks",
+                "hendrycksTest-global_facts",
+                "--batch_size",
+                "1",
             ],
             "justMyCode": false
         },
