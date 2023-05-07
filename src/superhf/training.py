@@ -80,7 +80,7 @@ class SuperHFTrainingArguments:
     scheduler_warmup_steps: int = 0
     kl_coefficient: float = 0.0
     validation_interval: int = 0
-    max_oom_count: int = 0
+    max_exception_count: int = 0
 
     # Dataset settings
     prompt_delimiter: str = constants.PROMPT_DELIMITER
@@ -241,7 +241,7 @@ class SuperHFTrainer:
         assert self.scheduler is not None
 
         # Track how many times we OOM and starting batch sizes
-        oom_count = 0
+        exception_count = 0
         batch_size_generating_initial = self.training_args.minibatch_size_generating
         batch_size_scoring_initial = self.training_args.minibatch_size_scoring
         batch_size_finetuning_initial = self.training_args.minibatch_size_finetuning
@@ -340,25 +340,28 @@ class SuperHFTrainer:
 
                 # Optionally, push the model to the hub
                 self.consider_pushing_to_hub(superbatch_index + 1, num_superbatches)
-            except RuntimeError as exc:
-                # TODO also catch ValueError (e.g. for filtering sbs 1) and rename more generically
-                oom_count += 1
+            except Exception as exc:  # pylint: disable=broad-exception-caught
+                exception_count += 1
                 print(exc)
                 print(
-                    "⚠️ WARNING: Error during this training iteration. Total OOM count:"
-                    f" {oom_count}/{self.training_args.max_oom_count}"
+                    "⚠️ WARNING: Error during this training iteration. Total exception"
+                    " count:"
+                    f" {exception_count}/{self.training_args.max_exception_count}"
                 )
-                if oom_count > self.training_args.max_oom_count:
+                if exception_count > self.training_args.max_exception_count:
                     raise exc
 
-                # Reset batch sizes to starting values
-                self.training_args.minibatch_size_generating = (
-                    batch_size_generating_initial
-                )
-                self.training_args.minibatch_size_scoring = batch_size_scoring_initial
-                self.training_args.minibatch_size_finetuning = (
-                    batch_size_finetuning_initial
-                )
+                # Reset batch sizes to starting values if a CUDA error
+                if isinstance(exc, RuntimeError):
+                    self.training_args.minibatch_size_generating = (
+                        batch_size_generating_initial
+                    )
+                    self.training_args.minibatch_size_scoring = (
+                        batch_size_scoring_initial
+                    )
+                    self.training_args.minibatch_size_finetuning = (
+                        batch_size_finetuning_initial
+                    )
 
     def consider_pushing_to_hub(
         self, superbatch_index: int, total_superbatches: int

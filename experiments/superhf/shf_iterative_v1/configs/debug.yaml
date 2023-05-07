@@ -98,7 +98,7 @@ length_penalty:
 validation_interval:
   desc: The number of superbatches to train before running the validation reward model.
   value: 2
-max_oom_count:
+max_exception_count:
   desc: The number of times to allow the model to run out of memory before stopping.
   value: 0
 hub_repo_id:
