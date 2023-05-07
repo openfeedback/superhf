@@ -528,7 +528,8 @@ def main(script_args: ScriptArguments):
             if normalize_reward:
                 curr_mean_reward = torch.mean(rewards)
                 rewards = [r - curr_mean_reward + reward_mean for r in rewards]
-            rewards = [r + offset_reward for r in rewards]
+            else:
+                rewards = [r + offset_reward for r in rewards]
 
             # Run PPO step
             start_time = time.time()

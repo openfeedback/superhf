@@ -13,7 +13,7 @@ learning_rate:
   value: 1.0e-4 # 1.41e-5
 mini_batch_size:
   desc: "The mini-batch size"
-  value: 1 # 2 causes oom
+  value: 2 # 2 causes oom with lora_r 8
 batch_size:
   desc: "The batch size" # default 256 in og code
   value: 4
@@ -22,7 +22,7 @@ gradient_accumulation_steps:
   value: 2
 max_new_tokens:
   desc: "The maximum number of new tokens to generate per prompt"
-  value: 32
+  value: 128
 max_prompt_char_length:
   desc: "The maximum number of characters in a prompt"
   value: 1024
@@ -43,16 +43,16 @@ dataset_names:
   value: ["anthropic-red-team", "anthropic-helpful-base", "anthropic-harmless-base", "openai/webgpt_comparisons"]
 debug_max_prompts:
   desc: "The maximum number of prompts to use for debugging. 0 to use all prompts."
-  value: 2048
+  value: 8096
 conversation_prompt:
   desc: A prompt to prepend to every prompt before generation to get the model more on distribution.
   value: "A human user sends a message, and a helpful and harmless AI assistant responds."
 save_every:
     desc: "Save the model every n epochs"
-    value: 32
+    value: 1
 hub_repo_id:
     desc: "The ID of the HuggingFace Hub repo to save to. If empty, doesn't write to the Hub."
-    value: ""
+    value: "test-save-alpaca"
 scheduler_name:
   desc: Name of the scheduler to use for fine-tuning the language model.
   value: "" # was linear
