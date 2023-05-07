@@ -125,10 +125,13 @@ def run_evaluations(args: argparse.Namespace) -> None:
         dumped = json.dumps(results, indent=2)
         print(dumped)
 
-        output_dir = os.path.join(os.path.dirname(__file__), "results", "lm_evals")
+        output_dir = os.path.join("./eval_results", "lm_evals")
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
-        output_path = os.path.join(output_dir, model_path.replace("/", "_") + ".json")
+        output_path = os.path.join(
+            output_dir,
+            model_path.split("/")[-1] + " N=" + str(len(task_names)) + ".json",
+        )
         with open(output_path, "w", encoding="utf8") as file:
             file.write(dumped)
 
