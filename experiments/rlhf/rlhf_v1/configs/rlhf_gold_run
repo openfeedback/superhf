@@ -13,7 +13,7 @@ learning_rate:
   value: 1.0e-4 # 1.41e-5
 mini_batch_size:
   desc: "The mini-batch size"
-  value: 2 # 2 causes oom with lora_r 8
+  value: 1 # 2 causes oom with lora_r 8
 batch_size:
   desc: "The batch size" # default 256 in og code
   value: 4
@@ -49,13 +49,13 @@ conversation_prompt:
   value: "A human user sends a message, and a helpful and harmless AI assistant responds."
 save_every:
     desc: "Save the model every n epochs"
-    value: 32
+    value: 64
 hub_repo_id:
     desc: "The ID of the HuggingFace Hub repo to save to. If empty, doesn't write to the Hub."
-    value: ""
+    value: "rlhf-gold-run"
 scheduler_name:
   desc: Name of the scheduler to use for fine-tuning the language model.
-  value: "" # was linear
+  value: "linear" # was linear
 scheduler_warmup_steps:
   desc: Number of warmup steps for the scheduler.
   value: 20
