@@ -93,6 +93,8 @@ def pattern_match(patterns: list[str], source_list: list[str]) -> list[str]:
 def run_evaluations(args: argparse.Namespace) -> None:
     """Run the evaluations for the given models and evaluation names."""
 
+    assert args.output_folder.strip() != "", "Output folder cannot be empty"
+
     task_names = pattern_match(args.tasks, tasks.ALL_TASKS)
     print(f"Selected Tasks: {task_names}")
     raw_model = None
@@ -125,12 +127,12 @@ def run_evaluations(args: argparse.Namespace) -> None:
         dumped = json.dumps(results, indent=2)
         print(dumped)
 
-        output_dir = os.path.join("./eval_results", "lm_evals")
+        output_dir = os.path.join("./eval_results", "lm_evals", args.output_folder)
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
         output_path = os.path.join(
             output_dir,
-            model_path.split("/")[-1] + " N=" + str(len(task_names)) + ".json",
+            model_path.split("/")[-1] + ".json",
         )
         with open(output_path, "w", encoding="utf8") as file:
             file.write(dumped)
@@ -152,5 +154,6 @@ if __name__ == "__main__":
         ),
         choices=MultiChoice(tasks.ALL_TASKS),
     )
+    parser.add_argument("--output_folder", type=str, required=True)
     parser.add_argument("--batch_size", type=str, default=None)
     run_evaluations(parser.parse_args())
