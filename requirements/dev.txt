@@ -272,7 +272,7 @@ pytz==2023.3
     #   -c requirements\prod.txt
     #   pandas
     #   typepy
-pywin32==306
+# COMMENTED OUT TO EXCLUDE PYWIN FOR MULTIPLATFORM pywin32==306
     # via
     #   jupyter-core
     #   portalocker

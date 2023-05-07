@@ -1,112 +1,19 @@
-language_model_name:
-  desc: HuggingFace language model to use, or "mock" for testing
-  value: "/juice5/scr5/nlp/llama_model/alpaca_7b"
-reward_model_train_name:
-  desc: HuggingFace reward model to use, or "mock" for testing
-  value: "/nlp/scr/fongsu/rm_combined/gptneo_1.3B_first_half"
-reward_model_val_name:
-  desc: HuggingFace reward model to use, or "mock" for testing, or blank for no validation.
-  # value: "/nlp/scr/fongsu/rm_combined/gptneo_1.3B_second_half"
-  value: ""  # Disabled for most runs to save time and memory
-learning_rate:
-  desc: Learning rate for fine-tuning the language model.
-  value: 3.0e-5
-scheduler_name:
-  desc: Name of the scheduler to use for fine-tuning the language model.
-  value: "cosine"
-scheduler_warmup_steps:
-  desc: Number of warmup steps for the scheduler.
-  value: 32
-kl_coefficient:
-  desc: Coefficient for the KL loss term added to the CLM loss. Requires LoRA. Set to 0 to disable.
-  value: 0.23
-inverse_loss_penalty:
-  desc: Regularizes loss by C with loss' = loss + C / loss. Set to 0 to disable.
-  value: 0.0
-max_prompt_char_length:
-  desc: Maximum number of characters to truncate prompts to
-  value: 1024
-temperature:
-  desc: Temperature to use for completion sampling
-  value: 1.0
-top_p:
-  desc: Top-p to use for completion sampling
-  value: 0.95
-num_prompts:
-  desc: Maximum number of prompts to use, or 0 for unlimited (up to the training set size).
-  value: 2048
-prompt_accumulation_steps:
-  desc: Number of prompts to generate, score, and filter before finetuning, or 0 for num_prompts.
-  value: 1
-superbatch_size:
-  desc: Number of completions to generate with the current policy before filtering and fine-tuning.
-  value: 32
-completion_filter_top_k:
-  desc: Top-k completions to filter and train on.
-  value: 1
-max_new_tokens:
-  desc: Maximum new token length of language model completion.
-  value: 64
-max_length_rm:
-  desc: Maximum token length of reward model input.
-  value: 1024
-minibatch_size_generating:
-  desc: Size of minibatches for generating completions.
-  value: 32
-minibatch_size_scoring:
-  desc: Size of minibatches for scoring completions.
-  value: 8
-minibatch_size_finetuning:
-  desc: Size of minibatches for fine-tuning the language model.
-  value: 8
-mixed_precision:
-  desc: Whether to use lower precision fp16 optimization, or other representations.
-  value: "bf16"
-lora_r:
-  desc: The r dimension parameter for LoRA. Only takes effect if r and alpha are non-zero.
-  value: 4
-lora_alpha:
-  desc: The alpha parameter for LoRA. Only takes effect if r and alpha are non-zero.
-  value: 32
-lora_dropout:
-  desc: The dropout parameter for LoRA, or 0 to disable dropout.
-  value: 0.05
-lora_target_modules:
-  desc: The list of modules to apply LoRA to. See src/superhf/lora.py for available modules.
-  value: ["q_proj", "v_proj"]  # For LLaMa
-  # value: ["query_key_value"]  # For GPT-NeoX
-conversation_prompt:
-  desc: A prompt to prepend to every prompt before generation to get the model more on distribution.
-  value: "A human user sends a message, and a helpful and harmless AI assistant responds."
-repetition_penalty:
-  desc: Repetition penalty to use for completion sampling. 1.0 means no penalty (logits unchanged)
-  value: 1.0
-no_repeat_ngram_size:
-  desc: Prevents repeating of n-grams of this size during completion sampling. 0 means no constraint (logits unchanged)
-  value: 0
-prompt_dataset_names:
-  desc: The list of datasets to use for prompts. See src/superhf/data.py for available datasets.
-  value: ["anthropic-red-team", "anthropic-helpful-base", "anthropic-harmless-base", "openai/webgpt_comparisons"]
-  # value: ["anthropic-harmless-base", "anthropic-red-team", "openai/webgpt_comparisons"]
-length_penalty:
-  desc: Adds -length_penalty * char_length to the reward. 0 means no penalty.
-  value: 0.0
-validation_interval:
-  desc: The number of superbatches to train before running the validation reward model.
-  value: 8
-max_oom_count:
-  desc: The number of times to allow the model to run out of memory before stopping.
-  value: 5
-hub_repo_id:
-  desc: The ID of the HuggingFace Hub repo to use for storing the model. If empty, no model will be stored.
-  # value: "test-repo"
-  value: "shf-7b"
-push_to_hub_interval:
-  desc: The number of superbatches to train before pushing to the HuggingFace Hub. If 0, no model will be stored.
-  value: 99999  # Set high to only save at the end
-push_to_hub_additional_indices:
-  desc: A list of additional superbatch indices to push to the hub in addition to every push_to_hub_interval.
-  value: []
-sweep_param_name:
-  desc: If running a sweep, one of the a list of short parameter names to add to the saved hub repo name.
-  value: ""
+python ./experiments/evaluations/run_lm_evals.py \
+ --models \
+ /juice5/scr5/nlp/llama_model/llama_hf_latest/llama-7b \
+ /juice5/scr5/nlp/llama_model/alpaca_7b \
+ gmukobi/shf-7b-kl-0.25 \
+ gmukobi/shf-7b-accum-1 \
+ gmukobi/shf-7b-gold-v1 \
+ --tasks
+ BoolQ \
+ PIQA \
+ SIQA \
+ HellaSwag \
+ WinoGrande \
+ ARC-e \
+ ARC-c \
+ OBQA \
+ TriviaQA \
+ --output_folder \
+ common_sense
