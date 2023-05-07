@@ -155,5 +155,5 @@ if __name__ == "__main__":
         choices=MultiChoice(tasks.ALL_TASKS),
     )
     parser.add_argument("--output_folder", type=str, required=True)
-    parser.add_argument("--batch_size", type=str, default=None)
+    parser.add_argument("--batch_size", type=str, default=8)
     run_evaluations(parser.parse_args())
