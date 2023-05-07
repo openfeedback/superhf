@@ -49,6 +49,7 @@ function Install {
     Invoke-Expression "pip install --upgrade torch --extra-index-url https://download.pytorch.org/whl/cu118 --user"
     Invoke-Expression "pip install -e ."
     Invoke-Expression "mypy --install-types"
+    Invoke-Expression "pip install pywin32"
     Invoke-Expression "pre-commit install"
 }
 
