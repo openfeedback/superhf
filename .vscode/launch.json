@@ -104,7 +104,7 @@
             "console": "integratedTerminal",
             "args": [
                 "--completions_file",
-                "experiments/openai/anthropic-harmless-base_completions_output.json",
+                "experiments/openai_generations/anthropic-harmless-base_completions_output.json",
                 "--reward_model",
                 "mock"
             ],

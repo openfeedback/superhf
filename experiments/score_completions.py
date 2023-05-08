@@ -167,10 +167,7 @@ def main():
             tokenizer = load_reward_tokenizer(args.reward_model)
         if not isinstance(reward_model, str):
             reward_model = accelerator.prepare(reward_model)
-        print(
-            f"Instantiated reward model: {reward_model_name} on device"
-            f" {reward_model.device}"
-        )
+        print(f"Instantiated reward model: {reward_model_name} on device {device}")
         print(f"The device is {device}, with reward model placed on device.")
         print_gpu_utilization()
         if reward_model_pipe is None:
@@ -180,6 +177,8 @@ def main():
                 completions=completions,
             )
         else:
+            if isinstance(reward_model, str):
+                print("WARNING: reward model is str, and pipeline is not None.")
             scores = reward_model_pipe(completions)
     print(scores[:5])
 
