@@ -22,6 +22,8 @@ from superhf.constants import SUPPORTED_DATASETS
 
 T = TypeVar("T")
 
+TEST_SET_SIZE_PER_DATASET = 2300
+
 
 def get_superhf_prompts(dataset_name: str, split: str = "train") -> list[str]:
     """
@@ -52,7 +54,7 @@ def get_superhf_prompts(dataset_name: str, split: str = "train") -> list[str]:
             [
                 dict(row)["transcript"].split("\n\nAssistant:")[0] + "\n\nAssistant:"
                 for row in dataset
-            ]
+            ][:-TEST_SET_SIZE_PER_DATASET]
         )
     elif dataset_name == "webgpt_comparisons":
         dataset = load_dataset(
@@ -64,7 +66,7 @@ def get_superhf_prompts(dataset_name: str, split: str = "train") -> list[str]:
             [
                 "\n\nHuman: " + row["question"]["full_text"] + "\n\nAssistant:"
                 for row in dataset
-            ]
+            ][:-TEST_SET_SIZE_PER_DATASET]
         )
     elif dataset_name == "anthropic-harmless-base":
         dataset = load_dataset(

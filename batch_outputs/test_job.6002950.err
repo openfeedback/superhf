@@ -1,37 +1,0 @@
-Using pad_token, but it is not set yet.
-Using pad_token, but it is not set yet.
-Using pad_token, but it is not set yet.
-Using pad_token, but it is not set yet.
-Some weights of GPTNeoModel were not initialized from the model checkpoint at EleutherAI/gpt-neo-1.3B and are newly initialized: ['transformer.h.17.attn.attention.bias', 'transformer.h.5.attn.attention.bias', 'transformer.h.13.attn.attention.bias', 'transformer.h.3.attn.attention.bias', 'transformer.h.19.attn.attention.bias', 'transformer.h.21.attn.attention.bias', 'transformer.h.11.attn.attention.bias', 'transformer.h.1.attn.attention.bias', 'transformer.h.23.attn.attention.bias', 'transformer.h.7.attn.attention.bias', 'transformer.h.15.attn.attention.bias', 'transformer.h.9.attn.attention.bias']
-You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
-Some weights of GPTNeoModel were not initialized from the model checkpoint at EleutherAI/gpt-neo-1.3B and are newly initialized: ['transformer.h.19.attn.attention.bias', 'transformer.h.21.attn.attention.bias', 'transformer.h.15.attn.attention.bias', 'transformer.h.23.attn.attention.bias', 'transformer.h.17.attn.attention.bias', 'transformer.h.1.attn.attention.bias', 'transformer.h.11.attn.attention.bias', 'transformer.h.9.attn.attention.bias', 'transformer.h.7.attn.attention.bias', 'transformer.h.13.attn.attention.bias', 'transformer.h.3.attn.attention.bias', 'transformer.h.5.attn.attention.bias']
-You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
-Some weights of GPTNeoModel were not initialized from the model checkpoint at EleutherAI/gpt-neo-1.3B and are newly initialized: ['transformer.h.23.attn.attention.bias', 'transformer.h.21.attn.attention.bias', 'transformer.h.3.attn.attention.bias', 'transformer.h.5.attn.attention.bias', 'transformer.h.19.attn.attention.bias', 'transformer.h.11.attn.attention.bias', 'transformer.h.13.attn.attention.bias', 'transformer.h.7.attn.attention.bias', 'transformer.h.15.attn.attention.bias', 'transformer.h.9.attn.attention.bias', 'transformer.h.17.attn.attention.bias', 'transformer.h.1.attn.attention.bias']
-You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
-Some weights of GPTNeoModel were not initialized from the model checkpoint at EleutherAI/gpt-neo-1.3B and are newly initialized: ['transformer.h.17.attn.attention.bias', 'transformer.h.7.attn.attention.bias', 'transformer.h.11.attn.attention.bias', 'transformer.h.3.attn.attention.bias', 'transformer.h.21.attn.attention.bias', 'transformer.h.5.attn.attention.bias', 'transformer.h.1.attn.attention.bias', 'transformer.h.15.attn.attention.bias', 'transformer.h.23.attn.attention.bias', 'transformer.h.13.attn.attention.bias', 'transformer.h.19.attn.attention.bias', 'transformer.h.9.attn.attention.bias']
-You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
-Using custom data configuration Anthropic--hh-rlhf-b971c05e85ce84ae
-Using custom data configuration Anthropic--hh-rlhf-b971c05e85ce84ae
-Using custom data configuration Anthropic--hh-rlhf-b971c05e85ce84ae
-Using custom data configuration Anthropic--hh-rlhf-b971c05e85ce84ae
-Found cached dataset json (/nlp/scr/fongsu/.cache/Anthropic___json/Anthropic--hh-rlhf-b971c05e85ce84ae/0.0.0/0f7e3662623656454fcd2b650f34e886a7db4b9104504885bd462096cc7a9f51)
-Found cached dataset json (/nlp/scr/fongsu/.cache/Anthropic___json/Anthropic--hh-rlhf-b971c05e85ce84ae/0.0.0/0f7e3662623656454fcd2b650f34e886a7db4b9104504885bd462096cc7a9f51)
-  0%|          | 0/2 [00:00<?, ?it/s]  0%|          | 0/2 [00:00<?, ?it/s]Found cached dataset json (/nlp/scr/fongsu/.cache/Anthropic___json/Anthropic--hh-rlhf-b971c05e85ce84ae/0.0.0/0f7e3662623656454fcd2b650f34e886a7db4b9104504885bd462096cc7a9f51)
-  0%|          | 0/2 [00:00<?, ?it/s]Found cached dataset json (/nlp/scr/fongsu/.cache/Anthropic___json/Anthropic--hh-rlhf-b971c05e85ce84ae/0.0.0/0f7e3662623656454fcd2b650f34e886a7db4b9104504885bd462096cc7a9f51)
-  0%|          | 0/2 [00:00<?, ?it/s] 50%|█████     | 1/2 [00:00<00:00,  1.62it/s] 50%|█████     | 1/2 [00:00<00:00,  1.62it/s] 50%|█████     | 1/2 [00:00<00:00,  1.96it/s] 50%|█████     | 1/2 [00:00<00:00,  1.77it/s]100%|██████████| 2/2 [00:00<00:00,  3.17it/s]100%|██████████| 2/2 [00:00<00:00,  3.17it/s]100%|██████████| 2/2 [00:00<00:00,  3.68it/s]100%|██████████| 2/2 [00:00<00:00,  3.40it/s]100%|██████████| 2/2 [00:00<00:00,  2.77it/s]
-100%|██████████| 2/2 [00:00<00:00,  2.77it/s]
-100%|██████████| 2/2 [00:00<00:00,  3.25it/s]100%|██████████| 2/2 [00:00<00:00,  2.99it/s]
-
-Using custom data configuration Anthropic--hh-rlhf-b971c05e85ce84ae
-Found cached dataset json (/nlp/scr/fongsu/.cache/Anthropic___json/Anthropic--hh-rlhf-b971c05e85ce84ae/0.0.0/0f7e3662623656454fcd2b650f34e886a7db4b9104504885bd462096cc7a9f51)
-  0%|          | 0/2 [00:00<?, ?it/s]100%|██████████| 2/2 [00:00<00:00, 630.20it/s]
-Using custom data configuration Anthropic--hh-rlhf-b971c05e85ce84ae
-Found cached dataset json (/nlp/scr/fongsu/.cache/Anthropic___json/Anthropic--hh-rlhf-b971c05e85ce84ae/0.0.0/0f7e3662623656454fcd2b650f34e886a7db4b9104504885bd462096cc7a9f51)
-  0%|          | 0/2 [00:00<?, ?it/s]100%|██████████| 2/2 [00:00<00:00, 418.32it/s]
-Using custom data configuration Anthropic--hh-rlhf-b971c05e85ce84ae
-Found cached dataset json (/nlp/scr/fongsu/.cache/Anthropic___json/Anthropic--hh-rlhf-b971c05e85ce84ae/0.0.0/0f7e3662623656454fcd2b650f34e886a7db4b9104504885bd462096cc7a9f51)
-  0%|          | 0/2 [00:00<?, ?it/s]100%|██████████| 2/2 [00:00<00:00, 514.51it/s]
-Using custom data configuration Anthropic--hh-rlhf-b971c05e85ce84ae
-Found cached dataset json (/nlp/scr/fongsu/.cache/Anthropic___json/Anthropic--hh-rlhf-b971c05e85ce84ae/0.0.0/0f7e3662623656454fcd2b650f34e886a7db4b9104504885bd462096cc7a9f51)
-  0%|          | 0/2 [00:00<?, ?it/s]100%|██████████| 2/2 [00:00<00:00, 687.42it/s]
-slurmstepd: error: *** JOB 6002950 ON jagupard35 CANCELLED AT 2023-04-07T00:46:11 ***

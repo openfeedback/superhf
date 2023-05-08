@@ -1,5 +1,0 @@
-Using custom data configuration Anthropic--hh-rlhf-c8cd8dc58ab67414
-Found cached dataset json (/sailhome/fongsu/.cache/huggingface/datasets/Anthropic___json/Anthropic--hh-rlhf-c8cd8dc58ab67414/0.0.0/0f7e3662623656454fcd2b650f34e886a7db4b9104504885bd462096cc7a9f51)
-  0%|          | 0/2 [00:00<?, ?it/s] 50%|█████     | 1/2 [00:03<00:03,  3.92s/it]100%|██████████| 2/2 [00:04<00:00,  1.78s/it]100%|██████████| 2/2 [00:04<00:00,  2.10s/it]
-Using pad_token, but it is not set yet.
-slurmstepd: error: *** JOB 5929151 ON jagupard12 CANCELLED AT 2023-03-16T19:10:16 ***

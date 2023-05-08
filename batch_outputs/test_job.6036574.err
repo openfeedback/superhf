@@ -1,826 +1,0 @@
-[INFO|configuration_utils.py:668] 2023-04-22 21:28:07,482 >> loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/config.json
-[INFO|configuration_utils.py:668] 2023-04-22 21:28:07,488 >> loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/config.json
-[INFO|configuration_utils.py:720] 2023-04-22 21:28:07,521 >> Model config GPTNeoConfig {
-  "_name_or_path": "EleutherAI/gpt-neo-1.3B",
-  "activation_function": "gelu_new",
-  "architectures": [
-    "GPTNeoForCausalLM"
-  ],
-  "attention_dropout": 0,
-  "attention_layers": [
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local"
-  ],
-  "attention_types": [
-    [
-      [
-        "global",
-        "local"
-      ],
-      12
-    ]
-  ],
-  "bos_token_id": 50256,
-  "embed_dropout": 0,
-  "eos_token_id": 50256,
-  "gradient_checkpointing": false,
-  "hidden_size": 2048,
-  "initializer_range": 0.02,
-  "intermediate_size": null,
-  "layer_norm_epsilon": 1e-05,
-  "max_position_embeddings": 2048,
-  "model_type": "gpt_neo",
-  "num_heads": 16,
-  "num_layers": 24,
-  "resid_dropout": 0,
-  "summary_activation": null,
-  "summary_first_dropout": 0.1,
-  "summary_proj_to_labels": true,
-  "summary_type": "cls_index",
-  "summary_use_proj": true,
-  "task_specific_params": {
-    "text-generation": {
-      "do_sample": true,
-      "max_length": 50,
-      "temperature": 0.9
-    }
-  },
-  "tokenizer_class": "GPT2Tokenizer",
-  "transformers_version": "4.28.1",
-  "use_cache": true,
-  "vocab_size": 50257,
-  "window_size": 256
-}
-
-[INFO|configuration_utils.py:720] 2023-04-22 21:28:07,522 >> Model config GPTNeoConfig {
-  "_name_or_path": "EleutherAI/gpt-neo-1.3B",
-  "activation_function": "gelu_new",
-  "architectures": [
-    "GPTNeoForCausalLM"
-  ],
-  "attention_dropout": 0,
-  "attention_layers": [
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local"
-  ],
-  "attention_types": [
-    [
-      [
-        "global",
-        "local"
-      ],
-      12
-    ]
-  ],
-  "bos_token_id": 50256,
-  "embed_dropout": 0,
-  "eos_token_id": 50256,
-  "gradient_checkpointing": false,
-  "hidden_size": 2048,
-  "initializer_range": 0.02,
-  "intermediate_size": null,
-  "layer_norm_epsilon": 1e-05,
-  "max_position_embeddings": 2048,
-  "model_type": "gpt_neo",
-  "num_heads": 16,
-  "num_layers": 24,
-  "resid_dropout": 0,
-  "summary_activation": null,
-  "summary_first_dropout": 0.1,
-  "summary_proj_to_labels": true,
-  "summary_type": "cls_index",
-  "summary_use_proj": true,
-  "task_specific_params": {
-    "text-generation": {
-      "do_sample": true,
-      "max_length": 50,
-      "temperature": 0.9
-    }
-  },
-  "tokenizer_class": "GPT2Tokenizer",
-  "transformers_version": "4.28.1",
-  "use_cache": true,
-  "vocab_size": 50257,
-  "window_size": 256
-}
-
-[INFO|tokenization_utils_base.py:1809] 2023-04-22 21:28:07,544 >> loading file vocab.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/vocab.json
-[INFO|tokenization_utils_base.py:1809] 2023-04-22 21:28:07,544 >> loading file vocab.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/vocab.json
-[INFO|tokenization_utils_base.py:1809] 2023-04-22 21:28:07,545 >> loading file merges.txt from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/merges.txt
-[INFO|tokenization_utils_base.py:1809] 2023-04-22 21:28:07,545 >> loading file merges.txt from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/merges.txt
-[INFO|tokenization_utils_base.py:1809] 2023-04-22 21:28:07,545 >> loading file tokenizer.json from cache at None
-[INFO|tokenization_utils_base.py:1809] 2023-04-22 21:28:07,545 >> loading file tokenizer.json from cache at None
-[INFO|tokenization_utils_base.py:1809] 2023-04-22 21:28:07,545 >> loading file added_tokens.json from cache at None
-[INFO|tokenization_utils_base.py:1809] 2023-04-22 21:28:07,545 >> loading file added_tokens.json from cache at None
-[INFO|tokenization_utils_base.py:1809] 2023-04-22 21:28:07,545 >> loading file special_tokens_map.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/special_tokens_map.json
-[INFO|tokenization_utils_base.py:1809] 2023-04-22 21:28:07,545 >> loading file special_tokens_map.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/special_tokens_map.json
-[INFO|tokenization_utils_base.py:1809] 2023-04-22 21:28:07,545 >> loading file tokenizer_config.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/tokenizer_config.json
-[INFO|tokenization_utils_base.py:1809] 2023-04-22 21:28:07,545 >> loading file tokenizer_config.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/tokenizer_config.json
-[INFO|configuration_utils.py:668] 2023-04-22 21:28:07,546 >> loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/config.json
-[INFO|configuration_utils.py:668] 2023-04-22 21:28:07,546 >> loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/config.json
-[INFO|configuration_utils.py:720] 2023-04-22 21:28:07,547 >> Model config GPTNeoConfig {
-  "_name_or_path": "EleutherAI/gpt-neo-1.3B",
-  "activation_function": "gelu_new",
-  "architectures": [
-    "GPTNeoForCausalLM"
-  ],
-  "attention_dropout": 0,
-  "attention_layers": [
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local"
-  ],
-  "attention_types": [
-    [
-      [
-        "global",
-        "local"
-      ],
-      12
-    ]
-  ],
-  "bos_token_id": 50256,
-  "embed_dropout": 0,
-  "eos_token_id": 50256,
-  "gradient_checkpointing": false,
-  "hidden_size": 2048,
-  "initializer_range": 0.02,
-  "intermediate_size": null,
-  "layer_norm_epsilon": 1e-05,
-  "max_position_embeddings": 2048,
-  "model_type": "gpt_neo",
-  "num_heads": 16,
-  "num_layers": 24,
-  "resid_dropout": 0,
-  "summary_activation": null,
-  "summary_first_dropout": 0.1,
-  "summary_proj_to_labels": true,
-  "summary_type": "cls_index",
-  "summary_use_proj": true,
-  "task_specific_params": {
-    "text-generation": {
-      "do_sample": true,
-      "max_length": 50,
-      "temperature": 0.9
-    }
-  },
-  "tokenizer_class": "GPT2Tokenizer",
-  "transformers_version": "4.28.1",
-  "use_cache": true,
-  "vocab_size": 50257,
-  "window_size": 256
-}
-
-[INFO|configuration_utils.py:720] 2023-04-22 21:28:07,547 >> Model config GPTNeoConfig {
-  "_name_or_path": "EleutherAI/gpt-neo-1.3B",
-  "activation_function": "gelu_new",
-  "architectures": [
-    "GPTNeoForCausalLM"
-  ],
-  "attention_dropout": 0,
-  "attention_layers": [
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local"
-  ],
-  "attention_types": [
-    [
-      [
-        "global",
-        "local"
-      ],
-      12
-    ]
-  ],
-  "bos_token_id": 50256,
-  "embed_dropout": 0,
-  "eos_token_id": 50256,
-  "gradient_checkpointing": false,
-  "hidden_size": 2048,
-  "initializer_range": 0.02,
-  "intermediate_size": null,
-  "layer_norm_epsilon": 1e-05,
-  "max_position_embeddings": 2048,
-  "model_type": "gpt_neo",
-  "num_heads": 16,
-  "num_layers": 24,
-  "resid_dropout": 0,
-  "summary_activation": null,
-  "summary_first_dropout": 0.1,
-  "summary_proj_to_labels": true,
-  "summary_type": "cls_index",
-  "summary_use_proj": true,
-  "task_specific_params": {
-    "text-generation": {
-      "do_sample": true,
-      "max_length": 50,
-      "temperature": 0.9
-    }
-  },
-  "tokenizer_class": "GPT2Tokenizer",
-  "transformers_version": "4.28.1",
-  "use_cache": true,
-  "vocab_size": 50257,
-  "window_size": 256
-}
-
-[INFO|configuration_utils.py:668] 2023-04-22 21:28:07,675 >> loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/config.json
-[INFO|configuration_utils.py:720] 2023-04-22 21:28:07,676 >> Model config GPTNeoConfig {
-  "_name_or_path": "EleutherAI/gpt-neo-1.3B",
-  "activation_function": "gelu_new",
-  "architectures": [
-    "GPTNeoForCausalLM"
-  ],
-  "attention_dropout": 0,
-  "attention_layers": [
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local"
-  ],
-  "attention_types": [
-    [
-      [
-        "global",
-        "local"
-      ],
-      12
-    ]
-  ],
-  "bos_token_id": 50256,
-  "embed_dropout": 0,
-  "eos_token_id": 50256,
-  "gradient_checkpointing": false,
-  "hidden_size": 2048,
-  "initializer_range": 0.02,
-  "intermediate_size": null,
-  "layer_norm_epsilon": 1e-05,
-  "max_position_embeddings": 2048,
-  "model_type": "gpt_neo",
-  "num_heads": 16,
-  "num_layers": 24,
-  "resid_dropout": 0,
-  "summary_activation": null,
-  "summary_first_dropout": 0.1,
-  "summary_proj_to_labels": true,
-  "summary_type": "cls_index",
-  "summary_use_proj": true,
-  "task_specific_params": {
-    "text-generation": {
-      "do_sample": true,
-      "max_length": 50,
-      "temperature": 0.9
-    }
-  },
-  "tokenizer_class": "GPT2Tokenizer",
-  "transformers_version": "4.28.1",
-  "use_cache": true,
-  "vocab_size": 50257,
-  "window_size": 256
-}
-
-[INFO|configuration_utils.py:668] 2023-04-22 21:28:07,678 >> loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/config.json
-[INFO|configuration_utils.py:720] 2023-04-22 21:28:07,679 >> Model config GPTNeoConfig {
-  "_name_or_path": "EleutherAI/gpt-neo-1.3B",
-  "activation_function": "gelu_new",
-  "architectures": [
-    "GPTNeoForCausalLM"
-  ],
-  "attention_dropout": 0,
-  "attention_layers": [
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local"
-  ],
-  "attention_types": [
-    [
-      [
-        "global",
-        "local"
-      ],
-      12
-    ]
-  ],
-  "bos_token_id": 50256,
-  "embed_dropout": 0,
-  "eos_token_id": 50256,
-  "gradient_checkpointing": false,
-  "hidden_size": 2048,
-  "initializer_range": 0.02,
-  "intermediate_size": null,
-  "layer_norm_epsilon": 1e-05,
-  "max_position_embeddings": 2048,
-  "model_type": "gpt_neo",
-  "num_heads": 16,
-  "num_layers": 24,
-  "resid_dropout": 0,
-  "summary_activation": null,
-  "summary_first_dropout": 0.1,
-  "summary_proj_to_labels": true,
-  "summary_type": "cls_index",
-  "summary_use_proj": true,
-  "task_specific_params": {
-    "text-generation": {
-      "do_sample": true,
-      "max_length": 50,
-      "temperature": 0.9
-    }
-  },
-  "tokenizer_class": "GPT2Tokenizer",
-  "transformers_version": "4.28.1",
-  "use_cache": true,
-  "vocab_size": 50257,
-  "window_size": 256
-}
-
-[ERROR|tokenization_utils_base.py:1042] 2023-04-22 21:28:07,708 >> Using pad_token, but it is not set yet.
-[ERROR|tokenization_utils_base.py:1042] 2023-04-22 21:28:07,713 >> Using pad_token, but it is not set yet.
-[INFO|configuration_utils.py:668] 2023-04-22 21:28:07,828 >> loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/config.json
-[INFO|configuration_utils.py:720] 2023-04-22 21:28:07,829 >> Model config GPTNeoConfig {
-  "_name_or_path": "EleutherAI/gpt-neo-1.3B",
-  "activation_function": "gelu_new",
-  "architectures": [
-    "GPTNeoForCausalLM"
-  ],
-  "attention_dropout": 0,
-  "attention_layers": [
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local"
-  ],
-  "attention_types": [
-    [
-      [
-        "global",
-        "local"
-      ],
-      12
-    ]
-  ],
-  "bos_token_id": 50256,
-  "embed_dropout": 0,
-  "eos_token_id": 50256,
-  "gradient_checkpointing": false,
-  "hidden_size": 2048,
-  "initializer_range": 0.02,
-  "intermediate_size": null,
-  "layer_norm_epsilon": 1e-05,
-  "max_position_embeddings": 2048,
-  "model_type": "gpt_neo",
-  "num_heads": 16,
-  "num_layers": 24,
-  "resid_dropout": 0,
-  "summary_activation": null,
-  "summary_first_dropout": 0.1,
-  "summary_proj_to_labels": true,
-  "summary_type": "cls_index",
-  "summary_use_proj": true,
-  "task_specific_params": {
-    "text-generation": {
-      "do_sample": true,
-      "max_length": 50,
-      "temperature": 0.9
-    }
-  },
-  "tokenizer_class": "GPT2Tokenizer",
-  "transformers_version": "4.28.1",
-  "use_cache": true,
-  "vocab_size": 50257,
-  "window_size": 256
-}
-
-[INFO|configuration_utils.py:668] 2023-04-22 21:28:07,837 >> loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/config.json
-[INFO|configuration_utils.py:720] 2023-04-22 21:28:07,838 >> Model config GPTNeoConfig {
-  "_name_or_path": "EleutherAI/gpt-neo-1.3B",
-  "activation_function": "gelu_new",
-  "architectures": [
-    "GPTNeoForCausalLM"
-  ],
-  "attention_dropout": 0,
-  "attention_layers": [
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local"
-  ],
-  "attention_types": [
-    [
-      [
-        "global",
-        "local"
-      ],
-      12
-    ]
-  ],
-  "bos_token_id": 50256,
-  "embed_dropout": 0,
-  "eos_token_id": 50256,
-  "gradient_checkpointing": false,
-  "hidden_size": 2048,
-  "initializer_range": 0.02,
-  "intermediate_size": null,
-  "layer_norm_epsilon": 1e-05,
-  "max_position_embeddings": 2048,
-  "model_type": "gpt_neo",
-  "num_heads": 16,
-  "num_layers": 24,
-  "resid_dropout": 0,
-  "summary_activation": null,
-  "summary_first_dropout": 0.1,
-  "summary_proj_to_labels": true,
-  "summary_type": "cls_index",
-  "summary_use_proj": true,
-  "task_specific_params": {
-    "text-generation": {
-      "do_sample": true,
-      "max_length": 50,
-      "temperature": 0.9
-    }
-  },
-  "tokenizer_class": "GPT2Tokenizer",
-  "transformers_version": "4.28.1",
-  "use_cache": true,
-  "vocab_size": 50257,
-  "window_size": 256
-}
-
-[INFO|configuration_utils.py:668] 2023-04-22 21:28:07,948 >> loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/config.json
-[INFO|configuration_utils.py:720] 2023-04-22 21:28:07,949 >> Model config GPTNeoConfig {
-  "_name_or_path": "EleutherAI/gpt-neo-1.3B",
-  "activation_function": "gelu_new",
-  "architectures": [
-    "GPTNeoForCausalLM"
-  ],
-  "attention_dropout": 0,
-  "attention_layers": [
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local"
-  ],
-  "attention_types": [
-    [
-      [
-        "global",
-        "local"
-      ],
-      12
-    ]
-  ],
-  "bos_token_id": 50256,
-  "embed_dropout": 0,
-  "eos_token_id": 50256,
-  "gradient_checkpointing": false,
-  "hidden_size": 2048,
-  "initializer_range": 0.02,
-  "intermediate_size": null,
-  "layer_norm_epsilon": 1e-05,
-  "max_position_embeddings": 2048,
-  "model_type": "gpt_neo",
-  "num_heads": 16,
-  "num_layers": 24,
-  "resid_dropout": 0,
-  "summary_activation": null,
-  "summary_first_dropout": 0.1,
-  "summary_proj_to_labels": true,
-  "summary_type": "cls_index",
-  "summary_use_proj": true,
-  "task_specific_params": {
-    "text-generation": {
-      "do_sample": true,
-      "max_length": 50,
-      "temperature": 0.9
-    }
-  },
-  "tokenizer_class": "GPT2Tokenizer",
-  "transformers_version": "4.28.1",
-  "use_cache": true,
-  "vocab_size": 50257,
-  "window_size": 256
-}
-
-[INFO|configuration_utils.py:668] 2023-04-22 21:28:07,960 >> loading configuration file config.json from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/config.json
-[INFO|configuration_utils.py:720] 2023-04-22 21:28:07,962 >> Model config GPTNeoConfig {
-  "_name_or_path": "EleutherAI/gpt-neo-1.3B",
-  "activation_function": "gelu_new",
-  "architectures": [
-    "GPTNeoForCausalLM"
-  ],
-  "attention_dropout": 0,
-  "attention_layers": [
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local",
-    "global",
-    "local"
-  ],
-  "attention_types": [
-    [
-      [
-        "global",
-        "local"
-      ],
-      12
-    ]
-  ],
-  "bos_token_id": 50256,
-  "embed_dropout": 0,
-  "eos_token_id": 50256,
-  "gradient_checkpointing": false,
-  "hidden_size": 2048,
-  "initializer_range": 0.02,
-  "intermediate_size": null,
-  "layer_norm_epsilon": 1e-05,
-  "max_position_embeddings": 2048,
-  "model_type": "gpt_neo",
-  "num_heads": 16,
-  "num_layers": 24,
-  "resid_dropout": 0,
-  "summary_activation": null,
-  "summary_first_dropout": 0.1,
-  "summary_proj_to_labels": true,
-  "summary_type": "cls_index",
-  "summary_use_proj": true,
-  "task_specific_params": {
-    "text-generation": {
-      "do_sample": true,
-      "max_length": 50,
-      "temperature": 0.9
-    }
-  },
-  "tokenizer_class": "GPT2Tokenizer",
-  "transformers_version": "4.28.1",
-  "use_cache": true,
-  "vocab_size": 50257,
-  "window_size": 256
-}
-
-[INFO|modeling_utils.py:2534] 2023-04-22 21:28:08,323 >> loading weights file pytorch_model.bin from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/pytorch_model.bin
-[INFO|modeling_utils.py:2534] 2023-04-22 21:28:08,323 >> loading weights file pytorch_model.bin from cache at /nlp/scr/fongsu/.cache/hub/models--EleutherAI--gpt-neo-1.3B/snapshots/0f35a20339a9e208bc061570981180cfb87c9572/pytorch_model.bin
-[INFO|modeling_utils.py:2623] 2023-04-22 21:28:09,963 >> Detected DeepSpeed ZeRO-3: activating zero.init() for this model
-[INFO|modeling_utils.py:2623] 2023-04-22 21:28:09,983 >> Detected DeepSpeed ZeRO-3: activating zero.init() for this model
-[INFO|modeling_utils.py:3190] 2023-04-22 21:28:27,406 >> All model checkpoint weights were used when initializing GPTNeoModel.
-
-[INFO|modeling_utils.py:3190] 2023-04-22 21:28:27,406 >> All model checkpoint weights were used when initializing GPTNeoModel.
-
-[INFO|modeling_utils.py:3198] 2023-04-22 21:28:27,407 >> All the weights of GPTNeoModel were initialized from the model checkpoint at EleutherAI/gpt-neo-1.3B.
-If your task is similar to the task the model of the checkpoint was trained on, you can already use GPTNeoModel for predictions without further training.
-[INFO|modeling_utils.py:3198] 2023-04-22 21:28:27,407 >> All the weights of GPTNeoModel were initialized from the model checkpoint at EleutherAI/gpt-neo-1.3B.
-If your task is similar to the task the model of the checkpoint was trained on, you can already use GPTNeoModel for predictions without further training.
-  0%|          | 0/2 [00:00<?, ?it/s]100%|██████████| 2/2 [00:00<00:00, 157.19it/s]
-  0%|          | 0/2 [00:00<?, ?it/s]100%|██████████| 2/2 [00:00<00:00, 173.77it/s]
-  0%|          | 0/2 [00:00<?, ?it/s]100%|██████████| 2/2 [00:00<00:00, 149.17it/s]
-  0%|          | 0/2 [00:00<?, ?it/s]100%|██████████| 2/2 [00:00<00:00, 158.42it/s]
-  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 641.82it/s]
-  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 801.20it/s]
-Using /sailhome/fongsu/.cache/torch_extensions/py38_cu117 as PyTorch extensions root...
-Using /sailhome/fongsu/.cache/torch_extensions/py38_cu117 as PyTorch extensions root...
-Detected CUDA files, patching ldflags
-Emitting ninja build file /sailhome/fongsu/.cache/torch_extensions/py38_cu117/cpu_adam/build.ninja...
-Building extension module cpu_adam...
-Allowing ninja to set a default number of workers... (overridable by setting the environment variable MAX_JOBS=N)
-Loading extension module cpu_adam...
-Loading extension module cpu_adam...
-Using /sailhome/fongsu/.cache/torch_extensions/py38_cu117 as PyTorch extensions root...
-Using /sailhome/fongsu/.cache/torch_extensions/py38_cu117 as PyTorch extensions root...
-Emitting ninja build file /sailhome/fongsu/.cache/torch_extensions/py38_cu117/utils/build.ninja...
-Building extension module utils...
-Allowing ninja to set a default number of workers... (overridable by setting the environment variable MAX_JOBS=N)
-Loading extension module utils...
-Loading extension module utils...
-Using /sailhome/fongsu/.cache/torch_extensions/py38_cu117 as PyTorch extensions root...
-No modifications detected for re-loaded extension module utils, skipping build step...
-Loading extension module utils...
-Using /sailhome/fongsu/.cache/torch_extensions/py38_cu117 as PyTorch extensions root...
-No modifications detected for re-loaded extension module utils, skipping build step...
-Loading extension module utils...
-[INFO|trainer.py:1769] 2023-04-22 21:29:05,851 >> ***** Running training *****
-[INFO|trainer.py:1770] 2023-04-22 21:29:05,851 >>   Num examples = 193,616
-[INFO|trainer.py:1771] 2023-04-22 21:29:05,852 >>   Num Epochs = 1
-[INFO|trainer.py:1772] 2023-04-22 21:29:05,852 >>   Instantaneous batch size per device = 16
-[INFO|trainer.py:1773] 2023-04-22 21:29:05,852 >>   Total train batch size (w. parallel, distributed & accumulation) = 32
-[INFO|trainer.py:1774] 2023-04-22 21:29:05,852 >>   Gradient Accumulation steps = 1
-[INFO|trainer.py:1775] 2023-04-22 21:29:05,852 >>   Total optimization steps = 6,051
-[INFO|trainer.py:1776] 2023-04-22 21:29:05,852 >>   Number of trainable parameters = 1,315,577,856
-[INFO|integrations.py:720] 2023-04-22 21:29:05,853 >> Automatic Weights & Biases logging enabled, to disable set os.environ["WANDB_DISABLED"] = "true"
-wandb: Currently logged in as: oliversf (comprehelp). Use `wandb login --relogin` to force relogin
-wandb: wandb version 0.15.0 is available!  To upgrade, please run:
-wandb:  $ pip install wandb --upgrade
-wandb: Tracking run with wandb version 0.13.10
-wandb: Run data is saved locally in /sailhome/fongsu/superhf/wandb/run-20230422_212908-f1s176z0
-wandb: Run `wandb offline` to turn off syncing.
-wandb: Syncing run vivid-terrain-256
-wandb: ⭐️ View project at https://wandb.ai/comprehelp/huggingface
-wandb: 🚀 View run at https://wandb.ai/comprehelp/huggingface/runs/f1s176z0
-  0%|          | 0/6051 [00:00<?, ?it/s][WARNING|logging.py:295] 2023-04-22 21:29:09,437 >> `use_cache=True` is incompatible with gradient checkpointing. Setting `use_cache=False`...
-[WARNING|logging.py:295] 2023-04-22 21:29:09,437 >> `use_cache=True` is incompatible with gradient checkpointing. Setting `use_cache=False`...
-  0%|          | 1/6051 [00:20<35:03:51, 20.86s/it]  0%|          | 2/6051 [00:38<32:10:10, 19.15s/it]  0%|          | 3/6051 [00:55<30:30:13, 18.16s/it]  0%|          | 4/6051 [01:14<31:01:37, 18.47s/it]  0%|          | 5/6051 [01:33<31:21:02, 18.67s/it]  0%|          | 6/6051 [01:52<31:25:34, 18.72s/it]  0%|          | 7/6051 [02:13<32:54:35, 19.60s/it]  0%|          | 8/6051 [02:32<32:03:38, 19.10s/it]  0%|          | 9/6051 [02:50<31:31:57, 18.79s/it]  0%|          | 10/6051 [03:09<31:59:43, 19.07s/it]                                                      0%|          | 10/6051 [03:09<31:59:43, 19.07s/it]  0%|          | 11/6051 [03:27<31:25:30, 18.73s/it]  0%|          | 12/6051 [03:46<31:35:38, 18.83s/it]  0%|          | 13/6051 [04:15<36:22:43, 21.69s/it]  0%|          | 14/6051 [04:38<37:28:10, 22.34s/it]  0%|          | 15/6051 [05:01<37:32:41, 22.39s/it]  0%|          | 16/6051 [05:20<35:41:39, 21.29s/it]  0%|          | 17/6051 [05:42<36:00:51, 21.49s/it]  0%|          | 18/6051 [06:00<34:37:13, 20.66s/it]  0%|          | 19/6051 [06:18<33:02:38, 19.72s/it]  0%|          | 20/6051 [06:35<31:50:23, 19.01s/it]                                                      0%|          | 20/6051 [06:35<31:50:23, 19.01s/it]  0%|          | 21/6051 [06:54<31:40:48, 18.91s/it]  0%|          | 22/6051 [07:12<31:24:53, 18.76s/it]  0%|          | 23/6051 [07:32<31:39:02, 18.90s/it]  0%|          | 24/6051 [07:50<31:18:18, 18.70s/it]  0%|          | 25/6051 [08:07<30:44:40, 18.37s/it]  0%|          | 26/6051 [08:28<31:38:17, 18.90s/it]  0%|          | 27/6051 [08:45<30:51:22, 18.44s/it]  0%|          | 28/6051 [09:03<30:45:11, 18.38s/it]  0%|          | 29/6051 [09:24<32:02:03, 19.15s/it]  0%|          | 30/6051 [09:45<32:39:51, 19.53s/it]                                                      0%|          | 30/6051 [09:45<32:39:51, 19.53s/it]  1%|          | 31/6051 [10:02<31:39:56, 18.94s/it]  1%|          | 32/6051 [10:22<32:22:20, 19.36s/it]  1%|          | 33/6051 [10:41<31:52:23, 19.07s/it]  1%|          | 34/6051 [10:59<31:22:43, 18.77s/it]  1%|          | 35/6051 [11:18<31:24:20, 18.79s/it]  1%|          | 36/6051 [11:41<33:52:07, 20.27s/it]  1%|          | 37/6051 [12:04<34:50:31, 20.86s/it]  1%|          | 38/6051 [12:22<33:41:08, 20.17s/it]  1%|          | 39/6051 [12:42<33:36:46, 20.13s/it]  1%|          | 40/6051 [13:00<32:33:59, 19.50s/it]                                                      1%|          | 40/6051 [13:00<32:33:59, 19.50s/it]  1%|          | 41/6051 [13:18<31:40:46, 18.98s/it]  1%|          | 42/6051 [13:36<31:10:51, 18.68s/it]  1%|          | 43/6051 [13:55<31:24:08, 18.82s/it]  1%|          | 44/6051 [14:13<30:59:20, 18.57s/it]  1%|          | 45/6051 [14:33<31:24:14, 18.82s/it]  1%|          | 46/6051 [14:52<31:47:14, 19.06s/it]  1%|          | 47/6051 [15:11<31:25:04, 18.84s/it]  1%|          | 48/6051 [15:29<31:20:26, 18.79s/it]  1%|          | 49/6051 [15:48<31:06:20, 18.66s/it]  1%|          | 50/6051 [16:14<34:59:03, 20.99s/it]                                                      1%|          | 50/6051 [16:14<34:59:03, 20.99s/it]  1%|          | 51/6051 [16:35<34:47:09, 20.87s/it]  1%|          | 52/6051 [16:57<35:39:16, 21.40s/it]  1%|          | 53/6051 [17:16<34:28:50, 20.70s/it]  1%|          | 54/6051 [17:35<33:39:20, 20.20s/it]  1%|          | 55/6051 [17:53<32:36:05, 19.57s/it]  1%|          | 56/6051 [18:18<35:11:52, 21.14s/it]  1%|          | 57/6051 [18:36<33:40:27, 20.22s/it]  1%|          | 58/6051 [18:56<33:33:04, 20.15s/it]  1%|          | 59/6051 [19:22<36:28:24, 21.91s/it]  1%|          | 60/6051 [19:42<35:19:43, 21.23s/it]                                                      1%|          | 60/6051 [19:42<35:19:43, 21.23s/it]  1%|          | 61/6051 [20:02<34:51:09, 20.95s/it]  1%|          | 62/6051 [20:21<33:49:06, 20.33s/it]  1%|          | 63/6051 [20:39<32:41:25, 19.65s/it]  1%|          | 64/6051 [20:58<32:19:18, 19.44s/it]  1%|          | 65/6051 [21:17<31:49:53, 19.14s/it]  1%|          | 66/6051 [21:35<31:29:07, 18.94s/it]  1%|          | 67/6051 [21:59<34:00:12, 20.46s/it]  1%|          | 68/6051 [22:22<35:01:19, 21.07s/it]  1%|          | 69/6051 [22:39<33:12:33, 19.99s/it]  1%|          | 70/6051 [22:58<32:41:58, 19.68s/it]                                                      1%|          | 70/6051 [22:58<32:41:58, 19.68s/it]  1%|          | 71/6051 [23:17<32:29:56, 19.56s/it]  1%|          | 72/6051 [23:35<31:42:46, 19.09s/it]  1%|          | 73/6051 [23:54<31:23:01, 18.90s/it]  1%|          | 74/6051 [24:12<31:13:34, 18.81s/it]  1%|          | 75/6051 [24:30<30:49:24, 18.57s/it]  1%|▏         | 76/6051 [24:49<30:56:55, 18.65s/it]  1%|▏         | 77/6051 [25:08<31:11:34, 18.80s/it]  1%|▏         | 78/6051 [25:27<30:58:12, 18.67s/it]  1%|▏         | 79/6051 [25:47<31:46:08, 19.15s/it]  1%|▏         | 80/6051 [26:07<32:15:28, 19.45s/it]                                                      1%|▏         | 80/6051 [26:07<32:15:28, 19.45s/it]  1%|▏         | 81/6051 [26:26<31:56:53, 19.27s/it]  1%|▏         | 82/6051 [26:47<32:54:20, 19.85s/it]  1%|▏         | 83/6051 [27:05<32:10:15, 19.41s/it]  1%|▏         | 84/6051 [27:24<31:55:53, 19.26s/it]  1%|▏         | 85/6051 [27:43<31:33:58, 19.05s/it]  1%|▏         | 86/6051 [28:00<30:44:53, 18.56s/it]  1%|▏         | 87/6051 [28:19<30:34:58, 18.46s/it]  1%|▏         | 88/6051 [28:38<31:09:21, 18.81s/it]  1%|▏         | 89/6051 [28:57<30:55:24, 18.67s/it]  1%|▏         | 90/6051 [29:16<31:14:31, 18.87s/it]                                                      1%|▏         | 90/6051 [29:16<31:14:31, 18.87s/it]  2%|▏         | 91/6051 [29:34<31:03:48, 18.76s/it]  2%|▏         | 92/6051 [29:56<32:22:11, 19.56s/it]  2%|▏         | 93/6051 [30:16<32:25:30, 19.59s/it]  2%|▏         | 94/6051 [30:36<32:49:16, 19.83s/it]  2%|▏         | 95/6051 [30:55<32:17:27, 19.52s/it]  2%|▏         | 96/6051 [31:14<32:15:00, 19.50s/it]  2%|▏         | 97/6051 [31:34<32:36:16, 19.71s/it]  2%|▏         | 98/6051 [31:53<31:53:48, 19.29s/it]  2%|▏         | 99/6051 [32:11<31:37:11, 19.12s/it]  2%|▏         | 100/6051 [32:29<30:53:53, 18.69s/it]                                                       2%|▏         | 100/6051 [32:29<30:53:53, 18.69s/it]  2%|▏         | 101/6051 [32:50<32:02:28, 19.39s/it]  2%|▏         | 102/6051 [33:12<33:03:06, 20.00s/it]  2%|▏         | 103/6051 [33:30<32:11:02, 19.48s/it]  2%|▏         | 104/6051 [33:49<31:50:00, 19.27s/it]  2%|▏         | 105/6051 [34:08<31:42:14, 19.20s/it]  2%|▏         | 106/6051 [34:26<31:14:46, 18.92s/it]  2%|▏         | 107/6051 [34:44<30:50:48, 18.68s/it]  2%|▏         | 108/6051 [35:04<31:15:07, 18.93s/it]  2%|▏         | 109/6051 [35:22<31:10:18, 18.89s/it]  2%|▏         | 110/6051 [35:40<30:22:19, 18.40s/it]                                                       2%|▏         | 110/6051 [35:40<30:22:19, 18.40s/it]  2%|▏         | 111/6051 [36:00<31:19:14, 18.98s/it]  2%|▏         | 112/6051 [36:19<31:23:28, 19.03s/it]  2%|▏         | 113/6051 [36:39<31:40:24, 19.20s/it]  2%|▏         | 114/6051 [36:58<31:29:47, 19.10s/it]  2%|▏         | 115/6051 [37:15<30:53:46, 18.74s/it]  2%|▏         | 116/6051 [37:33<30:18:25, 18.38s/it]  2%|▏         | 117/6051 [37:50<29:32:37, 17.92s/it]  2%|▏         | 118/6051 [38:09<30:00:20, 18.21s/it]  2%|▏         | 119/6051 [38:28<30:28:58, 18.50s/it]  2%|▏         | 120/6051 [38:46<30:25:21, 18.47s/it]                                                       2%|▏         | 120/6051 [38:46<30:25:21, 18.47s/it]  2%|▏         | 121/6051 [39:04<30:11:36, 18.33s/it]  2%|▏         | 122/6051 [39:22<30:08:26, 18.30s/it]  2%|▏         | 123/6051 [39:43<31:25:07, 19.08s/it]  2%|▏         | 124/6051 [40:02<31:07:53, 18.91s/it]  2%|▏         | 125/6051 [40:20<30:39:56, 18.63s/it]  2%|▏         | 126/6051 [40:38<30:20:50, 18.44s/it]  2%|▏         | 127/6051 [41:05<34:29:20, 20.96s/it]  2%|▏         | 128/6051 [41:23<33:02:14, 20.08s/it]  2%|▏         | 129/6051 [41:40<31:36:30, 19.21s/it]  2%|▏         | 130/6051 [42:00<32:05:42, 19.51s/it]                                                       2%|▏         | 130/6051 [42:00<32:05:42, 19.51s/it]  2%|▏         | 131/6051 [42:16<30:22:10, 18.47s/it]  2%|▏         | 132/6051 [42:35<30:41:23, 18.67s/it]  2%|▏         | 133/6051 [42:54<30:37:42, 18.63s/it]  2%|▏         | 134/6051 [43:11<30:02:20, 18.28s/it]  2%|▏         | 135/6051 [43:29<29:48:44, 18.14s/it]  2%|▏         | 136/6051 [43:47<29:27:52, 17.93s/it]  2%|▏         | 137/6051 [44:05<29:29:15, 17.95s/it]  2%|▏         | 138/6051 [44:25<30:37:01, 18.64s/it]  2%|▏         | 139/6051 [44:43<30:33:43, 18.61s/it]  2%|▏         | 140/6051 [45:02<30:42:17, 18.70s/it]                                                       2%|▏         | 140/6051 [45:02<30:42:17, 18.70s/it]  2%|▏         | 141/6051 [45:21<30:48:56, 18.77s/it]  2%|▏         | 142/6051 [45:40<30:45:05, 18.74s/it]  2%|▏         | 143/6051 [45:59<30:44:37, 18.73s/it]  2%|▏         | 144/6051 [46:18<30:55:58, 18.85s/it]  2%|▏         | 145/6051 [46:36<30:27:52, 18.57s/it]  2%|▏         | 146/6051 [46:54<30:23:12, 18.53s/it]  2%|▏         | 147/6051 [47:13<30:46:59, 18.77s/it]  2%|▏         | 148/6051 [47:32<30:50:47, 18.81s/it]  2%|▏         | 149/6051 [47:50<30:24:08, 18.54s/it]  2%|▏         | 150/6051 [48:08<29:57:25, 18.28s/it]                                                       2%|▏         | 150/6051 [48:08<29:57:25, 18.28s/it]  2%|▏         | 151/6051 [48:26<30:03:17, 18.34s/it]  3%|▎         | 152/6051 [48:44<29:52:37, 18.23s/it]  3%|▎         | 153/6051 [49:03<29:58:50, 18.30s/it]  3%|▎         | 154/6051 [49:21<29:58:39, 18.30s/it]  3%|▎         | 155/6051 [49:40<30:26:27, 18.59s/it]  3%|▎         | 156/6051 [49:59<30:14:55, 18.47s/it]  3%|▎         | 157/6051 [50:16<29:54:43, 18.27s/it]  3%|▎         | 158/6051 [50:43<33:56:25, 20.73s/it]  3%|▎         | 159/6051 [51:03<33:44:56, 20.62s/it]  3%|▎         | 160/6051 [51:22<33:03:34, 20.20s/it]                                                       3%|▎         | 160/6051 [51:22<33:03:34, 20.20s/it]  3%|▎         | 161/6051 [51:40<31:45:28, 19.41s/it]  3%|▎         | 162/6051 [51:58<31:10:34, 19.06s/it]  3%|▎         | 163/6051 [52:17<30:52:25, 18.88s/it]  3%|▎         | 164/6051 [52:36<31:05:06, 19.01s/it]  3%|▎         | 165/6051 [52:59<33:14:02, 20.33s/it]  3%|▎         | 166/6051 [53:25<35:41:51, 21.84s/it]  3%|▎         | 167/6051 [53:49<36:38:52, 22.42s/it]  3%|▎         | 168/6051 [54:07<34:37:12, 21.19s/it]  3%|▎         | 169/6051 [54:25<33:13:03, 20.33s/it]  3%|▎         | 170/6051 [54:50<35:24:53, 21.68s/it]                                                       3%|▎         | 170/6051 [54:50<35:24:53, 21.68s/it]  3%|▎         | 171/6051 [55:10<34:22:45, 21.05s/it]  3%|▎         | 172/6051 [55:30<34:00:00, 20.82s/it]  3%|▎         | 173/6051 [55:50<33:29:07, 20.51s/it]  3%|▎         | 174/6051 [56:09<32:56:13, 20.18s/it]  3%|▎         | 175/6051 [56:26<31:23:07, 19.23s/it]  3%|▎         | 176/6051 [56:45<31:10:50, 19.11s/it]  3%|▎         | 177/6051 [57:05<31:25:30, 19.26s/it]  3%|▎         | 178/6051 [57:23<30:54:13, 18.94s/it]  3%|▎         | 179/6051 [57:42<31:02:14, 19.03s/it]  3%|▎         | 180/6051 [58:00<30:47:41, 18.88s/it]                                                       3%|▎         | 180/6051 [58:00<30:47:41, 18.88s/it]  3%|▎         | 181/6051 [58:19<30:28:07, 18.69s/it]  3%|▎         | 182/6051 [58:37<30:06:18, 18.47s/it]  3%|▎         | 183/6051 [58:55<30:03:56, 18.45s/it]  3%|▎         | 184/6051 [59:25<35:36:02, 21.84s/it]  3%|▎         | 185/6051 [59:44<34:04:57, 20.92s/it]  3%|▎         | 186/6051 [1:00:02<32:47:07, 20.12s/it]  3%|▎         | 187/6051 [1:00:22<32:34:21, 20.00s/it]  3%|▎         | 188/6051 [1:00:41<32:21:42, 19.87s/it]  3%|▎         | 189/6051 [1:00:59<31:33:04, 19.38s/it]  3%|▎         | 190/6051 [1:01:18<31:15:58, 19.20s/it]                                                         3%|▎         | 190/6051 [1:01:18<31:15:58, 19.20s/it]  3%|▎         | 191/6051 [1:01:36<30:41:16, 18.85s/it]  3%|▎         | 192/6051 [1:01:54<30:20:35, 18.64s/it]  3%|▎         | 193/6051 [1:02:14<30:39:48, 18.84s/it]  3%|▎         | 194/6051 [1:02:33<31:00:57, 19.06s/it]  3%|▎         | 195/6051 [1:02:51<30:35:36, 18.81s/it]  3%|▎         | 196/6051 [1:03:10<30:26:47, 18.72s/it]  3%|▎         | 197/6051 [1:03:29<30:39:58, 18.86s/it]  3%|▎         | 198/6051 [1:03:48<30:30:16, 18.76s/it]  3%|▎         | 199/6051 [1:04:11<32:43:10, 20.13s/it]  3%|▎         | 200/6051 [1:04:32<33:07:59, 20.39s/it]                                                         3%|▎         | 200/6051 [1:04:32<33:07:59, 20.39s/it]  3%|▎         | 201/6051 [1:04:51<32:20:00, 19.90s/it]  3%|▎         | 202/6051 [1:05:10<32:11:01, 19.81s/it]  3%|▎         | 203/6051 [1:05:31<32:47:54, 20.19s/it]  3%|▎         | 204/6051 [1:05:51<32:38:36, 20.10s/it]  3%|▎         | 205/6051 [1:06:10<32:02:28, 19.73s/it]  3%|▎         | 206/6051 [1:06:28<31:05:49, 19.15s/it]  3%|▎         | 207/6051 [1:06:48<31:30:52, 19.41s/it]  3%|▎         | 208/6051 [1:07:07<31:15:05, 19.25s/it]  3%|▎         | 209/6051 [1:07:27<31:42:30, 19.54s/it]  3%|▎         | 210/6051 [1:07:46<31:10:12, 19.21s/it]                                                         3%|▎         | 210/6051 [1:07:46<31:10:12, 19.21s/it]  3%|▎         | 211/6051 [1:08:05<31:06:05, 19.17s/it]  4%|▎         | 212/6051 [1:08:29<33:40:06, 20.76s/it]  4%|▎         | 213/6051 [1:08:49<33:22:33, 20.58s/it]  4%|▎         | 214/6051 [1:09:08<32:32:54, 20.07s/it]  4%|▎         | 215/6051 [1:09:27<31:43:08, 19.57s/it]  4%|▎         | 216/6051 [1:09:46<31:31:46, 19.45s/it]  4%|▎         | 217/6051 [1:10:04<30:57:07, 19.10s/it]  4%|▎         | 218/6051 [1:10:24<31:24:02, 19.38s/it]  4%|▎         | 219/6051 [1:10:41<30:20:03, 18.72s/it]  4%|▎         | 220/6051 [1:11:01<30:52:18, 19.06s/it]                                                         4%|▎         | 220/6051 [1:11:01<30:52:18, 19.06s/it]  4%|▎         | 221/6051 [1:11:20<30:43:23, 18.97s/it]  4%|▎         | 222/6051 [1:11:39<30:42:56, 18.97s/it]  4%|▎         | 223/6051 [1:11:58<30:41:02, 18.95s/it]  4%|▎         | 224/6051 [1:12:28<36:13:39, 22.38s/it]  4%|▎         | 225/6051 [1:12:46<34:14:08, 21.15s/it]  4%|▎         | 226/6051 [1:13:05<33:13:39, 20.54s/it]  4%|▍         | 227/6051 [1:13:23<32:00:14, 19.78s/it]  4%|▍         | 228/6051 [1:13:47<33:55:41, 20.98s/it]  4%|▍         | 229/6051 [1:14:06<32:40:17, 20.20s/it]  4%|▍         | 230/6051 [1:14:27<33:22:55, 20.65s/it]                                                         4%|▍         | 230/6051 [1:14:27<33:22:55, 20.65s/it]  4%|▍         | 231/6051 [1:14:46<32:27:54, 20.08s/it]  4%|▍         | 232/6051 [1:15:06<32:20:51, 20.01s/it]  4%|▍         | 233/6051 [1:15:24<31:36:57, 19.56s/it]  4%|▍         | 234/6051 [1:15:44<31:37:03, 19.57s/it]  4%|▍         | 235/6051 [1:16:07<33:08:41, 20.52s/it]  4%|▍         | 236/6051 [1:16:25<32:02:33, 19.84s/it]  4%|▍         | 237/6051 [1:16:43<31:00:56, 19.20s/it]  4%|▍         | 238/6051 [1:17:02<31:04:34, 19.25s/it]  4%|▍         | 239/6051 [1:17:21<31:08:31, 19.29s/it]  4%|▍         | 240/6051 [1:17:40<30:58:10, 19.19s/it]                                                         4%|▍         | 240/6051 [1:17:40<30:58:10, 19.19s/it]  4%|▍         | 241/6051 [1:18:03<32:23:36, 20.07s/it]  4%|▍         | 242/6051 [1:18:21<31:42:47, 19.65s/it]  4%|▍         | 243/6051 [1:18:39<30:39:22, 19.00s/it]  4%|▍         | 244/6051 [1:18:57<30:10:25, 18.71s/it]  4%|▍         | 245/6051 [1:19:15<29:49:26, 18.49s/it]  4%|▍         | 246/6051 [1:19:33<29:46:31, 18.47s/it]  4%|▍         | 247/6051 [1:19:51<29:42:38, 18.43s/it]  4%|▍         | 248/6051 [1:20:12<30:40:32, 19.03s/it]  4%|▍         | 249/6051 [1:20:30<30:07:42, 18.69s/it]  4%|▍         | 250/6051 [1:20:48<30:02:55, 18.65s/it]                                                         4%|▍         | 250/6051 [1:20:48<30:02:55, 18.65s/it]  4%|▍         | 251/6051 [1:21:06<29:27:44, 18.29s/it]  4%|▍         | 252/6051 [1:21:34<34:18:15, 21.30s/it]  4%|▍         | 253/6051 [1:21:52<32:52:18, 20.41s/it]  4%|▍         | 254/6051 [1:22:10<31:38:32, 19.65s/it]  4%|▍         | 255/6051 [1:22:33<33:10:15, 20.60s/it]  4%|▍         | 256/6051 [1:22:51<32:00:29, 19.88s/it]  4%|▍         | 257/6051 [1:23:09<30:51:15, 19.17s/it]  4%|▍         | 258/6051 [1:23:28<30:51:54, 19.18s/it]  4%|▍         | 259/6051 [1:23:46<30:16:31, 18.82s/it]  4%|▍         | 260/6051 [1:24:07<31:21:20, 19.49s/it]                                                         4%|▍         | 260/6051 [1:24:07<31:21:20, 19.49s/it]  4%|▍         | 261/6051 [1:24:31<33:17:02, 20.69s/it]  4%|▍         | 262/6051 [1:24:56<35:33:03, 22.11s/it]  4%|▍         | 263/6051 [1:25:15<33:58:54, 21.14s/it]  4%|▍         | 264/6051 [1:25:34<33:13:27, 20.67s/it]  4%|▍         | 265/6051 [1:25:53<32:16:08, 20.08s/it]  4%|▍         | 266/6051 [1:26:12<31:28:32, 19.59s/it]  4%|▍         | 267/6051 [1:26:31<31:29:32, 19.60s/it]  4%|▍         | 268/6051 [1:26:55<33:26:43, 20.82s/it]  4%|▍         | 269/6051 [1:27:16<33:19:45, 20.75s/it]  4%|▍         | 270/6051 [1:27:36<33:06:06, 20.61s/it]                                                         4%|▍         | 270/6051 [1:27:36<33:06:06, 20.61s/it]  4%|▍         | 271/6051 [1:27:54<32:04:57, 19.98s/it]  4%|▍         | 272/6051 [1:28:13<31:39:46, 19.72s/it]  5%|▍         | 273/6051 [1:28:32<30:54:43, 19.26s/it]  5%|▍         | 274/6051 [1:28:49<29:53:39, 18.63s/it]  5%|▍         | 275/6051 [1:29:07<29:49:08, 18.59s/it]  5%|▍         | 276/6051 [1:29:26<29:59:46, 18.70s/it]  5%|▍         | 277/6051 [1:29:45<30:12:27, 18.83s/it]  5%|▍         | 278/6051 [1:30:06<30:56:21, 19.29s/it]  5%|▍         | 279/6051 [1:30:24<30:25:51, 18.98s/it]  5%|▍         | 280/6051 [1:30:43<30:15:55, 18.88s/it]                                                         5%|▍         | 280/6051 [1:30:43<30:15:55, 18.88s/it]  5%|▍         | 281/6051 [1:31:01<30:05:42, 18.78s/it]  5%|▍         | 282/6051 [1:31:18<29:12:50, 18.23s/it]  5%|▍         | 283/6051 [1:31:37<29:23:00, 18.34s/it]  5%|▍         | 284/6051 [1:31:55<29:08:56, 18.20s/it]  5%|▍         | 285/6051 [1:32:13<29:03:57, 18.15s/it]  5%|▍         | 286/6051 [1:32:31<29:10:32, 18.22s/it]  5%|▍         | 287/6051 [1:32:50<29:27:43, 18.40s/it]  5%|▍         | 288/6051 [1:33:09<29:51:05, 18.65s/it]  5%|▍         | 289/6051 [1:33:29<30:16:31, 18.92s/it]  5%|▍         | 290/6051 [1:33:48<30:16:55, 18.92s/it]                                                         5%|▍         | 290/6051 [1:33:48<30:16:55, 18.92s/it]  5%|▍         | 291/6051 [1:34:06<30:01:51, 18.77s/it]  5%|▍         | 292/6051 [1:34:25<30:11:00, 18.87s/it]  5%|▍         | 293/6051 [1:34:46<31:06:42, 19.45s/it]  5%|▍         | 294/6051 [1:35:06<31:14:07, 19.53s/it]  5%|▍         | 295/6051 [1:35:23<30:27:34, 19.05s/it]  5%|▍         | 296/6051 [1:35:43<30:47:46, 19.26s/it]  5%|▍         | 297/6051 [1:36:02<30:40:30, 19.19s/it]  5%|▍         | 298/6051 [1:36:21<30:17:17, 18.95s/it]  5%|▍         | 299/6051 [1:36:44<32:18:43, 20.22s/it]  5%|▍         | 300/6051 [1:37:05<32:46:16, 20.51s/it]                                                         5%|▍         | 300/6051 [1:37:05<32:46:16, 20.51s/it]  5%|▍         | 301/6051 [1:37:24<32:03:49, 20.07s/it]  5%|▍         | 302/6051 [1:37:42<31:06:31, 19.48s/it]  5%|▌         | 303/6051 [1:38:06<33:24:37, 20.93s/it]  5%|▌         | 304/6051 [1:38:27<33:24:59, 20.93s/it]slurmstepd: error: *** JOB 6036574 ON jagupard35 CANCELLED AT 2023-04-22T23:07:46 ***
-slurmstepd: error: *** JOB 6036574 STEPD TERMINATED ON jagupard35 AT 2023-04-22T23:08:47 DUE TO JOB NOT ENDING WITH SIGNALS ***
-slurmstepd: error: Unable to destroy container 226238 in cgroup plugin, giving up after 63 sec

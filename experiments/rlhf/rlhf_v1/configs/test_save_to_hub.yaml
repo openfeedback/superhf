@@ -1,0 +1,82 @@
+model_name:
+  desc: HuggingFace language model to use, or "mock" for testing
+  value: "/juice5/scr5/nlp/llama_model/alpaca_7b"
+reward_model_name:
+  desc: HuggingFace reward model to use, or "mock" for testing. gptneo_1.3B_first_half is for training and gptneo_1.3B_second_half is for testing.
+  value: "/nlp/scr/fongsu/rm_combined/gptneo_1.3B_first_half" # "OpenAssistant/reward-model-deberta-v3-large-v2" #
+  # /nlp/scr/fongsu/rm_combined/gptneo_1.3B_second_half
+log_with:
+  desc: "The logger to use"
+  value: "wandb"
+learning_rate:
+  desc: "The learning rate"
+  value: 1.0e-4 # 1.41e-5
+mini_batch_size:
+  desc: "The mini-batch size"
+  value: 2 # 2 causes oom with lora_r 8
+batch_size:
+  desc: "The batch size" # default 256 in og code
+  value: 4
+gradient_accumulation_steps:
+  desc: "The number of gradient accumulation steps"
+  value: 2
+max_new_tokens:
+  desc: "The maximum number of new tokens to generate per prompt"
+  value: 128
+max_prompt_char_length:
+  desc: "The maximum number of characters in a prompt"
+  value: 1024
+lora_r:
+  desc: The r dimension parameter for LoRA. Only takes effect if r and alpha are non-zero.
+  value: 4
+lora_alpha:
+  desc: The alpha parameter for LoRA. Only takes effect if r and alpha are non-zero.
+  value: 32
+lora_dropout:
+  desc: The dropout parameter for LoRA, or 0 to disable dropout.
+  value: 0.05
+lora_target_modules:
+  desc: The list of modules to apply LoRA to. See src/superhf/lora.py for available modules.
+  value: ["q_proj", "v_proj"]  # For LLaMa
+dataset_names:
+  desc: The list of datasets to use for prompts. See src/superhf/data.py for available datasets.
+  value: ["anthropic-red-team", "anthropic-helpful-base", "anthropic-harmless-base", "openai/webgpt_comparisons"]
+debug_max_prompts:
+  desc: "The maximum number of prompts to use for debugging. 0 to use all prompts."
+  value: 8096
+conversation_prompt:
+  desc: A prompt to prepend to every prompt before generation to get the model more on distribution.
+  value: "A human user sends a message, and a helpful and harmless AI assistant responds."
+save_every:
+    desc: "Save the model every n epochs"
+    value: 1
+hub_repo_id:
+    desc: "The ID of the HuggingFace Hub repo to save to. If empty, doesn't write to the Hub."
+    value: "test-save-alpaca"
+scheduler_name:
+  desc: Name of the scheduler to use for fine-tuning the language model.
+  value: "" # was linear
+scheduler_warmup_steps:
+  desc: Number of warmup steps for the scheduler.
+  value: 20
+init_kl_coef:
+  desc: The initial KL coefficient for the KL-divergence loss. Adaptive kl is performed. Originial code sets this to 0.2
+  value: 0.2
+clip_kl:
+  desc: Whether to clip the KL-divergence to always be greater than zero.
+  value: false
+normalize_reward:
+  desc: Whether to normalize the reward to have mean zero
+  value: false
+reward_mean:
+  desc: The mean of the reward distribution, if we are normalizing it.
+  value: 0.0
+offset_reward:
+  desc: The offset of the reward distribution, to be added to all rewards. Used if not normalizing reward.
+  value: 0.0
+top_p:
+  desc: The top-p value for nucleus sampling
+  value: 0.95
+try_tf32_training:
+  desc: Whether to try to use tf32 training
+  value: true
