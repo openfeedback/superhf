@@ -102,7 +102,12 @@
             "request": "launch",
             "program": "${workspaceFolder}/experiments/score_completions.py",
             "console": "integratedTerminal",
-            "args": [],
+            "args": [
+                "--completions_file",
+                "experiments/openai/anthropic-harmless-base_completions_output.json",
+                "--reward_model",
+                "mock"
+            ],
             "justMyCode": false
         },
     ]

@@ -56,9 +56,9 @@ def get_superhf_prompts(dataset_name: str, split: str = "train") -> list[str]:
                 for row in dataset
             ][:-TEST_SET_SIZE_PER_DATASET]
         )
-    elif dataset_name == "webgpt_comparisons":
+    elif dataset_name == "openai/webgpt_comparisons":
         dataset = load_dataset(
-            "openai/" + dataset_name,
+            dataset_name,
             split=split,
             keep_in_memory=False,
         )

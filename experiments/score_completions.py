@@ -5,7 +5,16 @@ This is a file for running a reward model to score a text file of completions
 import argparse
 import os
 import json
+
+from rlhf.rlhf_v1.run_rlhf import score_completions, load_reward_tokenizer
+from rlhf.rlhf_v1.run_rlhf import load_reward_model
+from openai_generations.read_answers import read_openai_answers
+import torch
+import accelerate
+
 import wandb
+
+from superhf.utils import print_gpu_utilization
 
 # from transformers import (
 #     AutoTokenizer,
@@ -72,10 +81,11 @@ def parse_args() -> argparse.Namespace:
 
 def load_completions_wandb(
     entity_name=WANDB_ENTITY_NAME, project_name=WANDB_PROJECT_NAME, run_id="0tjh64pg"
-) -> None:
+) -> tuple[list[list[str]], list[list[float]]]:
     """
-    This loads the wandb data from the run. It is run sequentially, and it downloads all versions
-    of the run until it runs out of versions.
+    Calls the wandb api to load completions and scores from a specified run.
+    It is run sequentially, and it downloads all versions of the run until it
+    encounters an error.
 
     TODO: make this run in parallel
 
@@ -83,6 +93,8 @@ def load_completions_wandb(
         completions: a list of lists of completions. Shape is (num_epochs, batch_size)
         scores: a list of lists of corresponding scores. Shape is (num_epochs, batch_size)
     """
+
+    assert run_id is not None, "Must specify a run id"
 
     # authenticate with wandb
     wandb.login()
@@ -128,9 +140,48 @@ def main():
     """
     Main function for running the reward model
     """
+    args = parse_args()
     # Option 1 is we're loading a wandb artifact
-    completions = load_completions_wandb()
-    print(completions)
+    # completions = load_completions_wandb()
+    #  print(completions)
+    # Option 2 is we're loading a file
+    scores = None
+    if args.completions_file is not None:
+        completions = read_openai_answers(args.completions_file)
+    else:
+        completions, scores = load_completions_wandb(
+            entity_name=args.wandb_entity_name,
+            project_name=args.wandb_project_name,
+            run_id=args.wandb_run_id,
+        )
+    print(completions[:5])
+    if scores is None:
+        accelerator = accelerate.Accelerator()
+        reward_model_name = args.reward_model
+        device = 0 if torch.cuda.is_available() else "cpu"
+
+        reward_model, reward_model_pipe = load_reward_model(
+            args.reward_model, device=device
+        )
+        if reward_model_pipe is None:
+            tokenizer = load_reward_tokenizer(args.reward_model)
+        if not isinstance(reward_model, str):
+            reward_model = accelerator.prepare(reward_model)
+        print(
+            f"Instantiated reward model: {reward_model_name} on device"
+            f" {reward_model.device}"
+        )
+        print(f"The device is {device}, with reward model placed on device.")
+        print_gpu_utilization()
+        if reward_model_pipe is None:
+            scores = score_completions(
+                reward_model=reward_model,
+                reward_model_tokenizer=tokenizer,
+                completions=completions,
+            )
+        else:
+            scores = reward_model_pipe(completions)
+    print(scores[:5])
 
 
 if __name__ == "__main__":

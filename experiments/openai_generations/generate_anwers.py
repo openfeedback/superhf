@@ -181,6 +181,8 @@ def generate_for_dataset(args, dataset: str) -> None:
         completions.append(completion)
 
     # Write answers to a file
+    if dataset == "openai/webgpt_comparisons":
+        dataset = "webgpt_comparisons"
     output_file = dataset + "_" + args.output_file
     with open(output_file, "w", encoding="utf-8") as outfile:
         # write the result to the output file in json format

@@ -18,7 +18,7 @@ Example usage:
 import os
 import random
 import re
-from typing import Optional, TypeVar, List, Union, Tuple
+from typing import Optional, TypeVar, List, Union, Tuple, Dict, Any
 from dataclasses import dataclass, field
 import time
 
@@ -43,8 +43,6 @@ from peft import LoraConfig, get_peft_model
 
 from datasets import Dataset
 
-from utils import separate_prompt_from_completion
-
 from trl import (
     PPOTrainer,
     PPOConfig,
@@ -58,6 +56,7 @@ from superhf import constants
 from superhf.data import get_superhf_prompts
 from superhf.utils import set_seed, print_gpu_utilization
 from superhf.mocking import MockRewardModel
+from superhf.constants import PROMPT_DELIMITER
 from reward_modelling.reward_model import RewardModel
 
 T = TypeVar("T")
@@ -102,6 +101,16 @@ def parse_args():
     parser = HfArgumentParser(ScriptArguments)
     script_args = parser.parse_args_into_dataclasses()[0]
     return script_args
+
+
+def separate_prompt_from_completion(text: str) -> tuple[str, str]:
+    """
+    Given a completed prompt text, separate the part before and including the
+    prompt delimiter from the part after.
+    """
+    prompt, completion = text.split(PROMPT_DELIMITER, 1)
+    prompt += PROMPT_DELIMITER
+    return prompt, completion
 
 
 def build_dataset(
@@ -186,7 +195,13 @@ def load_reward_model(
 ) -> Tuple[PreTrainedModel, Union[pipeline, None]]:
     """Load the reward model.
 
-    Returns either None for pipeline if using oliver's rm, otherwise returns a pipeline object.
+    Args:
+        reward_model_name: The name of the reward model to load.
+        device: The device to load the reward model onto.
+
+    Returns:
+        A tuple of the reward model and the reward model pipeline.
+        The pipeline is either None if using oliver's rm, otherwise returns a pipeline object.
     """
     reward_model_pipe = None
     if reward_model_name == "mock":
@@ -306,6 +321,7 @@ def score_completions(
     reward_model: PreTrainedModel,
     reward_model_tokenizer: PreTrainedTokenizer,
     completions: List[str],
+    reward_model_kwargs: Optional[Dict[str, Any]] = None,
 ) -> torch.Tensor:
     """
     Scores the completions from the reward model.
@@ -317,8 +333,11 @@ def score_completions(
         reward_model_kwargs: The arguments to pass to the reward model.
 
     Returns:
-        A list of scores (logits) for each completion.
+        A list of scores (logits as torch.Tensor) for each completion.
     """
+    if reward_model_kwargs is None:
+        reward_model_kwargs = {}
+
     reward_model_tokenizer.pad_token = reward_model_tokenizer.eos_token
     tqdm.write(f"We are scoring {len(completions)} completions.")
     completions_tokenized = reward_model_tokenizer(
@@ -329,7 +348,7 @@ def score_completions(
     assert reward_model.device != "cpu", "Reward model must be on GPU."
     with torch.no_grad():
         tqdm.write("Scoring completions.")
-        scores = reward_model(**completions_tokenized)
+        scores = reward_model(**completions_tokenized, **reward_model_kwargs)
     if not isinstance(scores, torch.Tensor):
         scores: torch.Tensor = scores.logits
     return scores

@@ -18,7 +18,7 @@ PROMPT_DELIMITER_REGEX_COMPLEX = re.compile(r"\n\n[^:]+:|\n|\"|-|Human|Assistant
 # Datasets currently supported by SuperHF
 SUPPORTED_DATASETS = [
     "anthropic-red-team",
-    "webgpt_comparisons",
+    "openai/webgpt_comparisons",
     "anthropic-harmless-base",
     "anthropic-helpful-base",
     "mock",

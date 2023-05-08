@@ -13,6 +13,7 @@ The data is in json format:
 
 import argparse
 import json
+import os
 
 
 def parse_args():
@@ -30,14 +31,34 @@ def parse_args():
     return args
 
 
+def read_openai_answers(input_file: str) -> list[str]:
+    """
+    Read answers from a file.
+
+    Args:
+        input_file: The path to the file containing the answers
+
+    Returns:
+        A list of answers
+    """
+    # check if it's a file
+    if not os.path.isfile(input_file):
+        raise ValueError(
+            f"Input file {input_file} does not exist. cwd is {os.getcwd()}"
+        )
+
+    with open(input_file, "r", encoding="utf-8") as file:
+        completions = json.load(file)["completions"]
+    return completions
+
+
 def main():
     """
     Read the input file entry by entry into a python list.
     Print this list for debugging purposes
     """
     args = parse_args()
-    with open(args.input_file, "r", encoding="utf-8") as file:
-        completions = json.load(file)["completions"]
+    completions = read_openai_answers(args.input_file)
     print(completions)
 
 
