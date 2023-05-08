@@ -1,0 +1,90 @@
+Using custom data configuration Anthropic--hh-rlhf-c8cd8dc58ab67414
+Found cached dataset json (/sailhome/fongsu/.cache/huggingface/datasets/Anthropic___json/Anthropic--hh-rlhf-c8cd8dc58ab67414/0.0.0/0f7e3662623656454fcd2b650f34e886a7db4b9104504885bd462096cc7a9f51)
+  0%|          | 0/2 [00:00<?, ?it/s]100%|██████████| 2/2 [00:00<00:00, 139.61it/s]
+Using pad_token, but it is not set yet.
+Some weights of GPTNeoModel were not initialized from the model checkpoint at EleutherAI/gpt-neo-1.3B and are newly initialized: ['transformer.h.15.attn.attention.bias', 'transformer.h.17.attn.attention.bias', 'transformer.h.7.attn.attention.bias', 'transformer.h.3.attn.attention.bias', 'transformer.h.1.attn.attention.bias', 'transformer.h.5.attn.attention.bias', 'transformer.h.19.attn.attention.bias', 'transformer.h.13.attn.attention.bias', 'transformer.h.11.attn.attention.bias', 'transformer.h.9.attn.attention.bias', 'transformer.h.23.attn.attention.bias', 'transformer.h.21.attn.attention.bias']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+Using custom data configuration Anthropic--hh-rlhf-161bcf33652d7a11
+Found cached dataset json (/sailhome/fongsu/.cache/huggingface/datasets/Anthropic___json/Anthropic--hh-rlhf-161bcf33652d7a11/0.0.0/0f7e3662623656454fcd2b650f34e886a7db4b9104504885bd462096cc7a9f51)
+  0%|          | 0/2 [00:00<?, ?it/s]100%|██████████| 2/2 [00:00<00:00, 246.43it/s]
+Using custom data configuration Anthropic--hh-rlhf-161bcf33652d7a11
+Found cached dataset json (/sailhome/fongsu/.cache/huggingface/datasets/Anthropic___json/Anthropic--hh-rlhf-161bcf33652d7a11/0.0.0/0f7e3662623656454fcd2b650f34e886a7db4b9104504885bd462096cc7a9f51)
+  0%|          | 0/2 [00:00<?, ?it/s]100%|██████████| 2/2 [00:00<00:00, 327.63it/s]
+/sailhome/fongsu/rm/lib/python3.8/site-packages/transformers/optimization.py:306: FutureWarning: This implementation of AdamW is deprecated and will be removed in a future version. Use the PyTorch implementation torch.optim.AdamW instead, or set `no_deprecation_warning=True` to disable this warning
+  warnings.warn(
+***** Running training *****
+  Num examples = 42537
+  Num Epochs = 1
+  Instantaneous batch size per device = 2
+  Total train batch size (w. parallel, distributed & accumulation) = 2
+  Gradient Accumulation steps = 1
+  Total optimization steps = 21269
+  Number of trainable parameters = 1315577856
+Automatic Weights & Biases logging enabled, to disable set os.environ["WANDB_DISABLED"] = "true"
+wandb: Currently logged in as: oliversf (comprehelp). Use `wandb login --relogin` to force relogin
+wandb: wandb version 0.14.0 is available!  To upgrade, please run:
+wandb:  $ pip install wandb --upgrade
+wandb: Tracking run with wandb version 0.13.10
+wandb: Run data is saved locally in /sailhome/fongsu/superhf/wandb/run-20230330_204939-ssobflzm
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run skilled-rain-155
+wandb: ⭐️ View project at https://wandb.ai/comprehelp/huggingface
+wandb: 🚀 View run at https://wandb.ai/comprehelp/huggingface/runs/ssobflzm
+  0%|          | 0/21269 [00:00<?, ?it/s][W reducer.cpp:1251] Warning: find_unused_parameters=True was specified in DDP constructor, but did not find any unused parameters in the forward pass. This flag results in an extra traversal of the autograd graph every iteration,  which can adversely affect performance. If your model indeed never has any unused parameters in the forward pass, consider turning this flag off. Note that this warning may be a false positive if your model has flow control causing later iterations to have unused parameters. (function operator())
+  0%|          | 1/21269 [00:12<72:54:15, 12.34s/it]  0%|          | 2/21269 [00:13<32:33:03,  5.51s/it]  0%|          | 3/21269 [00:13<19:17:55,  3.27s/it]  0%|          | 4/21269 [00:14<12:55:35,  2.19s/it]  0%|          | 5/21269 [00:14<9:07:14,  1.54s/it]   0%|          | 6/21269 [00:15<7:12:57,  1.22s/it]  0%|          | 7/21269 [00:16<6:26:41,  1.09s/it]  0%|          | 8/21269 [00:16<5:16:09,  1.12it/s]  0%|          | 9/21269 [00:17<4:36:18,  1.28it/s]  0%|          | 10/21269 [00:17<4:06:40,  1.44it/s]                                                      0%|          | 10/21269 [00:17<4:06:40,  1.44it/s]  0%|          | 11/21269 [00:18<3:54:36,  1.51it/s]  0%|          | 12/21269 [00:18<4:10:36,  1.41it/s]Traceback (most recent call last):
+  File "src/reward_modelling/reward_model.py", line 206, in <module>
+    result = trainer.train()
+  File "/sailhome/fongsu/rm/lib/python3.8/site-packages/transformers/trainer.py", line 1543, in train
+    return inner_training_loop(
+  File "/sailhome/fongsu/rm/lib/python3.8/site-packages/transformers/trainer.py", line 1791, in _inner_training_loop
+    tr_loss_step = self.training_step(model, inputs)
+  File "/sailhome/fongsu/rm/lib/python3.8/site-packages/transformers/trainer.py", line 2539, in training_step
+    loss = self.compute_loss(model, inputs)
+  File "src/reward_modelling/reward_model.py", line 85, in compute_loss
+    scores = model(**inputs)
+  File "/sailhome/fongsu/rm/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1130, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/sailhome/fongsu/rm/lib/python3.8/site-packages/torch/nn/parallel/distributed.py", line 1008, in forward
+    output = self._run_ddp_forward(*inputs, **kwargs)
+  File "/sailhome/fongsu/rm/lib/python3.8/site-packages/torch/nn/parallel/distributed.py", line 969, in _run_ddp_forward
+    return module_to_run(*inputs[0], **kwargs[0])
+  File "/sailhome/fongsu/rm/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1130, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "src/reward_modelling/reward_model.py", line 122, in forward
+    out = self.model(**inputs)[0].mean(dim=1)
+  File "/sailhome/fongsu/rm/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1130, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/sailhome/fongsu/rm/lib/python3.8/site-packages/transformers/models/gpt_neo/modeling_gpt_neo.py", line 621, in forward
+    outputs = block(
+  File "/sailhome/fongsu/rm/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1130, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/sailhome/fongsu/rm/lib/python3.8/site-packages/transformers/models/gpt_neo/modeling_gpt_neo.py", line 327, in forward
+    attn_outputs = self.attn(
+  File "/sailhome/fongsu/rm/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1130, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/sailhome/fongsu/rm/lib/python3.8/site-packages/transformers/models/gpt_neo/modeling_gpt_neo.py", line 279, in forward
+    return self.attention(
+  File "/sailhome/fongsu/rm/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1130, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/sailhome/fongsu/rm/lib/python3.8/site-packages/transformers/models/gpt_neo/modeling_gpt_neo.py", line 242, in forward
+    attn_output, attn_weights = self._attn(query, key, value, attention_mask, head_mask)
+  File "/sailhome/fongsu/rm/lib/python3.8/site-packages/transformers/models/gpt_neo/modeling_gpt_neo.py", line 187, in _attn
+    attn_weights = torch.matmul(query, key.transpose(-1, -2))
+RuntimeError: CUDA out of memory. Tried to allocate 150.00 MiB (GPU 0; 47.54 GiB total capacity; 43.81 GiB already allocated; 68.44 MiB free; 46.35 GiB reserved in total by PyTorch) If reserved memory is >> allocated memory try setting max_split_size_mb to avoid fragmentation.  See documentation for Memory Management and PYTORCH_CUDA_ALLOC_CONF
+wandb: Waiting for W&B process to finish... (failed 1). Press Control-C to abort syncing.
+wandb: 
+wandb: Run history:
+wandb:         train/epoch ▁
+wandb:   train/global_step ▁
+wandb: train/learning_rate ▁
+wandb:          train/loss ▁
+wandb: 
+wandb: Run summary:
+wandb:         train/epoch 0.0
+wandb:   train/global_step 10
+wandb: train/learning_rate 1e-05
+wandb:          train/loss 0.7584
+wandb: 
+wandb: 🚀 View run skilled-rain-155 at: https://wandb.ai/comprehelp/huggingface/runs/ssobflzm
+wandb: Synced 5 W&B file(s), 0 media file(s), 2 artifact file(s) and 0 other file(s)
+wandb: Find logs at: ./wandb/run-20230330_204939-ssobflzm/logs
