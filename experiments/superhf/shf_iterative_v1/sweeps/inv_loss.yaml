@@ -18,8 +18,8 @@ parameters:
       - 1.0
       - 3.3
   reward_model_val_name:
-    values:
-      - "/nlp/scr/fongsu/rm_combined/gptneo_1.3B_second_half"
+    value: "/nlp/scr/fongsu/rm_combined/gptneo_1.3B_second_half"
   sweep_param_name:
-    values:
-      - "invloss"
+    value: "invloss"
+  kl_coefficient:
+    value: 0.0
