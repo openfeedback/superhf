@@ -217,7 +217,6 @@ def get_configs():
     """
     Organizes all the configs into one place, and returns all of them.
     """
-    # TODO implement this to organize codes
     ppo_config = PPOConfig(
         model_name=wandb.config.model_name,
         steps=20000,
@@ -444,8 +443,7 @@ def main(script_args: ScriptArguments):
     device = ppo_trainer.accelerator.device
     if ppo_trainer.accelerator.num_processes == 1:
         device = 0 if torch.cuda.is_available() else "cpu"  # to avoid a `pipeline` bug
-    # This pipelinle is for the reward model
-    # TODO: look at superhf code to load the reward model and then
+    # This pipeline is for the reward model
     reward_model_tokenizer = load_reward_tokenizer(reward_model_name)
     reward_model, reward_model_pipe = load_reward_model(
         reward_model_name, device=device
@@ -463,8 +461,6 @@ def main(script_args: ScriptArguments):
             assert (
                 reward_model.device == 0
             ), "LLAMA and Alpaca models only work on GPU 0"
-    # reward_model.to(device) # TODO Might be redundant
-    # reward_model_pipe.tokenizer.pad_token_id = reward_model.config.eos_token_id
     print(f"The device is {device}, with reward model placed on device.")
     print_gpu_utilization()
 
