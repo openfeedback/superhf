@@ -203,10 +203,11 @@ class SuperHFTrainer:
         self.scheduler: Optional[torch.optim.lr_scheduler.LambdaLR] = None
 
         # Check that we're using a LoRA model if using a KL loss term
-        if self.training_args.kl_coefficient > 0:
-            assert hasattr(
-                self.language_model, "disable_adapter"
-            ), "KL loss term only supported for LoRA models."
+        if self.training_args.kl_coefficient >= 0:
+            assert hasattr(self.language_model, "disable_adapter"), (
+                "KL divergence only supported for LoRA models (set kl_coefficient to"
+                " -1 to disable)."
+            )
             self.kl_loss = torch.nn.KLDivLoss(reduction="batchmean", log_target=True)
 
     def train(self, prompts: list[str]) -> None:
@@ -824,7 +825,7 @@ class SuperHFTrainer:
                 loss = loss + self.training_args.inverse_loss_penalty / loss
 
             # KL divergence penalty
-            if self.training_args.kl_coefficient > 0:
+            if self.training_args.kl_coefficient >= 0:
                 # Calculate the log probabilities of the generated tokens
                 logp_online_model = torch.log_softmax(outputs.logits, dim=2)
 
@@ -853,10 +854,12 @@ class SuperHFTrainer:
                     kl_divergence = self.kl_loss(
                         logp_online_model_i, logp_original_model_i
                     )
-                    # Clamp KL to be positive to avoid negative KL gaming
-                    kl_divergence = torch.maximum(kl_divergence, torch.tensor(0.0))
                     sum_kl_divergence += kl_divergence.item()
-                    loss = loss + self.training_args.kl_coefficient * kl_divergence
+
+                    # Clamp KL to be positive to avoid negative KL gaming due to the approximation
+                    kl_divergence = torch.maximum(kl_divergence, torch.tensor(0.0))
+                    if self.training_args.kl_coefficient > 0.0:
+                        loss = loss + self.training_args.kl_coefficient * kl_divergence
 
             sum_loss += loss.item()
             self.accelerator.backward(loss)

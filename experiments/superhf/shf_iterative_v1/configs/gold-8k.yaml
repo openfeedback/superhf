@@ -17,7 +17,7 @@ scheduler_warmup_steps:
   desc: Number of warmup steps for the scheduler.
   value: 32
 kl_coefficient:
-  desc: Coefficient for the KL loss term added to the CLM loss. Requires LoRA. Set to 0 to disable.
+  desc: Coefficient for the KL loss term added to the CLM loss. Requires LoRA. Set to -1 to disable (0.0 still calculates KL but adds nothing to the loss).
   value: 0.23
 inverse_loss_penalty:
   desc: Regularizes loss by C with loss' = loss + C / loss. Set to 0 to disable.
