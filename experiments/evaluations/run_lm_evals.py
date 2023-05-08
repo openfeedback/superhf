@@ -90,9 +90,25 @@ def pattern_match(patterns: list[str], source_list: list[str]) -> list[str]:
     return sorted(list(task_names))
 
 
-def run_evaluations(args: argparse.Namespace) -> None:
+def run_evaluations() -> None:
     """Run the evaluations for the given models and evaluation names."""
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--models", type=str, nargs="+", required=True)
+    parser.add_argument(
+        "--tasks",
+        type=str,
+        nargs="+",
+        required=True,
+        help=(
+            "See all tasks at"
+            " https://github.com/EleutherAI/lm-evaluation-harness/blob/v0.3.0/docs/task_table.md"
+        ),
+        choices=MultiChoice(tasks.ALL_TASKS),
+    )
+    parser.add_argument("--output_folder", type=str, required=True)
+    parser.add_argument("--batch_size", type=int, default=16)
 
+    args = parser.parse_args()
     assert args.output_folder.strip() != "", "Output folder cannot be empty"
 
     task_names = pattern_match(args.tasks, tasks.ALL_TASKS)
@@ -104,6 +120,7 @@ def run_evaluations(args: argparse.Namespace) -> None:
         tqdm.write(
             "\n" + "-" * 66 + f"\n\n###### Running evaluations for {model_path} ######"
         )
+        # Handle
         raw_model, tokenizer = load_eval_model_and_tokenizer(
             model_path, raw_model, tokenizer, verbose=True
         )
@@ -141,19 +158,4 @@ def run_evaluations(args: argparse.Namespace) -> None:
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--models", type=str, nargs="+", required=True)
-    parser.add_argument(
-        "--tasks",
-        type=str,
-        nargs="+",
-        required=True,
-        help=(
-            "See all tasks at"
-            " https://github.com/EleutherAI/lm-evaluation-harness/blob/v0.3.0/docs/task_table.md"
-        ),
-        choices=MultiChoice(tasks.ALL_TASKS),
-    )
-    parser.add_argument("--output_folder", type=str, required=True)
-    parser.add_argument("--batch_size", type=int, default=16)
-    run_evaluations(parser.parse_args())
+    run_evaluations()

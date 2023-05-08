@@ -114,6 +114,7 @@
                 "facebook/opt-125m",
                 // "gmukobi/model-test-opt-125m-C",
                 "--tasks",
+                // "math_precalc",
                 "hendrycksTest-global_facts",
                 "cb",
                 "--output_folder",
