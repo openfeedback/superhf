@@ -60,3 +60,6 @@ MANIFEST
 # experiments/**/output
 wandb
 checkpoints
+
+# Slurm output files
+*.out
