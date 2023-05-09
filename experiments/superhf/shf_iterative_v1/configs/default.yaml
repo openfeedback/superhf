@@ -100,7 +100,7 @@ max_exception_count:
 hub_repo_id:
   desc: The ID of the HuggingFace Hub repo to use for storing the model. If empty, no model will be stored.
   # value: "test-repo"
-  value: "shf-7b-default"
+  value: "shf-7b"
 push_to_hub_interval:
   desc: The number of superbatches to train before pushing to the HuggingFace Hub. If 0, no model will be stored.
   value: 99999  # Set high to only save at the end

@@ -17,7 +17,7 @@
     "hendrycksTest-global_facts": 0
   },
   "config": {
-    "model": "gmukobi/model-test-pythia-70m-A",
+    "model": "gmukobi/model-test-pythia-70m-A@step-0007",
     "model_args": null,
     "num_fewshot": 0,
     "batch_size": 16,

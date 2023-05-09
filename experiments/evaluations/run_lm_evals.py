@@ -90,9 +90,25 @@ def pattern_match(patterns: list[str], source_list: list[str]) -> list[str]:
     return sorted(list(task_names))
 
 
-def run_evaluations(args: argparse.Namespace) -> None:
+def run_evaluations() -> None:
     """Run the evaluations for the given models and evaluation names."""
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--models", type=str, nargs="+", required=True)
+    parser.add_argument(
+        "--tasks",
+        type=str,
+        nargs="+",
+        required=True,
+        help=(
+            "See all tasks at"
+            " https://github.com/EleutherAI/lm-evaluation-harness/blob/v0.3.0/docs/task_table.md"
+        ),
+        choices=MultiChoice(tasks.ALL_TASKS),
+    )
+    parser.add_argument("--output_folder", type=str, required=True)
+    parser.add_argument("--batch_size", type=int, default=16)
 
+    args = parser.parse_args()
     assert args.output_folder.strip() != "", "Output folder cannot be empty"
 
     task_names = pattern_match(args.tasks, tasks.ALL_TASKS)
@@ -100,12 +116,20 @@ def run_evaluations(args: argparse.Namespace) -> None:
     raw_model = None
     tokenizer = None
 
-    for model_path in tqdm(args.models, desc="Models"):
+    for model_specification in tqdm(args.models, desc="Models"):
         tqdm.write(
-            "\n" + "-" * 66 + f"\n\n###### Running evaluations for {model_path} ######"
+            "\n"
+            + "-" * 66
+            + f"\n\n###### Running evaluations for {model_specification} ######"
         )
+        # Handle revisions with org/model-name@revision syntax
+        model_path = model_specification.split("@")[0]
+        try:
+            revision = model_specification.split("@")[1]
+        except IndexError:
+            revision = None
         raw_model, tokenizer = load_eval_model_and_tokenizer(
-            model_path, raw_model, tokenizer, verbose=True
+            model_path, raw_model, tokenizer, verbose=True, revision=revision
         )
         eval_model = CustomEvalModel(raw_model, tokenizer, batch_size=args.batch_size)
 
@@ -123,7 +147,7 @@ def run_evaluations(args: argparse.Namespace) -> None:
             # check_integrity=args.check_integrity,
         )
 
-        results["config"]["model"] = model_path  # Allow serialization
+        results["config"]["model"] = model_specification  # Allow serialization
         dumped = json.dumps(results, indent=2)
         print(dumped)
 
@@ -132,7 +156,7 @@ def run_evaluations(args: argparse.Namespace) -> None:
             os.makedirs(output_dir)
         output_path = os.path.join(
             output_dir,
-            model_path.split("/")[-1] + ".json",
+            model_specification.split("/")[-1] + ".json",
         )
         with open(output_path, "w", encoding="utf8") as file:
             file.write(dumped)
@@ -141,19 +165,4 @@ def run_evaluations(args: argparse.Namespace) -> None:
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--models", type=str, nargs="+", required=True)
-    parser.add_argument(
-        "--tasks",
-        type=str,
-        nargs="+",
-        required=True,
-        help=(
-            "See all tasks at"
-            " https://github.com/EleutherAI/lm-evaluation-harness/blob/v0.3.0/docs/task_table.md"
-        ),
-        choices=MultiChoice(tasks.ALL_TASKS),
-    )
-    parser.add_argument("--output_folder", type=str, required=True)
-    parser.add_argument("--batch_size", type=int, default=16)
-    run_evaluations(parser.parse_args())
+    run_evaluations()
