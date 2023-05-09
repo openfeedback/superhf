@@ -42,7 +42,7 @@ def load_eval_model_and_tokenizer(
     prev_model: Optional[torch.nn.Module] = None,
     prev_tokenizer: Optional[PreTrainedTokenizerBase] = None,
     verbose: bool = False,
-    revision: str = "main",
+    revision: Optional[str] = None,
     **model_kwargs: Any,
 ) -> tuple[torch.nn.Module, PreTrainedTokenizerBase]:
     """
