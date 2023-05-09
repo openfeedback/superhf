@@ -103,10 +103,8 @@
             "program": "${workspaceFolder}/experiments/score_completions.py",
             "console": "integratedTerminal",
             "args": [
-                "--completions_file",
-                "experiments/openai_generations/anthropic-harmless-base_completions_output.json",
-                "--reward_model",
-                "mock"
+                "--config",
+                "${workspaceFolder}/experiments/config_score_completions.yaml",
             ],
             "justMyCode": false
         },

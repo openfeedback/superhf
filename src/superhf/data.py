@@ -47,27 +47,53 @@ def get_superhf_prompts(dataset_name: str, split: str = "train") -> list[str]:
         dataset = load_dataset(
             "Anthropic/hh-rlhf",
             data_dir="red-team-attempts",
-            split=split,
+            split="train",
             keep_in_memory=False,
         )
-        prompts.extend(
-            [
-                dict(row)["transcript"].split("\n\nAssistant:")[0] + "\n\nAssistant:"
-                for row in dataset
-            ][:-TEST_SET_SIZE_PER_DATASET]
-        )
+        if split == "train":
+            prompts.extend(
+                [
+                    dict(row)["transcript"].split("\n\nAssistant:")[0]
+                    + "\n\nAssistant:"
+                    for row in dataset
+                ][:-TEST_SET_SIZE_PER_DATASET]
+            )
+        elif split == "test":
+            prompts.extend(
+                [
+                    dict(row)["transcript"].split("\n\nAssistant:")[0]
+                    + "\n\nAssistant:"
+                    for row in dataset
+                ][-TEST_SET_SIZE_PER_DATASET:]
+            )
+        else:
+            raise ValueError(
+                f"split must be one of 'test' or 'train'. Instead got {split}"
+            )
     elif dataset_name == "openai/webgpt_comparisons":
         dataset = load_dataset(
             dataset_name,
-            split=split,
+            split="train",
             keep_in_memory=False,
         )
-        prompts.extend(
-            [
-                "\n\nHuman: " + row["question"]["full_text"] + "\n\nAssistant:"
-                for row in dataset
-            ][:-TEST_SET_SIZE_PER_DATASET]
-        )
+        if split == "train":
+            prompts.extend(
+                [
+                    "\n\nHuman: " + row["question"]["full_text"] + "\n\nAssistant:"
+                    for row in dataset
+                ][:-TEST_SET_SIZE_PER_DATASET]
+            )
+        elif split == "test":
+            prompts.extend(
+                [
+                    "\n\nHuman: " + row["question"]["full_text"] + "\n\nAssistant:"
+                    for row in dataset
+                ][-TEST_SET_SIZE_PER_DATASET:]
+            )
+        else:
+            raise ValueError(
+                f"split must be one of 'test' or 'train'. Instead got {split}"
+            )
     elif dataset_name == "anthropic-harmless-base":
         dataset = load_dataset(
             "Anthropic/hh-rlhf",
