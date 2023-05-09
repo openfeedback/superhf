@@ -17,6 +17,8 @@ import torch
 
 from accelerate import Accelerator, find_executable_batch_size
 
+from model_loading import load_eval_model_and_tokenizer
+
 import wandb
 
 from superhf.data import get_superhf_prompts
@@ -24,11 +26,6 @@ from superhf.utils import print_gpu_utilization
 from superhf.training import SuperHFTrainingArguments, SuperHFTrainer
 from superhf.filtering import CompletionFilterTopK
 from superhf.mocking import MockRewardModel
-from experiments.superhf.shf_iterative_v1.run_shf_iterative import (
-    load_language_model,
-    load_language_tokenizer,
-)
-
 
 WANDB_ENTITY_NAME = "stanfordaialignment"
 WANDB_PROJECT_NAME = "rlhf-trl-v1"
@@ -115,9 +112,7 @@ def generate_completions_from_lm(args):
     """
     Given a language model, loads in test prompts and then generates completions
     """
-    device = torch.device(
-        torch.cuda.current_device() if torch.cuda.is_available() else "cpu"
-    )
+    # pylint: disable=too-many-locals
     # Get the prompt dataset
     prompts: list[str] = []
     for dataset_name in wandb.config.prompt_dataset_names:
@@ -137,10 +132,15 @@ def generate_completions_from_lm(args):
     print(f"Loaded {len(prompts)} prompts.")
     print_gpu_utilization()
 
-    language_model = load_language_model(device, args.language_model)
+    language_model_path = args.language_model.split("@")[0]
+    try:
+        revision = args.language_model.split("@")[1]
+    except IndexError:
+        revision = None
+    language_model, language_tokenizer = load_eval_model_and_tokenizer(
+        language_model_path, revision=revision
+    )
     print_gpu_utilization()
-
-    language_tokenizer = load_language_tokenizer(args.language_model)
 
     # Check for unix
     if os.name == "posix":
