@@ -158,7 +158,9 @@ def peftmodel_from_pretrained_revision(
         filename = os.path.join(model_id, WEIGHTS_NAME)
     else:
         try:
-            filename = hf_hub_download(model_id, WEIGHTS_NAME)
+            revision = kwargs.get("revision", None)
+            filename = hf_hub_download(model_id, WEIGHTS_NAME, revision=revision)
+
         except ValueError as exc:
             raise ValueError(
                 f"Can't find weights for {model_id} in {model_id} or in the Hugging"
