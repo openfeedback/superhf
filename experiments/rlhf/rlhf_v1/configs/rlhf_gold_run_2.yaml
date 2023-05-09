@@ -19,7 +19,7 @@ batch_size:
   value: 4
 gradient_accumulation_steps:
   desc: "The number of gradient accumulation steps"
-  value: 2
+  value: 4
 max_new_tokens:
   desc: "The maximum number of new tokens to generate per prompt"
   value: 64
@@ -52,7 +52,7 @@ save_every:
     value: 128
 hub_repo_id:
     desc: "The ID of the HuggingFace Hub repo to save to. If empty, doesn't write to the Hub."
-    value: "rlhf-batch-8-max-new-tokens-64"
+    value: "rlhf-batch-16-max-new-tokens-64"
 scheduler_name:
   desc: Name of the scheduler to use for fine-tuning the language model.
   value: "" # was linear
