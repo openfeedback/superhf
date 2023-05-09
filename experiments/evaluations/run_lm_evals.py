@@ -127,7 +127,7 @@ def run_evaluations() -> None:
         try:
             revision = model_specification.split("@")[1]
         except IndexError:
-            revision = "main"
+            revision = None
         raw_model, tokenizer = load_eval_model_and_tokenizer(
             model_path, raw_model, tokenizer, verbose=True, revision=revision
         )
