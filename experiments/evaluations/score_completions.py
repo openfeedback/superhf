@@ -5,19 +5,20 @@ This is a file for running a reward model to score a text file of completions
 import argparse
 import os
 import json
-from typing import List
+from typing import Optional, List, Dict, Any
 import yaml
 
-# pylint: disable=import-error
-from rlhf.rlhf_v1.run_rlhf import score_completions, load_reward_tokenizer
-from rlhf.rlhf_v1.run_rlhf import load_reward_model
-from openai_generations.read_answers import read_openai_answers
-
+from transformers import (
+    PreTrainedTokenizer,
+    PreTrainedModel,
+)
 import torch
 
 from accelerate import Accelerator, find_executable_batch_size
 
 from model_loading import load_eval_model_and_tokenizer
+from tqdm import tqdm
+
 
 import wandb
 
@@ -108,6 +109,64 @@ def load_completions_wandb(
     return completions, scores
 
 
+def read_openai_completions(input_file: str) -> list[str]:
+    """
+    Read openai completions from a file.
+
+    Args:
+        input_file: The path to the file containing the answers
+
+    Returns:
+        A list of answers
+    """
+    # check if it's a file
+    if not os.path.isfile(input_file):
+        raise ValueError(
+            f"Input file {input_file} does not exist. cwd is {os.getcwd()}"
+        )
+
+    with open(input_file, "r", encoding="utf-8") as file:
+        completions = json.load(file)["completions"]
+    return completions
+
+
+def score_completions(
+    reward_model: PreTrainedModel,
+    reward_model_tokenizer: PreTrainedTokenizer,
+    completions: List[str],
+    reward_model_kwargs: Optional[Dict[str, Any]] = None,
+) -> torch.Tensor:
+    """
+    Scores the completions from the reward model.
+
+    Args:
+        reward_model: The reward model to use.
+        reward_model_tokenizer: The tokenizer for the reward model.
+        completions: The completions to score, in text format.
+        reward_model_kwargs: The arguments to pass to the reward model.
+
+    Returns:
+        A list of scores (logits as torch.Tensor) for each completion.
+    """
+    if reward_model_kwargs is None:
+        reward_model_kwargs = {}
+
+    reward_model_tokenizer.pad_token = reward_model_tokenizer.eos_token
+    tqdm.write(f"We are scoring {len(completions)} completions.")
+    completions_tokenized = reward_model_tokenizer(
+        completions, padding=True, truncation=True, return_tensors="pt"
+    )
+    completions_tokenized = completions_tokenized.to(reward_model.device)
+    tqdm.write(f"Moved completions to {reward_model.device}.")
+    assert reward_model.device != "cpu", "Reward model must be on GPU."
+    with torch.no_grad():
+        tqdm.write("Scoring completions.")
+        scores = reward_model(**completions_tokenized, **reward_model_kwargs)
+    if not isinstance(scores, torch.Tensor):
+        scores: torch.Tensor = scores.logits
+    return scores
+
+
 def generate_completions_from_lm(args):
     """
     Given a language model, loads in test prompts and then generates completions
@@ -157,7 +216,7 @@ def generate_completions_from_lm(args):
     completion_filter = CompletionFilterTopK(1)
 
     reward_model_train = MockRewardModel()
-    reward_tokenizer_train = load_reward_tokenizer("mock")
+    reward_tokenizer_train = None  # load_reward_tokenizer("mock")
 
     trainer = SuperHFTrainer(
         language_model=language_model,
@@ -196,7 +255,7 @@ def main() -> None:
     scores: List[float] = []
     if args.completions_file is not None:
         if args.openai:
-            completions = read_openai_answers(args.completions_file)
+            completions = read_openai_completions(args.completions_file)
         else:
             # raise an unimplemented error
             raise NotImplementedError(
@@ -230,26 +289,19 @@ def main() -> None:
         reward_model_name = args.reward_model
         device = 0 if torch.cuda.is_available() else "cpu"
 
-        reward_model, reward_model_pipe = load_reward_model(
-            args.reward_model, device=device
+        reward_model, reward_tokenizer = load_eval_model_and_tokenizer(
+            args.reward_model
         )
-        if reward_model_pipe is None:
-            tokenizer = load_reward_tokenizer(args.reward_model)
         if not isinstance(reward_model, str):
             reward_model = accelerator.prepare(reward_model)
         print(f"Instantiated reward model: {reward_model_name} on device {device}")
         print(f"The device is {device}, with reward model placed on device.")
         print_gpu_utilization()
-        if reward_model_pipe is None:
-            scores = score_completions(
-                reward_model=reward_model,
-                reward_model_tokenizer=tokenizer,
-                completions=completions,
-            )
-        else:
-            if not isinstance(reward_model, str):
-                print("WARNING: reward model is str, and pipeline is not None.")
-            scores = reward_model_pipe(completions)
+        scores = score_completions(
+            reward_model=reward_model,
+            reward_model_tokenizer=reward_tokenizer,
+            completions=completions,
+        )
     print("First score is:")
     print(scores[0])
 
