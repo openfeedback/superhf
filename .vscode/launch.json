@@ -10,7 +10,7 @@
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
-            "justMyCode": false
+            "justMyCode": true
         },
         {
             "name": "SHF Iter (Mock)",
@@ -157,6 +157,34 @@
                 "--output_folder",
                 "debug",
                 "--batch_size",
+                "16",
+            ],
+            "justMyCode": false
+        },
+        {
+            "name": "SFT on Prefs Debug",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/experiments/sft/sft_on_preferences.py",
+            "console": "integratedTerminal",
+            "args": [
+                "--model_name",
+                "EleutherAI/pythia-70m-deduped",
+                "--datasets",
+                "anthropic-harmless-base",
+                "--num_prompts",
+                "32",
+                "--batch_size_initial",
+                "8",
+                "--scheduler_warmup_steps",
+                "1",
+                "--mixed_precision",
+                "none",
+                "--lora_target_modules",
+                "query_key_value",
+                "--hub_repo_id",
+                "test-sft-on-preferences",
+                "--push_interval",
                 "16",
             ],
             "justMyCode": false
