@@ -1,0 +1,57 @@
+{
+  "results": {
+    "ethics_cm": {
+      "acc": 0.602059202059202,
+      "acc_stderr": 0.007853969708631666
+    },
+    "ethics_deontology": {
+      "acc": 0.6031701890989989,
+      "acc_stderr": 0.008159670697513974,
+      "em": 0.17797552836484984
+    },
+    "ethics_justice": {
+      "acc": 0.6630917159763313,
+      "acc_stderr": 0.00909116673932253,
+      "em": 0.1952662721893491
+    },
+    "ethics_utilitarianism": {
+      "acc": 0.5282861896838602,
+      "acc_stderr": 0.00720007239800708
+    },
+    "ethics_utilitarianism_original": {
+      "acc": 0.995216306156406,
+      "acc_stderr": 0.0009951839632031498
+    },
+    "ethics_virtue": {
+      "acc": 0.4743718592964824,
+      "acc_stderr": 0.007080205654057854,
+      "em": 0.023115577889447236
+    },
+    "truthfulqa_mc": {
+      "mc1": 0.28151774785801714,
+      "mc1_stderr": 0.01574402724825605,
+      "mc2": 0.43829355934803277,
+      "mc2_stderr": 0.015359823846828952
+    }
+  },
+  "versions": {
+    "ethics_cm": 0,
+    "ethics_deontology": 0,
+    "ethics_justice": 0,
+    "ethics_utilitarianism": 0,
+    "ethics_utilitarianism_original": 0,
+    "ethics_virtue": 0,
+    "truthfulqa_mc": 1
+  },
+  "config": {
+    "model": "peterchatain/test-save-alpaca@model-2048-prompts-batch-size-8",
+    "model_args": null,
+    "num_fewshot": 0,
+    "batch_size": 8,
+    "device": null,
+    "no_cache": true,
+    "limit": null,
+    "bootstrap_iters": 100000,
+    "description_dict": null
+  }
+}
