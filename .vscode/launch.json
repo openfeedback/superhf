@@ -10,7 +10,7 @@
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
-            "justMyCode": true
+            "justMyCode": false
         },
         {
             "name": "SHF Iter (Mock)",
@@ -49,14 +49,28 @@
             "justMyCode": false
         },
         {
-            "name": "SHF Iter (Pythia 1B Debug)",
+            "name": "SHF Iter (Debug)",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/experiments/superhf/shf_iterative_v1/run_shf_iterative.py",
             "console": "integratedTerminal",
             "args": [
                 "--config",
-                "${workspaceFolder}/experiments/superhf/shf_iterative_v1/configs/pythia-1B-debug.yaml",
+                "${workspaceFolder}/experiments/superhf/shf_iterative_v1/configs/debug.yaml",
+            ],
+            "justMyCode": false
+        },
+        {
+            "name": "SHF Iter (Pythia 3B Debug Offload)",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/experiments/superhf/shf_iterative_v1/run_shf_iterative.py",
+            "console": "integratedTerminal",
+            "args": [
+                "--config",
+                "${workspaceFolder}/experiments/superhf/shf_iterative_v1/configs/debug.yaml",
+                "language_model_name=theblackcat102/pythia-3b-deduped-sft-r1",
+                "cpu_offload=True",
             ],
             "justMyCode": false
         },
@@ -97,6 +111,20 @@
             "justMyCode": false
         },
         {
+            "name": "SHF Debug (Sweep)",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/experiments/superhf/shf_iterative_v1/run_shf_iterative.py",
+            "console": "integratedTerminal",
+            "args": [
+                "--config",
+                "${workspaceFolder}/experiments/superhf/shf_iterative_v1/configs/debug.yaml",
+                "--sweep",
+                "${workspaceFolder}/experiments/superhf/shf_iterative_v1/sweeps/params.yaml",
+            ],
+            "justMyCode": false
+        },
+        {
             "name": "Score Completions",
             "type": "python",
             "request": "launch",
@@ -105,6 +133,29 @@
             "args": [
                 "--config",
                 "${workspaceFolder}/experiments/config_score_completions.yaml",
+            ],
+            "justMyCode": false
+        },
+        {
+            "name": "LM Evals Debug",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/experiments/evaluations/run_lm_evals.py",
+            "console": "integratedTerminal",
+            "args": [
+                "--models",
+                "EleutherAI/pythia-70m-deduped",
+                "gmukobi/model-test-pythia-70m-A",
+                // "gmukobi/model-test-pythia-70m-B",
+                "facebook/opt-125m",
+                // "gmukobi/model-test-opt-125m-C",
+                "--tasks",
+                "hendrycksTest-global_facts",
+                "cb",
+                "--output_folder",
+                "debug",
+                "--batch_size",
+                "16",
             ],
             "justMyCode": false
         },

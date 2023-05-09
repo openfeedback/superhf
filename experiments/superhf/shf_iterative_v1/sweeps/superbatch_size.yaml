@@ -4,20 +4,22 @@ metric:
   goal: maximize
   name: score_train_avg.mean
 parameters:
-  prompt_accumulation_steps:
+  superbatch_size:
     values:
-      - 0
       - 1
       - 2
-      - 3
       - 4
+      - 6
       - 8
       - 16
+      - 24
       - 32
       - 64
+      - 96
       - 128
-  scheduler_warmup_steps:
-    # No warmup since variable num steps
-    value: 0
+  reward_model_val_name:
+    value: "/nlp/scr/fongsu/rm_combined/gptneo_1.3B_second_half"
+  max_exception_count:
+    value: 64
   sweep_param_name:
-    value: "accum"
+    value: "sbs"

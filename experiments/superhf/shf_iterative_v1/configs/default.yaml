@@ -6,7 +6,8 @@ reward_model_train_name:
   value: "/nlp/scr/fongsu/rm_combined/gptneo_1.3B_first_half"
 reward_model_val_name:
   desc: HuggingFace reward model to use, or "mock" for testing, or blank for no validation.
-  value: "/nlp/scr/fongsu/rm_combined/gptneo_1.3B_second_half"
+  # value: "/nlp/scr/fongsu/rm_combined/gptneo_1.3B_second_half"
+  value: ""  # Disabled for most runs to save time and memory
 learning_rate:
   desc: Learning rate for fine-tuning the language model.
   value: 3.0e-5
@@ -17,8 +18,8 @@ scheduler_warmup_steps:
   desc: Number of warmup steps for the scheduler.
   value: 32
 kl_coefficient:
-  desc: Coefficient for the KL loss term added to the CLM loss. Requires LoRA. Set to 0 to disable.
-  value: 0.175
+  desc: Coefficient for the KL loss term added to the CLM loss. Requires LoRA. Set to -1 to disable (0.0 still calculates KL but adds nothing to the loss).
+  value: 0.23
 inverse_loss_penalty:
   desc: Regularizes loss by C with loss' = loss + C / loss. Set to 0 to disable.
   value: 0.0
@@ -92,11 +93,20 @@ length_penalty:
   value: 0.0
 validation_interval:
   desc: The number of superbatches to train before running the validation reward model.
+  value: 8
+max_exception_count:
+  desc: The number of times to allow the model to run out of memory before stopping.
   value: 5
 hub_repo_id:
   desc: The ID of the HuggingFace Hub repo to use for storing the model. If empty, no model will be stored.
   # value: "test-repo"
-  value: ""
+  value: "shf-7b-default"
 push_to_hub_interval:
   desc: The number of superbatches to train before pushing to the HuggingFace Hub. If 0, no model will be stored.
-  value: 0
+  value: 99999  # Set high to only save at the end
+push_to_hub_additional_indices:
+  desc: A list of additional superbatch indices to push to the hub in addition to every push_to_hub_interval.
+  value: []
+sweep_param_name:
+  desc: If running a sweep, one of the a list of short parameter names to add to the saved hub repo name.
+  value: ""

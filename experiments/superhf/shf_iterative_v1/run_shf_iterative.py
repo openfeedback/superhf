@@ -5,7 +5,7 @@ Client code showing how to call the training loop for the iterative version of t
 import argparse
 import random
 import os
-import yaml
+from typing import Any
 
 from transformers import (
     AutoTokenizer,
@@ -24,6 +24,7 @@ from peft import (
     get_peft_model,
 )
 import torch
+import yaml
 import wandb
 
 from superhf.data import get_superhf_prompts
@@ -36,14 +37,14 @@ from superhf.metrics import (
 )
 from superhf.mocking import MockLanguageModel, MockRewardModel
 from superhf.training import SuperHFTrainingArguments, SuperHFTrainer
-from superhf.utils import set_seed, print_gpu_utilization
+from superhf.utils import set_seed, print_memory_utilization
 from reward_modelling.reward_model import RewardModel
 
 WANDB_ENTITY_NAME = "stanfordaialignment"
 WANDB_PROJECT_NAME = "superhf-v3"
 
 
-def main(argparse_args: argparse.Namespace) -> None:
+def main(argparse_args: argparse.Namespace, extra_args: list[str]) -> None:
     """
     Instantiate and train the SuperHF model.
     """
@@ -51,13 +52,12 @@ def main(argparse_args: argparse.Namespace) -> None:
     # pylint: disable=too-many-statements
     # pylint: disable=too-many-branches
 
+    print_memory_utilization()
+
     # Attempt to fix too many open files issue on SLURM
     torch.multiprocessing.set_sharing_strategy("file_system")
 
-    # Configure device and seed
-    device = torch.device(
-        torch.cuda.current_device() if torch.cuda.is_available() else "cpu"
-    )
+    # Configure seed
     set_seed(66)
 
     # Enable tf32 training if supported
@@ -75,6 +75,22 @@ def main(argparse_args: argparse.Namespace) -> None:
         config=argparse_args.config,
     )
     assert run is not None
+
+    # Process any extra arguments, converting values to appropriate types
+    extra_args_dict = {}
+    for arg in extra_args:
+        value: Any
+        key, value = arg.split("=")
+        if value == "True":
+            value = True
+        elif value == "False":
+            value = False
+        elif "." in value:
+            value = float(value)
+        elif value.isdigit():
+            value = int(value)
+        extra_args_dict[key] = value
+    wandb.config.update(extra_args_dict, allow_val_change=True)
 
     # Get the prompt dataset
     prompts: list[str] = []
@@ -99,7 +115,7 @@ def main(argparse_args: argparse.Namespace) -> None:
         prompts = prompts[: wandb.config.num_prompts]
 
     print(f"Loaded {len(prompts)} prompts.")
-    print_gpu_utilization()
+    print_memory_utilization()
     print("Instantiating models...")
 
     # Instantiate our language and reward models and tokenizers
@@ -109,30 +125,37 @@ def main(argparse_args: argparse.Namespace) -> None:
     reward_tokenizer_train_name = wandb.config.reward_model_train_name
     reward_tokenizer_val_name = wandb.config.reward_model_val_name
 
-    language_model = load_language_model(device, language_model_name)
-    print_gpu_utilization()
+    language_model = load_language_model(language_model_name)
+    print_memory_utilization()
 
-    reward_model_train = load_reward_model(device, reward_model_train_name)
-    print_gpu_utilization()
+    reward_model_train = load_reward_model(reward_model_train_name)
+    print_memory_utilization()
 
-    reward_model_val = load_reward_model(device, reward_model_val_name)
-    print_gpu_utilization()
+    if reward_model_val_name != "" and reward_model_val_name.lower() != "none":
+        reward_model_val = load_reward_model(reward_model_val_name)
+        print_memory_utilization()
+    else:
+        print("No validation reward model specified.")
+        reward_model_val = None
 
     language_tokenizer = load_language_tokenizer(language_model_name)
     reward_tokenizer_train = load_reward_tokenizer(reward_tokenizer_train_name)
-    reward_tokenizer_val = load_reward_tokenizer(reward_tokenizer_val_name)
-    print_gpu_utilization()
+    if reward_model_val_name != "" and reward_model_val_name.lower() != "none":
+        reward_tokenizer_val = load_reward_tokenizer(reward_tokenizer_val_name)
+    else:
+        reward_tokenizer_val = None
+    print_memory_utilization()
 
-    # Check for unix
-    if os.name == "posix":
-        print("Compiling models...")
-        print(type(language_model))
-        language_model = torch.compile(language_model)
-        print(type(language_model))
-        reward_model_train = torch.compile(reward_model_train)
-        reward_model_val = torch.compile(reward_model_val)
-        print("Compiled models.")
-        print_gpu_utilization()
+    # # Check for unix before compiling models
+    # if os.name == "posix":
+    #     print("Compiling models...")
+    #     print(type(language_model))
+    #     language_model = torch.compile(language_model)
+    #     print(type(language_model))
+    #     reward_model_train = torch.compile(reward_model_train)
+    #     reward_model_val = torch.compile(reward_model_val)
+    #     print("Compiled models.")
+    #     print_gpu_utilization()
 
     # Set our training arguments
     print("Setting up trainer...")
@@ -170,10 +193,13 @@ def main(argparse_args: argparse.Namespace) -> None:
         inverse_loss_penalty=wandb.config.inverse_loss_penalty,
         kl_coefficient=wandb.config.kl_coefficient,
         validation_interval=wandb.config.validation_interval,
+        max_exception_count=wandb.config.max_exception_count,
         reward_model_is_steamshp=("SteamSHP" in reward_model_train_name),
         length_penalty=wandb.config.length_penalty,
         hub_repo_id=wandb.config.hub_repo_id,
         push_to_hub_interval=wandb.config.push_to_hub_interval,
+        push_to_hub_additional_indices=wandb.config.push_to_hub_additional_indices,
+        sweep_param_name=wandb.config.sweep_param_name,
     )
     completion_filter_top_k = wandb.config.completion_filter_top_k
     completion_filter = CompletionFilterTopK(completion_filter_top_k)
@@ -206,20 +232,21 @@ def main(argparse_args: argparse.Namespace) -> None:
     trainer.train(prompts)
 
     # Explicit finish to avoid wandb hanging
-    wandb.alert(title="FINISHED SuperHF run!", text="FINISHED SuperHF run!")
+    wandb.alert(
+        title="FINISHED SuperHF run!", text="FINISHED SuperHF run! <@WGPFRK13K>"
+    )
     wandb.finish()
 
 
-def load_language_model(
-    device: torch.device, language_model_name: str
-) -> PreTrainedModel:
+def load_language_model(language_model_name: str) -> PreTrainedModel:
     """Load the language model."""
     language_model = (
         MockLanguageModel()
         if language_model_name == "mock"
         else AutoModelForCausalLM.from_pretrained(
-            language_model_name  # , torch_dtype=dtype
-        ).to(device)
+            language_model_name,
+            low_cpu_mem_usage=True,
+        )
     )
     if wandb.config.lora_r != 0 and wandb.config.lora_alpha != 0:
         # Set up low-rank adapters (LoRA)
@@ -238,20 +265,24 @@ def load_language_model(
     return language_model
 
 
-def load_reward_model(device: torch.device, reward_model_name: str) -> PreTrainedModel:
+def load_reward_model(reward_model_name: str) -> PreTrainedModel:
     """Load the reward model."""
     if reward_model_name == "mock":
         reward_model_train = MockRewardModel()
     elif "rm_combined" in reward_model_name or "oliversssf2" in reward_model_name:
-        reward_model_train = RewardModel.from_pretrained(reward_model_name).to(device)
+        reward_model_train = RewardModel.from_pretrained(
+            reward_model_name,
+            low_cpu_mem_usage=True,
+            torch_dtype=torch.bfloat16,  # Force half for these large RMs
+        )
     elif "SteamSHP-flan-t5" in reward_model_name:
-        reward_model_train = AutoModelForSeq2SeqLM.from_pretrained(
-            reward_model_name
-        ).to(device)
+        reward_model_train = AutoModelForSeq2SeqLM.from_pretrained(reward_model_name)
     else:
         reward_model_train = AutoModelForSequenceClassification.from_pretrained(
-            reward_model_name
-        ).to(device)
+            reward_model_name,
+            low_cpu_mem_usage=True,
+            torch_dtype=torch.bfloat16,
+        )
 
     print(f"Instantiated reward model: {reward_model_name}")
     return reward_model_train
@@ -320,18 +351,18 @@ if __name__ == "__main__":
             " ../sweeps/params.yaml"
         ),
     )
-    args = parser.parse_args()
+    known_args, unknown_args = parser.parse_known_args()
 
-    if args.sweep != "":
+    if known_args.sweep != "":
         # Run sweeps
-        with open(args.sweep, mode="r", encoding="utf-8") as f:
+        with open(known_args.sweep, mode="r", encoding="utf-8") as f:
             sweep_params = yaml.load(f, Loader=yaml.FullLoader)
         wandb.agent(
             sweep_params["id"],
-            function=lambda: main(args),
+            function=lambda: main(known_args, unknown_args),
             entity=WANDB_ENTITY_NAME,
             project=WANDB_PROJECT_NAME,
             count=sweep_params["count"],
         )
     else:
-        main(args)
+        main(known_args, unknown_args)
