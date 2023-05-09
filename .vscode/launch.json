@@ -128,11 +128,11 @@
             "name": "Score Completions",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/experiments/score_completions.py",
+            "program": "${workspaceFolder}/experiments/evaluations/score_completions.py",
             "console": "integratedTerminal",
             "args": [
                 "--config",
-                "${workspaceFolder}/experiments/config_score_completions.yaml",
+                "${workspaceFolder}/experiments/evaluations/config_score_completions.yaml",
             ],
             "justMyCode": false
         },
