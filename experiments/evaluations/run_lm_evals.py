@@ -116,13 +116,20 @@ def run_evaluations() -> None:
     raw_model = None
     tokenizer = None
 
-    for model_path in tqdm(args.models, desc="Models"):
+    for model_specification in tqdm(args.models, desc="Models"):
         tqdm.write(
-            "\n" + "-" * 66 + f"\n\n###### Running evaluations for {model_path} ######"
+            "\n"
+            + "-" * 66
+            + f"\n\n###### Running evaluations for {model_specification} ######"
         )
-        # Handle
+        # Handle revisions with org/model-name@revision syntax
+        model_path = model_specification.split("@")[0]
+        try:
+            revision = model_specification.split("@")[1]
+        except IndexError:
+            revision = "main"
         raw_model, tokenizer = load_eval_model_and_tokenizer(
-            model_path, raw_model, tokenizer, verbose=True
+            model_path, raw_model, tokenizer, verbose=True, revision=revision
         )
         eval_model = CustomEvalModel(raw_model, tokenizer, batch_size=args.batch_size)
 
@@ -140,7 +147,7 @@ def run_evaluations() -> None:
             # check_integrity=args.check_integrity,
         )
 
-        results["config"]["model"] = model_path  # Allow serialization
+        results["config"]["model"] = model_specification  # Allow serialization
         dumped = json.dumps(results, indent=2)
         print(dumped)
 
@@ -149,7 +156,7 @@ def run_evaluations() -> None:
             os.makedirs(output_dir)
         output_path = os.path.join(
             output_dir,
-            model_path.split("/")[-1] + ".json",
+            model_specification.split("/")[-1] + ".json",
         )
         with open(output_path, "w", encoding="utf8") as file:
             file.write(dumped)
