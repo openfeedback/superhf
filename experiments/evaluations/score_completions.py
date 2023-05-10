@@ -211,7 +211,11 @@ def generate_completions_from_lm(
     except IndexError:
         revision = None
     language_model, language_tokenizer = load_eval_model_and_tokenizer(
-        language_model_path, existing_model, revision=revision, model_type="language"
+        language_model_path,
+        existing_model,
+        revision=revision,
+        model_type="language",
+        torch_dtype=torch.bfloat16,
     )
     print_memory_utilization()
 
@@ -420,7 +424,7 @@ def main() -> None:
         # we are in scoring mode, so score completions
         accelerator = Accelerator()
         reward_model, reward_tokenizer = load_eval_model_and_tokenizer(
-            args.reward_model, model_type="reward"
+            args.reward_model, model_type="reward", torch_dtype=torch.bfloat16
         )
         if not isinstance(reward_model, str):
             reward_model = accelerator.prepare(reward_model)

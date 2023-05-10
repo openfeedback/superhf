@@ -59,6 +59,15 @@ def load_eval_model_and_tokenizer(
     with the new adapters. If not, it will reload a new base model and then add the LoRA adapters.
 
     A similar process happens with loading the appropriate tokenizer.
+
+    Args:
+        model_path: The path to the model to load.
+        prev_model: The previous model to reuse weights from.
+        prev_tokenizer: The previous tokenizer to reuse weights from.
+        verbose: Whether to print out progress.
+        revision: The hugging face branch of the model to load.
+        model_type: The type of model to load, either "language" or "reward".
+        **model_kwargs: Any additional kwargs to pass to the model such as bfloat16.
     """
     # pylint: disable=protected-access
     # pylint: disable=too-many-branches
@@ -115,7 +124,7 @@ def load_eval_model_and_tokenizer(
                 model = RewardModel.from_pretrained(
                     base_model_path,
                     low_cpu_mem_usage=True,
-                    torch_dtype=torch.bfloat16,  # Force half for these large RMs
+                    **model_kwargs,
                 )
                 tokenizer_path = "EleutherAI/gpt-neo-1.3B"
             else:
