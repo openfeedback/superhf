@@ -14,6 +14,7 @@ from transformers import (
     GPT2Tokenizer,
 )
 import torch
+from torch.utils.data import DataLoader, TensorDataset
 
 from accelerate import Accelerator, find_executable_batch_size
 
@@ -138,6 +139,7 @@ def read_openai_completions(input_file: str) -> list[str]:
 
 
 def score_completions(
+    starting_batch_size_rm: int,
     reward_model: PreTrainedModel,
     reward_model_tokenizer: PreTrainedTokenizer,
     completions: List[str],
@@ -166,15 +168,33 @@ def score_completions(
     completions_tokenized = completions_tokenized.to(reward_model.device)
     tqdm.write(f"Moved completions to {reward_model.device}.")
     assert reward_model.device != "cpu", "Reward model must be on GPU."
+
+    # Create a DataLoader
+    tensor_dataset = TensorDataset(
+        completions_tokenized["input_ids"], completions_tokenized["attention_mask"]
+    )
+    data_loader = DataLoader(tensor_dataset, batch_size=starting_batch_size_rm)
+
+    scores = []
     with torch.no_grad():
         tqdm.write("Scoring completions.")
-        scores = reward_model(**completions_tokenized, **reward_model_kwargs)
-    if not isinstance(scores, torch.Tensor):
-        scores: torch.Tensor = scores.logits
-    return scores
+        for batch in data_loader:
+            input_ids, attention_mask = batch
+            model_inputs = {
+                "input_ids": input_ids,
+                "attention_mask": attention_mask,
+                **reward_model_kwargs,
+            }
+            batch_scores = reward_model(**model_inputs)
+            if not isinstance(batch_scores, torch.Tensor):
+                batch_scores: torch.Tensor = batch_scores.logits
+            scores.append(batch_scores)
+    return torch.cat(scores), starting_batch_size_rm
 
 
-def generate_completions_from_lm(language_model, prompts_dict):
+def generate_completions_from_lm(
+    starting_batch_size, language_model, existing_model, prompts_dict
+):
     """
     Given a language model and test prompts and then generates completions
 
@@ -191,7 +211,7 @@ def generate_completions_from_lm(language_model, prompts_dict):
     except IndexError:
         revision = None
     language_model, language_tokenizer = load_eval_model_and_tokenizer(
-        language_model_path, revision=revision, model_type="language"
+        language_model_path, existing_model, revision=revision, model_type="language"
     )
     print_memory_utilization()
 
@@ -231,12 +251,12 @@ def generate_completions_from_lm(language_model, prompts_dict):
     completions_dict = {}
     for dataset_name in tqdm(prompts_dict.keys(), desc="Datasets"):
         prompts = prompts_dict[dataset_name]
-        if trainer.training_args.minibatch_size_generating == 0:
-            trainer.training_args.minibatch_size_generating = len(prompts)
+        if starting_batch_size == 0:
+            starting_batch_size = len(prompts)
 
         completions_raw = find_executable_batch_size(
             trainer.generate_completions,
-            trainer.training_args.minibatch_size_generating,
+            starting_batch_size,
         )(prompts)
 
         tqdm.write(
@@ -245,7 +265,7 @@ def generate_completions_from_lm(language_model, prompts_dict):
         )
         completions_dict[dataset_name] = completions_raw
 
-    return completions_dict
+    return completions_dict, language_model, starting_batch_size
 
 
 def load_prompts_dictionary(args):
@@ -362,7 +382,9 @@ def main() -> None:
     #     for batch_scores in scores_batched:
     #         scores.extend(batch_scores)
     if language_model_names is not None:
+        starting_batch_size_lm = args.starting_batch_size_lm
         prompts_dict = load_prompts_dictionary(args)
+        cached_model = None
         for language_model_name in tqdm(
             args.language_model_names, desc="Language models"
         ):
@@ -376,11 +398,17 @@ def main() -> None:
             tqdm.write(
                 f"Generating completions with language model {language_model_name}"
             )
-            completions_dict = generate_completions_from_lm(
-                language_model_name, prompts_dict
+            completions_dict, cached_model, starting_batch_size_lm = (
+                find_executable_batch_size(
+                    generate_completions_from_lm, starting_batch_size_lm
+                )(language_model_name, cached_model, prompts_dict)
             )
             filename = os.path.join(test_completions_dir, f"{language_model_name}.json")
             save_completions(completions_dict, filename)
+
+        del prompts_dict
+        del completions_dict
+        del cached_model
     else:
         raise NotImplementedError(
             "Must specify at least a language model or wandb to load generations"
@@ -393,6 +421,7 @@ def main() -> None:
         scoring_mode = False
     scores_dict = {}
     if scoring_mode:
+        starting_batch_size_rm = args.starting_batch_size_rm
         # we are in scoring mode, so score completions
         accelerator = Accelerator()
         reward_model, reward_tokenizer = load_eval_model_and_tokenizer(
@@ -427,7 +456,9 @@ def main() -> None:
             )
             for dataset_name in args.prompt_dataset_names:
                 completions = completions_dict[dataset_name]
-                scores = score_completions(
+                scores, starting_batch_size_rm = find_executable_batch_size(
+                    score_completions, starting_batch_size_rm
+                )(
                     reward_model=reward_model,
                     reward_model_tokenizer=reward_tokenizer,
                     completions=completions,

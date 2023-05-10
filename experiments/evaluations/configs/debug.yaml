@@ -18,12 +18,18 @@ use_openai:
 language_model_names:
   desc: The name of the language model to use
   value: ["mock"] # "mock"
+starting_batch_size_lm:
+  desc: The starting batch size for the reward model scoring
+  value: 64
 max_new_tokens:
   desc: The number of new tokens to generate
   value: 64
 reward_model:
   desc: The name of the reward model to use
   value: "mock"
+starting_batch_size_rm:
+  desc: The starting batch size for the reward model scoring
+  value: 64
 scoring_mode:
   desc: Whether to score completions and save them or not.
   value: True
