@@ -215,20 +215,12 @@ def generate_completions_from_lm(
     )
     print_memory_utilization()
 
-    # Check for unix
-    # if os.name == "posix":
-    # TODO Update torch and compile it
-    #     print("Compiling models...")
-    #     print(type(language_model))
-    #     language_model = torch.compile(language_model)
-    #     print("Compiled models.")
-    #     print_memory_utilization()
-
     training_args = SuperHFTrainingArguments(
         minibatch_size_generating=64,
         max_new_tokens=128,
         temperature=0.7,
         kl_coefficient=-1,
+        superbatch_size=1,  # we don't want to duplicate prompts
     )
     # this completion filter is not used because we do not call trainer.train
     completion_filter = CompletionFilterTopK(1)
@@ -263,6 +255,7 @@ def generate_completions_from_lm(
             f"The length of completions is {len(completions_raw)} for dataset"
             f" {dataset_name}"
         )
+        print_memory_utilization()
         completions_dict[dataset_name] = completions_raw
 
     return completions_dict, language_model, starting_batch_size
