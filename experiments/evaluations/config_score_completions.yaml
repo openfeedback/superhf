@@ -11,17 +11,16 @@ wandb_project_name:
 wandb_entity_name:
   desc: The wandb entity name of the run to load completions from
   value: null
-
-openai:
+use_openai:
   desc: Whether to use the openai reward model
   value: false
 
 language_model:
   desc: The name of the language model to use
-  value: "mock"
+  value: "mock" # "mock"
 reward_model:
   desc: The name of the reward model to use
-  value: "mock"
+  value: "/nlp/scr/fongsu/rm_combined/gptneo_1.3B_second_half" # "mock"
 
 prompt_dataset_names:
   desc: The list of datasets to use for prompts. See src/superhf/data.py for available datasets.

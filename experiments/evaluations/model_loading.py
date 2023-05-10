@@ -29,12 +29,15 @@ import torch
 from transformers import (
     AutoModelForCausalLM,
     AutoTokenizer,
+    AutoModelForSequenceClassification,
     PreTrainedTokenizerBase,
     LlamaTokenizer,
 )
 from tqdm import tqdm
 
 from superhf.utils import print_memory_utilization
+from superhf.mocking import MockLanguageModel, MockRewardModel
+from reward_modelling.reward_model import RewardModel
 
 
 def load_eval_model_and_tokenizer(
@@ -43,6 +46,7 @@ def load_eval_model_and_tokenizer(
     prev_tokenizer: Optional[PreTrainedTokenizerBase] = None,
     verbose: bool = False,
     revision: Optional[str] = None,
+    model_type: Optional[str] = "language",
     **model_kwargs: Any,
 ) -> tuple[torch.nn.Module, PreTrainedTokenizerBase]:
     """
@@ -57,6 +61,8 @@ def load_eval_model_and_tokenizer(
     A similar process happens with loading the appropriate tokenizer.
     """
     # pylint: disable=protected-access
+    # pylint: disable=too-many-branches
+    # pylint: disable=too-many-statements
 
     assert (prev_model is None and prev_tokenizer is None) or (
         prev_model is not None and prev_tokenizer is not None
@@ -71,6 +77,9 @@ def load_eval_model_and_tokenizer(
         peft_config = None
         base_model_path = model_path
         tokenizer_path = model_path
+
+    if tokenizer_path == "mock":
+        tokenizer_path = "gpt2"
 
     if (
         prev_model is not None
@@ -97,7 +106,33 @@ def load_eval_model_and_tokenizer(
 
         if verbose:
             tqdm.write(f"Loading model and tokenizer from scratch for {model_path}.")
-        model = AutoModelForCausalLM.from_pretrained(base_model_path, **model_kwargs)
+        if "reward" in model_type:
+            # load a reward model
+            tqdm.write("Loading a reward model")
+            if base_model_path == "mock":
+                model = MockRewardModel()
+            elif "rm_combined" in base_model_path or "oliversssf2" in base_model_path:
+                model = RewardModel.from_pretrained(
+                    base_model_path,
+                    low_cpu_mem_usage=True,
+                    torch_dtype=torch.bfloat16,  # Force half for these large RMs
+                )
+                tokenizer_path = "EleutherAI/gpt-neo-1.3B"
+            else:
+                model = AutoModelForSequenceClassification.from_pretrained(
+                    base_model_path,
+                    low_cpu_mem_usage=True,
+                )
+        else:
+            # load a language model that is not a peft model
+            model = (
+                MockLanguageModel()
+                if base_model_path == "mock"
+                else AutoModelForCausalLM.from_pretrained(
+                    base_model_path, **model_kwargs
+                )
+            )
+
         # Fix for misnamed class in the NLP Cluster's Alpaca tokenizer config
         tokenizer_class = (
             LlamaTokenizer

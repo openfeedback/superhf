@@ -134,7 +134,7 @@
                 "--config",
                 "${workspaceFolder}/experiments/evaluations/config_score_completions.yaml",
             ],
-            "justMyCode": false
+            "justMyCode": true
         },
         {
             "name": "LM Evals Debug",

@@ -49,7 +49,8 @@ def parse_args() -> argparse.Namespace:
     with open(args.config, "r", encoding="utf-8") as file:
         yaml_args = yaml.safe_load(file)
 
-    return yaml_args
+    values_dict = {k: v["value"] for k, v in yaml_args.items()}
+    return argparse.Namespace(**values_dict)
 
 
 def load_completions_wandb(
@@ -197,7 +198,7 @@ def generate_completions_from_lm(args):
     except IndexError:
         revision = None
     language_model, language_tokenizer = load_eval_model_and_tokenizer(
-        language_model_path, revision=revision
+        language_model_path, revision=revision, model_type="language"
     )
     print_gpu_utilization()
 
@@ -253,8 +254,13 @@ def main() -> None:
 
     completions: List[str] = []
     scores: List[float] = []
-    if args.completions_file is not None:
-        if args.openai:
+    try:
+        completions_file = args.completions_file
+    except AttributeError:
+        completions_file = None
+
+    if completions_file is not None:
+        if "openai" in args.completions_file:
             completions = read_openai_completions(args.completions_file)
         else:
             # raise an unimplemented error
@@ -290,7 +296,7 @@ def main() -> None:
         device = 0 if torch.cuda.is_available() else "cpu"
 
         reward_model, reward_tokenizer = load_eval_model_and_tokenizer(
-            args.reward_model
+            args.reward_model, model_type="reward"
         )
         if not isinstance(reward_model, str):
             reward_model = accelerator.prepare(reward_model)
