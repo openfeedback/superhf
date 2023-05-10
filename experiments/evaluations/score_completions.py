@@ -229,6 +229,7 @@ def generate_completions_from_lm(
         max_new_tokens=128,
         temperature=0.7,
         kl_coefficient=-1,
+        superbatch_size=1,  # we don't want to duplicate prompts
     )
     # this completion filter is not used because we do not call trainer.train
     completion_filter = CompletionFilterTopK(1)

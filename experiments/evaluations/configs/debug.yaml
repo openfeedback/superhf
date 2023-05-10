@@ -36,7 +36,7 @@ scoring_mode:
 
 prompt_dataset_names:
   desc: The list of datasets to use for prompts. See src/superhf/data.py for available datasets.
-  value: ["anthropic-harmless-base"] # ["anthropic-red-team", "anthropic-helpful-base", "anthropic-harmless-base", "openai/webgpt_comparisons"]
+  value: ["anthropic-helpful-base", "openai/webgpt_comparisons"] # ["anthropic-red-team", "anthropic-helpful-base", "anthropic-harmless-base", "openai/webgpt_comparisons"]
 max_prompt_char_length:
   desc: If generating completions, set's max length for input prompts.
   value: 1024
