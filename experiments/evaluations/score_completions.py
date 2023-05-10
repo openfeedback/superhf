@@ -23,7 +23,7 @@ from tqdm import tqdm
 import wandb
 
 from superhf.data import get_superhf_prompts
-from superhf.utils import print_gpu_utilization
+from superhf.utils import print_memory_utilization
 from superhf.training import SuperHFTrainingArguments, SuperHFTrainer
 from superhf.filtering import CompletionFilterTopK
 from superhf.mocking import MockRewardModel
@@ -190,7 +190,7 @@ def generate_completions_from_lm(args):
         f"{wandb.config.max_prompt_char_length} chars."
     )
     print(f"Loaded {len(prompts)} prompts.")
-    print_gpu_utilization()
+    print_memory_utilization()
 
     language_model_path = args.language_model.split("@")[0]
     try:
@@ -200,7 +200,7 @@ def generate_completions_from_lm(args):
     language_model, language_tokenizer = load_eval_model_and_tokenizer(
         language_model_path, revision=revision, model_type="language"
     )
-    print_gpu_utilization()
+    print_memory_utilization()
 
     # Check for unix
     if os.name == "posix":
@@ -208,7 +208,7 @@ def generate_completions_from_lm(args):
         print(type(language_model))
         language_model = torch.compile(language_model)
         print("Compiled models.")
-        print_gpu_utilization()
+        print_memory_utilization()
 
     training_args = SuperHFTrainingArguments(
         minibatch_size_generating=16, max_new_tokens=128, temperature=0.7
@@ -271,6 +271,7 @@ def main() -> None:
 
     else:
         if args.wandb_run_id is not None:
+            # grab completions from wandb
             completions_batched, scores_batched = load_completions_wandb(
                 entity_name=args.wandb_entity_name,
                 project_name=args.wandb_project_name,
@@ -286,30 +287,23 @@ def main() -> None:
         else:
             raise NotImplementedError(
                 "Must specify at least a language model or wandb to load generations"
-                " from, or a comletions file with completions"
+                " from, or a completions file with completions"
             )
-    print("first completion is:")
-    print(completions[0])
     if not scores:
         accelerator = Accelerator()
-        reward_model_name = args.reward_model
-        device = 0 if torch.cuda.is_available() else "cpu"
-
         reward_model, reward_tokenizer = load_eval_model_and_tokenizer(
             args.reward_model, model_type="reward"
         )
         if not isinstance(reward_model, str):
             reward_model = accelerator.prepare(reward_model)
-        print(f"Instantiated reward model: {reward_model_name} on device {device}")
-        print(f"The device is {device}, with reward model placed on device.")
-        print_gpu_utilization()
+        print_memory_utilization()
         scores = score_completions(
             reward_model=reward_model,
             reward_model_tokenizer=reward_tokenizer,
             completions=completions,
         )
-    print("First score is:")
-    print(scores[0])
+
+    # save a json file with the following structure
 
 
 if __name__ == "__main__":
@@ -361,7 +355,7 @@ if __name__ == "__main__":
 #         """
 
 #         tqdm.write(f"Trying generation with batch size {minibatch_size}")
-#         print_gpu_utilization()
+#         print_memory_utilization()
 
 #         # Duplicate each prompt superbatch_size numbers time with system prompt
 #         system_prompt = self.training_args.conversation_prompt

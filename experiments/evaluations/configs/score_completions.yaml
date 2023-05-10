@@ -17,14 +17,14 @@ use_openai:
 
 language_model:
   desc: The name of the language model to use
-  value: "mock" # "mock"
+  value: "mock"
 reward_model:
   desc: The name of the reward model to use
   value: "/nlp/scr/fongsu/rm_combined/gptneo_1.3B_second_half" # "mock"
 
 prompt_dataset_names:
   desc: The list of datasets to use for prompts. See src/superhf/data.py for available datasets.
-  value: ["anthropic-harmless-base"] # ["anthropic-red-team", "anthropic-helpful-base", "anthropic-harmless-base", "openai/webgpt_comparisons"]
+  value: ["anthropic-red-team", "anthropic-helpful-base", "anthropic-harmless-base", "openai/webgpt_comparisons"]
 max_prompt_char_length:
   desc: If generating completions, set's max length for input prompts.
   value: 1024

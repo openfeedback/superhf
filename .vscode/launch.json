@@ -125,14 +125,14 @@
             "justMyCode": false
         },
         {
-            "name": "Score Completions",
+            "name": "Test set evalulation",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/experiments/evaluations/score_completions.py",
             "console": "integratedTerminal",
             "args": [
                 "--config",
-                "${workspaceFolder}/experiments/evaluations/config_score_completions.yaml",
+                "${workspaceFolder}/experiments/evaluations/configs/debug.yaml",
             ],
             "justMyCode": true
         },
