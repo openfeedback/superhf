@@ -282,12 +282,14 @@ def main() -> None:
             for batch_scores in scores_batched:
                 scores.extend(batch_scores)
         elif args.language_model is not None:
-            print(f"Generating completions with language model {args.language_model}")
+            tqdm.write(
+                f"Generating completions with language model {args.language_model}"
+            )
             completions = generate_completions_from_lm(args)
         else:
             raise NotImplementedError(
                 "Must specify at least a language model or wandb to load generations"
-                " from, or a completions file with completions"
+                " from, or a completions file with completions from openAI"
             )
     if not scores:
         accelerator = Accelerator()
@@ -303,7 +305,21 @@ def main() -> None:
             completions=completions,
         )
 
+    print(f"there are {len(completions)} completions and {len(scores)} scores")
+
     # save a json file with the following structure
+    # reward model
+    # -> model_name
+    # -> dataset1
+    # -> completions
+    # -> scores
+    # -> dataset2
+    # -> completions
+    # -> scores
+    # -> dataset3
+    # -> completions
+    # -> scores
+    # output = {}
 
 
 if __name__ == "__main__":
