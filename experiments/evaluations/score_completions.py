@@ -178,7 +178,7 @@ def score_completions(
     scores = []
     with torch.no_grad():
         tqdm.write("Scoring completions.")
-        for batch in data_loader:
+        for batch in tqdm(data_loader, desc="scoring completion batch"):
             input_ids, attention_mask = batch
             model_inputs = {
                 "input_ids": input_ids,
@@ -389,7 +389,8 @@ def main() -> None:
             args.language_model_names, desc="Language models"
         ):
             #  it does, don't generate here
-            if language_model_name in already_generated_completions:
+            language_model_base_name = language_model_name.split(os.path.sep)[-1]
+            if language_model_base_name in already_generated_completions:
                 tqdm.write(
                     "Already generated completions for language model"
                     f" {language_model_name}"
@@ -403,7 +404,9 @@ def main() -> None:
                     generate_completions_from_lm, starting_batch_size_lm
                 )(language_model_name, cached_model, prompts_dict)
             )
-            filename = os.path.join(test_completions_dir, f"{language_model_name}.json")
+            filename = os.path.join(
+                test_completions_dir, f"{language_model_base_name}.json"
+            )
             save_completions(completions_dict, filename)
 
         del prompts_dict
@@ -444,17 +447,18 @@ def main() -> None:
             score.split(".")[0] for score in already_generated_scores
         ]
         for language_model_name in tqdm(
-            already_generated_completions, desc="Language models"
+            already_generated_completions, desc="Scoring per language models"
         ):
             if language_model_name in already_generated_scores:
                 tqdm.write(
                     f"Already generated scores for language model {language_model_name}"
                 )
                 continue
+            language_model_base_name = language_model_name.split(os.path.sep)[-1]
             completions_dict = load_completions_json(
-                os.path.join(test_completions_dir, f"{language_model_name}.json")
+                os.path.join(test_completions_dir, f"{language_model_base_name}.json")
             )
-            for dataset_name in args.prompt_dataset_names:
+            for dataset_name in tqdm(args.prompt_dataset_names, desc="Datasets"):
                 completions = completions_dict[dataset_name]
                 scores, starting_batch_size_rm = find_executable_batch_size(
                     score_completions, starting_batch_size_rm
@@ -464,7 +468,7 @@ def main() -> None:
                     completions=completions,
                 )
                 scores_dict[dataset_name] = scores.tolist()
-            filename = os.path.join(test_scores_dir, f"{language_model_name}.json")
+            filename = os.path.join(test_scores_dir, f"{language_model_base_name}.json")
             save_scores(scores_dict, filename)
 
     # print(f"there are {len(completions_dict)} completions")
