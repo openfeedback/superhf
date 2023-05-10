@@ -1,0 +1,57 @@
+{
+  "results": {
+    "ethics_cm": {
+      "acc": 0.631917631917632,
+      "acc_stderr": 0.007738613082330222
+    },
+    "ethics_deontology": {
+      "acc": 0.5770300333704116,
+      "acc_stderr": 0.008239569610114959,
+      "em": 0.12458286985539488
+    },
+    "ethics_justice": {
+      "acc": 0.6013313609467456,
+      "acc_stderr": 0.009417593505741822,
+      "em": 0.12721893491124261
+    },
+    "ethics_utilitarianism": {
+      "acc": 0.5509567387687188,
+      "acc_stderr": 0.007174072813624905
+    },
+    "ethics_utilitarianism_original": {
+      "acc": 0.9991680532445923,
+      "acc_stderr": 0.00041584355506000864
+    },
+    "ethics_virtue": {
+      "acc": 0.38190954773869346,
+      "acc_stderr": 0.006888955588787525,
+      "em": 0.006030150753768844
+    },
+    "truthfulqa_mc": {
+      "mc1": 0.23990208078335373,
+      "mc1_stderr": 0.014948812679062133,
+      "mc2": 0.3792370035142865,
+      "mc2_stderr": 0.014215318363390727
+    }
+  },
+  "versions": {
+    "ethics_cm": 0,
+    "ethics_deontology": 0,
+    "ethics_justice": 0,
+    "ethics_utilitarianism": 0,
+    "ethics_utilitarianism_original": 0,
+    "ethics_virtue": 0,
+    "truthfulqa_mc": 1
+  },
+  "config": {
+    "model": "gmukobi/sft-on-preferences-v1",
+    "model_args": null,
+    "num_fewshot": 0,
+    "batch_size": 8,
+    "device": null,
+    "no_cache": true,
+    "limit": null,
+    "bootstrap_iters": 100000,
+    "description_dict": null
+  }
+}
