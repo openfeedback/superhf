@@ -13,6 +13,8 @@ from torch.utils.data import DataLoader
 
 from accelerate import Accelerator, find_executable_batch_size
 from tqdm import tqdm
+from huggingface_hub import HfApi
+from huggingface_hub.utils import HfHubHTTPError
 from transformers import (
     PreTrainedTokenizerBase,
     BatchEncoding,
@@ -26,7 +28,7 @@ from superhf import constants
 from superhf.data import ListDataset
 from superhf.filtering import CompletionFilterBase
 from superhf.metrics import SuperHFMetrics, report_metrics_print
-from superhf.utils import print_gpu_utilization, separate_prompt_from_completion
+from superhf.utils import print_memory_utilization, separate_prompt_from_completion
 
 
 @dataclass
@@ -78,6 +80,7 @@ class SuperHFTrainingArguments:
     scheduler_warmup_steps: int = 0
     kl_coefficient: float = 0.0
     validation_interval: int = 0
+    max_exception_count: int = 0
 
     # Dataset settings
     prompt_delimiter: str = constants.PROMPT_DELIMITER
@@ -91,6 +94,8 @@ class SuperHFTrainingArguments:
     # Push to hub (set to 0 to disable)
     hub_repo_id: Optional[str] = None
     push_to_hub_interval: int = 0
+    push_to_hub_additional_indices: list[int] = field(default_factory=list)
+    sweep_param_name: str = ""
 
 
 class SuperHFTrainer:
@@ -143,6 +148,20 @@ class SuperHFTrainer:
             report_metrics = [report_metrics]
         self.report_metrics = report_metrics
 
+        # Make sure we're logged in to the hub if intending to push
+        if (
+            self.training_args.hub_repo_id is not None
+            and self.training_args.hub_repo_id != ""
+            and self.training_args.push_to_hub_interval > 0
+        ):
+            self.hf_api = HfApi()
+            assert self.hf_api.whoami(), (
+                "Must be logged in to the Hugging Face Hub to push models to the hub. "
+                "Run `huggingface-cli login` to log in."
+            )
+        else:
+            self.hf_api = None
+
         # Add padding tokens if they are not already there
         if self.language_tokenizer.pad_token is None:
             self.language_tokenizer.pad_token = self.language_tokenizer.eos_token
@@ -152,27 +171,43 @@ class SuperHFTrainer:
                 self.reward_tokenizer_train.eos_token
             )
             print("Added pad token to reward tokenizer.")
+        if (
+            self.reward_tokenizer_val is not None
+            and self.reward_tokenizer_val.pad_token is None
+        ):
+            self.reward_tokenizer_val.pad_token = self.reward_tokenizer_val.eos_token
+            print("Added pad token to val tokenizer.")
 
-        # Reward model is always in eval mode
+        # Reward models are always in eval mode
         self.reward_model_train.eval()
+        if self.reward_model_val is not None:
+            self.reward_model_val.eval()
 
         # Initialize the accelerator
         self.accelerator = Accelerator(
-            mixed_precision=self.training_args.mixed_precision
+            mixed_precision=self.training_args.mixed_precision,
+            split_batches=True,  # Because our RM collator returns a tuple
         )
 
         # Prepare with accelerator
-        self.language_model = self.accelerator.prepare(self.language_model)
+        self.language_model, self.reward_model_train, self.reward_model_val = (
+            self.accelerator.prepare(
+                self.language_model, self.reward_model_train, self.reward_model_val
+            )
+        )
+        print("After accelerator model preparation.")
+        print_memory_utilization()
 
         # Lazy-init optimizer and scheduler
         self.optimizer: Optional[torch.optim.Optimizer] = None
         self.scheduler: Optional[torch.optim.lr_scheduler.LambdaLR] = None
 
         # Check that we're using a LoRA model if using a KL loss term
-        if self.training_args.kl_coefficient > 0:
-            assert hasattr(
-                self.language_model, "disable_adapter"
-            ), "KL loss term only supported for LoRA models."
+        if self.training_args.kl_coefficient >= 0:
+            assert hasattr(self.language_model, "disable_adapter"), (
+                "KL divergence only supported for LoRA models (set kl_coefficient to"
+                " -1 to disable)."
+            )
             self.kl_loss = torch.nn.KLDivLoss(reduction="batchmean", log_target=True)
 
     def train(self, prompts: list[str]) -> None:
@@ -206,141 +241,228 @@ class SuperHFTrainer:
         )
         assert self.scheduler is not None
 
+        # Track how many times we OOM and starting batch sizes
+        exception_count = 0
+        batch_size_generating_initial = self.training_args.minibatch_size_generating
+        batch_size_scoring_initial = self.training_args.minibatch_size_scoring
+        batch_size_finetuning_initial = self.training_args.minibatch_size_finetuning
+
         # Then, iterate over group of prompts in superbatches
         for superbatch_index, superbatch_prompts in tqdm(
             enumerate(prompts_dataloader),
             total=num_superbatches,
-            desc="Superbatch",
+            desc="🍰 Superbatch",
             file=sys.stdout,
         ):
-            tqdm.write(
-                f"Before generation, on superbatch_index {superbatch_index} ", end=""
-            )
-            print_gpu_utilization()
-            # Generate completions for each prompt in the superbatch
-            completions_raw = find_executable_batch_size(
-                self.generate_completions,
-                self.training_args.minibatch_size_generating,
-            )(superbatch_prompts)
-
-            tqdm.write("Before scoring ", end="")
-            print_gpu_utilization()
-            # Score the completions
             try:
+                tqdm.write(
+                    f"Before generation, on superbatch_index {superbatch_index} ",
+                    end="",
+                )
+                # Generate completions for each prompt in the superbatch
+                completions_raw = find_executable_batch_size(
+                    self.generate_completions,
+                    self.training_args.minibatch_size_generating,
+                )(superbatch_prompts)
+
+                # tqdm.write("Before scoring ", end="")
+                # Score the completions
+                try:
+                    (
+                        scores_train,
+                        completions_trimmed,
+                        completion_lengths,
+                    ) = find_executable_batch_size(
+                        self.score_completions_train,
+                        self.training_args.minibatch_size_scoring,
+                    )(
+                        completions_raw
+                    )
+
+                    if (
+                        (
+                            superbatch_index % self.training_args.validation_interval
+                            == 0
+                            or superbatch_index == num_superbatches - 1
+                        )
+                        and self.reward_model_val is not None
+                        and self.reward_tokenizer_val is not None
+                    ):
+                        # Score the completions with the validation reward model
+                        scores_val = self.score_completions_val(completions_trimmed)
+                    else:
+                        scores_val = []
+                except (IndexError, KeyError) as exc:
+                    print("Error during scoring completions:")
+                    print(exc)
+                    print("completions_raw:")
+                    print(completions_raw)
+                    continue
+
+                # Filter the completions
                 (
+                    filtered_scores,
+                    filtered_completions,
+                    filtered_completion_lengths,
+                ) = self.filter_completions(
+                    len(superbatch_prompts),
                     scores_train,
                     completions_trimmed,
                     completion_lengths,
-                ) = find_executable_batch_size(
-                    self.score_completions_train,
-                    self.training_args.minibatch_size_scoring,
-                )(
-                    completions_raw
                 )
 
-                if (
-                    (
-                        superbatch_index % self.training_args.validation_interval == 0
-                        or superbatch_index == num_superbatches - 1
-                    )
-                    and self.reward_model_val is not None
-                    and self.reward_tokenizer_val is not None
-                ):
-                    # Score the completions with the validation reward model
-                    scores_val = self.score_completions_val(completions_trimmed)
-                else:
-                    scores_val = []
-            except (IndexError, KeyError) as exc:
-                print("Error during scoring completions:")
+                # Fine-tune the language model on the filtered completions
+                average_loss, average_kl_div = find_executable_batch_size(
+                    self.finetune_language_model,
+                    self.training_args.minibatch_size_finetuning,
+                )(filtered_completions)
+
+                # Optionally report metrics
+                metrics = SuperHFMetrics(
+                    superbatches_complete=superbatch_index + 1,  # the number complete
+                    superbatch_count=num_superbatches,
+                    completions=completions_trimmed,
+                    filtered_completions=filtered_completions,
+                    scores_train=scores_train,
+                    scores_val=scores_val,
+                    filtered_scores=filtered_scores,
+                    average_loss=average_loss,
+                    average_kl_div=average_kl_div,
+                    scheduler_lr=self.scheduler.get_last_lr()[0],
+                    completion_lengths=completion_lengths,
+                    filtered_completion_lengths=filtered_completion_lengths,
+                )
+                if self.report_metrics is not None:
+                    for report_metrics_function in self.report_metrics:
+                        report_metrics_function(metrics)
+
+                # Optionally, save the model
+                # self.save_model()
+
+                # Optionally, push the model to the hub
+                self.consider_pushing_to_hub(superbatch_index + 1, num_superbatches)
+            except Exception as exc:  # pylint: disable=broad-exception-caught
+                exception_count += 1
                 print(exc)
-                print("completions_raw:")
-                print(completions_raw)
-                continue
+                print(
+                    "⚠️ WARNING: Error during this training iteration. Total exception"
+                    " count:"
+                    f" {exception_count}/{self.training_args.max_exception_count}"
+                )
+                if exception_count > self.training_args.max_exception_count:
+                    raise exc
 
-            tqdm.write("Before filtering ", end="")
-            print_gpu_utilization()
+                # Reset batch sizes to starting values if a CUDA error
+                if isinstance(exc, RuntimeError):
+                    self.training_args.minibatch_size_generating = (
+                        batch_size_generating_initial
+                    )
+                    self.training_args.minibatch_size_scoring = (
+                        batch_size_scoring_initial
+                    )
+                    self.training_args.minibatch_size_finetuning = (
+                        batch_size_finetuning_initial
+                    )
 
-            # Filter the completions
-            (
-                filtered_scores,
-                filtered_completions,
-                filtered_completion_lengths,
-            ) = self.filter_completions(
-                len(superbatch_prompts),
-                scores_train,
-                completions_trimmed,
-                completion_lengths,
-            )
+    def consider_pushing_to_hub(
+        self, superbatch_index: int, total_superbatches: int
+    ) -> None:
+        """
+        Pushes the model to the hub if it's appropriate to do so.
 
-            # Fine-tune the language model on the filtered completions
-            average_loss, average_kl_div = find_executable_batch_size(
-                self.finetune_language_model,
-                self.training_args.minibatch_size_finetuning,
-            )(filtered_completions)
-
-            # Optionally report metrics
-            metrics = SuperHFMetrics(
-                superbatch_index=superbatch_index,
-                superbatch_count=num_superbatches,
-                completions=completions_trimmed,
-                filtered_completions=filtered_completions,
-                scores_train=scores_train,
-                scores_val=scores_val,
-                filtered_scores=filtered_scores,
-                average_loss=average_loss,
-                average_kl_div=average_kl_div,
-                scheduler_lr=self.scheduler.get_last_lr()[0],
-                completion_lengths=completion_lengths,
-                filtered_completion_lengths=filtered_completion_lengths,
-            )
-            if self.report_metrics is not None:
-                for report_metrics_function in self.report_metrics:
-                    report_metrics_function(metrics)
-
-            # Optionally, save the model
-            # self.save_model()
-
-            # Optionally, push the model to the hub
-            self.consider_pushing_to_hub(superbatch_index, num_superbatches)
-
-    def consider_pushing_to_hub(self, superbatch_index: int, num_prompts: int) -> None:
-        """Pushes the model to the hub if it's appropriate to do so."""
+        superbatch_index is the index of the _just completed_ superbatch
+        (i.e. after superbatch 0 finished, 1 is passed in).
+        """
+        is_push_index = (
+            # Every N superbatches
+            superbatch_index % self.training_args.push_to_hub_interval == 0
+            # Last superbatch
+            or superbatch_index == total_superbatches
+            # Manually specified indices
+            or superbatch_index in self.training_args.push_to_hub_additional_indices
+        )
         if (  # pylint: disable=too-many-boolean-expressions
             # User must specify a hub repo
             self.training_args.hub_repo_id is not None
             and self.training_args.hub_repo_id != ""
             # User must specify a push interval
             and self.training_args.push_to_hub_interval > 0
-            # Don't push on the first superbatch
-            and superbatch_index > 0
+            # Don't push on the first superbatch (unless specified)
             and (
-                # every N superbatches
-                superbatch_index % self.training_args.push_to_hub_interval == 0
-                # last superbatch
-                or superbatch_index == num_prompts - 1
+                superbatch_index > 0
+                or 0 in self.training_args.push_to_hub_additional_indices
             )
+            and is_push_index
         ):
-            tqdm.write("Pushing model and tokenizer to the Hub!")
-            tqdm.write(
-                str(
-                    self.language_model.push_to_hub(
-                        repo_id=self.training_args.hub_repo_id,
-                        commit_message=(
-                            f"Upload model from superbatch {superbatch_index}"
-                        ),
+            # pylint: disable=protected-access
+            repo_name = self.training_args.hub_repo_id
+            assert self.hf_api is not None
+            if self.training_args.sweep_param_name != "":
+                assert (
+                    self.training_args.sweep_param_name != "pythia"
+                    or "pythia" in self.language_model.config._name_or_path
+                ), (
+                    "Must use a pythia model to add a pythia model size to the repo"
+                    " name."
+                )
+
+                model_size_or_name = self.language_model.config._name_or_path.lower()
+                try:
+                    # Get the size of a pythia model
+                    model_size_or_name = model_size_or_name.split("-")[1]
+                except IndexError:
+                    # If it's not a pythia model, use the name
+                    assert "pythia" not in model_size_or_name
+
+                param_name_to_value = {
+                    "accum": self.training_args.prompt_accumulation_steps,
+                    "kl": self.training_args.kl_coefficient,
+                    "invloss": self.training_args.inverse_loss_penalty,
+                    "lr": self.training_args.learning_rate,
+                    "sbs": self.training_args.superbatch_size,
+                    "pythia": model_size_or_name,
+                }
+                param_value = param_name_to_value[self.training_args.sweep_param_name]
+                repo_name += f"-{self.training_args.sweep_param_name}-{param_value}"
+            # Add the number of processed prompts to the title
+            prompt_index = (
+                superbatch_index * self.training_args.prompt_accumulation_steps
+            )
+            tqdm.write("🚀 Pushing model and tokenizer to the Hub!")
+            if "debug" in self.training_args.hub_repo_id:
+                tqdm.write(repo_name + " (not actually pushed due to 'debug' in name)")
+            else:
+                tqdm.write(
+                    str(
+                        self.language_model.push_to_hub(
+                            repo_id=repo_name,
+                            commit_message=(
+                                f"Upload model from superbatch {superbatch_index}"
+                            ),
+                        )
                     )
                 )
-            )
-            tqdm.write(
-                str(
-                    self.language_tokenizer.push_to_hub(
-                        repo_id=self.training_args.hub_repo_id,
-                        commit_message=(
-                            f"Upload tokenizer from superbatch {superbatch_index}"
-                        ),
+                tqdm.write(
+                    str(
+                        self.language_tokenizer.push_to_hub(
+                            repo_id=repo_name,
+                            commit_message=(
+                                f"Upload tokenizer from superbatch {superbatch_index}"
+                            ),
+                        )
                     )
                 )
-            )
+                # Create a new branch with the superbatch index as the name
+                hf_username = self.hf_api.whoami()["name"]
+                repo_id = hf_username + "/" + repo_name
+                branch = f"step-{prompt_index:04}"
+                try:
+                    result = self.hf_api.create_branch(repo_id=repo_id, branch=branch)
+                except HfHubHTTPError:
+                    # Delete the branch first
+                    self.hf_api.delete_branch(repo_id=repo_id, branch=branch)
+                    result = self.hf_api.create_branch(repo_id=repo_id, branch=branch)
+                tqdm.write(str(result))
 
     def collate_fn_lm_completions(self, batch: list[str]) -> BatchEncoding:
         """
@@ -371,7 +493,6 @@ class SuperHFTrainer:
         self.training_args.minibatch_size_generating = minibatch_size
 
         tqdm.write(f"Trying generation with batch size {minibatch_size}")
-        print_gpu_utilization()
 
         # Duplicate each prompt superbatch_size numbers time with system prompt
         system_prompt = self.training_args.conversation_prompt
@@ -387,28 +508,28 @@ class SuperHFTrainer:
             collate_fn=self.collate_fn_lm_completions,
             pin_memory=True,
         )
+        completion_dataloader = self.accelerator.prepare(completion_dataloader)
 
         completions_encoded: list[TensorType["batch", "seq_len"]] = []
         with torch.no_grad():
             for minibatch in tqdm(
                 completion_dataloader,
-                desc="Generation",
+                desc="🌱 Generation",
                 total=len(completion_dataloader),
                 file=sys.stdout,
             ):
                 encodings = minibatch
-                # with torch.cuda.amp.autocast(dtype=self.training_args.dtype):  # type: ignore
-                encodings.to(self.language_model.device)
-                outputs = self.language_model.generate(  # type: ignore
-                    **encodings,
-                    max_new_tokens=self.training_args.max_new_tokens,
-                    temperature=self.training_args.temperature,
-                    top_p=self.training_args.top_p,
-                    do_sample=True,
-                    num_return_sequences=1,
-                    pad_token_id=self.language_tokenizer.pad_token_id,
-                    logits_processor=self.training_args.logits_processors,
-                )
+                with torch.cuda.amp.autocast(dtype=self.training_args.dtype):  # type: ignore
+                    outputs = self.language_model.generate(  # type: ignore
+                        **encodings,
+                        max_new_tokens=self.training_args.max_new_tokens,
+                        temperature=self.training_args.temperature,
+                        top_p=self.training_args.top_p,
+                        do_sample=True,
+                        num_return_sequences=1,
+                        pad_token_id=self.language_tokenizer.pad_token_id,
+                        logits_processor=self.training_args.logits_processors,
+                    )
                 completions_encoded.extend(outputs.to("cpu"))
         # completions_gathered: list[str] = accelerator.gather(
         #     completions
@@ -416,11 +537,12 @@ class SuperHFTrainer:
         completions_text: list[str] = self.language_tokenizer.batch_decode(
             completions_encoded, skip_special_tokens=True
         )
+        print_memory_utilization()
         return completions_text
 
     def collate_fn_rm_train(
         self, completions: list[str]
-    ) -> tuple[list[str], BatchEncoding, list[int]]:
+    ) -> tuple[BatchEncoding, list[str], list[int]]:
         """
         Collate function for the reward model's dataloader.
 
@@ -459,14 +581,14 @@ class SuperHFTrainer:
                 completions_for_rm.append(joined_completion_normal)
 
         return (
-            completions_for_lm,
             self.reward_tokenizer_train(
                 completions_for_rm,
                 return_tensors="pt",
                 padding=True,
                 truncation=True,
                 max_length=self.training_args.max_length_rm,
-            ).to(self.reward_model_train.device),
+            ),
+            completions_for_lm,
             completion_lengths,
         )
 
@@ -484,7 +606,7 @@ class SuperHFTrainer:
             padding=True,
             truncation=True,
             max_length=self.training_args.max_length_rm,
-        ).to(self.reward_model_val.device)
+        )
 
     def score_completions_train(
         self,
@@ -508,6 +630,9 @@ class SuperHFTrainer:
             batch_size=minibatch_size,
             collate_fn=self.collate_fn_rm_train,
         )
+        score_dataloader = self.accelerator.prepare(
+            score_dataloader,
+        )
 
         with torch.no_grad():
             iteration = 0
@@ -518,8 +643,8 @@ class SuperHFTrainer:
             ):
                 iteration += 1
                 (
-                    completions_trimmed,
                     completion_encodings,
+                    completions_trimmed,
                     completion_lengths,
                 ) = minibatch
                 if self.training_args.reward_model_is_steamshp:
@@ -565,6 +690,8 @@ class SuperHFTrainer:
             batch_size=self.training_args.minibatch_size_scoring,
             collate_fn=self.collate_fn_rm_val,
         )
+        score_dataloader = self.accelerator.prepare(score_dataloader)
+
         with torch.no_grad():
             for minibatch in score_dataloader:
                 completion_encodings = minibatch
@@ -662,7 +789,6 @@ class SuperHFTrainer:
         assert self.scheduler is not None
 
         tqdm.write(f"Trying finetuning with batch size {minibatch_size}")
-        print_gpu_utilization()
         self.training_args.minibatch_size_finetuning = minibatch_size
 
         finetuning_dataloader = DataLoader(
@@ -673,8 +799,7 @@ class SuperHFTrainer:
 
         finetuning_dataloader = self.accelerator.prepare(finetuning_dataloader)
 
-        tqdm.write("After accelerator prepare, ", end="")
-        print_gpu_utilization()
+        # tqdm.write("After accelerator prepare, ", end="")
         sum_loss = 0
         num_invalid_losses = 0
         self.language_model.train()
@@ -700,7 +825,7 @@ class SuperHFTrainer:
                 loss = loss + self.training_args.inverse_loss_penalty / loss
 
             # KL divergence penalty
-            if self.training_args.kl_coefficient > 0:
+            if self.training_args.kl_coefficient >= 0:
                 # Calculate the log probabilities of the generated tokens
                 logp_online_model = torch.log_softmax(outputs.logits, dim=2)
 
@@ -729,10 +854,12 @@ class SuperHFTrainer:
                     kl_divergence = self.kl_loss(
                         logp_online_model_i, logp_original_model_i
                     )
-                    # Clamp KL to be positive to avoid negative KL gaming
-                    kl_divergence = torch.maximum(kl_divergence, torch.tensor(0.0))
                     sum_kl_divergence += kl_divergence.item()
-                    loss = loss + self.training_args.kl_coefficient * kl_divergence
+
+                    # Clamp KL to be positive to avoid negative KL gaming due to the approximation
+                    kl_divergence = torch.maximum(kl_divergence, torch.tensor(0.0))
+                    if self.training_args.kl_coefficient > 0.0:
+                        loss = loss + self.training_args.kl_coefficient * kl_divergence
 
             sum_loss += loss.item()
             self.accelerator.backward(loss)
@@ -745,6 +872,8 @@ class SuperHFTrainer:
                 f"WARNING: {num_invalid_losses} minibatches had nan, inf, or negative"
                 " loss."
             )
+
+        print_memory_utilization()
 
         num_valid_losses = len(finetuning_dataloader) - num_invalid_losses
         return sum_loss / num_valid_losses if num_valid_losses > 0 else 0, (

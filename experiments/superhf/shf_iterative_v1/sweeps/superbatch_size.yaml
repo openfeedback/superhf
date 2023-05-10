@@ -1,0 +1,25 @@
+program: experiments/superhf/shf_iterative_v1/run_shf_iterative.py
+method: grid
+metric:
+  goal: maximize
+  name: score_train_avg.mean
+parameters:
+  superbatch_size:
+    values:
+      - 1
+      - 2
+      - 4
+      - 6
+      - 8
+      - 16
+      - 24
+      - 32
+      - 64
+      - 96
+      - 128
+  reward_model_val_name:
+    value: "/nlp/scr/fongsu/rm_combined/gptneo_1.3B_second_half"
+  max_exception_count:
+    value: 64
+  sweep_param_name:
+    value: "sbs"

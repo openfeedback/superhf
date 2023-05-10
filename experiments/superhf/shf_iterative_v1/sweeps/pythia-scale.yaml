@@ -1,0 +1,22 @@
+program: experiments/superhf/shf_iterative_v1/run_shf_iterative.py
+method: grid
+metric:
+  goal: maximize
+  name: score_train_avg.mean
+parameters:
+  language_model_name:
+    values:
+      - "EleutherAI/pythia-70M-deduped"
+      - "EleutherAI/pythia-160M-deduped"
+      - "EleutherAI/pythia-410M-deduped"
+      - "EleutherAI/pythia-1B-deduped"
+      - "EleutherAI/pythia-1.4B-deduped"
+      - "EleutherAI/pythia-2.8B-deduped"
+      - "EleutherAI/pythia-6.9B-deduped"
+      - "EleutherAI/pythia-12B-deduped"
+  hub_repo_id:
+    value: "shf"
+  sweep_param_name:
+    value: "pythia"
+  lora_target_modules:
+    value: ["query_key_value"]  # For GPT-NeoX

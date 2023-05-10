@@ -1,0 +1,62 @@
+{
+  "results": {
+    "arc_challenge": {
+      "acc": 0.4206484641638225,
+      "acc_stderr": 0.014426211252508406,
+      "acc_norm": 0.439419795221843,
+      "acc_norm_stderr": 0.014503747823580127
+    },
+    "arc_easy": {
+      "acc": 0.7222222222222222,
+      "acc_stderr": 0.00919077990964992,
+      "acc_norm": 0.5980639730639731,
+      "acc_norm_stderr": 0.010060521220920566
+    },
+    "boolq": {
+      "acc": 0.7691131498470948,
+      "acc_stderr": 0.0073703355004933226
+    },
+    "hellaswag": {
+      "acc": 0.5728938458474407,
+      "acc_stderr": 0.004936470085238486,
+      "acc_norm": 0.732921728739295,
+      "acc_norm_stderr": 0.00441529365659949
+    },
+    "openbookqa": {
+      "acc": 0.324,
+      "acc_stderr": 0.020950557312477455,
+      "acc_norm": 0.42,
+      "acc_norm_stderr": 0.022094713229761784
+    },
+    "piqa": {
+      "acc": 0.7752992383025027,
+      "acc_stderr": 0.009738282586548378,
+      "acc_norm": 0.780739934711643,
+      "acc_norm_stderr": 0.009653357463605306
+    },
+    "winogrande": {
+      "acc": 0.67008681925809,
+      "acc_stderr": 0.01321443254251754
+    }
+  },
+  "versions": {
+    "arc_challenge": 0,
+    "arc_easy": 0,
+    "boolq": 1,
+    "hellaswag": 0,
+    "openbookqa": 0,
+    "piqa": 0,
+    "winogrande": 0
+  },
+  "config": {
+    "model": "peterchatain/test-save-alpaca@model-2048-prompts-batch-size-8",
+    "model_args": null,
+    "num_fewshot": 0,
+    "batch_size": 8,
+    "device": null,
+    "no_cache": true,
+    "limit": null,
+    "bootstrap_iters": 100000,
+    "description_dict": null
+  }
+}

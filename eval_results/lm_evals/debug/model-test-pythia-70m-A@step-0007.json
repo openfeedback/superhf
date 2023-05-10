@@ -1,0 +1,30 @@
+{
+  "results": {
+    "cb": {
+      "acc": 0.42857142857142855,
+      "acc_stderr": 0.06672848092813058,
+      "f1": 0.3138191955396256
+    },
+    "hendrycksTest-global_facts": {
+      "acc": 0.23,
+      "acc_stderr": 0.04229525846816505,
+      "acc_norm": 0.23,
+      "acc_norm_stderr": 0.042295258468165065
+    }
+  },
+  "versions": {
+    "cb": 1,
+    "hendrycksTest-global_facts": 0
+  },
+  "config": {
+    "model": "gmukobi/model-test-pythia-70m-A@step-0007",
+    "model_args": null,
+    "num_fewshot": 0,
+    "batch_size": 16,
+    "device": null,
+    "no_cache": true,
+    "limit": null,
+    "bootstrap_iters": 100000,
+    "description_dict": null
+  }
+}

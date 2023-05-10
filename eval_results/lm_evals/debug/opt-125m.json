@@ -1,0 +1,30 @@
+{
+  "results": {
+    "cb": {
+      "acc": 0.21428571428571427,
+      "acc_stderr": 0.05532833351724884,
+      "f1": 0.21317471317471315
+    },
+    "hendrycksTest-global_facts": {
+      "acc": 0.19,
+      "acc_stderr": 0.039427724440366255,
+      "acc_norm": 0.22,
+      "acc_norm_stderr": 0.041633319989322674
+    }
+  },
+  "versions": {
+    "cb": 1,
+    "hendrycksTest-global_facts": 0
+  },
+  "config": {
+    "model": "facebook/opt-125m",
+    "model_args": null,
+    "num_fewshot": 0,
+    "batch_size": 16,
+    "device": null,
+    "no_cache": true,
+    "limit": null,
+    "bootstrap_iters": 100000,
+    "description_dict": null
+  }
+}

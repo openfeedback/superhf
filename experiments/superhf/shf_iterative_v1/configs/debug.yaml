@@ -1,15 +1,18 @@
 language_model_name:
   desc: HuggingFace language model to use, or "mock" for testing
-  value: "theblackcat102/pythia-1b-deduped-sft"
+  # value: "theblackcat102/pythia-1b-deduped-sft"
+  value: "EleutherAI/pythia-70m-deduped"  # Faster
+  # value: "facebook/opt-125m" # Closer to LLaMA
 reward_model_train_name:
   desc: HuggingFace reward model to use, or "mock" for testing
   value: "OpenAssistant/reward-model-deberta-v3-base"
 reward_model_val_name:
   desc: HuggingFace reward model to use, or "mock" for testing, or blank for no validation.
-  value: "vincentmin/opt-125m-eli5-reward"
+  value: "None"
+  # value: "vincentmin/opt-125m-eli5-reward"
 learning_rate:
   desc: Learning rate for fine-tuning the language model.
-  value: 3.0e-5
+  value: 1.0e-1
 scheduler_name:
   desc: Name of the scheduler to use for fine-tuning the language model.
   value: "cosine"
@@ -17,8 +20,8 @@ scheduler_warmup_steps:
   desc: Number of warmup steps for the scheduler.
   value: 32
 kl_coefficient:
-  desc: Coefficient for the KL loss term added to the CLM loss. Requires LoRA. Set to 0 to disable.
-  value: 0.3
+  desc: Coefficient for the KL loss term added to the CLM loss. Requires LoRA. Set to -1 to disable (0.0 still calculates KL but adds nothing to the loss).
+  value: 0.23
 inverse_loss_penalty:
   desc: Regularizes loss by C with loss' = loss + C / loss. Set to 0 to disable.
   value: 0.0
@@ -27,19 +30,19 @@ max_prompt_char_length:
   value: 1024
 temperature:
   desc: Temperature to use for completion sampling
-  value: 1.0
+  value: 0.5
 top_p:
   desc: Top-p to use for completion sampling
   value: 0.95
 num_prompts:
   desc: Maximum number of prompts to use, or 0 for unlimited (up to the training set size).
-  value: 1
+  value: 11
 prompt_accumulation_steps:
   desc: Number of prompts to generate, score, and filter before finetuning, or 0 for num_prompts.
   value: 1
 superbatch_size:
   desc: Number of completions to generate with the current policy before filtering and fine-tuning.
-  value: 64
+  value: 2
 completion_filter_top_k:
   desc: Top-k completions to filter and train on.
   value: 1
@@ -71,8 +74,8 @@ lora_dropout:
   desc: The dropout parameter for LoRA, or 0 to disable dropout.
   value: 0.05
 lora_target_modules:
-  desc: The list of modules to apply LoRA to. See src/superhf/lora.py for available modules.
-  # value: ["q_proj", "v_proj"]  # For LLaMa
+  desc: The list of modules to apply LoRA to. See lora.py for available modules.
+  # value: ["q_proj", "v_proj"]  # For LLaMa or OPT
   value: ["query_key_value"]  # For GPT-NeoX
 conversation_prompt:
   desc: A prompt to prepend to every prompt before generation to get the model more on distribution.
@@ -95,11 +98,20 @@ length_penalty:
 validation_interval:
   desc: The number of superbatches to train before running the validation reward model.
   value: 2
+max_exception_count:
+  desc: The number of times to allow the model to run out of memory before stopping.
+  value: 0
 hub_repo_id:
   desc: The ID of the HuggingFace Hub repo to use for storing the model. If empty, no model will be stored.
-  # value: "test-repo"
   value: ""
+  # value: "model-test-pythia-70m-A"
 push_to_hub_interval:
   desc: The number of superbatches to train before pushing to the HuggingFace Hub. If 0, no model will be stored.
   # value: 1
-  value: 0
+  value: 7
+push_to_hub_additional_indices:
+  desc: A list of additional superbatch indices to push to the hub in addition to every push_to_hub_interval.
+  value: [1,2,4,8,16,32,64,128,256,512]
+sweep_param_name:
+  desc: If running a sweep, one of the a list of short parameter names to add to the saved hub repo name.
+  value: ""

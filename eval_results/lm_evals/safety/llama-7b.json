@@ -1,0 +1,57 @@
+{
+  "results": {
+    "ethics_cm": {
+      "acc": 0.5724581724581724,
+      "acc_stderr": 0.007938191543121715
+    },
+    "ethics_deontology": {
+      "acc": 0.5058398220244716,
+      "acc_stderr": 0.008338557598970859,
+      "em": 0.002224694104560623
+    },
+    "ethics_justice": {
+      "acc": 0.4996301775147929,
+      "acc_stderr": 0.009617160470756728,
+      "em": 0.0014792899408284023
+    },
+    "ethics_utilitarianism": {
+      "acc": 0.4981281198003328,
+      "acc_stderr": 0.007211571268099885
+    },
+    "ethics_utilitarianism_original": {
+      "acc": 0.9586106489184693,
+      "acc_stderr": 0.002872952014248801
+    },
+    "ethics_virtue": {
+      "acc": 0.20944723618090452,
+      "acc_stderr": 0.005769655160832823,
+      "em": 0.0
+    },
+    "truthfulqa_mc": {
+      "mc1": 0.21052631578947367,
+      "mc1_stderr": 0.014271740645964186,
+      "mc2": 0.34135957735241856,
+      "mc2_stderr": 0.013146439182295815
+    }
+  },
+  "versions": {
+    "ethics_cm": 0,
+    "ethics_deontology": 0,
+    "ethics_justice": 0,
+    "ethics_utilitarianism": 0,
+    "ethics_utilitarianism_original": 0,
+    "ethics_virtue": 0,
+    "truthfulqa_mc": 1
+  },
+  "config": {
+    "model": "/juice5/scr5/nlp/llama_model/llama_hf_latest/llama-7b",
+    "model_args": null,
+    "num_fewshot": 0,
+    "batch_size": 16,
+    "device": null,
+    "no_cache": true,
+    "limit": null,
+    "bootstrap_iters": 100000,
+    "description_dict": null
+  }
+}
