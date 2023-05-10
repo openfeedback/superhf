@@ -17,7 +17,7 @@ use_openai:
 
 language_model_names:
   desc: The name of the language model to use
-  value: null #["/juice5/scr5/nlp/llama_model/alpaca_7b"] # "mock"
+  value: ["/juice5/scr5/nlp/llama_model/alpaca_7b"] # "mock"
 starting_batch_size_lm:
   desc: The starting batch size for the reward model scoring
   value: 64
@@ -26,13 +26,13 @@ max_new_tokens:
   value: 64
 reward_model:
   desc: The name of the reward model to use
-  value: "/nlp/scr/fongsu/rm_combined/gptneo_1.3B_second_half" # "mock"
+  value: "mock" # "/nlp/scr/fongsu/rm_combined/gptneo_1.3B_second_half" # "mock"
 starting_batch_size_rm:
   desc: The starting batch size for the reward model scoring
   value: 64
 scoring_mode:
   desc: Whether to score completions and save them or not.
-  value: True
+  value: False
 
 prompt_dataset_names:
   desc: The list of datasets to use for prompts. See src/superhf/data.py for available datasets.
