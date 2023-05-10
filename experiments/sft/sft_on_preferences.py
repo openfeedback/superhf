@@ -69,8 +69,8 @@ def main() -> None:
             "anthropic-harmless-base",
         ],
     )
-    parser.add_argument("--num_examples", type=int, default=0)
-    parser.add_argument("--lr", type=float, default=3e-5)
+    parser.add_argument("--num_examples", type=int, default=8192)
+    parser.add_argument("--lr", type=float, default=1e-5)
     parser.add_argument("--batch_size", type=int, default=8)
     parser.add_argument("--scheduler_warmup_steps", type=int, default=32)
     parser.add_argument("--mixed_precision", type=str, default="bf16")
@@ -253,9 +253,13 @@ def load_language_tokenizer(language_tokenizer_name: str) -> PreTrainedTokenizer
     """Load the language model tokenizer."""
     if "llama" in language_tokenizer_name or "alpaca" in language_tokenizer_name:
         # Fix for misnamed class in the NLP Cluster's Alpaca tokenizer config
-        language_tokenizer = LlamaTokenizer.from_pretrained(language_tokenizer_name)
+        language_tokenizer = LlamaTokenizer.from_pretrained(
+            language_tokenizer_name, truncate_side="left"
+        )
     else:
-        language_tokenizer = AutoTokenizer.from_pretrained(language_tokenizer_name)
+        language_tokenizer = AutoTokenizer.from_pretrained(
+            language_tokenizer_name, truncate_side="left"
+        )
 
     if language_tokenizer.pad_token is None:
         language_tokenizer.pad_token = language_tokenizer.eos_token
