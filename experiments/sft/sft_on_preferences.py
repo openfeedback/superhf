@@ -137,6 +137,7 @@ def main() -> None:
         report_to=["wandb"],
         lr_scheduler_type="cosine",
         learning_rate=wandb.config.lr,
+        weight_decay=0.01,
         warmup_steps=wandb.config.scheduler_warmup_steps,
         save_steps=save_steps,
     )

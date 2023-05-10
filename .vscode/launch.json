@@ -171,7 +171,7 @@
                 "--model_name",
                 "EleutherAI/pythia-70m-deduped",
                 "--num_examples",
-                "32",
+                "512",
                 "--batch_size",
                 "8",
                 "--scheduler_warmup_steps",
@@ -183,7 +183,7 @@
                 "--hub_repo_id",
                 "test-sft-on-preferences",
                 "--push_interval",
-                "16",
+                "64",
             ],
             "justMyCode": false
         },
