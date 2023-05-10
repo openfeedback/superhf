@@ -69,8 +69,8 @@ def main() -> None:
             "anthropic-harmless-base",
         ],
     )
-    parser.add_argument("--num_examples", type=int, default=8192)
-    parser.add_argument("--lr", type=float, default=3e-5)
+    parser.add_argument("--num_examples", type=int, default=65536)
+    parser.add_argument("--lr", type=float, default=1e-5)
     parser.add_argument("--batch_size", type=int, default=4)
     parser.add_argument("--scheduler_warmup_steps", type=int, default=32)
     parser.add_argument("--mixed_precision", type=str, default="bf16")
@@ -80,7 +80,7 @@ def main() -> None:
     parser.add_argument(
         "--lora_target_modules", type=str, nargs="+", default=["q_proj", "v_proj"]
     )
-    parser.add_argument("--hub_repo_id", type=str, default="sft-on-preferences-v2")
+    parser.add_argument("--hub_repo_id", type=str, default="sft-on-preferences-v3")
     parser.add_argument("--push_interval", type=int, default=128, help="In examples.")
 
     # Initialize wandb and hub api
@@ -165,7 +165,7 @@ def main() -> None:
         """Custom trainer for pushing LoRA adapters to the hub."""
 
         def _save_checkpoint(self, *_: Any, **__: Any) -> None:
-            """Turn off saving the full model to file."""
+            """Hack: Turn off saving the full model to file."""
 
     trainer = CustomTrainer(
         model=language_model,
