@@ -16,10 +16,10 @@ mini_batch_size:
   value: 1 # 2 causes oom with lora_r 8
 batch_size:
   desc: "The batch size" # default 256 in og code
-  value: 4
+  value: 8
 gradient_accumulation_steps:
   desc: "The number of gradient accumulation steps"
-  value: 2
+  value: 1
 max_new_tokens:
   desc: "The maximum number of new tokens to generate per prompt"
   value: 64
@@ -52,7 +52,7 @@ save_every:
     value: 128
 hub_repo_id:
     desc: "The ID of the HuggingFace Hub repo to save to. If empty, doesn't write to the Hub."
-    value: "rlhf-batch-8-max-new-tokens-64"
+    value: "rlhf-v2-batch-8-max-new-tokens-64"
 scheduler_name:
   desc: Name of the scheduler to use for fine-tuning the language model.
   value: "" # was linear
