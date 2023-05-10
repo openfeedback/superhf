@@ -11,6 +11,7 @@ import yaml
 from transformers import (
     PreTrainedTokenizer,
     PreTrainedModel,
+    GPT2Tokenizer,
 )
 import torch
 
@@ -195,21 +196,26 @@ def generate_completions_from_lm(language_model, prompts_dict):
     print_memory_utilization()
 
     # Check for unix
-    if os.name == "posix":
-        print("Compiling models...")
-        print(type(language_model))
-        language_model = torch.compile(language_model)
-        print("Compiled models.")
-        print_memory_utilization()
+    # if os.name == "posix":
+    # TODO Update torch and compile it
+    #     print("Compiling models...")
+    #     print(type(language_model))
+    #     language_model = torch.compile(language_model)
+    #     print("Compiled models.")
+    #     print_memory_utilization()
 
     training_args = SuperHFTrainingArguments(
-        minibatch_size_generating=64, max_new_tokens=128, temperature=0.7
+        minibatch_size_generating=64,
+        max_new_tokens=128,
+        temperature=0.7,
+        kl_coefficient=-1,
     )
     # this completion filter is not used because we do not call trainer.train
     completion_filter = CompletionFilterTopK(1)
 
     reward_model_train = MockRewardModel()
-    reward_tokenizer_train = None  # load_reward_tokenizer("mock")
+    # load gpt2 tokenizer
+    reward_tokenizer_train = GPT2Tokenizer.from_pretrained("gpt2")
 
     trainer = SuperHFTrainer(
         language_model=language_model,
@@ -225,8 +231,8 @@ def generate_completions_from_lm(language_model, prompts_dict):
     completions_dict = {}
     for dataset_name in tqdm(prompts_dict.keys(), desc="Datasets"):
         prompts = prompts_dict[dataset_name]
-        if prompt_batch_size == 0:
-            prompt_batch_size = len(prompts)
+        if trainer.training_args.minibatch_size_generating == 0:
+            trainer.training_args.minibatch_size_generating = len(prompts)
 
         completions_raw = find_executable_batch_size(
             trainer.generate_completions,
@@ -268,6 +274,21 @@ def load_prompts_dictionary(args):
     return completions_dict
 
 
+def load_completions_json(completions_file):
+    """
+    Loads completions from a json file
+
+    Args:
+        completions_file: the json file to load
+
+    Returns:
+        A dictionary with dataset name: list of completions
+    """
+    with open(completions_file, "r", encoding="utf-8") as file:
+        completions_dict = json.load(file)
+    return completions_dict
+
+
 def save_completions(completions_dict, language_model_name):
     """
     Saves completions as a json to TEST_COMPLETIONS_DIR
@@ -299,6 +320,15 @@ def save_completions(completions_dict, language_model_name):
     # else:
 
 
+def save_scores(scores_dict, filename):
+    """
+    Saves scores as a json to TEST_SCORES_DIR
+    """
+    with open(filename, "w", encoding="utf-8") as file:
+        json.dump(scores_dict, file)
+    return filename
+
+
 def main() -> None:
     """
     Main function for running the reward model
@@ -312,8 +342,13 @@ def main() -> None:
         language_model_names = args.language_model_names
     except AttributeError:
         language_model_names = None
+    # print(f"Current directory is {os.getcwd()}")
+    script_path_dir = os.path.dirname(os.path.abspath(__file__))
     # get all the filenames in TEST_COMPLETIONS_DIR
-    already_generated_completions = os.listdir(TEST_COMPLETIONS_DIR)
+    test_completions_dir = os.path.join(script_path_dir, TEST_COMPLETIONS_DIR)
+    if not os.path.exists(test_completions_dir):
+        os.makedirs(test_completions_dir)
+    already_generated_completions = os.listdir(test_completions_dir)
     already_generated_completions = [
         completion.split(".")[0] for completion in already_generated_completions
     ]
@@ -342,7 +377,7 @@ def main() -> None:
                 )
                 continue
             tqdm.write(
-                f"Generating completions with language model {args.language_model_name}"
+                f"Generating completions with language model {language_model_name}"
             )
             completions_dict = generate_completions_from_lm(
                 language_model_name, prompts_dict
@@ -358,6 +393,7 @@ def main() -> None:
         scoring_mode = args.scoring_mode
     except AttributeError:
         scoring_mode = False
+    scores_dict = {}
     if scoring_mode:
         # we are in scoring mode, so score completions
         accelerator = Accelerator()
@@ -373,13 +409,37 @@ def main() -> None:
         #       test_scores folder.
         # TODO read the completions from a file
         # TODO: Find executable batch size
-        scores = score_completions(
-            reward_model=reward_model,
-            reward_model_tokenizer=reward_tokenizer,
-            completions=completions_dict,
-        )
+        already_generated_completions = os.listdir(test_completions_dir)
+        already_generated_completions = [
+            completion.split(".")[0] for completion in already_generated_completions
+        ]
+        test_scores_dir = os.path.join(script_path_dir, TEST_SCORES_DIR)
+        already_generated_scores = os.listdir(test_scores_dir)
+        already_generated_scores = [
+            score.split(".")[0] for score in already_generated_scores
+        ]
+        for language_model_name in tqdm(
+            already_generated_completions, desc="Language models"
+        ):
+            if language_model_name in already_generated_scores:
+                tqdm.write(
+                    f"Already generated scores for language model {language_model_name}"
+                )
+                continue
+            completions_dict = load_completions_json(
+                os.path.join(test_completions_dir, f"{language_model_name}.json")
+            )
+            scores = score_completions(
+                reward_model=reward_model,
+                reward_model_tokenizer=reward_tokenizer,
+                completions=completions_dict,
+            )
+            scores_dict[language_model_name] = scores
+            filename = os.path.join(test_scores_dir, f"{language_model_name}.json")
+            save_scores(scores, filename)
 
-    print(f"there are {len(completions_dict)} completions and {len(scores)} scores")
+    # print(f"there are {len(completions_dict)} completions")
+    # print(f"there are {len(scores)} scores")
 
     # directory for test_completions
     # json with generations
