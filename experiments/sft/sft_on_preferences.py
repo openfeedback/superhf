@@ -139,7 +139,6 @@ def main() -> None:
         learning_rate=wandb.config.lr,
         warmup_steps=wandb.config.scheduler_warmup_steps,
         save_steps=save_steps,
-        # save_strategy="no",
     )
 
     class PushModelCallback(TrainerCallback):
@@ -157,17 +156,28 @@ def main() -> None:
             push_to_hub(
                 hf_api,
                 language_model,
-                language_tokenizer,
                 state.global_step * args.train_batch_size,
             )
 
-    trainer = Trainer(
+    class CustomTrainer(Trainer):
+        """Custom trainer for pushing LoRA adapters to the hub."""
+
+        def _save_checkpoint(self, *_: Any, **__: Any) -> None:
+            """Turn off saving the full model to file."""
+
+    trainer = CustomTrainer(
         model=language_model,
         args=training_args,
         train_dataset=dataset,
         tokenizer=language_tokenizer,
         data_collator=DataCollatorForLanguageModeling(language_tokenizer, mlm=False),
         callbacks=[PushModelCallback],
+    )
+
+    # Push the tokenizer first since it won't change
+    language_tokenizer.push_to_hub(
+        repo_id=wandb.config.hub_repo_id,
+        commit_message="Upload tokenizer",
     )
 
     # Train model
@@ -185,7 +195,6 @@ def main() -> None:
 def push_to_hub(
     hf_api: HfApi,
     model: PreTrainedModel,
-    tokenizer: PreTrainedTokenizerBase,
     num_examples: int,
 ) -> None:
     """Push the model to the hub."""
@@ -204,14 +213,7 @@ def push_to_hub(
                 )
             )
         )
-        tqdm.write(
-            str(
-                tokenizer.push_to_hub(
-                    repo_id=repo_name,
-                    commit_message=f"Upload tokenizer from {num_examples} examples",
-                )
-            )
-        )
+        tqdm.write(str())
         # Create a new branch with the superbatch index as the name
         hf_username = hf_api.whoami()["name"]
         repo_id = hf_username + "/" + repo_name
