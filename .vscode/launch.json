@@ -170,9 +170,9 @@
             "args": [
                 "--model_name",
                 "EleutherAI/pythia-70m-deduped",
-                "--num_prompts",
+                "--num_examples",
                 "32",
-                "--batch_size_initial",
+                "--batch_size",
                 "8",
                 "--scheduler_warmup_steps",
                 "1",
