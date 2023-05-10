@@ -10,3 +10,6 @@ parameters:
       - 1.0e-4
       - 1.0e-5
 program: experiments/superhf/rlhf/rlhf_v1/run_rlhf.py
+sweep_param_name:
+    values:
+      - "lr"

@@ -2,7 +2,7 @@
 Script for running RLHF to compare with SuperHF.
 
 Utilizes hugging face pipelines for the reward model, and PPO trainer from TRL
-to train the language model.
+to train the language model. If a large reward model, does manual generation
 
 Implements LoRA based on this guide -
 https://github.com/lvwerra/trl/blob/52fecee8839ad826ad1e6c83a95c99a4116e98d2/
@@ -81,7 +81,7 @@ class ScriptArguments:
     # NOTE: gpt2 models use Conv1D instead of Linear layers which are not yet supported in 8 bit
     # mode models like gpt-neo* models are more suitable.
     config: Optional[str] = field(
-        # Get file pa`th relative to this file
+        # Get file path relative to this file
         default=os.path.join(os.path.dirname(__file__), "configs", "rlhf_config.yaml"),
         metadata={"help": "The name of the Weights and Biases config to use."},
     )
@@ -90,6 +90,9 @@ class ScriptArguments:
     )
     sweep_id: Optional[str] = field(
         default="", metadata={"help": "sweep id to use to for a sweep"}
+    )
+    sweep_param_name: Optional[str] = field(
+        default="", metadata={"help": "sweep parameter name"}
     )
 
 
@@ -236,7 +239,7 @@ def get_configs():
         model_name=wandb.config.model_name,
         steps=20000,
         learning_rate=wandb.config.learning_rate,
-        adap_kl_ctrl=True,
+        adap_kl_ctrl=False,
         init_kl_coef=wandb.config.init_kl_coef,
         clip_kl=wandb.config.clip_kl,
         target=6,
@@ -407,6 +410,7 @@ def main(script_args: ScriptArguments):
         model_ref = AutoModelForCausalLMWithValueHead.from_pretrained(
             ppo_config.model_name
         )
+    # TODO: potential optimization: maybe the value head isn't loaded in peft and it should be
     language_model = AutoModelForCausalLMWithValueHead.from_pretrained(language_model)
 
     # set seed before initializing value head for deterministic eval
@@ -572,14 +576,49 @@ def main(script_args: ScriptArguments):
             tqdm.write(
                 f"Pushing model and tokenizer to the Hub! Location: {hub_repo_id}"
             )
-            ppo_trainer.model.push_to_hub(
-                repo_id=hub_repo_id,
-                commit_message=f"Upload model from batch {epoch}, run {run_name}",
+            repo_name = hub_repo_id
+            if script_args.sweep_param_name is not None:
+                assert (
+                    script_args.sweep_param_name != "pythia"
+                    or "pythia" in ppo_config.model_name
+                ), (
+                    "Must use a pythia model to add a pythia model size to the repo"
+                    " name."
+                )
+                param_name_to_value = {
+                    # get the actual params
+                    "kl": ppo_config.init_kl_coef,
+                    "lr": ppo_config.learning_rate,
+                    "batch": (
+                        ppo_config.batch_size * ppo_config.gradient_accumulation_steps
+                    ),
+                    "pythia": ppo_config.model_name,
+                }
+                # get the param value specified by the sweep
+                param_value = param_name_to_value[script_args.sweep_param_name]
+                repo_name += f"-{script_args.sweep_param_name}-{param_value}"
+
+            tqdm.write(
+                str(
+                    ppo_trainer.model.push_to_hub(
+                        repo_id=hub_repo_id,
+                        commit_message=(
+                            f"Upload model from batch {epoch}, run {run_name}"
+                        ),
+                    )
+                )
             )
-            ppo_trainer.tokenizer.push_to_hub(
-                repo_id=hub_repo_id,
-                commit_message=f"Upload tokenizer from batch {epoch}, run {run_name}",
+            tqdm.write(
+                str(
+                    ppo_trainer.tokenizer.push_to_hub(
+                        repo_id=hub_repo_id,
+                        commit_message=(
+                            f"Upload tokenizer from batch {epoch}, run {run_name}"
+                        ),
+                    )
+                )
             )
+
     # Explicit finish to avoid wandb hanging
     wandb.alert(
         title="FINISHED SuperHF run!", text="FINISHED SuperHF run! <@W011580CVSN>"
@@ -620,7 +659,12 @@ if __name__ == "__main__":
     args = parse_args()
     if args.sweep_id != "":
         # Run sweeps
-        # with open(args.sweep, encoding="utf-8") as f:
+        # try:
+        #     print(f"{args.sweep_id}")
+        # except AttributeError:
+        #     print("No sweep id found. If doing a sweep, must provide a --sweep-id")
+        #     raise AttributeError
+        # with open(args.sweep, mode="r", encoding="utf-8") as f:
         #     sweep_params = yaml.load(f, Loader=yaml.FullLoader)
         wandb.agent(
             args.sweep_id,

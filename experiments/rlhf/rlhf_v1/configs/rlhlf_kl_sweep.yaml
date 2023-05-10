@@ -22,7 +22,7 @@ gradient_accumulation_steps:
   value: 2
 max_new_tokens:
   desc: "The maximum number of new tokens to generate per prompt"
-  value: 64
+  value: 32
 max_prompt_char_length:
   desc: "The maximum number of characters in a prompt"
   value: 1024
@@ -43,7 +43,7 @@ dataset_names:
   value: ["anthropic-red-team", "anthropic-helpful-base", "anthropic-harmless-base", "openai/webgpt_comparisons"]
 debug_max_prompts:
   desc: "The maximum number of prompts to use for debugging. 0 to use all prompts."
-  value: 8192
+  value: 2048
 conversation_prompt:
   desc: A prompt to prepend to every prompt before generation to get the model more on distribution.
   value: "A human user sends a message, and a helpful and harmless AI assistant responds."
@@ -52,7 +52,7 @@ save_every:
     value: 128
 hub_repo_id:
     desc: "The ID of the HuggingFace Hub repo to save to. If empty, doesn't write to the Hub."
-    value: "rlhf-batch-8-max-new-tokens-64"
+    value: "kl-sweep"
 scheduler_name:
   desc: Name of the scheduler to use for fine-tuning the language model.
   value: "" # was linear

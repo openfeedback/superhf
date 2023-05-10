@@ -13,16 +13,16 @@ learning_rate:
   value: 1.0e-4 # 1.41e-5
 mini_batch_size:
   desc: "The mini-batch size"
-  value: 2 # 2 causes oom
+  value: 1 # 2 causes oom with lora_r 8
 batch_size:
   desc: "The batch size" # default 256 in og code
   value: 4
 gradient_accumulation_steps:
   desc: "The number of gradient accumulation steps"
-  value: 1
+  value: 4
 max_new_tokens:
   desc: "The maximum number of new tokens to generate per prompt"
-  value: 32
+  value: 64
 max_prompt_char_length:
   desc: "The maximum number of characters in a prompt"
   value: 1024
@@ -34,7 +34,7 @@ lora_alpha:
   value: 32
 lora_dropout:
   desc: The dropout parameter for LoRA, or 0 to disable dropout.
-  value: 0.1
+  value: 0.05
 lora_target_modules:
   desc: The list of modules to apply LoRA to. See src/superhf/lora.py for available modules.
   value: ["q_proj", "v_proj"]  # For LLaMa
@@ -43,16 +43,16 @@ dataset_names:
   value: ["anthropic-red-team", "anthropic-helpful-base", "anthropic-harmless-base", "openai/webgpt_comparisons"]
 debug_max_prompts:
   desc: "The maximum number of prompts to use for debugging. 0 to use all prompts."
-  value: 4000
+  value: 8192
 conversation_prompt:
   desc: A prompt to prepend to every prompt before generation to get the model more on distribution.
   value: "A human user sends a message, and a helpful and harmless AI assistant responds."
 save_every:
     desc: "Save the model every n epochs"
-    value: 32
+    value: 128
 hub_repo_id:
     desc: "The ID of the HuggingFace Hub repo to save to. If empty, doesn't write to the Hub."
-    value: ""
+    value: "rlhf-batch-16-max-new-tokens-64"
 scheduler_name:
   desc: Name of the scheduler to use for fine-tuning the language model.
   value: "" # was linear
@@ -67,13 +67,13 @@ clip_kl:
   value: false
 normalize_reward:
   desc: Whether to normalize the reward to have mean zero
-  value: true
+  value: false
 reward_mean:
   desc: The mean of the reward distribution, if we are normalizing it.
   value: 0.0
 offset_reward:
-  desc: The offset of the reward distribution, to be added to all rewards.
-  value: 2.0
+  desc: The offset of the reward distribution, to be added to all rewards. Used if not normalizing reward.
+  value: 0.0
 top_p:
   desc: The top-p value for nucleus sampling
   value: 0.95

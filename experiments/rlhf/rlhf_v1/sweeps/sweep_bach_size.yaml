@@ -9,8 +9,7 @@ parameters:
       - 8
       - 16
       - 2
-  normalize_reward:
-    values:
-      - true
-      - false
 program: experiments/superhf/rlhf/rlhf_v1/run_rlhf.py
+sweep_param_name:
+    values:
+      - "batch-size"

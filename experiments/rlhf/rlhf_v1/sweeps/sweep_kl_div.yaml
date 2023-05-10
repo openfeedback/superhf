@@ -16,3 +16,6 @@ parameters:
       - 0.35
       - 0.4
 program: experiments/superhf/rlhf/rlhf_v1/run_rlhf.py
+sweep_param_name:
+    values:
+      - "kl"
