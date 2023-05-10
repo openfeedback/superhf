@@ -409,9 +409,8 @@ def main() -> None:
             )
             save_completions(completions_dict, filename)
 
-        del prompts_dict
-        del completions_dict
-        del cached_model
+        # del prompts_dict
+        # del cached_model
     else:
         raise NotImplementedError(
             "Must specify at least a language model or wandb to load generations"
