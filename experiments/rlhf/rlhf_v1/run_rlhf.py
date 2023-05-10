@@ -293,6 +293,7 @@ def get_configs():
         "top_p": wandb.config.top_p,
         "do_sample": True,
         "pad_token_id": language_tokenizer.eos_token_id,
+        "eos_token_id": -1,
         "max_new_tokens": wandb.config.max_new_tokens,
     }
 
