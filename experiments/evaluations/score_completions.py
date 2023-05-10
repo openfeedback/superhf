@@ -193,14 +193,25 @@ def score_completions(
 
 
 def generate_completions_from_lm(
-    starting_batch_size, language_model, existing_model, prompts_dict
+    starting_batch_size,
+    language_model,
+    prev_language_model,
+    prev_lm_tokenizer,
+    prompts_dict,
 ):
     """
     Given a language model and test prompts and then generates completions
 
     Args:
-        args.language_model:
-        completions_dict: the dictionary containing dataset: list of completions
+        starting_batch_size: The batch size to use for the first batch.
+        language_model: The language model to use.
+        prev_language_model: The previous language model to use.
+        prev_lm_tokenizer: The previous language model tokenizer to use.
+        prompts_dict: The prompts to use.
+
+    Returns:
+        A list of completions and cached model and tokenizer, as well as a potentially
+        reduced batch size due to cuda oom.
     """
     # pylint: disable=too-many-locals
     print_memory_utilization()
@@ -211,12 +222,13 @@ def generate_completions_from_lm(
     except IndexError:
         revision = None
     language_model, language_tokenizer = load_eval_model_and_tokenizer(
-        language_model_path,
-        existing_model,
+        model_path=language_model_path,
+        prev_model=prev_language_model,
+        prev_tokenizer=prev_lm_tokenizer,
         revision=revision,
         model_type="language",
-        torch_dtype=torch.bfloat16,
         tokenizer_padding_side="left",
+        torch_dtype=torch.bfloat16,  # kwargs
     )
     print_memory_utilization()
 
@@ -226,6 +238,7 @@ def generate_completions_from_lm(
         temperature=0.7,
         kl_coefficient=-1,
         superbatch_size=1,  # we don't want to duplicate prompts
+        minibatch_size_generating=starting_batch_size,
     )
     # this completion filter is not used because we do not call trainer.train
     completion_filter = CompletionFilterTopK(1)
@@ -253,7 +266,7 @@ def generate_completions_from_lm(
 
         completions_raw = find_executable_batch_size(
             trainer.generate_completions,
-            starting_batch_size,
+            trainer.training_args.minibatch_size_generating,
         )(prompts)
 
         tqdm.write(
@@ -263,7 +276,12 @@ def generate_completions_from_lm(
         print_memory_utilization()
         completions_dict[dataset_name] = completions_raw
 
-    return completions_dict, language_model, language_tokenizer, starting_batch_size
+    return (
+        completions_dict,
+        language_model,
+        language_tokenizer,
+        trainer.training_args.minibatch_size_generating,
+    )
 
 
 def load_prompts_dictionary(args):
@@ -403,9 +421,13 @@ def main() -> None:
                 f"Generating completions with language model {language_model_name}"
             )
             completions_dict, prev_model, prev_tokenizer, starting_batch_size_lm = (
-                find_executable_batch_size(
-                    generate_completions_from_lm, starting_batch_size_lm
-                )(language_model_name, prev_model, prev_tokenizer, prompts_dict)
+                generate_completions_from_lm(
+                    starting_batch_size=starting_batch_size_lm,
+                    language_model=language_model_name,
+                    prev_language_model=prev_model,
+                    prev_lm_tokenizer=prev_tokenizer,
+                    prompts_dict=prompts_dict,
+                )
             )
             filename = os.path.join(
                 test_completions_dir, f"{language_model_base_name}.json"
