@@ -233,7 +233,6 @@ def generate_completions_from_lm(
     print_memory_utilization()
 
     training_args = SuperHFTrainingArguments(
-        minibatch_size_generating=64,
         max_new_tokens=128,
         temperature=0.7,
         kl_coefficient=-1,
