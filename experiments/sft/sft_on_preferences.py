@@ -70,8 +70,8 @@ def main() -> None:
         ],
     )
     parser.add_argument("--num_examples", type=int, default=8192)
-    parser.add_argument("--lr", type=float, default=1e-5)
-    parser.add_argument("--batch_size", type=int, default=8)
+    parser.add_argument("--lr", type=float, default=3e-5)
+    parser.add_argument("--batch_size", type=int, default=4)
     parser.add_argument("--scheduler_warmup_steps", type=int, default=32)
     parser.add_argument("--mixed_precision", type=str, default="bf16")
     parser.add_argument("--lora_r", type=int, default=4)
@@ -80,7 +80,7 @@ def main() -> None:
     parser.add_argument(
         "--lora_target_modules", type=str, nargs="+", default=["q_proj", "v_proj"]
     )
-    parser.add_argument("--hub_repo_id", type=str, default="sft-on-preferences")
+    parser.add_argument("--hub_repo_id", type=str, default="sft-on-preferences-v2")
     parser.add_argument("--push_interval", type=int, default=128, help="In examples.")
 
     # Initialize wandb and hub api
@@ -140,6 +140,7 @@ def main() -> None:
         weight_decay=0.01,
         warmup_steps=wandb.config.scheduler_warmup_steps,
         save_steps=save_steps,
+        logging_steps=save_steps,
     )
 
     class PushModelCallback(TrainerCallback):
