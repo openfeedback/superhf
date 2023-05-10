@@ -7,9 +7,9 @@ import argparse
 import random
 from typing import Any
 
-# from typing import Dict, List, Tuple
-
 from datasets import Dataset
+from huggingface_hub import HfApi
+from huggingface_hub.utils import HfHubHTTPError
 import torch
 from transformers import (
     AutoModelForCausalLM,
@@ -25,6 +25,7 @@ from transformers import (
     DataCollatorForLanguageModeling,
 )
 from peft import get_peft_model, LoraConfig
+from tqdm import tqdm
 import wandb
 
 from superhf.data import get_superhf_prompts
@@ -37,6 +38,8 @@ WANDB_PROJECT_NAME = "superhf-v3"
 
 def main() -> None:
     """Main execution of the script."""
+
+    # pylint: disable=too-many-statements
 
     # Initialization
     print_memory_utilization()
@@ -78,9 +81,11 @@ def main() -> None:
         "--lora_target_modules", type=str, nargs="+", default=["q_proj", "v_proj"]
     )
     parser.add_argument("--hub_repo_id", type=str, default="sft-on-preferences")
-    parser.add_argument("--push_interval", type=int, default=128)
+    parser.add_argument("--push_interval", type=int, default=128, help="In examples.")
 
-    # Initialize wandb
+    # Initialize wandb and hub api
+    hf_api = HfApi()
+    hf_api.whoami()
     run = wandb.init(
         entity=WANDB_ENTITY_NAME,
         project=WANDB_PROJECT_NAME,
@@ -121,15 +126,20 @@ def main() -> None:
     # dataset = language_tokenizer(examples, padding="max_length", truncation=True)
 
     # Initializer trainer
+    save_steps = wandb.config.push_interval / wandb.config.batch_size
+    assert save_steps.is_integer(), "Push interval must be divisible by batch size."
+    save_steps = int(save_steps)
     training_args = TrainingArguments(
         output_dir="./sft_training_output/",
+        num_train_epochs=1,
         per_device_train_batch_size=wandb.config.batch_size,
         bf16=wandb.config.mixed_precision == "bf16",
         report_to=["wandb"],
         lr_scheduler_type="cosine",
         learning_rate=wandb.config.lr,
         warmup_steps=wandb.config.scheduler_warmup_steps,
-        save_steps=wandb.config.push_interval,
+        save_steps=save_steps,
+        # save_strategy="no",
     )
 
     class PushModelCallback(TrainerCallback):
@@ -145,9 +155,10 @@ def main() -> None:
             """Push the model to the hub."""
             print_memory_utilization()
             push_to_hub(
+                hf_api,
                 language_model,
                 language_tokenizer,
-                state.global_step * args.per_device_train_batch_size,
+                state.global_step * args.train_batch_size,
             )
 
     trainer = Trainer(
@@ -172,13 +183,45 @@ def main() -> None:
 
 
 def push_to_hub(
-    model: PreTrainedModel, tokenizer: PreTrainedTokenizerBase, step: int
+    hf_api: HfApi,
+    model: PreTrainedModel,
+    tokenizer: PreTrainedTokenizerBase,
+    num_examples: int,
 ) -> None:
     """Push the model to the hub."""
-    print("Pushing to hub...")
-    print(model)
-    print(tokenizer)
-    print(step)
+    assert hf_api is not None
+
+    tqdm.write("🚀 Pushing model and tokenizer to the Hub!")
+    repo_name = wandb.config.hub_repo_id
+    if "debug" in repo_name:
+        tqdm.write(repo_name + " (not actually pushed due to 'debug' in name)")
+    else:
+        tqdm.write(
+            str(
+                model.push_to_hub(
+                    repo_id=repo_name,
+                    commit_message=f"Upload model from {num_examples} examples",
+                )
+            )
+        )
+        tqdm.write(
+            str(
+                tokenizer.push_to_hub(
+                    repo_id=repo_name,
+                    commit_message=f"Upload tokenizer from {num_examples} examples",
+                )
+            )
+        )
+        # Create a new branch with the superbatch index as the name
+        hf_username = hf_api.whoami()["name"]
+        repo_id = hf_username + "/" + repo_name
+        branch = f"step-{num_examples:04}"
+        try:
+            hf_api.create_branch(repo_id=repo_id, branch=branch)
+        except HfHubHTTPError:
+            # Delete the branch first
+            hf_api.delete_branch(repo_id=repo_id, branch=branch)
+            hf_api.create_branch(repo_id=repo_id, branch=branch)
 
 
 def load_language_model(language_model_name: str) -> PreTrainedModel:
