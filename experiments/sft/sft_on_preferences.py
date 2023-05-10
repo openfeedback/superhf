@@ -4,9 +4,11 @@ train dataset and do supervised fine-tuning on them.
 """
 
 import argparse
+import random
 
 # from typing import Dict, List, Tuple
 
+import torch
 from transformers import (
     AutoModelForCausalLM,
     AutoTokenizer,
@@ -17,7 +19,9 @@ from transformers import (
 from peft import get_peft_model, LoraConfig
 import wandb
 
-# from superhf.data import get_superhf_prompts
+from superhf.data import get_superhf_prompts
+from superhf.utils import print_memory_utilization, set_seed
+
 # from reward_modelling.reward_model import RewardModel
 
 
@@ -27,6 +31,21 @@ WANDB_PROJECT_NAME = "superhf-v3"
 
 def main() -> None:
     """Main execution of the script."""
+
+    # Initialization
+    print_memory_utilization()
+
+    # Attempt to fix too many open files issue on SLURM
+    torch.multiprocessing.set_sharing_strategy("file_system")
+
+    # Configure seed
+    set_seed(66)
+
+    # Enable tf32 training if supported
+    if torch.cuda.is_available() and torch.cuda.get_device_capability()[0] >= 8:
+        print("Enabling tf32 training.")
+        torch.backends.cuda.matmul.allow_tf32 = True
+        torch.backends.cudnn.allow_tf32 = True
 
     # Parse arguments
     parser = argparse.ArgumentParser(
@@ -40,10 +59,8 @@ def main() -> None:
         type=str,
         nargs="+",
         default=[
-            "anthropic-red-team",
             "anthropic-helpful-base",
             "anthropic-harmless-base",
-            "openai/webgpt_comparisons",
         ],
     )
     parser.add_argument("--num_prompts", type=int, default=0)
@@ -70,6 +87,18 @@ def main() -> None:
     assert run is not None
 
     # Load dataset
+    prompts: list[str] = []
+    for dataset_name in wandb.config.datasets:
+        prompts.extend(get_superhf_prompts(dataset_name, load_whole_completion=True))
+    random.shuffle(prompts)
+
+    # Only load the first section of prompts
+    if wandb.config.num_prompts != 0:
+        prompts = prompts[: wandb.config.num_prompts]
+
+    print(f"Loaded {len(prompts)} prompts.")
+    print_memory_utilization()
+    print("Instantiating models...")
 
     # Load model and tokenizer
 

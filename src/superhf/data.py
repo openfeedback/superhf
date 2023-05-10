@@ -25,7 +25,9 @@ T = TypeVar("T")
 TEST_SET_SIZE_PER_DATASET = 2300
 
 
-def get_superhf_prompts(dataset_name: str, split: str = "train") -> list[str]:
+def get_superhf_prompts(
+    dataset_name: str, split: str = "train", load_whole_completion: bool = False
+) -> list[str]:
     """
     Get a list of prompts from a dataset.
 
@@ -37,13 +39,19 @@ def get_superhf_prompts(dataset_name: str, split: str = "train") -> list[str]:
             - 'anthropic-helpful-base'
             - 'mock'
         split: The split of the dataset to load.
+        load_whole_completion: Whether to load the whole completion or just the prompt.
 
     Returns:
         A list of prompts.
     """
+    # pylint: disable=too-many-branches
+
     # Load the appropriate dataset then convert to a list of prompts
-    prompts: list[str] = []
+    output: list[str] = []
     if dataset_name == "anthropic-red-team":
+        assert (
+            not load_whole_completion
+        ), f"{dataset_name} not supported for chosen completions."
         dataset = load_dataset(
             "Anthropic/hh-rlhf",
             data_dir="red-team-attempts",
@@ -51,21 +59,15 @@ def get_superhf_prompts(dataset_name: str, split: str = "train") -> list[str]:
             keep_in_memory=False,
         )
         if split == "train":
-            prompts.extend(
-                [
-                    dict(row)["transcript"].split("\n\nAssistant:")[0]
-                    + "\n\nAssistant:"
-                    for row in dataset
-                ][:-TEST_SET_SIZE_PER_DATASET]
-            )
+            output = [
+                dict(row)["transcript"].split("\n\nAssistant:")[0] + "\n\nAssistant:"
+                for row in dataset
+            ][:-TEST_SET_SIZE_PER_DATASET]
         elif split == "test":
-            prompts.extend(
-                [
-                    dict(row)["transcript"].split("\n\nAssistant:")[0]
-                    + "\n\nAssistant:"
-                    for row in dataset
-                ][-TEST_SET_SIZE_PER_DATASET:]
-            )
+            output = [
+                dict(row)["transcript"].split("\n\nAssistant:")[0] + "\n\nAssistant:"
+                for row in dataset
+            ][-TEST_SET_SIZE_PER_DATASET:]
         else:
             raise ValueError(
                 f"split must be one of 'test' or 'train'. Instead got {split}"
@@ -77,19 +79,18 @@ def get_superhf_prompts(dataset_name: str, split: str = "train") -> list[str]:
             keep_in_memory=False,
         )
         if split == "train":
-            prompts.extend(
-                [
-                    "\n\nHuman: " + row["question"]["full_text"] + "\n\nAssistant:"
-                    for row in dataset
-                ][:-TEST_SET_SIZE_PER_DATASET]
-            )
+            assert (
+                not load_whole_completion
+            ), f"{dataset_name} not supported for chosen completions."
+            output = [
+                "\n\nHuman: " + row["question"]["full_text"] + "\n\nAssistant:"
+                for row in dataset
+            ][:-TEST_SET_SIZE_PER_DATASET]
         elif split == "test":
-            prompts.extend(
-                [
-                    "\n\nHuman: " + row["question"]["full_text"] + "\n\nAssistant:"
-                    for row in dataset
-                ][-TEST_SET_SIZE_PER_DATASET:]
-            )
+            output = [
+                "\n\nHuman: " + row["question"]["full_text"] + "\n\nAssistant:"
+                for row in dataset
+            ][-TEST_SET_SIZE_PER_DATASET:]
         else:
             raise ValueError(
                 f"split must be one of 'test' or 'train'. Instead got {split}"
@@ -101,12 +102,13 @@ def get_superhf_prompts(dataset_name: str, split: str = "train") -> list[str]:
             split=split,
             keep_in_memory=False,
         )
-        prompts.extend(
-            [
+        if load_whole_completion:
+            output = [row["chosen"] for row in dataset]
+        else:
+            output = [
                 row["chosen"].split("\n\nAssistant:")[0] + "\n\nAssistant:"
                 for row in dataset
             ]
-        )
     elif dataset_name == "anthropic-helpful-base":
         dataset = load_dataset(
             "Anthropic/hh-rlhf",
@@ -114,14 +116,15 @@ def get_superhf_prompts(dataset_name: str, split: str = "train") -> list[str]:
             split=split,
             keep_in_memory=False,
         )
-        prompts.extend(
-            [
+        if load_whole_completion:
+            output = [row["chosen"] for row in dataset]
+        else:
+            output = [
                 row["chosen"].split("\n\nAssistant:")[0] + "\n\nAssistant:"
                 for row in dataset
             ]
-        )
     elif dataset_name == "mock":
-        prompts.extend(
+        output.extend(
             [
                 f"{i}\n\nHuman: ...\n\nAssistant: Sphinx of black quartz, judge my vow."
                 for i in range(50000)
@@ -133,7 +136,7 @@ def get_superhf_prompts(dataset_name: str, split: str = "train") -> list[str]:
             + f"supported datasets: {SUPPORTED_DATASETS}"
         )
 
-    return prompts
+    return output
 
 
 class ListDataset(IterableDataset[T]):

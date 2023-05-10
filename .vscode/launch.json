@@ -170,8 +170,6 @@
             "args": [
                 "--model_name",
                 "EleutherAI/pythia-70m-deduped",
-                "--datasets",
-                "anthropic-harmless-base",
                 "--num_prompts",
                 "32",
                 "--batch_size_initial",
