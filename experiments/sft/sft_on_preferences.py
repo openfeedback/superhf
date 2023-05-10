@@ -39,7 +39,7 @@ WANDB_PROJECT_NAME = "sft-on-preferences"
 def main() -> None:
     """Main execution of the script."""
 
-    # pylint: disable=too-many-statements
+    # pylint: disable=too-many-statements,too-many-locals
 
     # Initialization
     print_memory_utilization()
@@ -70,6 +70,7 @@ def main() -> None:
         ],
     )
     parser.add_argument("--num_examples", type=int, default=65536)
+    parser.add_argument("--max_example_char_length", type=int, default=2048)
     parser.add_argument("--lr", type=float, default=1e-5)
     parser.add_argument("--batch_size", type=int, default=4)
     parser.add_argument("--scheduler_warmup_steps", type=int, default=32)
@@ -99,6 +100,19 @@ def main() -> None:
     for dataset_name in wandb.config.datasets:
         examples.extend(get_superhf_prompts(dataset_name, load_whole_completion=True))
     random.shuffle(examples)
+
+    # Filter out prompts that are too long
+    old_prompt_count = len(examples)
+    filtered = [
+        prompt
+        for prompt in examples
+        if len(prompt) < wandb.config.max_example_char_length
+    ]
+    print(
+        f"Filtered {old_prompt_count - len(filtered)} prompts over "
+        f"{wandb.config.max_example_char_length} chars."
+    )
+    examples = filtered
 
     # Only load the first section of prompts
     if wandb.config.num_examples != 0:
