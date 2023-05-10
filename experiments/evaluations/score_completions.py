@@ -28,8 +28,13 @@ from superhf.training import SuperHFTrainingArguments, SuperHFTrainer
 from superhf.filtering import CompletionFilterTopK
 from superhf.mocking import MockRewardModel
 
+# Default parameters
 WANDB_ENTITY_NAME = "stanfordaialignment"
 WANDB_PROJECT_NAME = "rlhf-trl-v1"
+
+# folder to be used for saving and loading test set eval data
+TEST_COMPLETIONS_DIR = "test_completions"
+TEST_SCORES_DIR = "test_scores"
 
 
 def parse_args() -> argparse.Namespace:
@@ -168,31 +173,20 @@ def score_completions(
     return scores
 
 
-def generate_completions_from_lm(args):
+def generate_completions_from_lm(language_model, prompts_dict):
     """
-    Given a language model, loads in test prompts and then generates completions
+    Given a language model and test prompts and then generates completions
+
+    Args:
+        args.language_model:
+        completions_dict: the dictionary containing dataset: list of completions
     """
     # pylint: disable=too-many-locals
-    # Get the prompt dataset
-    prompts: list[str] = []
-    for dataset_name in args.prompt_dataset_names:
-        prompts.extend(get_superhf_prompts(dataset_name, split="test"))
-
-    # Filter out prompts that are too long
-    old_prompt_count = len(prompts)
-    prompts = [
-        prompt for prompt in prompts if len(prompt) < args.max_prompt_char_length
-    ]
-    print(
-        f"Filtered {old_prompt_count - len(prompts)} prompts over "
-        f"{args.max_prompt_char_length} chars."
-    )
-    print(f"Loaded {len(prompts)} prompts.")
     print_memory_utilization()
 
-    language_model_path = args.language_model.split("@")[0]
+    language_model_path = language_model.split("@")[0]
     try:
-        revision = args.language_model.split("@")[1]
+        revision = language_model.split("@")[1]
     except IndexError:
         revision = None
     language_model, language_tokenizer = load_eval_model_and_tokenizer(
@@ -209,7 +203,7 @@ def generate_completions_from_lm(args):
         print_memory_utilization()
 
     training_args = SuperHFTrainingArguments(
-        minibatch_size_generating=16, max_new_tokens=128, temperature=0.7
+        minibatch_size_generating=64, max_new_tokens=128, temperature=0.7
     )
     # this completion filter is not used because we do not call trainer.train
     completion_filter = CompletionFilterTopK(1)
@@ -228,17 +222,81 @@ def generate_completions_from_lm(args):
         training_args=training_args,
     )
 
-    if prompt_batch_size == 0:
-        prompt_batch_size = len(prompts)
+    completions_dict = {}
+    for dataset_name in tqdm(prompts_dict.keys(), desc="Datasets"):
+        prompts = prompts_dict[dataset_name]
+        if prompt_batch_size == 0:
+            prompt_batch_size = len(prompts)
 
-    completions_raw = find_executable_batch_size(
-        trainer.generate_completions,
-        trainer.training_args.minibatch_size_generating,
-    )(prompts)
+        completions_raw = find_executable_batch_size(
+            trainer.generate_completions,
+            trainer.training_args.minibatch_size_generating,
+        )(prompts)
 
-    print(f"The length of completions is {len(completions_raw)}")
+        tqdm.write(
+            f"The length of completions is {len(completions_raw)} for dataset"
+            f" {dataset_name}"
+        )
+        completions_dict[dataset_name] = completions_raw
 
-    return completions_raw
+    return completions_dict
+
+
+def load_prompts_dictionary(args):
+    """
+    Args:
+        prompt_dataset_names: the list of dataets to load
+    Returns:
+        A dicitonary with the dataset name: list of prompts
+    """
+    # Get the prompt dataset
+    completions_dict = {}
+    for dataset_name in args.prompt_dataset_names:
+        prompts = get_superhf_prompts(dataset_name, split="test")
+
+        # Filter out prompts that are too long
+        old_prompt_count = len(prompts)
+        prompts = [
+            prompt for prompt in prompts if len(prompt) < args.max_prompt_char_length
+        ]
+        print(
+            f"Filtered {old_prompt_count - len(prompts)} prompts over "
+            f"{args.max_prompt_char_length} chars from dataset {dataset_name}"
+        )
+        print(f"Loaded {len(prompts)} prompts for dataset {dataset_name}")
+        completions_dict[dataset_name] = prompts
+    return completions_dict
+
+
+def save_completions(completions_dict, language_model_name):
+    """
+    Saves completions as a json to TEST_COMPLETIONS_DIR
+
+    Args:
+        completions_dict:
+
+    Returns:
+        The filename of where the completions were saved as a json file
+    """
+
+    if not os.path.exists(TEST_COMPLETIONS_DIR):
+        os.makedirs(TEST_COMPLETIONS_DIR)
+
+    filename = os.path.join(TEST_COMPLETIONS_DIR, f"{language_model_name}.json")
+    with open(filename, "w", encoding="utf-8") as file:
+        json.dump(completions_dict, file)
+    return filename
+
+    # if completions_file is not None:
+    #     if "openai" in args.completions_file:
+    #         completions = read_openai_completions(args.completions_file)
+    #     else:
+    #         # raise an unimplemented error
+    #         raise NotImplementedError(
+    #             "Need to implement general loading from a file. "
+    #             " Specify openai flag otherwsie"
+    #         )
+    # else:
 
 
 def main() -> None:
@@ -250,46 +308,58 @@ def main() -> None:
     # pylint: disable=too-many-branches
     args = parse_args()
 
-    completions: List[str] = []
-    scores: List[float] = []
     try:
-        completions_file = args.completions_file
+        language_model_names = args.language_model_names
     except AttributeError:
-        completions_file = None
+        language_model_names = None
+    # get all the filenames in TEST_COMPLETIONS_DIR
+    already_generated_completions = os.listdir(TEST_COMPLETIONS_DIR)
+    already_generated_completions = [
+        completion.split(".")[0] for completion in already_generated_completions
+    ]
 
-    if completions_file is not None:
-        if "openai" in args.completions_file:
-            completions = read_openai_completions(args.completions_file)
-        else:
-            # raise an unimplemented error
-            raise NotImplementedError(
-                "Need to implement general loading from a file. "
-                " Specify openai flag otherwsie"
-            )
-
-    else:
-        if args.wandb_run_id is not None:
-            # grab completions from wandb
-            completions_batched, scores_batched = load_completions_wandb(
-                entity_name=args.wandb_entity_name,
-                project_name=args.wandb_project_name,
-                run_id=args.wandb_run_id,
-            )
-            for batch in completions_batched:
-                completions.extend(batch)
-            for batch_scores in scores_batched:
-                scores.extend(batch_scores)
-        elif args.language_model is not None:
+    # if args.wandb_run_id is not None:
+    #     # grab completions from wandb
+    #     completions_batched, scores_batched = load_completions_wandb(
+    #         entity_name=args.wandb_entity_name,
+    #         project_name=args.wandb_project_name,
+    #         run_id=args.wandb_run_id,
+    #     )
+    #     for batch in completions_batched:
+    #         completions.extend(batch)
+    #     for batch_scores in scores_batched:
+    #         scores.extend(batch_scores)
+    if language_model_names is not None:
+        prompts_dict = load_prompts_dictionary(args)
+        for language_model_name in tqdm(
+            args.language_model_names, desc="Language models"
+        ):
+            #  it does, don't generate here
+            if language_model_name in already_generated_completions:
+                tqdm.write(
+                    "Already generated completions for language model"
+                    f" {language_model_name}"
+                )
+                continue
             tqdm.write(
-                f"Generating completions with language model {args.language_model}"
+                f"Generating completions with language model {args.language_model_name}"
             )
-            completions = generate_completions_from_lm(args)
-        else:
-            raise NotImplementedError(
-                "Must specify at least a language model or wandb to load generations"
-                " from, or a completions file with completions from openAI"
+            completions_dict = generate_completions_from_lm(
+                language_model_name, prompts_dict
             )
-    if not scores:
+            save_completions(completions_dict, language_model_name)
+    else:
+        raise NotImplementedError(
+            "Must specify at least a language model or wandb to load generations"
+            " from, or a completions file with completions from openAI"
+        )
+
+    try:
+        scoring_mode = args.scoring_mode
+    except AttributeError:
+        scoring_mode = False
+    if scoring_mode:
+        # we are in scoring mode, so score completions
         accelerator = Accelerator()
         reward_model, reward_tokenizer = load_eval_model_and_tokenizer(
             args.reward_model, model_type="reward"
@@ -297,13 +367,19 @@ def main() -> None:
         if not isinstance(reward_model, str):
             reward_model = accelerator.prepare(reward_model)
         print_memory_utilization()
+
+        # TODO: Move this into a for loop over all the completions in the
+        #       test_completions folder. Don't sccore if the corresponding file exists in
+        #       test_scores folder.
+        # TODO read the completions from a file
+        # TODO: Find executable batch size
         scores = score_completions(
             reward_model=reward_model,
             reward_model_tokenizer=reward_tokenizer,
-            completions=completions,
+            completions=completions_dict,
         )
 
-    print(f"there are {len(completions)} completions and {len(scores)} scores")
+    print(f"there are {len(completions_dict)} completions and {len(scores)} scores")
 
     # directory for test_completions
     # json with generations

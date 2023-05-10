@@ -15,9 +15,12 @@ use_openai:
   desc: Whether to use the openai reward model
   value: false
 
-language_model:
+language_model_names:
   desc: The name of the language model to use
-  value: "mock" # "mock"
+  value: ["mock"] # "mock"
+max_new_tokens:
+  desc: The number of new tokens to generate
+  value: 64
 reward_model:
   desc: The name of the reward model to use
   value: "mock"
