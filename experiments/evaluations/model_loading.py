@@ -47,6 +47,7 @@ def load_eval_model_and_tokenizer(
     verbose: bool = False,
     revision: Optional[str] = None,
     model_type: Optional[str] = "language",
+    tokenizer_padding_side: Optional[str] = None,
     **model_kwargs: Any,
 ) -> tuple[torch.nn.Module, PreTrainedTokenizerBase]:
     """
@@ -72,6 +73,7 @@ def load_eval_model_and_tokenizer(
     # pylint: disable=protected-access
     # pylint: disable=too-many-branches
     # pylint: disable=too-many-statements
+    # pylint: disable=too-many-locals
 
     assert (prev_model is None and prev_tokenizer is None) or (
         prev_model is not None and prev_tokenizer is not None
@@ -173,6 +175,16 @@ def load_eval_model_and_tokenizer(
     # Set device
     model = model.to(torch.device("cuda" if torch.cuda.is_available() else "cpu"))
 
+    prev_padding_side = tokenizer.padding_side
+    if (
+        tokenizer_padding_side is not None
+        and tokenizer_padding_side != prev_padding_side
+    ):
+        tqdm.write(
+            f"Changing padding side from {prev_padding_side} to"
+            f" {tokenizer_padding_side}."
+        )
+        tokenizer.padding_side = tokenizer_padding_side
     return model, tokenizer
 
 

@@ -216,6 +216,7 @@ def generate_completions_from_lm(
         revision=revision,
         model_type="language",
         torch_dtype=torch.bfloat16,
+        tokenizer_padding_side="left",
     )
     print_memory_utilization()
 
@@ -262,7 +263,7 @@ def generate_completions_from_lm(
         print_memory_utilization()
         completions_dict[dataset_name] = completions_raw
 
-    return completions_dict, language_model, starting_batch_size
+    return completions_dict, language_model, language_tokenizer, starting_batch_size
 
 
 def load_prompts_dictionary(args):
@@ -385,7 +386,8 @@ def main() -> None:
     if language_model_names is not None:
         starting_batch_size_lm = args.starting_batch_size_lm
         prompts_dict = load_prompts_dictionary(args)
-        cached_model = None
+        prev_model = None
+        prev_tokenizer = None
         for language_model_name in tqdm(
             args.language_model_names, desc="Language models"
         ):
@@ -400,10 +402,10 @@ def main() -> None:
             tqdm.write(
                 f"Generating completions with language model {language_model_name}"
             )
-            completions_dict, cached_model, starting_batch_size_lm = (
+            completions_dict, prev_model, prev_tokenizer, starting_batch_size_lm = (
                 find_executable_batch_size(
                     generate_completions_from_lm, starting_batch_size_lm
-                )(language_model_name, cached_model, prompts_dict)
+                )(language_model_name, prev_model, prev_tokenizer, prompts_dict)
             )
             filename = os.path.join(
                 test_completions_dir, f"{language_model_base_name}.json"
@@ -411,7 +413,7 @@ def main() -> None:
             save_completions(completions_dict, filename)
 
         # del prompts_dict
-        # del cached_model
+        # del prev_model
     elif not scoring_mode:
         raise NotImplementedError(
             "Must specify at least a language model or wandb to load generations from,"
