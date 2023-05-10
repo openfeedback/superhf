@@ -33,7 +33,7 @@ from superhf.utils import print_memory_utilization, set_seed
 
 
 WANDB_ENTITY_NAME = "stanfordaialignment"
-WANDB_PROJECT_NAME = "superhf-v3"
+WANDB_PROJECT_NAME = "sft-on-preferences"
 
 
 def main() -> None:
