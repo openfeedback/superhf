@@ -289,7 +289,7 @@ def load_completions_json(completions_file):
     return completions_dict
 
 
-def save_completions(completions_dict, language_model_name):
+def save_completions(completions_dict, filename):
     """
     Saves completions as a json to TEST_COMPLETIONS_DIR
 
@@ -299,13 +299,9 @@ def save_completions(completions_dict, language_model_name):
     Returns:
         The filename of where the completions were saved as a json file
     """
-
-    if not os.path.exists(TEST_COMPLETIONS_DIR):
-        os.makedirs(TEST_COMPLETIONS_DIR)
-
-    filename = os.path.join(TEST_COMPLETIONS_DIR, f"{language_model_name}.json")
     with open(filename, "w", encoding="utf-8") as file:
         json.dump(completions_dict, file)
+    tqdm.write(f"Saved completions to {filename}")
     return filename
 
     # if completions_file is not None:
@@ -324,6 +320,7 @@ def save_scores(scores_dict, filename):
     """
     Saves scores as a json to TEST_SCORES_DIR
     """
+    tqdm.write(f"Saving scores to {filename}")
     with open(filename, "w", encoding="utf-8") as file:
         json.dump(scores_dict, file)
     return filename
@@ -382,7 +379,8 @@ def main() -> None:
             completions_dict = generate_completions_from_lm(
                 language_model_name, prompts_dict
             )
-            save_completions(completions_dict, language_model_name)
+            filename = os.path.join(test_completions_dir, f"{language_model_name}.json")
+            save_completions(completions_dict, filename)
     else:
         raise NotImplementedError(
             "Must specify at least a language model or wandb to load generations"
@@ -404,16 +402,14 @@ def main() -> None:
             reward_model = accelerator.prepare(reward_model)
         print_memory_utilization()
 
-        # TODO: Move this into a for loop over all the completions in the
-        #       test_completions folder. Don't sccore if the corresponding file exists in
-        #       test_scores folder.
-        # TODO read the completions from a file
         # TODO: Find executable batch size
         already_generated_completions = os.listdir(test_completions_dir)
         already_generated_completions = [
             completion.split(".")[0] for completion in already_generated_completions
         ]
         test_scores_dir = os.path.join(script_path_dir, TEST_SCORES_DIR)
+        if not os.path.exists(test_scores_dir):
+            os.makedirs(test_scores_dir)
         already_generated_scores = os.listdir(test_scores_dir)
         already_generated_scores = [
             score.split(".")[0] for score in already_generated_scores
@@ -429,14 +425,16 @@ def main() -> None:
             completions_dict = load_completions_json(
                 os.path.join(test_completions_dir, f"{language_model_name}.json")
             )
-            scores = score_completions(
-                reward_model=reward_model,
-                reward_model_tokenizer=reward_tokenizer,
-                completions=completions_dict,
-            )
-            scores_dict[language_model_name] = scores
+            for dataset_name in args.prompt_dataset_names:
+                completions = completions_dict[dataset_name]
+                scores = score_completions(
+                    reward_model=reward_model,
+                    reward_model_tokenizer=reward_tokenizer,
+                    completions=completions,
+                )
+                scores_dict[dataset_name] = scores.tolist()
             filename = os.path.join(test_scores_dir, f"{language_model_name}.json")
-            save_scores(scores, filename)
+            save_scores(scores_dict, filename)
 
     # print(f"there are {len(completions_dict)} completions")
     # print(f"there are {len(scores)} scores")

@@ -24,6 +24,9 @@ max_new_tokens:
 reward_model:
   desc: The name of the reward model to use
   value: "mock"
+scoring_mode:
+  desc: Whether to score completions and save them or not.
+  value: True
 
 prompt_dataset_names:
   desc: The list of datasets to use for prompts. See src/superhf/data.py for available datasets.
