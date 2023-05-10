@@ -359,6 +359,10 @@ def main() -> None:
         language_model_names = args.language_model_names
     except AttributeError:
         language_model_names = None
+    try:
+        scoring_mode = args.scoring_mode
+    except AttributeError:
+        scoring_mode = False
     # print(f"Current directory is {os.getcwd()}")
     script_path_dir = os.path.dirname(os.path.abspath(__file__))
     # get all the filenames in TEST_COMPLETIONS_DIR
@@ -411,16 +415,12 @@ def main() -> None:
 
         # del prompts_dict
         # del cached_model
-    else:
+    elif not scoring_mode:
         raise NotImplementedError(
-            "Must specify at least a language model or wandb to load generations"
-            " from, or a completions file with completions from openAI"
+            "Must specify at least a language model or wandb to load generations from,"
+            " or a completions file with completions from openAI. Or be in scoring mode"
         )
 
-    try:
-        scoring_mode = args.scoring_mode
-    except AttributeError:
-        scoring_mode = False
     scores_dict = {}
     if scoring_mode:
         starting_batch_size_rm = args.starting_batch_size_rm
