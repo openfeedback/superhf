@@ -175,19 +175,17 @@ def generate_completions_from_lm(args):
     # pylint: disable=too-many-locals
     # Get the prompt dataset
     prompts: list[str] = []
-    for dataset_name in wandb.config.prompt_dataset_names:
+    for dataset_name in args.prompt_dataset_names:
         prompts.extend(get_superhf_prompts(dataset_name, split="test"))
 
     # Filter out prompts that are too long
     old_prompt_count = len(prompts)
     prompts = [
-        prompt
-        for prompt in prompts
-        if len(prompt) < wandb.config.max_prompt_char_length
+        prompt for prompt in prompts if len(prompt) < args.max_prompt_char_length
     ]
     print(
         f"Filtered {old_prompt_count - len(prompts)} prompts over "
-        f"{wandb.config.max_prompt_char_length} chars."
+        f"{args.max_prompt_char_length} chars."
     )
     print(f"Loaded {len(prompts)} prompts.")
     print_memory_utilization()
@@ -307,7 +305,15 @@ def main() -> None:
 
     print(f"there are {len(completions)} completions and {len(scores)} scores")
 
-    # save a json file with the following structure
+    # directory for test_completions
+    # json with generations
+    # in the json file, generations are per dataset
+    # directory for rewards with reward model
+    # json name with the scores
+    # statistics lilke mean, std, quartiles per dagtaset
+    # for language models grab just the last part, and include the @
+
+    # look through the test_completions
     # reward model
     # -> model_name
     # -> dataset1
@@ -320,6 +326,8 @@ def main() -> None:
     # -> completions
     # -> scores
     # output = {}
+    # try decreasing learning rate as we increase batch size
+    # get rid of kl annealing
 
 
 if __name__ == "__main__":
