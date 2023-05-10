@@ -446,8 +446,13 @@ def main() -> None:
         starting_batch_size_rm = args.starting_batch_size_rm
         # we are in scoring mode, so score completions
         accelerator = Accelerator()
+        try:
+            torch_dtype_lm_str = args.lm_dtype
+            torch_dtype_lm = getattr(torch, torch_dtype_lm_str)
+        except AttributeError:
+            torch_dtype_lm = torch.bfloat16
         reward_model, reward_tokenizer = load_eval_model_and_tokenizer(
-            args.reward_model, model_type="reward", torch_dtype=torch.bfloat16
+            args.reward_model, model_type="reward", torch_dtype=torch_dtype_lm
         )
         if not isinstance(reward_model, str):
             reward_model = accelerator.prepare(reward_model)
