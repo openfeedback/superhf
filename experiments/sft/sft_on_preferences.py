@@ -69,7 +69,7 @@ def main() -> None:
             "anthropic-harmless-base",
         ],
     )
-    parser.add_argument("--num_examples", type=int, default=65536)
+    parser.add_argument("--num_examples", type=int, default=8192)
     parser.add_argument("--max_example_char_length", type=int, default=2048)
     parser.add_argument("--lr", type=float, default=1e-5)
     parser.add_argument("--batch_size", type=int, default=4)
@@ -81,7 +81,7 @@ def main() -> None:
     parser.add_argument(
         "--lora_target_modules", type=str, nargs="+", default=["q_proj", "v_proj"]
     )
-    parser.add_argument("--hub_repo_id", type=str, default="sft-on-preferences-v3")
+    parser.add_argument("--hub_repo_id", type=str, default="sft-on-preferences-v4")
     parser.add_argument("--push_interval", type=int, default=128, help="In examples.")
 
     # Initialize wandb and hub api
