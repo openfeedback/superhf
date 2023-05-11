@@ -137,6 +137,18 @@
             "justMyCode": true
         },
         {
+            "name": "Test set evalulation (real lm)",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/experiments/evaluations/score_completions.py",
+            "console": "integratedTerminal",
+            "args": [
+                "--config",
+                "${workspaceFolder}/experiments/evaluations/configs/debug_lm.yaml",
+            ],
+            "justMyCode": true
+        },
+        {
             "name": "LM Evals Debug",
             "type": "python",
             "request": "launch",
