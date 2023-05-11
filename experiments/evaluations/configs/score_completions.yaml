@@ -1,6 +1,6 @@
 completions_file:
   desc: Path to the file containing the completions to score
-  value: "experiments/openai_generations/anthropic-harmless-base_completions_output.json"
+  value: null # "experiments/openai_generations/anthropic-harmless-base_completions_output.json"
 
 wandb_run_id:
   desc: The wandb run id of the run to load completions from
@@ -14,16 +14,6 @@ wandb_entity_name:
 use_openai:
   desc: Whether to use the openai reward model
   value: false
-
-language_model_names:
-  desc: The name of the language model to use
-  value: null #["/juice5/scr5/nlp/llama_model/alpaca_7b"] # "mock"
-starting_batch_size_lm:
-  desc: The starting batch size for the reward model scoring
-  value: 64
-max_new_tokens:
-  desc: The number of new tokens to generate
-  value: 64
 
 reward_model:
   desc: The name of the reward model to use

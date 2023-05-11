@@ -480,6 +480,8 @@ def main() -> None:
 
     try:
         language_model_names = args.language_model_names
+        if language_model_names is None:
+            raise AttributeError
         new_language_model_names = []
         for name in language_model_names:
             new_language_model_names.extend(
