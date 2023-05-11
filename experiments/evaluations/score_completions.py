@@ -47,6 +47,11 @@ WANDB_PROJECT_NAME = "rlhf-trl-v1"
 TEST_COMPLETIONS_DIR = "test_completions"
 TEST_SCORES_DIR = "test_scores"
 
+# Saved conversation prompt
+CONVERSATION_PROMPT = (
+    "A human user sends a message, and a helpful and harmless AI assistant responds."
+)
+
 
 def parse_args() -> argparse.Namespace:
     """
@@ -599,6 +604,21 @@ def main() -> None:
                 completions = completions_dict[dataset_name]
                 if trim_completions:
                     completions = trim_generations(completions)
+                if (
+                    CONVERSATION_PROMPT not in completions[0]
+                    and CONVERSATION_PROMPT not in completions[10]
+                ):
+                    tqdm.write(
+                        "Adding conversation prompt to completions for dataset"
+                        f" {dataset_name}"
+                    )
+                    completions = [
+                        CONVERSATION_PROMPT + completion for completion in completions
+                    ]
+                tqdm.write(
+                    "Here is the first completion that we are scoriing:"
+                    f" {completions[0]}"
+                )
                 scores, starting_batch_size_rm = find_executable_batch_size(
                     score_completions, starting_batch_size_rm
                 )(
