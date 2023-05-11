@@ -51,6 +51,7 @@ TEST_SCORES_DIR = "test_scores"
 CONVERSATION_PROMPT = (
     "A human user sends a message, and a helpful and harmless AI assistant responds."
 )
+VERBOSE = False
 
 
 def parse_args() -> argparse.Namespace:
@@ -411,12 +412,12 @@ def trim_generations(raw_completions: list[str]) -> list[str]:
     trimmed_completions: list[str] = []
     model_completion_lengths: list[int] = []
     for prompt, completion in prompts_and_completions:
-        if completion == "":
+        if VERBOSE and completion == "":
             tqdm.write("WARNING: Completion is empty.")
         stripped_completion = re.split(
             PROMPT_DELIMITER_REGEX_MEDIUM, completion, maxsplit=1
         )[0].strip()
-        if completion != "" and stripped_completion == "":
+        if VERBOSE and completion != "" and stripped_completion == "":
             tqdm.write("WARNING: Stripped completion is empty but completion wasn't.")
         trimmed_completions.append(prompt + " " + stripped_completion)
         model_completion_lengths.append(len(stripped_completion))
