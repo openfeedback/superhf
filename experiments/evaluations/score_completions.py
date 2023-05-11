@@ -5,6 +5,7 @@ This is a file for running a reward model to score a text file of completions
 import argparse
 import os
 import json
+import re
 from typing import Optional, List, Dict, Any
 import yaml
 
@@ -29,6 +30,7 @@ from superhf.utils import print_memory_utilization
 from superhf.training import SuperHFTrainingArguments, SuperHFTrainer
 from superhf.filtering import CompletionFilterTopK
 from superhf.mocking import MockRewardModel
+from superhf.constants import PROMPT_DELIMITER, PROMPT_DELIMITER_REGEX_MEDIUM
 
 # Default parameters
 WANDB_ENTITY_NAME = "stanfordaialignment"
@@ -273,7 +275,8 @@ def generate_completions_from_lm(
             f" {dataset_name}"
         )
         print_memory_utilization()
-        completions_dict[dataset_name] = completions_raw
+        completions_filtered = trim_generations(completions_raw)
+        completions_dict[dataset_name] = completions_filtered
 
     return (
         completions_dict,
@@ -359,6 +362,48 @@ def save_scores(scores_dict, filename):
     with open(filename, "w", encoding="utf-8") as file:
         json.dump(scores_dict, file)
     return filename
+
+
+def separate_prompt_from_completion(text: str) -> tuple[str, str]:
+    """
+    Given a completed prompt text, separate the part before and including the
+    prompt delimiter from the part after.
+    """
+    prompt, completion = text.split(PROMPT_DELIMITER, 1)
+    prompt += PROMPT_DELIMITER
+    return prompt, completion
+
+
+def trim_generations(raw_completions: list[str]) -> list[str]:
+    """
+    Trim the generated completions to remove extra simulated turns of conversation.
+
+    Return:
+        A list of string wtih the prompt and modell response without any extra simulated
+            conversation turns.
+    """
+    original_length = len(raw_completions)
+    prompts_and_completions = [
+        separate_prompt_from_completion(completion) for completion in raw_completions
+    ]
+    trimmed_completions: list[str] = []
+    model_completion_lengths: list[int] = []
+    for prompt, completion in prompts_and_completions:
+        if completion == "":
+            tqdm.write("WARNING: Completion is empty.")
+        stripped_completion = re.split(
+            PROMPT_DELIMITER_REGEX_MEDIUM, completion, maxsplit=1
+        )[0].strip()
+        if stripped_completion == "":
+            tqdm.write("WARNING: Stripped completion is empty.")
+        trimmed_completions.append(prompt + " " + stripped_completion)
+        model_completion_lengths.append(len(stripped_completion))
+
+    assert len(trimmed_completions) == original_length, (
+        "The number of Trimmed completions should be the same as the number of original"
+        " completions."
+    )
+    return trimmed_completions
 
 
 def main() -> None:
@@ -451,6 +496,11 @@ def main() -> None:
             torch_dtype_lm = getattr(torch, torch_dtype_lm_str)
         except AttributeError:
             torch_dtype_lm = torch.bfloat16
+
+        try:
+            trim_completions = args.trim_completions
+        except AttributeError:
+            trim_completions = False
         reward_model, reward_tokenizer = load_eval_model_and_tokenizer(
             args.reward_model, model_type="reward", torch_dtype=torch_dtype_lm
         )
@@ -484,6 +534,8 @@ def main() -> None:
             )
             for dataset_name in tqdm(args.prompt_dataset_names, desc="Datasets"):
                 completions = completions_dict[dataset_name]
+                if trim_completions:
+                    completions = trim_generations(completions)
                 scores, starting_batch_size_rm = find_executable_batch_size(
                     score_completions, starting_batch_size_rm
                 )(
@@ -495,178 +547,12 @@ def main() -> None:
             filename = os.path.join(test_scores_dir, f"{language_model_base_name}.json")
             save_scores(scores_dict, filename)
 
-    # print(f"there are {len(completions_dict)} completions")
-    # print(f"there are {len(scores)} scores")
-
-    # directory for test_completions
-    # json with generations
-    # in the json file, generations are per dataset
-    # directory for rewards with reward model
-    # json name with the scores
     # statistics lilke mean, std, quartiles per dagtaset
     # for language models grab just the last part, and include the @
 
-    # look through the test_completions
-    # reward model
-    # -> model_name
-    # -> dataset1
-    # -> completions
-    # -> scores
-    # -> dataset2
-    # -> completions
-    # -> scores
-    # -> dataset3
-    # -> completions
-    # -> scores
-    # output = {}
     # try decreasing learning rate as we increase batch size
     # get rid of kl annealing
 
 
 if __name__ == "__main__":
     main()
-
-
-#     completions_raw = find_executable_batch_size(
-#                 self.generate_completions,
-#                 self.training_args.minibatch_size_generating,
-#             )(superbatch_prompts)
-
-# class LMResponseGenerator():
-#     def __init__(self,
-#         language_model: PreTrainedModel,
-#         reward_model_train: PreTrainedModel,
-#         reward_model_val: Optional[PreTrainedModel],
-#         language_tokenizer: PreTrainedTokenizerBase,
-#         reward_tokenizer_train: PreTrainedTokenizerBase,
-#         reward_tokenizer_val: Optional[PreTrainedTokenizerBase],
-#         completion_filter: CompletionFilterBase,
-#         training_args: SuperHFTrainingArguments):
-
-
-#     def collate_fn_lm_completions(self, batch: list[str]) -> BatchEncoding:
-#         """
-#         Collate function for the language model completions DataLoader.
-
-#         Prepends the system prompt to each prompt. By default this is the empty string.
-#         """
-#         return self.language_tokenizer(
-#             batch,
-#             return_tensors="pt",
-#             padding=True,
-#             truncation=True,
-#             max_length=self.training_args.max_length_rm,
-#         )
-
-#     def generate_completions(
-#         self,
-#         minibatch_size: int,
-#         superbatch_prompts: list[str],
-#     ) -> list[str]:
-#         """
-#         Generate completions for the prompts in the superbatch.
-
-#         Args:
-#             minibatch_size: The minibatch size to use for generation.
-#             superbatch_prompts: The prompts in the superbatch.
-#         """
-
-#         tqdm.write(f"Trying generation with batch size {minibatch_size}")
-#         print_memory_utilization()
-
-#         # Duplicate each prompt superbatch_size numbers time with system prompt
-#         system_prompt = self.training_args.conversation_prompt
-#         prompt_batch_duplicated = [
-#             system_prompt + prompt
-#             for prompt in superbatch_prompts
-#             for _ in range(self.training_args.superbatch_size)
-#         ]
-
-#         completion_dataloader = DataLoader(
-#             ListDataset(prompt_batch_duplicated),
-#             batch_size=minibatch_size,
-#             collate_fn=self.collate_fn_lm_completions,
-#             pin_memory=True,
-#         )
-
-#         completions_encoded: list[TensorType["batch", "seq_len"]] = []
-#         with torch.no_grad():
-#             for minibatch in tqdm(
-#                 completion_dataloader,
-#                 desc="Generation",
-#                 total=len(completion_dataloader),
-#                 file=sys.stdout,
-#             ):
-#                 encodings = minibatch
-#                 # with torch.cuda.amp.autocast(dtype=self.training_args.dtype):  # type: ignore
-#                 encodings.to(self.language_model.device)
-#                 outputs = self.language_model.generate(  # type: ignore
-#                     **encodings,
-#                     max_new_tokens=self.training_args.max_new_tokens,
-#                     temperature=self.training_args.temperature,
-#                     top_p=self.training_args.top_p,
-#                     do_sample=True,
-#                     num_return_sequences=1,
-#                     pad_token_id=self.language_tokenizer.pad_token_id,
-#                     logits_processor=self.training_args.logits_processors,
-#                 )
-#                 completions_encoded.extend(outputs.to("cpu"))
-#         # completions_gathered: list[str] = accelerator.gather(
-#         #     completions
-#         # )  # Not needed on single GPU
-#         completions_text: list[str] = self.language_tokenizer.batch_decode(
-#             completions_encoded, skip_special_tokens=True
-#         )
-#         return completions_text
-
-#     def collate_fn_rm_train(
-#         self, completions: list[str]
-#     ) -> tuple[list[str], BatchEncoding, list[int]]:
-#         """
-#         Collate function for the reward model's dataloader.
-
-#         Takes encoded completions from the language model, decodes them, encodes them for the
-#         reward model, and returns both the decoded completion text and re-encoded completions.
-#         """
-
-#         # Remove completions after any extra "\n\nHuman:", "\n\nA:", "\n\nH:", or similar.
-#         # This is to prevent the model from learning to generate additional turns of conversation.
-#         prompts_and_completions = [
-#             separate_prompt_from_completion(completion) for completion in completions
-#         ]
-#         completions_for_lm: list[str] = []
-#         completions_for_rm: list[str] = []
-#         completion_lengths: list[int] = []
-#         for prompt, completion in prompts_and_completions:
-#             stripped_completion = re.split(
-#                 constants.PROMPT_DELIMITER_REGEX_MEDIUM, completion, maxsplit=1
-#             )[0].strip()
-#             completion_lengths.append(len(stripped_completion))
-#             joined_completion_normal = prompt + " " + stripped_completion
-#             completions_for_lm.append(joined_completion_normal)
-#             if self.training_args.reward_model_is_steamshp:
-#                 # Handle the weird SteamSHP format
-#                 prompt_only = prompt.split(constants.HUMAN_DELIMITER)[1].split(
-#                     constants.PROMPT_DELIMITER
-#                 )[0]
-#                 joined_completion_shp = (
-#                     f"POST:{prompt_only}\n\n"
-#                     f" RESPONSE A: {stripped_completion}\n\n RESPONSE B: .\n\n Which"
-#                     " response is better? RESPONSE"
-#                 )
-#                 completions_for_rm.append(joined_completion_shp)
-#             else:
-#                 # Concat normally
-#                 completions_for_rm.append(joined_completion_normal)
-
-#         return (
-#             completions_for_lm,
-#             self.reward_tokenizer_train(
-#                 completions_for_rm,
-#                 return_tensors="pt",
-#                 padding=True,
-#                 truncation=True,
-#                 max_length=self.training_args.max_length_rm,
-#             ).to(self.reward_model_train.device),
-#             completion_lengths,
-#         )
