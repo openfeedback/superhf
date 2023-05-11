@@ -303,9 +303,16 @@ def load_prompts_dictionary(args):
         prompts = [
             prompt for prompt in prompts if len(prompt) < args.max_prompt_char_length
         ]
+        try:
+            max_prompts_per_dataset = args.max_prompts_per_dataset
+        except AttributeError:
+            max_prompts_per_dataset = 0
+        if max_prompts_per_dataset > 0:
+            prompts = prompts[:max_prompts_per_dataset]
         print(
             f"Filtered {old_prompt_count - len(prompts)} prompts over "
-            f"{args.max_prompt_char_length} chars from dataset {dataset_name}"
+            f"{args.max_prompt_char_length} chars from dataset {dataset_name}."
+            f"max_prompts_per_dataset={max_prompts_per_dataset}"
         )
         print(f"Loaded {len(prompts)} prompts for dataset {dataset_name}")
         completions_dict[dataset_name] = prompts
@@ -394,8 +401,8 @@ def trim_generations(raw_completions: list[str]) -> list[str]:
         stripped_completion = re.split(
             PROMPT_DELIMITER_REGEX_MEDIUM, completion, maxsplit=1
         )[0].strip()
-        if stripped_completion == "":
-            tqdm.write("WARNING: Stripped completion is empty.")
+        if completion != "" and stripped_completion == "":
+            tqdm.write("WARNING: Stripped completion is empty but completion wasn't.")
         trimmed_completions.append(prompt + " " + stripped_completion)
         model_completion_lengths.append(len(stripped_completion))
 

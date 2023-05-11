@@ -17,7 +17,7 @@ use_openai:
 
 language_model_names:
   desc: The name of the language model to use
-  value: ["mock"] # "mock"
+  value: ["/juice5/scr5/nlp/llama_model/llama_hf_latest/llama-7b"] # "mock"
 starting_batch_size_lm:
   desc: The starting batch size for the reward model scoring
   value: 64
@@ -30,17 +30,17 @@ max_prompts_per_dataset:
 
 reward_model:
   desc: The name of the reward model to use
-  value: "mock"
+  value: "mock" # "/nlp/scr/fongsu/rm_combined/gptneo_1.3B_second_half" # "mock"
 starting_batch_size_rm:
   desc: The starting batch size for the reward model scoring
   value: 64
 scoring_mode:
   desc: Whether to score completions and save them or not.
-  value: True
+  value: False
 
 prompt_dataset_names:
   desc: The list of datasets to use for prompts. See src/superhf/data.py for available datasets.
-  value: ["anthropic-helpful-base", "openai/webgpt_comparisons"] # ["anthropic-red-team", "anthropic-helpful-base", "anthropic-harmless-base", "openai/webgpt_comparisons"]
+  value: ["anthropic-red-team", "anthropic-helpful-base", "anthropic-harmless-base", "openai/webgpt_comparisons"]
 max_prompt_char_length:
   desc: If generating completions, set's max length for input prompts.
   value: 1024
