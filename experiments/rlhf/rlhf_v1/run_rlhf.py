@@ -292,15 +292,18 @@ def get_configs():
     # We then define the arguments to pass to the `generate` function. These arguments
     # are passed to the `generate` function of the PPOTrainer, which is a wrapper around
     # the `generate` function of the trained model.
+    extra_generation_args = wandb.config.generation_kwargs
     generation_kwargs = {
         "min_length": -1,
         "top_k": 0.0,
         "top_p": wandb.config.top_p,
         "do_sample": True,
         "pad_token_id": language_tokenizer.eos_token_id,
-        "eos_token_id": -1,
         "max_new_tokens": wandb.config.max_new_tokens,
     }
+    # loop over extra_generation_args two at a time
+    for i in range(len(extra_generation_args) // 2):
+        generation_kwargs[extra_generation_args[i]] = extra_generation_args[i + 1]
 
     return (
         ppo_config,
