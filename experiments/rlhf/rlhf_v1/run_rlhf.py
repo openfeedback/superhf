@@ -592,7 +592,7 @@ def main(script_args: ScriptArguments):
             tqdm.write(
                 str(
                     ppo_trainer.model.push_to_hub(
-                        repo_id=hub_repo_id,
+                        repo_id=repo_name,
                         commit_message=(
                             f"Upload model from batch {epoch}, run {run_name}"
                         ),
@@ -602,7 +602,7 @@ def main(script_args: ScriptArguments):
             tqdm.write(
                 str(
                     ppo_trainer.tokenizer.push_to_hub(
-                        repo_id=hub_repo_id,
+                        repo_id=repo_name,
                         commit_message=(
                             f"Upload tokenizer from batch {epoch}, run {run_name}"
                         ),
