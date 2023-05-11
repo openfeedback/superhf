@@ -17,15 +17,15 @@ use_openai:
 
 language_model_names:
   desc: The name of the language model to use
-  value: ["gmukobi/shf-7b-gold-v1@step-0001,
-          gmukobi/shf-7b-gold-v1@step-0002,
-          gmukobi/shf-7b-gold-v1@step-0004,
-          gmukobi/shf-7b-gold-v1@step-0008,
-          gmukobi/shf-7b-gold-v1@step-0016,
-          gmukobi/shf-7b-gold-v1@step-0032,
-          gmukobi/shf-7b-gold-v1@step-0064,
-          gmukobi/shf-7b-gold-v1@step-0128,
-          gmukobi/shf-7b-gold-v1@step-0256"]
+  value: ["gmukobi/shf-7b-gold-v1@step-0001",
+          "gmukobi/shf-7b-gold-v1@step-0002",
+          "gmukobi/shf-7b-gold-v1@step-0004",
+          "gmukobi/shf-7b-gold-v1@step-0008",
+          "gmukobi/shf-7b-gold-v1@step-0016",
+          "gmukobi/shf-7b-gold-v1@step-0032",
+          "gmukobi/shf-7b-gold-v1@step-0064",
+          "gmukobi/shf-7b-gold-v1@step-0128",
+          "gmukobi/shf-7b-gold-v1@step-0256"]
 starting_batch_size_lm:
   desc: The starting batch size for the reward model scoring
   value: 64
