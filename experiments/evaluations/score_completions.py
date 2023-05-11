@@ -619,8 +619,9 @@ def main() -> None:
                     ]
                 tqdm.write(
                     "Here is the first completion that we are scoriing:"
-                    f" {completions[0]}"
+                    f" {completions[0]!r}"
                 )
+
                 scores, starting_batch_size_rm = find_executable_batch_size(
                     score_completions, starting_batch_size_rm
                 )(
