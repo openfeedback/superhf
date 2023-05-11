@@ -1,5 +1,10 @@
 """
 This is a file for running a reward model to score a text file of completions
+
+Language model naming conventions:
+    if @ is in it, what follows is a revision / branch name
+    if "{N}" is in it, then the name must be author/model_name-{N} where
+        we search the hub for all models of this form under author's account
 """
 
 import argparse
@@ -8,6 +13,7 @@ import json
 import re
 from typing import Optional, List, Dict, Any
 import random
+import requests
 import yaml
 
 from transformers import (
@@ -417,6 +423,40 @@ def trim_generations(raw_completions: list[str]) -> list[str]:
     return trimmed_completions
 
 
+def get_all_models(model_name: str, model_interval: tuple[int, int]) -> List[str]:
+    """
+    Uses the hugging face api to get all the models that match the model name,
+    and that fall wihin the model interval. Assumes model_name is of the form
+
+    Args:
+        model_name: the name of the model to get
+        model_interval: the first model to grab and the last one, zero indexed
+                        if (0,0), then load all models
+
+    Returns:
+        A list of model names with length model_interval[1] - model_interval[0]
+    """
+    # Define the base URL for the Hugging Face Model Hub API
+    base_url = "https://huggingface.co/api/"
+
+    author, model_base_name = model_name.split("{N}")[0].split("/")
+    path_pattern = author + "/" + model_base_name
+
+    query_params = {"author": author}
+    response = requests.get(base_url + "models", params=query_params, timeout=20)
+    models_list = response.json()
+
+    valid_models = [
+        model["modelId"] for model in models_list if path_pattern in model["modelId"]
+    ]
+    valid_models.sort()
+
+    if model_interval[0] == 0 and model_interval[1] == 0:
+        model_interval = (0, len(valid_models))
+
+    return valid_models[model_interval[0] : model_interval[1]]
+
+
 def main() -> None:
     """
     Main function for running the reward model
@@ -428,6 +468,12 @@ def main() -> None:
 
     try:
         language_model_names = args.language_model_names
+        for i, name in enumerate(language_model_names):
+            if "{N}" in name:
+                language_model_names[i] = get_all_models(
+                    name, args.language_model_interval
+                )
+
     except AttributeError:
         language_model_names = None
     try:
