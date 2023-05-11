@@ -52,7 +52,7 @@ save_every:
     value: 32
 hub_repo_id:
     desc: "The ID of the HuggingFace Hub repo to save to. If empty, doesn't write to the Hub."
-    value: "rlhf-sweep-lr-1e-4-bs-8"
+    value: "rlhf-bs-8-kl-0.2-sweep"
 scheduler_name:
   desc: Name of the scheduler to use for fine-tuning the language model.
   value: "" # was linear
