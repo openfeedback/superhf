@@ -17,26 +17,29 @@ use_openai:
 
 language_model_names:
   desc: The name of the language model to use
-  value: null #["/juice5/scr5/nlp/llama_model/alpaca_7b"] # "mock"
+  value: ["gmukobi/shf-7b-gold-v1@step-2688", "gmukobi/shf-7b-gold-v1@step-2816", "gmukobi/shf-7b-gold-v1@step-2944", "gmukobi/shf-7b-gold-v1@step-3072", "gmukobi/shf-7b-gold-v1@step-3200", "gmukobi/shf-7b-gold-v1@step-3328", "gmukobi/shf-7b-gold-v1@step-3456", "gmukobi/shf-7b-gold-v1@step-3584", "gmukobi/shf-7b-gold-v1@step-3712", "gmukobi/shf-7b-gold-v1@step-3840", "gmukobi/shf-7b-gold-v1@step-3968", "gmukobi/shf-7b-gold-v1@step-4096", "gmukobi/shf-7b-gold-v1@step-4224", "gmukobi/shf-7b-gold-v1@step-4352", "gmukobi/shf-7b-gold-v1@step-4480", "gmukobi/shf-7b-gold-v1@step-4608", "gmukobi/shf-7b-gold-v1@step-4736", "gmukobi/shf-7b-gold-v1@step-4864", "gmukobi/shf-7b-gold-v1@step-4992"]
 starting_batch_size_lm:
   desc: The starting batch size for the reward model scoring
   value: 64
 max_new_tokens:
   desc: The number of new tokens to generate
   value: 64
+max_prompts_per_dataset:
+  desc: What subset of test prompts to use for each dataset
+  value: 128
+randomize_prompts_subset:
+  desc: Whether to randomize the prompts subset if using a subset
+  value: True
 
 reward_model:
   desc: The name of the reward model to use
-  value: "/nlp/scr/fongsu/rm_combined/gptneo_1.3B_second_half" # "mock"
+  value: "mock" # "/nlp/scr/fongsu/rm_combined/gptneo_1.3B_second_half" # "mock"
 starting_batch_size_rm:
   desc: The starting batch size for the reward model scoring
   value: 64
 scoring_mode:
   desc: Whether to score completions and save them or not.
-  value: True
-trim_completions:
-  desc: Whether to trim the completions from extra turns of generation
-  value: True
+  value: False
 
 prompt_dataset_names:
   desc: The list of datasets to use for prompts. See src/superhf/data.py for available datasets.

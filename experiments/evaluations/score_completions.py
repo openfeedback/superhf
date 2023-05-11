@@ -371,7 +371,7 @@ def save_completions(completions_dict, filename):
     # else:
 
 
-def save_scores(scores_dict, filename):
+def save_scores(scores_dict, filename) -> str:
     """
     Saves scores as a json to TEST_SCORES_DIR
     """
@@ -571,7 +571,6 @@ def main() -> None:
             reward_model = accelerator.prepare(reward_model)
         print_memory_utilization()
 
-        # TODO: Find executable batch size
         already_generated_completions = os.listdir(test_completions_dir)
         already_generated_completions = [
             completion.split(".")[0] for completion in already_generated_completions
@@ -591,6 +590,7 @@ def main() -> None:
                     f"Already generated scores for language model {language_model_name}"
                 )
                 continue
+            tqdm.write(f"Scoring completions for language model {language_model_name}")
             language_model_base_name = language_model_name.split(os.path.sep)[-1]
             completions_dict = load_completions_json(
                 os.path.join(test_completions_dir, f"{language_model_base_name}.json")
@@ -614,7 +614,6 @@ def main() -> None:
     # for language models grab just the last part, and include the @
 
     # try decreasing learning rate as we increase batch size
-    # get rid of kl annealing
 
 
 if __name__ == "__main__":
