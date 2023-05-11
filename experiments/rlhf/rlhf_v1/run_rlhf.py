@@ -106,16 +106,6 @@ def parse_args():
     return script_args
 
 
-def separate_prompt_from_completion(text: str) -> tuple[str, str]:
-    """
-    Given a completed prompt text, separate the part before and including the
-    prompt delimiter from the part after.
-    """
-    prompt, completion = text.split(PROMPT_DELIMITER, 1)
-    prompt += PROMPT_DELIMITER
-    return prompt, completion
-
-
 def build_dataset(
     dataset_names,
     # tokenizer,
@@ -627,10 +617,23 @@ def main(script_args: ScriptArguments):
     wandb.finish()
 
 
+def separate_prompt_from_completion(text: str) -> tuple[str, str]:
+    """
+    Given a completed prompt text, separate the part before and including the
+    prompt delimiter from the part after.
+    """
+    prompt, completion = text.split(PROMPT_DELIMITER, 1)
+    prompt += PROMPT_DELIMITER
+    return prompt, completion
+
+
 def trim_generations(raw_completions: list[str]) -> list[str]:
     """
-    Trim the generated completions to remove the prompt and the model's
-    repetition of the prompt. Copied from SuperHF code
+      Trim the generated completions to remove extra simulated turns of conversation.
+
+    Return:
+        A list of string wtih the prompt and modell response without any extra simulated
+            conversation turns. Copied from Superhf
     """
     original_length = len(raw_completions)
     prompts_and_completions = [
