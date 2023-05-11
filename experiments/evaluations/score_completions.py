@@ -435,7 +435,10 @@ def get_all_models(model_name: str, model_interval: tuple[int, int]) -> List[str
 
     Returns:
         A list of model names with length model_interval[1] - model_interval[0]
+        or if there is no placeholder {N}, just the model name
     """
+    if "{N}" not in model_name:
+        return [model_name]
     # Define the base URL for the Hugging Face Model Hub API
     base_url = "https://huggingface.co/api/"
 
@@ -465,14 +468,15 @@ def main() -> None:
     # pylint: disable=too-many-statements
     # pylint: disable=too-many-branches
     args = parse_args()
+    random.seed(0)
 
     try:
         language_model_names = args.language_model_names
-        for i, name in enumerate(language_model_names):
-            if "{N}" in name:
-                language_model_names[i] = get_all_models(
-                    name, args.language_model_interval
-                )
+        new_language_model_names = []
+        for name in enumerate(language_model_names):
+            new_language_model_names.extend(
+                get_all_models(name, args.language_model_interval)
+            )
 
     except AttributeError:
         language_model_names = None
@@ -507,9 +511,7 @@ def main() -> None:
         prompts_dict = load_prompts_dictionary(args)
         prev_model = None
         prev_tokenizer = None
-        for language_model_name in tqdm(
-            args.language_model_names, desc="Language models"
-        ):
+        for language_model_name in tqdm(language_model_names, desc="Language models"):
             #  it does, don't generate here
             language_model_base_name = language_model_name.split(os.path.sep)[-1]
             if language_model_base_name in already_generated_completions:
