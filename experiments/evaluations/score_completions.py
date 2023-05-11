@@ -438,6 +438,7 @@ def get_all_models(model_name: str, model_interval: tuple[int, int]) -> List[str
         or if there is no placeholder {N}, just the model name
     """
     if "{N}" not in model_name:
+        print("No {N} in model name, returning model name")
         return [model_name]
     # Define the base URL for the Hugging Face Model Hub API
     base_url = "https://huggingface.co/api/"
@@ -457,7 +458,9 @@ def get_all_models(model_name: str, model_interval: tuple[int, int]) -> List[str
     if model_interval[0] == 0 and model_interval[1] == 0:
         model_interval = (0, len(valid_models))
 
-    return valid_models[model_interval[0] : model_interval[1]]
+    loaded_model_names = valid_models[model_interval[0] : model_interval[1]]
+    print(f"Loaded models {loaded_model_names}")
+    return loaded_model_names
 
 
 def main() -> None:
@@ -473,7 +476,7 @@ def main() -> None:
     try:
         language_model_names = args.language_model_names
         new_language_model_names = []
-        for name in enumerate(language_model_names):
+        for name in language_model_names:
             new_language_model_names.extend(
                 get_all_models(name, args.language_model_interval)
             )
