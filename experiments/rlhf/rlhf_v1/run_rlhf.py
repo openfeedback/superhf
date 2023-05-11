@@ -54,7 +54,7 @@ import wandb
 
 from superhf import constants
 from superhf.data import get_superhf_prompts
-from superhf.utils import set_seed, print_gpu_utilization
+from superhf.utils import set_seed, print_memory_utilization
 from superhf.mocking import MockRewardModel
 from superhf.constants import PROMPT_DELIMITER
 from reward_modelling.reward_model import RewardModel
@@ -384,6 +384,7 @@ def main(script_args: ScriptArguments):
     reward_mean = wandb.config.reward_mean
     offset_reward = wandb.config.offset_reward
     reward_model_name = wandb.config.reward_model_name
+    test_reward_model_name = wandb.config.test_reward_model_name
 
     (
         ppo_config,
@@ -465,6 +466,8 @@ def main(script_args: ScriptArguments):
     reward_model, reward_model_pipe = load_reward_model(
         reward_model_name, device=device
     )
+    if test_reward_model_name != "":
+        test_reward_model, _ = load_reward_model(test_reward_model_name, device=device)
 
     if not isinstance(reward_model, str):
         reward_model = ppo_trainer.accelerator.prepare(reward_model)
@@ -472,14 +475,20 @@ def main(script_args: ScriptArguments):
         f"Instantiated reward model: {reward_model_name} on device"
         f" {reward_model.device}"
     )
+    if test_reward_model_name != "":
+        test_reward_model = ppo_trainer.accelerator.prepare(test_reward_model)
+        print(
+            f"Instantiated test reward model: {test_reward_model_name} on device"
+            f" {test_reward_model.device}"
+        )
     if "llama" in reward_model_name or "alpaca" in reward_model_name:
         assert device == 0, "LLAMA and Alpaca models only work on GPU 0"
         if not isinstance(reward_model, str):
             assert (
                 reward_model.device == 0
             ), "LLAMA and Alpaca models only work on GPU 0"
-    print(f"The device is {device}, with reward model placed on device.")
-    print_gpu_utilization()
+    print(f"The device is {device}, with reward model(s) placed on device.")
+    print_memory_utilization()
 
     # input_size = LengthSampler(input_min_text_length, input_max_text_length)
 
@@ -493,7 +502,7 @@ def main(script_args: ScriptArguments):
     ):
         try:
             tqdm.write(f"Epoch {epoch}")
-            print_gpu_utilization()
+            print_memory_utilization()
 
             query_tensors = [
                 language_tokenizer(q, return_tensors="pt")["input_ids"]
@@ -516,11 +525,12 @@ def main(script_args: ScriptArguments):
             tqdm.write(
                 f"Finished generating responses. took {time.time() - start_time}"
             )
-            print_gpu_utilization()
+            print_memory_utilization()
 
             # Compute sentiment score
             start_time = time.time()
             texts = [q + r for q, r in zip(batch["query"], batch["response"])]
+            test_rewards = []
             if reward_model_pipe is not None:
                 pipe_outputs = reward_model_pipe(texts, **reward_model_kwargs)
                 original_rewards = [
@@ -533,6 +543,12 @@ def main(script_args: ScriptArguments):
                     reward_model_tokenizer=reward_model_tokenizer,
                     completions=texts,
                 )
+                if test_reward_model_name != "":
+                    test_rewards = score_completions(
+                        reward_model=test_reward_model,
+                        reward_model_tokenizer=reward_model_tokenizer,
+                        completions=texts,
+                    )
                 original_rewards = [datum.item() for datum in rewards]
             tqdm.write(f"Time to score completions: {time.time() - start_time}")
 
@@ -548,10 +564,10 @@ def main(script_args: ScriptArguments):
             start_time = time.time()
             tqdm.write("Running PPO step")
             stats = ppo_trainer.step(query_tensors, response_tensors, rewards)
-            ppo_trainer.log_stats(stats, batch, original_rewards)
+            ppo_trainer.log_stats(stats, batch, original_rewards, test_rewards)
 
             tqdm.write(f"Finished PPO step. Took {time.time() - start_time} seconds.")
-            print_gpu_utilization()
+            print_memory_utilization()
         # catch cuda OOM exception
         except RuntimeError as exc:
             oom_count += 1
@@ -571,7 +587,10 @@ def main(script_args: ScriptArguments):
                 f"Pushing model and tokenizer to the Hub! Location: {hub_repo_id}"
             )
             repo_name = hub_repo_id
-            if script_args.sweep_param_name is not None:
+            if (
+                script_args.sweep_param_name is not None
+                and script_args.sweep_param_name != ""
+            ):
                 assert (
                     script_args.sweep_param_name != "pythia"
                     or "pythia" in ppo_config.model_name
