@@ -459,7 +459,7 @@ def get_all_models(model_name: str, model_interval: tuple[int, int]) -> List[str
         model_interval = (0, len(valid_models))
 
     loaded_model_names = valid_models[model_interval[0] : model_interval[1]]
-    print(f"Loaded models {loaded_model_names}")
+    print(f"Loaded model names {loaded_model_names}")
     return loaded_model_names
 
 
@@ -480,6 +480,7 @@ def main() -> None:
             new_language_model_names.extend(
                 get_all_models(name, args.language_model_interval)
             )
+        language_model_names = new_language_model_names
 
     except AttributeError:
         language_model_names = None

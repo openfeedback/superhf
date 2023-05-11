@@ -17,13 +17,23 @@ use_openai:
 
 language_model_names:
   desc: The name of the language model to use
-  value: ["peterchatain/test-save-alpaca@model-2048-prompts-batch-size-8.json"] # "mock"
+  value: ["gmukobi/shf-7b-accum-{N}"] # "mock"
+language_model_interval:
+  desc: The interval of models to use. 0,0 for to use all models
+  value: [0,0]
 starting_batch_size_lm:
   desc: The starting batch size for the reward model scoring
   value: 64
 max_new_tokens:
   desc: The number of new tokens to generate
   value: 64
+max_prompts_per_dataset:
+  desc: What subset of test prompts to use for each dataset
+  value: 128
+randomize_prompts_subset:
+  desc: Whether to randomize the prompts subset if using a subset
+  value: True
+
 reward_model:
   desc: The name of the reward model to use
   value: "mock"
