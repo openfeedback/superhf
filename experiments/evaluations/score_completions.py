@@ -469,6 +469,15 @@ def get_all_models(model_name: str, model_interval: tuple[int, int]) -> List[str
     return loaded_model_names
 
 
+def remove_extension(dir_names: List[str]) -> List[str]:
+    """
+    Given a list of directory names reformat them to remove the .json
+    """
+
+    dir_names = [".".join(dir_name.split(".")[:-1]) for dir_name in dir_names]
+    return dir_names
+
+
 def main() -> None:
     """
     Main function for running the reward model
@@ -503,9 +512,7 @@ def main() -> None:
     if not os.path.exists(test_completions_dir):
         os.makedirs(test_completions_dir)
     already_generated_completions = os.listdir(test_completions_dir)
-    already_generated_completions = [
-        completion.split(".")[0] for completion in already_generated_completions
-    ]
+    already_generated_completions = remove_extension(already_generated_completions)
 
     # if args.wandb_run_id is not None:
     #     # grab completions from wandb
@@ -580,16 +587,12 @@ def main() -> None:
         print_memory_utilization()
 
         already_generated_completions = os.listdir(test_completions_dir)
-        already_generated_completions = [
-            completion.split(".")[0] for completion in already_generated_completions
-        ]
+        already_generated_completions = remove_extension(already_generated_completions)
         test_scores_dir = os.path.join(script_path_dir, TEST_SCORES_DIR)
         if not os.path.exists(test_scores_dir):
             os.makedirs(test_scores_dir)
         already_generated_scores = os.listdir(test_scores_dir)
-        already_generated_scores = [
-            score.split(".")[0] for score in already_generated_scores
-        ]
+        already_generated_scores = remove_extension(already_generated_scores)
         for language_model_name in tqdm(
             already_generated_completions, desc="Scoring per language models"
         ):
