@@ -27,6 +27,9 @@ max_new_tokens:
 max_prompts_per_dataset:
   desc: The maximum number of prompts to use per dataset
   value: 128
+randomize_prompts_subset:
+  desc: Whether to randomize the prompts subset if using a subset
+  value: True
 
 reward_model:
   desc: The name of the reward model to use

@@ -7,6 +7,7 @@ import os
 import json
 import re
 from typing import Optional, List, Dict, Any
+import random
 import yaml
 
 from transformers import (
@@ -308,7 +309,10 @@ def load_prompts_dictionary(args):
         except AttributeError:
             max_prompts_per_dataset = 0
         if max_prompts_per_dataset > 0:
-            prompts = prompts[:max_prompts_per_dataset]
+            if args.randomize_prompts_subset:
+                prompts = random.sample(prompts, max_prompts_per_dataset)
+            else:
+                prompts = prompts[:max_prompts_per_dataset]
         print(
             f"Filtered {old_prompt_count - len(prompts)} prompts over "
             f"{args.max_prompt_char_length} chars from dataset {dataset_name}."
