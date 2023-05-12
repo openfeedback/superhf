@@ -17,7 +17,7 @@ use_openai:
 
 language_model_names:
   desc: The name of the language model to use
-  value: ["gmukobi/shf-7b-gold-v1@step-7552", "gmukobi/shf-7b-gold-v1@step-7680", "gmukobi/shf-7b-gold-v1@step-7808", "gmukobi/shf-7b-gold-v1@step-7936", "gmukobi/shf-7b-gold-v1@step-8064", "gmukobi/shf-7b-gold-v1@step-8192"]
+  value: ["peterchatain/test-save-alpaca@model-2048-prompts-batch-size-8"]
 starting_batch_size_lm:
   desc: The starting batch size for the reward model scoring
   value: 64

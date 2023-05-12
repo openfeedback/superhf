@@ -489,6 +489,7 @@ def main() -> None:
         language_model_names = args.language_model_names
     except AttributeError:
         language_model_names = None
+        tqdm.write("No language model names specified.")
 
     new_language_model_names = []
     for name in language_model_names:
