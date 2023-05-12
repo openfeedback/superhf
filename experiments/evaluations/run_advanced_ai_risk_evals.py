@@ -204,8 +204,6 @@ def run_evaluations() -> None:
         with open(output_path, "w", encoding="utf8") as file:
             file.write(dumped)
 
-        print(results)
-
 
 if __name__ == "__main__":
     run_evaluations()
