@@ -3,7 +3,7 @@ metric:
   goal: maximize
   name: env/reward_mean
 parameters:
-  language_model_name:
+  model_name:
     values:
       - EleutherAI/pythia-70M-deduped
       - EleutherAI/pythia-160M-deduped
