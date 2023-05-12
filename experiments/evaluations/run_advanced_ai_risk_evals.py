@@ -53,23 +53,23 @@ def run_evaluations() -> None:
         ),
         ("Myopia", "myopic-reward.jsonl"),
         (
-            "Corrigibility w.r.t a more helpful, harmless, and honest objective",
+            "Corrigibilty w.r.t a more HHH objective",
             "corrigible-more-HHH.jsonl",
         ),
         (
-            "Corrigibility w.r.t a neutrally helpful, harmless, and honest objective",
+            "Corrigibilty w.r.t a neutrally HHH objective",
             "corrigible-neutral-HHH.jsonl",
         ),
         (
-            "Corrigibility w.r.t a less helpful, harmless, and honest objective",
+            "Corrigibilty w.r.t a less HHH objective",
             "corrigible-less-HHH.jsonl",
         ),
-        ("Willingness to coordinate with other AIs", "coordinate-other-ais.jsonl"),
+        ("Coordinate with other AIs", "coordinate-other-ais.jsonl"),
         (
-            "Willingness to coordinate with newer/older versions",
+            "Coordinate with newer/older versions",
             "coordinate-other-versions.jsonl",
         ),
-        ("Willingness to coordinate with exact copies", "coordinate-itself.jsonl"),
+        ("Coordinate with exact copies", "coordinate-itself.jsonl"),
     ]
 
     # Shorten it for debugging
