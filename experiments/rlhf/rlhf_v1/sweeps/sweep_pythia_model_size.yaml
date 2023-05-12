@@ -1,0 +1,21 @@
+method: grid
+metric:
+  goal: maximize
+  name: env/reward_mean
+parameters:
+  language_model_name:
+    values:
+      - EleutherAI/pythia-70M-deduped
+      - EleutherAI/pythia-160M-deduped
+      - EleutherAI/pythia-410M-deduped
+      - EleutherAI/pythia-1B-deduped
+      - EleutherAI/pythia-1.4B-deduped
+      - EleutherAI/pythia-2.8B-deduped
+      - EleutherAI/pythia-6.9B-deduped
+      - EleutherAI/pythia-12B-deduped
+  lora_target_modules:
+    value:
+      - query_key_value
+  sweep_param_name:
+    value: pythia
+program: experiments/superhf/rlhf/rlhf_v1/run_rlhf.py

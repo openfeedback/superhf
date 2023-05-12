@@ -4,25 +4,30 @@ model_name:
 reward_model_name:
   desc: HuggingFace reward model to use, or "mock" for testing. gptneo_1.3B_first_half is for training and gptneo_1.3B_second_half is for testing.
   value: "/nlp/scr/fongsu/rm_combined/gptneo_1.3B_first_half" # "OpenAssistant/reward-model-deberta-v3-large-v2" #
-  # /nlp/scr/fongsu/rm_combined/gptneo_1.3B_second_half
+test_reward_model_name:
+  desc: HuggingFace reward model to use for testing.
+  value: "/nlp/scr/fongsu/rm_combined/gptneo_1.3B_second_half"
 log_with:
   desc: "The logger to use"
   value: "wandb"
 learning_rate:
   desc: "The learning rate"
-  value: 1.0e-4 # 1.41e-5
+  value: 5.0e-6 # 1.41e-5
 mini_batch_size:
   desc: "The mini-batch size"
-  value: 1 # 2 causes oom with lora_r 8
+  value: 1 # 8 for sphinx, 1 for a6000 machines
 batch_size:
   desc: "The batch size" # default 256 in og code
   value: 8
 gradient_accumulation_steps:
   desc: "The number of gradient accumulation steps"
-  value: 1
+  value: 2
 max_new_tokens:
   desc: "The maximum number of new tokens to generate per prompt"
   value: 64
+generation_kwargs:
+  desc: Extra args to pass to generation. Format is arg_name followed by value
+  value: ["eos_token_id", 2]
 max_prompt_char_length:
   desc: "The maximum number of characters in a prompt"
   value: 1024
@@ -49,10 +54,13 @@ conversation_prompt:
   value: "A human user sends a message, and a helpful and harmless AI assistant responds."
 save_every:
     desc: "Save the model every n epochs"
-    value: 128
+    value: 64
+extra_push_to_hub:
+    desc: Extra intervals to push to the hub
+    value: [1, 4, 16, 32]
 hub_repo_id:
     desc: "The ID of the HuggingFace Hub repo to save to. If empty, doesn't write to the Hub."
-    value: "rlhf-v2-batch-8-max-new-tokens-64"
+    value: "rlhf-v3-lr-5.0e-6-batch-16"
 scheduler_name:
   desc: Name of the scheduler to use for fine-tuning the language model.
   value: "" # was linear
