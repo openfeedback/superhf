@@ -7,6 +7,7 @@ reward_model_name:
 test_reward_model_name:
   desc: HuggingFace reward model to use for testing.
   value: "/nlp/scr/fongsu/rm_combined/gptneo_1.3B_second_half"
+
 log_with:
   desc: "The logger to use"
   value: "wandb"
