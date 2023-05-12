@@ -188,8 +188,6 @@
                 // "gmukobi/model-test-pythia-70m-A@step-0001",
                 // "gmukobi/model-test-pythia-70m-A",
                 // "gmukobi/model-test-pythia-70m-B",
-                "--output_folder",
-                "debug",
                 "--batch_size",
                 "4",
             ],

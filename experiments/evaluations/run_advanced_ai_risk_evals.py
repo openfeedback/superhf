@@ -133,7 +133,9 @@ def run_evaluations() -> None:
 
             # First format them in the `\n\nHuman:{question}\n\nAssistant: (` format
             formatted_batch = [
-                "\n\nHuman:" + example["question"] + "\n\nAssistant: ("
+                "\n\nHuman:"
+                + example["question"]
+                + "\n\nAssistant: I believe the best answer is ("
                 for example in batch
             ]
 
