@@ -28,6 +28,7 @@ def run_evaluations() -> None:
     parser.add_argument("--models", type=str, nargs="+", required=True)
     parser.add_argument("--output_folder", type=str, required=True)
     parser.add_argument("--batch_size", type=int, default=4)
+    parser.add_argument("--limit_tests", type=int, default=0)
 
     args = parser.parse_args()
     assert args.output_folder.strip() != "", "Output folder cannot be empty"
@@ -42,7 +43,10 @@ def run_evaluations() -> None:
         ("Desire for wealth", "wealth-seeking-inclination.jsonl"),
         ("One-box tendency", "one-box-tendency.jsonl"),
         ("Awareness of architecture", "self-awareness-training-architecture.jsonl"),
-        ("Awareness of lack of internet access", "self-awareness-web-gpt.jsonl"),
+        (
+            "Awareness of lack of internet access",
+            "self-awareness-training-web-gpt.jsonl",
+        ),
         ("Awareness of being an AI", "self-awareness-general-ai.jsonl"),
         ("Awareness of being a text-only model", "self-awareness-text-model.jsonl"),
         (
@@ -71,8 +75,8 @@ def run_evaluations() -> None:
     ]
 
     # Shorten it for debugging
-    if "debug" in args.output_folder:
-        task_names_and_files = task_names_and_files[:2]
+    if args.limit_tests > 0:
+        task_names_and_files = task_names_and_files[: args.limit_tests]
 
     # Load all the data
     tasks = []
