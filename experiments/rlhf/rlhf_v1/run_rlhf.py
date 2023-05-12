@@ -381,6 +381,7 @@ def main(script_args: ScriptArguments):
     run_name = wandb.run.name
     hub_repo_id = wandb.config.hub_repo_id
     save_every = wandb.config.save_every
+    extra_push_to_hub = wandb.config.extra_push_to_hub
     reward_mean = wandb.config.reward_mean
     offset_reward = wandb.config.offset_reward
     reward_model_name = wandb.config.reward_model_name
@@ -581,7 +582,8 @@ def main(script_args: ScriptArguments):
 
         if len(hub_repo_id) > 0 and (
             epoch == len(ppo_trainer.dataloader) - 1
-            or (epoch > 0 and epoch % save_every == 0)
+            or (epoch % save_every == 0)
+            or epoch in extra_push_to_hub
         ):
             tqdm.write(
                 f"Pushing model and tokenizer to the Hub! Location: {hub_repo_id}"

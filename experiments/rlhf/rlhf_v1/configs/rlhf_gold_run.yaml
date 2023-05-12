@@ -55,6 +55,9 @@ conversation_prompt:
 save_every:
     desc: "Save the model every n epochs"
     value: 64
+extra_push_to_hub:
+    desc: Extra intervals to push to the hub
+    value: [1, 4, 16, 32]
 hub_repo_id:
     desc: "The ID of the HuggingFace Hub repo to save to. If empty, doesn't write to the Hub."
     value: "rlhf-v3-lr-5.0e-6-batch-16"
