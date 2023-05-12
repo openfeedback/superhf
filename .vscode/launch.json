@@ -173,5 +173,27 @@
             ],
             "justMyCode": false
         },
+        {
+            "name": "Advanced AI Risk Evals Debug",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/experiments/evaluations/run_advanced_ai_risk_evals.py",
+            "console": "integratedTerminal",
+            "args": [
+                "--models",
+                "EleutherAI/pythia-70m-deduped",
+                "facebook/opt-125m",
+                "gpt2",
+                "EleutherAI/pythia-1b-deduped",
+                // "gmukobi/model-test-pythia-70m-A@step-0001",
+                // "gmukobi/model-test-pythia-70m-A",
+                // "gmukobi/model-test-pythia-70m-B",
+                "--output_folder",
+                "debug",
+                "--batch_size",
+                "4",
+            ],
+            "justMyCode": false
+        },
     ]
 }
