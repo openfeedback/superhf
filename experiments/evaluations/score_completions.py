@@ -443,9 +443,6 @@ def get_all_models(model_name: str, model_interval: tuple[int, int]) -> List[str
         A list of model names with length model_interval[1] - model_interval[0]
         or if there is no placeholder {N}, just the model name
     """
-    if "{N}" not in model_name:
-        print("No {N} in model name, returning model name")
-        return [model_name]
     # Define the base URL for the Hugging Face Model Hub API
     base_url = "https://huggingface.co/api/"
 
@@ -490,17 +487,19 @@ def main() -> None:
 
     try:
         language_model_names = args.language_model_names
-        if language_model_names is None:
-            raise AttributeError
-        new_language_model_names = []
-        for name in language_model_names:
+    except AttributeError:
+        language_model_names = None
+
+    new_language_model_names = []
+    for name in language_model_names:
+        if "{N}" in name:
             new_language_model_names.extend(
                 get_all_models(name, args.language_model_interval)
             )
-        language_model_names = new_language_model_names
+        else:
+            new_language_model_names.append(name)
+    language_model_names = new_language_model_names
 
-    except AttributeError:
-        language_model_names = None
     try:
         scoring_mode = args.scoring_mode
     except AttributeError:
