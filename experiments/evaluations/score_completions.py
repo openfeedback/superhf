@@ -489,43 +489,41 @@ def main() -> None:
         language_model_names = args.language_model_names
     except AttributeError:
         language_model_names = None
-        tqdm.write("No language model names specified.")
-
-    new_language_model_names = []
-    for name in language_model_names:
-        if "{N}" in name:
-            new_language_model_names.extend(
-                get_all_models(name, args.language_model_interval)
-            )
-        else:
-            new_language_model_names.append(name)
-    language_model_names = new_language_model_names
-
     try:
         scoring_mode = args.scoring_mode
     except AttributeError:
         scoring_mode = False
-    # print(f"Current directory is {os.getcwd()}")
-    script_path_dir = os.path.dirname(os.path.abspath(__file__))
-    # get all the filenames in TEST_COMPLETIONS_DIR
-    test_completions_dir = os.path.join(script_path_dir, TEST_COMPLETIONS_DIR)
-    if not os.path.exists(test_completions_dir):
-        os.makedirs(test_completions_dir)
-    already_generated_completions = os.listdir(test_completions_dir)
-    already_generated_completions = remove_extension(already_generated_completions)
 
-    # if args.wandb_run_id is not None:
-    #     # grab completions from wandb
-    #     completions_batched, scores_batched = load_completions_wandb(
-    #         entity_name=args.wandb_entity_name,
-    #         project_name=args.wandb_project_name,
-    #         run_id=args.wandb_run_id,
-    #     )
-    #     for batch in completions_batched:
-    #         completions.extend(batch)
-    #     for batch_scores in scores_batched:
-    #         scores.extend(batch_scores)
-    if language_model_names is not None:
+    if language_model_names is not None and not scoring_mode:
+        new_language_model_names = []
+        for name in language_model_names:
+            if "{N}" in name:
+                new_language_model_names.extend(
+                    get_all_models(name, args.language_model_interval)
+                )
+            else:
+                new_language_model_names.append(name)
+        language_model_names = new_language_model_names
+        # print(f"Current directory is {os.getcwd()}")
+        script_path_dir = os.path.dirname(os.path.abspath(__file__))
+        # get all the filenames in TEST_COMPLETIONS_DIR
+        test_completions_dir = os.path.join(script_path_dir, TEST_COMPLETIONS_DIR)
+        if not os.path.exists(test_completions_dir):
+            os.makedirs(test_completions_dir)
+        already_generated_completions = os.listdir(test_completions_dir)
+        already_generated_completions = remove_extension(already_generated_completions)
+
+        # if args.wandb_run_id is not None:
+        #     # grab completions from wandb
+        #     completions_batched, scores_batched = load_completions_wandb(
+        #         entity_name=args.wandb_entity_name,
+        #         project_name=args.wandb_project_name,
+        #         run_id=args.wandb_run_id,
+        #     )
+        #     for batch in completions_batched:
+        #         completions.extend(batch)
+        #     for batch_scores in scores_batched:
+        #         scores.extend(batch_scores)
         starting_batch_size_lm = args.starting_batch_size_lm
         prompts_dict = load_prompts_dictionary(args)
         prev_model = None
