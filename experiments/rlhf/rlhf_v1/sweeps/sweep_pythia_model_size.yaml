@@ -16,6 +16,9 @@ parameters:
   lora_target_modules:
     value:
       - query_key_value
+  hub_repo_id:
+    value:
+      - rlhf-v3-sweep
   sweep_param_name:
     value: pythia
 program: experiments/superhf/rlhf/rlhf_v1/run_rlhf.py
