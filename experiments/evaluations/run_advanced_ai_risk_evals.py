@@ -26,12 +26,10 @@ def run_evaluations() -> None:
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--models", type=str, nargs="+", required=True)
-    parser.add_argument("--output_folder", type=str, required=True)
     parser.add_argument("--batch_size", type=int, default=4)
     parser.add_argument("--limit_tests", type=int, default=0)
 
     args = parser.parse_args()
-    assert args.output_folder.strip() != "", "Output folder cannot be empty"
 
     model = None
     tokenizer = None
@@ -194,9 +192,7 @@ def run_evaluations() -> None:
         dumped = json.dumps(results, indent=2)
         print(dumped)
 
-        output_dir = os.path.join(
-            "./eval_results", "advanced_ai_risk", args.output_folder
-        )
+        output_dir = os.path.join("./eval_results", "advanced_ai_risk")
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
         output_path = os.path.join(
