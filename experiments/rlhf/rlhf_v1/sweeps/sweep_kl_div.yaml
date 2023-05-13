@@ -15,7 +15,10 @@ parameters:
       - 0.3
       - 0.35
       - 0.4
-program: experiments/superhf/rlhf/rlhf_v1/run_rlhf.py
-sweep_param_name:
+  sweep_param_name:
     values:
       - "kl"
+  hub_repo_id:
+    value:
+      - rlhf-v3-sweep
+program: experiments/superhf/rlhf/rlhf_v1/run_rlhf.py
