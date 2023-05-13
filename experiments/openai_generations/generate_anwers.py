@@ -93,13 +93,12 @@ def parse_args():
 
 # Define function to generate answers for a list of questions
 @retry(wait=wait_random_exponential(min=1, max=60), stop=stop_after_attempt(6))
-def generate_answers(
-    question="NO QUESTION PROVIDED", engine="gpt-3.5-turbo", max_tokens=64
-) -> list:
+def generate_answers(question=None, engine="gpt-3.5-turbo", max_tokens=64) -> list:
     """
     Given a sigle question, generate and return an anwser for it.
     Retries with exponential backoff if the request fails.
     """
+    assert question is not None, "Question cannot be None"
     completion = openai.ChatCompletion.create(
         model=engine,
         messages=[question],
