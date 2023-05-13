@@ -19,8 +19,8 @@ language_model_names:
   desc: The name of the language model to use
   value: ["gmukobi/shf-pythia-{N}"] # "mock"
 language_model_interval:
-  desc: The interval of models to use. 0,0 for to use all models
-  value: [0,0]
+  desc: The interval to use for the language model
+  value: [2, 7] # and [0,1], leaving [1,2] for sphinx
 starting_batch_size_lm:
   desc: The starting batch size for the reward model scoring
   value: 64
