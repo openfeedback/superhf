@@ -77,15 +77,15 @@ def parse_args() -> argparse.Namespace:
         "--scores-dir",
         type=str,
         default="test_scores",
-        help="The directory name where scores will be saved to",
+        help="The directory name where scores will be saved to.",
     )
     args = parser.parse_args()
     with open(args.config, "r", encoding="utf-8") as file:
         yaml_args = yaml.safe_load(file)
 
     values_dict = {k: v["value"] for k, v in yaml_args.items()}
-    values_dict["completions-dir"] = args.completions_dir
-    values_dict["scores-dir"] = args.scores_dir
+    values_dict["completions_dir"] = args.completions_dir
+    values_dict["scores_dir"] = args.scores_dir
     return argparse.Namespace(**values_dict)
 
 
@@ -580,7 +580,7 @@ def score_all_completions(args, script_path_dir: str, test_completions_dir: str)
 
     already_generated_completions = os.listdir(test_completions_dir)
     already_generated_completions = remove_extension(already_generated_completions)
-    test_scores_dir = os.path.join(script_path_dir, args.score_dir)
+    test_scores_dir = os.path.join(script_path_dir, args.scores_dir)
     if not os.path.exists(test_scores_dir):
         os.makedirs(test_scores_dir)
     already_generated_scores = os.listdir(test_scores_dir)
