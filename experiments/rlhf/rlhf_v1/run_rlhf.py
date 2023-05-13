@@ -614,8 +614,11 @@ def main(script_args: ScriptArguments):
                     "batch": (
                         ppo_config.batch_size * ppo_config.gradient_accumulation_steps
                     ),
-                    "pythia": ppo_config.model_name.split("-")[1],
                 }
+                if "pythia" == script_args.sweep_param_name:
+                    param_name_to_value["pythia"] = (
+                        ppo_config.model_name.split("-")[1],
+                    )
                 # get the param value specified by the sweep
                 param_value = param_name_to_value[script_args.sweep_param_name]
                 repo_name += f"-{script_args.sweep_param_name}-{param_value}"
