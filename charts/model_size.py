@@ -15,7 +15,7 @@ from chart_utils import (
 )
 from superhf.utils import set_seed
 
-OUTPUT_FILE = "./charts/shf_ablations/modelsize.png"
+OUTPUT_FILE = "./charts/shf_ablations/model_size.png"
 
 
 def main() -> None:
@@ -98,7 +98,7 @@ def main() -> None:
 
     # Set labels and title
     plt.xlabel("Parameters")
-    plt.ylabel("Average test accuracy")
+    plt.ylabel("Average test score")
     plt.title("SuperHF scaling (Pythia model suite)")
 
     # Display grid
