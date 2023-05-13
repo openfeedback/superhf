@@ -10,6 +10,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+DEFAULT_COLOR_PALETTE = "colorblind"
+
 
 def bootstrapped_stdev(data: list[Any], num_samples: int = 1000) -> Any:
     """
@@ -62,10 +64,32 @@ def set_plot_style() -> None:
     # Figure size
     plt.rcParams["figure.figsize"] = (8, 5)
     # Make title larger
-    plt.rcParams["axes.titlesize"] = 20
+    plt.rcParams["axes.titlesize"] = 16
     # Higher DPI
     plt.rcParams["figure.dpi"] = 300
     # Default marker
     plt.rcParams["lines.marker"] = "o"
     # Default marker size
     plt.rcParams["lines.markersize"] = 8
+    # Accessible colors
+    sns.set_palette(DEFAULT_COLOR_PALETTE)
+
+
+def _get_color_from_palette(index: int) -> Any:
+    """Get a color from the default palette."""
+    palette = sns.color_palette(DEFAULT_COLOR_PALETTE)
+    color = palette[index]
+    return color
+
+
+def model_type_to_palette_color(model_type: str) -> Any:
+    """Standardize our use of models types to palette colors."""
+    all_model_types = [
+        "pretrained",
+        "instruct",
+        "sft_preferences",
+        "rlhf",
+        "superhf",
+    ]
+    assert model_type in all_model_types
+    return _get_color_from_palette(all_model_types.index(model_type))
