@@ -44,8 +44,8 @@ WANDB_ENTITY_NAME = "stanfordaialignment"
 WANDB_PROJECT_NAME = "rlhf-trl-v1"
 
 # folder to be used for saving and loading test set eval data
-TEST_COMPLETIONS_DIR = "test_completions"
-TEST_SCORES_DIR = "test_scores"
+# TEST_COMPLETIONS_DIR = "test_completions"
+# TEST_SCORES_DIR = "test_scores"
 
 # Saved conversation prompt
 CONVERSATION_PROMPT = (
@@ -67,11 +67,25 @@ def parse_args() -> argparse.Namespace:
         default=None,
         help="Path to the config file containing the completions to score",
     )
+    parser.add_argument(
+        "--completions-dir",
+        type=str,
+        default="test_completions",
+        help="Directory name where the generations will be saved and read from,",
+    )
+    parser.add_argument(
+        "--scores-dir",
+        type=str,
+        default="test_scores",
+        help="The directory name where scores will be saved to",
+    )
     args = parser.parse_args()
     with open(args.config, "r", encoding="utf-8") as file:
         yaml_args = yaml.safe_load(file)
 
     values_dict = {k: v["value"] for k, v in yaml_args.items()}
+    values_dict["completions-dir"] = args.completions_dir
+    values_dict["scores-dir"] = args.scores_dir
     return argparse.Namespace(**values_dict)
 
 
@@ -566,7 +580,7 @@ def score_all_completions(args, script_path_dir: str, test_completions_dir: str)
 
     already_generated_completions = os.listdir(test_completions_dir)
     already_generated_completions = remove_extension(already_generated_completions)
-    test_scores_dir = os.path.join(script_path_dir, TEST_SCORES_DIR)
+    test_scores_dir = os.path.join(script_path_dir, args.score_dir)
     if not os.path.exists(test_scores_dir):
         os.makedirs(test_scores_dir)
     already_generated_scores = os.listdir(test_scores_dir)
@@ -636,7 +650,7 @@ def main() -> None:
 
     script_path_dir = os.path.dirname(os.path.abspath(__file__))
     # get all the filenames in TEST_COMPLETIONS_DIR
-    test_completions_dir = os.path.join(script_path_dir, TEST_COMPLETIONS_DIR)
+    test_completions_dir = os.path.join(script_path_dir, args.completions_dir)
 
     if language_model_names is not None and len(language_model_names) != 0:
         generate_all_completions(args, language_model_names, test_completions_dir)
