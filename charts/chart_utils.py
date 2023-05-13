@@ -1,0 +1,71 @@
+"""
+Functions to help with creating charts.
+"""
+
+import os
+import json
+from typing import Any
+
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+
+def bootstrapped_stdev(data: list[Any], num_samples: int = 1000) -> Any:
+    """
+    Bootstrap a stdev by sampling the whole dataset with replacement N times.
+
+    We calculate the average of each sample, then take the stdev of the averages.
+    """
+    averages = []
+    for _ in range(num_samples):
+        # Sample the data with replacement
+        sample = np.random.choice(data, size=len(data), replace=True)
+
+        # Calculate the average of the sample
+        average = np.average(sample)
+
+        # Add the average to the array
+        averages.append(average)
+
+    # Calculate the standard deviation of the averages
+    stdev = np.std(averages)
+
+    return stdev
+
+
+def flatten_2d_vector(vector: list[list[Any]]) -> list[Any]:
+    """Flatten a 2D list of single-element lists into a 1D list."""
+    output = [element[0] for element in vector]
+    return output
+
+
+def load_json(file_path: str) -> dict[str, Any]:
+    """Load a JSON file."""
+    with open(file_path, encoding="utf-8") as file:
+        file_data = json.load(file)
+    assert isinstance(file_data, dict)
+    return file_data
+
+
+def create_file_dir_if_not_exists(file_path: str) -> None:
+    """Create the directory for a file if it doesn't already exist."""
+    file_dir = os.path.dirname(file_path)
+    if not os.path.exists(file_dir):
+        os.makedirs(file_dir)
+
+
+def set_plot_style() -> None:
+    """Set default plot styling."""
+    # Default theme
+    sns.set_theme(context="paper", font_scale=1.5, style="whitegrid")
+    # Figure size
+    plt.rcParams["figure.figsize"] = (8, 5)
+    # Make title larger
+    plt.rcParams["axes.titlesize"] = 20
+    # Higher DPI
+    plt.rcParams["figure.dpi"] = 300
+    # Default marker
+    plt.rcParams["lines.marker"] = "o"
+    # Default marker size
+    plt.rcParams["lines.markersize"] = 8

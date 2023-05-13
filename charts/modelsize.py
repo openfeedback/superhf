@@ -1,55 +1,113 @@
-import requests
-import json
-import pandas as pd
+"""
+Plot scores as a function of model size.
+"""
+
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.stats import sem, t
+import seaborn as sns
 
-# Define the model sizes and their corresponding file names
-file_names = ["shf-pythia-160m.json", "shf-pythia-410m.json", "shf-pythia-1b.json", 
-              "shf-pythia-1.4b.json", "shf-pythia-2.8b.json", "shf-pythia-6.9b.json"]
-model_sizes = [160, 410, 1000, 1400, 2800, 6900]  # in millions
+from chart_utils import (
+    # bootstrapped_stdev,
+    create_file_dir_if_not_exists,
+    flatten_2d_vector,
+    load_json,
+    set_plot_style,
+)
+from superhf.utils import set_seed
 
-# Initialize a data frame to hold the scores
-data = pd.DataFrame(columns=["model_size", "score"])
+OUTPUT_FILE = "./charts/shf_ablations/modelsize.png"
 
-# Retrieve data from each file
-for model_size, file_name in zip(model_sizes, file_names):
-    url = f"https://raw.githubusercontent.com/openfeedback/superhf/evaluations/experiments/evaluations/test_scores/{file_name}"
-    r = requests.get(url)
-    file_data = r.json()
-    scores = file_data["anthropic-red-team"] + file_data["anthropic-helpful-base"] + file_data["openai/webgpt_comparisons"]
-    for score_list in scores:
-        score = score_list[0]  # Extract the score from the list
-        data = data.append({"model_size": model_size, "score": score}, ignore_index=True)
 
-# Convert data types
-data["model_size"] = data["model_size"].astype(int)
-data["score"] = data["score"].astype(float)
+def main() -> None:
+    """Main function."""
 
-# Initialize arrays to hold the mean scores and the confidence intervals
-mean_scores = []
-confidence_intervals = []
+    # pylint: disable=too-many-locals
 
-# For each model size, calculate the mean score and the 95% confidence interval
-for model_size in model_sizes:
-    scores = data[data["model_size"] == model_size]["score"]
-    mean_score = scores.mean()
-    confidence_interval = sem(scores) * t.ppf((1 + 0.95) / 2., scores.count() - 1)
-    mean_scores.append(mean_score)
-    confidence_intervals.append(confidence_interval)
+    # Initialize
+    set_seed(66)
+    set_plot_style()
 
-# Create the plot
-fig, ax = plt.subplots()
-ax.errorbar(model_sizes, mean_scores, yerr=confidence_intervals, fmt='o')
+    # Define the model sizes and their corresponding file names
+    file_names = [
+        # "shf-pythia-70m.json",
+        "shf-pythia-160m.json",
+        "shf-pythia-410m.json",
+        "shf-pythia-1b.json",
+        "shf-pythia-1.4b.json",
+        "shf-pythia-2.8b.json",
+        "shf-pythia-6.9b.json",
+    ]
+    parameters = [1.6e8, 4.1e8, 1e9, 1.4e9, 2.8e9, 6.9e9]
 
-# Set labels and title
-ax.set_xlabel('Model size (in millions)')
-ax.set_ylabel('Average test accuracy')
-ax.set_title('Average test accuracy by model size')
+    # Initialize lists to hold the data
+    mean_scores = []
+    all_scores = []
+    # stdevs = []
 
-# Display grid
-ax.grid(True)
+    # Calculate plot values for data
+    for file_name in file_names:
+        file_path = f"./experiments/evaluations/test_scores/{file_name}"
+        file_data = load_json(file_path)
+        scores = (
+            file_data["anthropic-red-team"]
+            + file_data["anthropic-helpful-base"]
+            + file_data["anthropic-harmless-base"]
+            + file_data["openai/webgpt_comparisons"]
+        )
+        # Unwrap scores from 2D array
+        scores = flatten_2d_vector(scores)
 
-# Show the plot
-plt.show()
+        # Calculate the mean score
+        mean_score = np.average(scores)
+
+        # Calculate the standard deviation of the scores
+        # stdev = bootstrapped_stdev(scores)
+
+        # Add the data
+        all_scores.append(scores)
+        mean_scores.append(mean_score)
+        # stdevs.append(stdev)
+
+    # Convert data types
+    # data["model_size"] = data["model_size"].astype(int)
+    # data["score"] = data["score"].astype(float)
+
+    # Initialize arrays to hold the mean scores and the confidence intervals
+    # mean_scores = []
+    # confidence_intervals = []
+
+    # # For each model size, calculate the mean score and the 95% confidence interval
+    # for model_size in model_sizes:
+    #     scores = data[data["model_size"] == model_size]["score"]
+    #     mean_score = scores.mean()
+    #     confidence_interval = sem(scores) * t.ppf((1 + 0.95) / 2.0, scores.count() - 1)
+    #     mean_scores.append(mean_score)
+    #     confidence_intervals.append(confidence_interval)
+
+    # Create the plot
+    sns.lineplot(x=parameters, y=mean_scores, label="SuperHF")
+
+    # Set x-axis to log
+    plt.xscale("log")
+
+    # More x-ticks
+    plt.xticks(
+        [1e8, 3e8, 1e9, 3e9, 1e10],
+        ["100M", "300M", "1B", "3B", "10B"],
+    )
+
+    # Set labels and title
+    plt.xlabel("Parameters")
+    plt.ylabel("Average test accuracy")
+    plt.title("SuperHF scaling (Pythia model suite)")
+
+    # Display grid
+    plt.grid(True)
+
+    # Save the plot
+    create_file_dir_if_not_exists(OUTPUT_FILE)
+    plt.savefig(OUTPUT_FILE)
+
+
+if __name__ == "__main__":
+    main()
