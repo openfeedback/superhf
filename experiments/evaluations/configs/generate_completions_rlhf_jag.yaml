@@ -17,7 +17,7 @@ use_openai:
 
 language_model_names:
   desc: The name of the language model to use
-  value: ["peterchatain/test-save-alpaca@model-2048-prompts-batch-size-8"] # "mock"
+  value: ["peterchatain/rlhf-v3-lr-5.0e-6-batch-16@gold-run"]
 starting_batch_size_lm:
   desc: The starting batch size for the reward model scoring
   value: 64
