@@ -20,5 +20,5 @@ parameters:
       - "kl"
   hub_repo_id:
     value:
-      - rlhf-v3-sweep
+      - rlhf-v3-kl-sweep
 program: experiments/superhf/rlhf/rlhf_v1/run_rlhf.py
