@@ -8,8 +8,7 @@ import seaborn as sns
 
 from chart_utils import (
     create_file_dir_if_not_exists,
-    flatten_2d_vector,
-    load_json,
+    get_test_scores,
     set_plot_style,
     model_type_to_palette_color,
 )
@@ -43,21 +42,10 @@ def main() -> None:
     # Calculate plot values for data
     all_data = []
     for parameter, file_name in zip(parameters, file_names):
-        # TODO refactor this into chart_utils.py
         file_path = f"./experiments/evaluations/test_scores/{file_name}"
-        file_data = load_json(file_path)
-        scores = (
-            file_data["anthropic-red-team"]
-            + file_data["anthropic-helpful-base"]
-            + file_data["anthropic-harmless-base"]
-            + file_data["openai/webgpt_comparisons"]
-        )
-        # Unwrap scores from 2D array
-        scores = flatten_2d_vector(scores)
-
-        # Add the data
-        for score in scores:
-            all_data.append([parameter, score])
+        scores = get_test_scores(file_path)
+        scores = [[parameter, score] for score in scores]
+        all_data.extend(scores)
 
     dataframe = pd.DataFrame(all_data, columns=["Parameter", "Score"])
 
@@ -70,16 +58,11 @@ def main() -> None:
         errorbar=errorbar,
         color=model_type_to_palette_color("superhf"),
     )
-    # sns.lineplot(x=parameters, y=mean_scores, label="SuperHF")
 
     # Set x-axis to log
     plt.xscale("log")
 
     # More x-ticks
-    # plt.xticks(
-    #     [1e8, 3e8, 1e9, 3e9, 1e10],
-    #     ["100M", "300M", "1B", "3B", "10B"],
-    # )
     plt.xticks(parameters, ["70M", "160M", "410M", "1B", "1.4B", "2.8B", "6.9B", "12B"])
 
     # Set labels and title

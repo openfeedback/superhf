@@ -57,6 +57,25 @@ def create_file_dir_if_not_exists(file_path: str) -> None:
         os.makedirs(file_dir)
 
 
+def get_test_scores(file_path: str) -> list[float]:
+    """Get the test scores from a file."""
+    output = []
+    file_data = load_json(file_path)
+    scores = (
+        file_data["anthropic-red-team"]
+        + file_data["anthropic-helpful-base"]
+        + file_data["anthropic-harmless-base"]
+        + file_data["openai/webgpt_comparisons"]
+    )
+    # Unwrap scores from 2D array
+    scores = flatten_2d_vector(scores)
+
+    # Add the data
+    for score in scores:
+        output.append(score)
+    return output
+
+
 def set_plot_style() -> None:
     """Set default plot styling."""
     # Default theme
