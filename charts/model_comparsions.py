@@ -39,9 +39,9 @@ def main() -> None:
 
     # Calculate plot values for data
     all_data = []
-    for parameter, file_name in zip(parameters, file_names):
+    for model_name in model_names:
         # TODO refactor this into chart_utils.py
-        file_path = f"./experiments/evaluations/test_scores/{file_name}"
+        file_path = f"./experiments/evaluations/test_scores/{model_name}"
         file_data = load_json(file_path)
         scores = (
             file_data["anthropic-red-team"]
@@ -55,15 +55,15 @@ def main() -> None:
 
         # Add the data
         for score in scores:
-            all_data.append([parameter, score])
+            all_data.append([model_name, score])
 
         
 
     dataframe = pd.DataFrame(all_data, columns=["Model", "Score"])
 
     # Create the plot
-    errorbar = "sd"
-    plot = sns.lineplot(
+    errorbar = "ci"
+    plot = sns.barplot(
         data=dataframe,
         x="Model",
         y="Score",
