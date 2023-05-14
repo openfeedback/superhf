@@ -10,6 +10,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+from superhf.utils import set_seed
+
 DEFAULT_COLOR_PALETTE = "colorblind"
 
 
@@ -76,8 +78,10 @@ def get_test_scores(file_path: str) -> list[float]:
     return output
 
 
-def set_plot_style() -> None:
+def initialize_plot() -> None:
     """Set default plot styling."""
+    # Set seed
+    set_seed(66)
     # Default theme
     sns.set_theme(context="paper", font_scale=1.5, style="whitegrid")
     # Figure size
@@ -92,6 +96,11 @@ def set_plot_style() -> None:
     plt.rcParams["lines.markersize"] = 8
     # Accessible colors
     sns.set_palette(DEFAULT_COLOR_PALETTE)
+
+
+def set_plot_style() -> None:
+    """Deprecated. Use initialize_plot() instead."""
+    raise DeprecationWarning("Use initialize_plot() instead.")
 
 
 def _get_color_from_palette(index: int) -> Any:
@@ -113,3 +122,9 @@ def model_type_to_palette_color(model_type: str) -> Any:
     ]
     assert model_type in all_model_types
     return _get_color_from_palette(all_model_types.index(model_type))
+
+
+def save_plot(file_path: str) -> None:
+    """Save a plot to a file."""
+    create_file_dir_if_not_exists(file_path)
+    plt.savefig(file_path)

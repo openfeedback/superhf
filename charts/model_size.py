@@ -7,12 +7,11 @@ import pandas as pd
 import seaborn as sns
 
 from chart_utils import (
-    create_file_dir_if_not_exists,
     get_test_scores,
-    set_plot_style,
+    initialize_plot,
     model_type_to_palette_color,
+    save_plot,
 )
-from superhf.utils import set_seed
 
 OUTPUT_FILE = "./charts/shf_ablations/model_size.png"
 
@@ -20,11 +19,8 @@ OUTPUT_FILE = "./charts/shf_ablations/model_size.png"
 def main() -> None:
     """Main function."""
 
-    # pylint: disable=too-many-locals
-
     # Initialize
-    set_seed(66)
-    set_plot_style()
+    initialize_plot()
 
     # Define the model sizes and their corresponding file names
     file_names = [
@@ -44,18 +40,17 @@ def main() -> None:
     for parameter, file_name in zip(parameters, file_names):
         file_path = f"./experiments/evaluations/test_scores/{file_name}"
         scores = get_test_scores(file_path)
-        scores = [[parameter, score] for score in scores]
-        all_data.extend(scores)
+        named_scores = [[parameter, score] for score in scores]
+        all_data.extend(named_scores)
 
     dataframe = pd.DataFrame(all_data, columns=["Parameter", "Score"])
 
     # Create the plot
-    errorbar = "ci"
     sns.lineplot(
         data=dataframe,
         x="Parameter",
         y="Score",
-        errorbar=errorbar,
+        errorbar="ci",
         color=model_type_to_palette_color("superhf"),
     )
 
@@ -71,8 +66,7 @@ def main() -> None:
     plt.title("SuperHF scaling (Pythia model suite)")
 
     # Save the plot
-    create_file_dir_if_not_exists(OUTPUT_FILE)
-    plt.savefig(OUTPUT_FILE)
+    save_plot(OUTPUT_FILE)
 
 
 if __name__ == "__main__":
