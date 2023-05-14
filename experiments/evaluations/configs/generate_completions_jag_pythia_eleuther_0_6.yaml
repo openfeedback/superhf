@@ -17,7 +17,7 @@ use_openai:
 
 language_model_names:
   desc: The name of the language model to use
-  value: ["EleutherAI/pythia-70m-deduped", "EleutherAI/pythia-160m-deduped", "EleutherAI/pythia-410m-deduped", "EleutherAI/pythia-1b-deduped", "EleutherAI/pythia-1.4b-deduped", "EleutherAI/pythia-2.8b-deduped", "EleutherAI/pythia-6.9b-deduped", "EleutherAI/pythia-12b-deduped"]
+  value: ["EleutherAI/pythia-70m-deduped", "EleutherAI/pythia-160m-deduped", "EleutherAI/pythia-410m-deduped", "EleutherAI/pythia-1b-deduped", "EleutherAI/pythia-1.4b-deduped", "EleutherAI/pythia-2.8b-deduped", "EleutherAI/pythia-6.9b-deduped"]
 language_model_interval:
   desc: The interval to use for the language model
   value: [0,0]
