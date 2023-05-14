@@ -147,7 +147,7 @@
             "console": "integratedTerminal",
             "args": [
                 "--config",
-                "${workspaceFolder}/experiments/evaluations/configs/debug_lm.yaml",
+                "${workspaceFolder}/experiments/evaluations/configs/generate_completions_jag_pythia_eleuther_0_6.yaml",
             ],
             "justMyCode": true
         },

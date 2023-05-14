@@ -520,7 +520,7 @@ def generate_all_completions(
     prev_tokenizer = None
     for language_model_name in tqdm(language_model_names, desc="Language models"):
         #  it does, don't generate here
-        language_model_base_name = language_model_name.split(os.path.sep)[-1]
+        language_model_base_name = language_model_name.split("/")[-1]
         if language_model_base_name in already_generated_completions:
             tqdm.write(
                 "Already generated completions for language model"
