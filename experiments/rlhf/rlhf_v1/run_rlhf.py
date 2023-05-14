@@ -65,6 +65,11 @@ WANDB_ENTITY_NAME = "stanfordaialignment"
 WANDB_PROJECT_NAME = "rlhf-trl-v1"
 MAX_OOM_ALLOWED = 5
 
+DEFAULT_PAD_TOKEN = "[PAD]"
+DEFAULT_EOS_TOKEN = "</s>"
+DEFAULT_BOS_TOKEN = "</s>"
+DEFAULT_UNK_TOKEN = "</s>"
+
 
 # We first define the configuration of the experiment, defining the model, the dataset,
 # the training parameters, and the PPO parameters.
@@ -284,11 +289,18 @@ def get_configs():
         language_tokenizer = LlamaTokenizer.from_pretrained(
             ppo_config.model_name, padding_side="left"
         )
+        language_tokenizer.add_special_tokens(
+        {
+            "eos_token": DEFAULT_EOS_TOKEN,
+            "bos_token": DEFAULT_BOS_TOKEN,
+            "unk_token": DEFAULT_UNK_TOKEN,
+            "pad_token": DEFAULT_PAD_TOKEN,
+        }
     else:
         language_tokenizer = AutoTokenizer.from_pretrained(
             ppo_config.model_name, padding_side="left"
         )
-
+        tokenizer.pad_token = tokenizer.eos_token
     # We then define the arguments to pass to the `generate` function. These arguments
     # are passed to the `generate` function of the PPOTrainer, which is a wrapper around
     # the `generate` function of the trained model.
@@ -298,7 +310,7 @@ def get_configs():
         "top_k": 0.0,
         "top_p": wandb.config.top_p,
         "do_sample": True,
-        "pad_token_id": language_tokenizer.eos_token_id,
+        "pad_token_id": language_tokenizer.pad_token_id,
         "max_new_tokens": wandb.config.max_new_tokens,
     }
     # loop over extra_generation_args two at a time
