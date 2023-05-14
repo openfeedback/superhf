@@ -290,17 +290,18 @@ def get_configs():
             ppo_config.model_name, padding_side="left"
         )
         language_tokenizer.add_special_tokens(
-        {
-            "eos_token": DEFAULT_EOS_TOKEN,
-            "bos_token": DEFAULT_BOS_TOKEN,
-            "unk_token": DEFAULT_UNK_TOKEN,
-            "pad_token": DEFAULT_PAD_TOKEN,
-        }
+            {
+                "eos_token": DEFAULT_EOS_TOKEN,
+                "bos_token": DEFAULT_BOS_TOKEN,
+                "unk_token": DEFAULT_UNK_TOKEN,
+                "pad_token": DEFAULT_PAD_TOKEN,
+            }
+        )
     else:
         language_tokenizer = AutoTokenizer.from_pretrained(
             ppo_config.model_name, padding_side="left"
         )
-        tokenizer.pad_token = tokenizer.eos_token
+        language_tokenizer.pad_token = language_tokenizer.eos_token
     # We then define the arguments to pass to the `generate` function. These arguments
     # are passed to the `generate` function of the PPOTrainer, which is a wrapper around
     # the `generate` function of the trained model.
