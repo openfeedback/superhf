@@ -13,7 +13,7 @@ from chart_utils import (
     save_plot,
 )
 
-OUTPUT_FILE = "./charts/shf_ablations/model_size.png"
+OUTPUT_FILE = "./charts/models/model_size.png"
 
 
 def main() -> None:
