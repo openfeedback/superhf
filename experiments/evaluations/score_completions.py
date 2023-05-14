@@ -376,19 +376,9 @@ def save_completions(completions_dict, filename):
     """
     with open(filename, "w", encoding="utf-8") as file:
         json.dump(completions_dict, file)
+        file.write("\n")
     tqdm.write(f"Saved completions to {filename}")
     return filename
-
-    # if completions_file is not None:
-    #     if "openai" in args.completions_file:
-    #         completions = read_openai_completions(args.completions_file)
-    #     else:
-    #         # raise an unimplemented error
-    #         raise NotImplementedError(
-    #             "Need to implement general loading from a file. "
-    #             " Specify openai flag otherwsie"
-    #         )
-    # else:
 
 
 def save_scores(scores_dict, filename) -> str:
@@ -398,6 +388,7 @@ def save_scores(scores_dict, filename) -> str:
     tqdm.write(f"Saving scores to {filename}")
     with open(filename, "w", encoding="utf-8") as file:
         json.dump(scores_dict, file)
+        file.write("\n")
     return filename
 
 

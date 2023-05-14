@@ -90,11 +90,14 @@
             "name": "GPT Generation Script",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/experiments/openai/generate_anwers.py",
+            "program": "${workspaceFolder}/experiments/openai_generations/generate_anwers.py",
             "console": "integratedTerminal",
             "args": [
                 "--key",
-                "----------------------"
+                "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",
+                "--engine",
+                "gpt-3.5-turbo",
+                "--debug"
             ],
             "justMyCode": false
         },

@@ -18,8 +18,11 @@ This script analyzes 1,000 randomly selected prompts.
 import sys
 import argparse
 import json
-import random
+from datetime import datetime
+
+# import random
 import logging
+from typing import List
 from concurrent.futures import ThreadPoolExecutor
 
 
@@ -59,7 +62,10 @@ def parse_args():
         "--output_file",
         type=str,
         default="completions_output.json",
-        help="Output file",
+        help=(
+            "Output file to append at the end of filename. Filename has the format "
+            "engine_date_output_file"
+        ),
     )
     parser.add_argument(
         "--max_tokens",
@@ -79,9 +85,15 @@ def parse_args():
         help="Debug mode, only work with 5 prompts from the dataset",
     )
     parser.add_argument(
+        "--max_prompt_char_length",
+        type=int,
+        default=1024,
+        help="Max prompt char length, anything longer get's filtered out",
+    )
+    parser.add_argument(
         "--dataset",
         type=str,
-        default="webgpt_comparisons",
+        default="all",
         help=(
             "Dataset to use, loaded from superhf.data.get_superhf_prompts(). 'All'"
             " generates for all supported datasets except mock"
@@ -119,53 +131,76 @@ def main() -> None:
     # Set OpenAI API key
     openai.api_key = args.key
 
+    completions_dict = {}
     if args.dataset == "all":
         for dataset in SUPPORTED_DATASETS:
             if dataset == "mock":
                 continue
-            generate_for_dataset(args, dataset)
+            completions = generate_for_dataset(args, dataset)
+            completions_dict[dataset] = completions
     else:
-        generate_for_dataset(args, args.dataset)
+        completions_dict[args.dataset] = generate_for_dataset(args, args.dataset)
+
+    # get the current day
+    now = datetime.now()
+    date = now.strftime("%Y-%m-%d")
+
+    with open(
+        f"{args.engine}_{date}_{args.output_file}", "w", encoding="utf-8"
+    ) as file:
+        json.dump(completions_dict, file, indent=4)
+        file.write("\n")
 
 
-def generate_for_dataset(args, dataset: str) -> None:
+def generate_for_dataset(args, dataset_name: str) -> List[str]:
     """
-    Generate answers for a dataset
+    Generate answers for a single dataset
+
+    Args:
+        args: Command line arguments
+        dataset_name: Name of the dataset to generate answers for
+
+    Returns:
+        List of answers
     """
+    # pylint: disable=too-many-locals
 
-    print("Generating completions for dataset: " + dataset)
-    questions = get_superhf_prompts(dataset)
-    if args.debug:
-        questions = questions[:5]
-        assert len(questions) < 10
-
-    # randomize the order of the prompts
-    random.seed(RANDOM_SEED)
-    random.shuffle(questions)
-    questions = questions[:NUMBER_OF_PROMPTS]
-
-    questions = [
-        question.split("\n\nAssistant:")[0].strip("\n\nHuman: ")
-        for question in questions
+    print("Generating completions for dataset: " + dataset_name)
+    prompts = get_superhf_prompts(dataset_name, split="test")
+    # Filter out prompts that are too long
+    old_prompt_count = len(prompts)
+    prompts = [
+        prompt for prompt in prompts if len(prompt) < args.max_prompt_char_length
     ]
+    if args.debug:
+        prompts = prompts[:5]
+        assert len(prompts) < 10
+    prompts = [
+        prompt.split("\n\nAssistant:")[0].strip("\n\nHuman: ") for prompt in prompts
+    ]
+    print(
+        f"Filtered {old_prompt_count - len(prompts)} prompts over "
+        f"{args.max_prompt_char_length} chars from dataset {dataset_name}."
+    )
+    print(f"Loaded {len(prompts)} prompts for dataset {dataset_name}")
 
     def generate_answer_wrapper(prompt):
         return generate_answers(prompt, args.engine, args.max_tokens)
 
-    prompts = []
-    for question in questions:
-        prompt = {"role": "user", "content": question}
-        prompts.append(prompt)
-    answers = ["" for _ in prompts]
-    n_requests = 0
+    gpt_prompts = []
+    for prompt in prompts:
+        input_prompt = {"role": "user", "content": prompt}
+        gpt_prompts.append(input_prompt)
+    answers = ["" for _ in gpt_prompts]
 
     with ThreadPoolExecutor() as executor:
         answers = list(
             tqdm.tqdm(
-                executor.map(generate_answer_wrapper, prompts), total=len(prompts)
+                executor.map(generate_answer_wrapper, gpt_prompts),
+                total=len(gpt_prompts),
             )
         )
-
+    n_requests = len(answers)
     print(
         "Just processed "
         + str(n_requests)
@@ -174,18 +209,19 @@ def generate_for_dataset(args, dataset: str) -> None:
     )
 
     completions = []
-    for i, question in enumerate(questions):
+    for i, question in enumerate(prompts):
         # Stitch together the prompt and answer
         completion = "\n\nHuman: " + question + "\n\nAssistant: " + answers[i]
         completions.append(completion)
 
     # Write answers to a file
-    if dataset == "openai/webgpt_comparisons":
-        dataset = "webgpt_comparisons"
-    output_file = dataset + "_" + args.output_file
-    with open(output_file, "w", encoding="utf-8") as outfile:
-        # write the result to the output file in json format
-        json.dump({"completions": completions}, outfile)
+    if dataset_name == "openai/webgpt_comparisons":
+        dataset_name = "webgpt_comparisons"
+    # output_file = dataset_name + "_" + args.output_file
+    # with open(output_file, "w", encoding="utf-8") as outfile:
+    #     # write the result to the output file in json format
+    #     json.dump({"completions": completions}, outfile)
+    return completions
 
 
 if __name__ == "__main__":
