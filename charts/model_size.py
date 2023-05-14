@@ -43,6 +43,7 @@ def main() -> None:
     # Calculate plot values for data
     all_data = []
     for parameter, file_name in zip(parameters, file_names):
+        # TODO refactor this into chart_utils.py
         file_path = f"./experiments/evaluations/test_scores/{file_name}"
         file_data = load_json(file_path)
         scores = (
