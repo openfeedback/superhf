@@ -29,7 +29,7 @@ max_new_tokens:
   value: 64
 generation_kwargs:
   desc: Extra args to pass to generation. Format is arg_name followed by value
-  value: ["eos_token_id", 2]
+  value: ["eos_token_id", 100_000]
 max_prompt_char_length:
   desc: "The maximum number of characters in a prompt"
   value: 1024
