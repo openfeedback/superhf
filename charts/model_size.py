@@ -41,22 +41,34 @@ def main() -> None:
         "pythia-2.8b-deduped.json",
         "pythia-6.9b-deduped.json",
         "pythia-12b-deduped.json",
+        "rlhf-v3-sweep-pythia-70M.json",
+        "rlhf-v3-sweep-pythia-160M.json",
+        "rlhf-v3-sweep-pythia-410m.json",
+        "rlhf-v3-sweep-pythia-1b.json",
+        "rlhf-v3-sweep-pythia-1.4b.json",
+        "rlhf-v3-sweep-pythia-2.8b.json",
+        "rlhf-v3-sweep-pythia-6.9b.json",
+        "rlhf-v3-sweep-pythia-12b.json",
     ]
     parameters = [7e7, 1.6e8, 4.1e8, 1e9, 1.4e9, 2.8e9, 6.9e9, 1.2e10]
 
     # Calculate plot values for data
     shf_data = []
+    rlhf_data = []
     pretrained_data = []
-    for parameter, file_name in zip(parameters * 2, file_names):
+    for parameter, file_name in zip(parameters * 3, file_names):
         file_path = f"./experiments/evaluations/test_scores/{file_name}"
         scores = get_test_scores(file_path)
         named_scores = [[parameter, score] for score in scores]
         if "shf" in file_name:
             shf_data.extend(named_scores)
+        elif "rlhf" in file_name:
+            rlhf_data.extend(named_scores)
         else:
             pretrained_data.extend(named_scores)
 
     dataframe_shf = pd.DataFrame(shf_data, columns=["Parameter", "Score"])
+    dataframe_rlhf = pd.DataFrame(rlhf_data, columns=["Parameter", "Score"])
     dataframe_pretrained = pd.DataFrame(pretrained_data, columns=["Parameter", "Score"])
 
     # Create the plot
@@ -67,6 +79,14 @@ def main() -> None:
         errorbar="ci",
         label="Pythia Base",
         color=model_type_to_palette_color("pretrained"),
+    )
+    sns.lineplot(
+        data=dataframe_rlhf,
+        x="Parameter",
+        y="Score",
+        errorbar="ci",
+        label="RLHF",
+        color=model_type_to_palette_color("rlhf"),
     )
     sns.lineplot(
         data=dataframe_shf,
