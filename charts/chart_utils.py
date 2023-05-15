@@ -14,6 +14,16 @@ from superhf.utils import set_seed
 
 DEFAULT_COLOR_PALETTE = "colorblind"
 
+MODEL_NAME_MAPPING = {
+    "llama-7b.json": "LLaMA",
+    "alpaca_7b.json": "Alpaca",
+    "sft-on-preferences-v1.json": "SFT",
+    "rlhf-v3-lr-5.0e-6-batch-16@gold-run.json": "RLHF",
+    "shf-7b-default.json": "SuperHF",
+    "gpt-3.5-turbo_2023-05-13_completions_output.json": "GPT-3.5",
+    "gpt-4_2023-05-13_completions_output.json": "GPT-4",
+}
+
 
 def bootstrapped_stdev(data: list[Any], num_samples: int = 1000) -> Any:
     """
