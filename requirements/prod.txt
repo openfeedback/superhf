@@ -21,8 +21,6 @@ async-timeout==4.0.2
     # via aiohttp
 attrs==23.1.0
     # via aiohttp
-backoff==2.2.1
-    # via -r requirements/prod.in
 certifi==2023.5.7
     # via
     #   requests
@@ -161,6 +159,8 @@ smmap==5.0.0
     # via gitdb
 sympy==1.12
     # via torch
+tenacity==8.2.2
+    # via -r requirements/prod.in
 tokenizers==0.13.3
     # via transformers
 torch==2.0.1

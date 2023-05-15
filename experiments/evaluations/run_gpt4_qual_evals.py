@@ -2,16 +2,20 @@
 Using GPT-4, get qualitative evaluations of the completions.
 """
 
+from enum import Enum
 import json
 import os
 from typing import Any
-from enum import Enum
+import time
 
-import backoff
+from tenacity import (
+    retry,
+    stop_after_attempt,
+    wait_random_exponential,
+)  # for exponential backoff
 import jsonlines
 import numpy as np
 import openai
-from openai.error import RateLimitError
 from tqdm import tqdm
 
 from evaluation_utils import trim_generations
@@ -44,6 +48,7 @@ COMPLETION_PATHS = [
 OPENAI_MODEL = "gpt-4"
 OUTPUT_DIR = "./eval_results/gp4_qualitative"
 PREFERENCE_COMPARISONS_PER_DATASET = 256
+REQUEST_SLEEP_INTERVAL = 1  # seconds
 
 
 def create_file_dir_if_not_exists(file_path: str) -> None:
@@ -53,7 +58,7 @@ def create_file_dir_if_not_exists(file_path: str) -> None:
         os.makedirs(file_dir)
 
 
-@backoff.on_exception(backoff.expo, RateLimitError)
+@retry(wait=wait_random_exponential(min=0.5, max=10), stop=stop_after_attempt(8))
 def query_api(system_prompt: str, user_prompt: str) -> Any:
     """Query the API for a completion."""
     if MOCK_API:
@@ -67,6 +72,7 @@ def query_api(system_prompt: str, user_prompt: str) -> Any:
         temperature=0.0,
         max_tokens=1,
     )
+    time.sleep(REQUEST_SLEEP_INTERVAL)
     return response.choices[0].message.content
 
 
