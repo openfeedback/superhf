@@ -11,7 +11,10 @@ from chart_utils import (
     initialize_plot,
     save_plot,
     MODEL_NAME_MAPPING,
+    QUALITATIVE_MODEL_ORDER,
 )
+
+QUALITATIVE_MODEL_ORDER = QUALITATIVE_MODEL_ORDER[:-2]
 
 INPUT_FILE = "./eval_results/gpt4_qualitative/elo_scores.json"
 OUTPUT_FILE = "./charts/models/elo_scores.png"
@@ -19,16 +22,6 @@ OUTPUT_FILE = "./charts/models/elo_scores.png"
 
 def main() -> None:
     """Main function."""
-
-    order = [
-        "LLaMA",
-        "Alpaca",
-        "SFT",
-        "RLHF",
-        "SuperHF",
-        "GPT-3.5",
-        "GPT-4",
-    ]
 
     # Initialize
     initialize_plot()
@@ -52,8 +45,8 @@ def main() -> None:
         x="Model",
         y="Score",
         capsize=0.1,
-        errorbar="sd",
-        order=order,
+        errorbar="ci",
+        order=QUALITATIVE_MODEL_ORDER,
         # label="Pythia Base",
     )
 

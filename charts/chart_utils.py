@@ -24,6 +24,16 @@ MODEL_NAME_MAPPING = {
     "gpt-4_2023-05-13_completions_output.json": "GPT-4",
 }
 
+QUALITATIVE_MODEL_ORDER = [
+    "LLaMA",
+    "Alpaca",
+    "SFT",
+    "RLHF",
+    "SuperHF",
+    "GPT-3.5",
+    "GPT-4",
+]
+
 
 def bootstrapped_stdev(data: list[Any], num_samples: int = 1000) -> Any:
     """

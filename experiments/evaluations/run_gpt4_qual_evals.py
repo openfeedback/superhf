@@ -34,7 +34,7 @@ class EvaluationMode(Enum):
 
 
 # Config
-EVALUATION_MODE = EvaluationMode.AVOIDANCE
+EVALUATION_MODE = EvaluationMode.RELEVANCE
 MOCK_API = False
 COMPLETION_PATHS = [
     "./experiments/evaluations/test_completions/llama-7b.json",
