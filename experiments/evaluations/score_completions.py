@@ -10,7 +10,6 @@ Language model naming conventions:
 import argparse
 import os
 import json
-import re
 from typing import Optional, List, Dict, Any
 import random
 import requests
@@ -27,9 +26,10 @@ from torch.utils.data import DataLoader, TensorDataset
 from accelerate import Accelerator, find_executable_batch_size
 
 from model_loading import load_eval_model_and_tokenizer
+from evaluation_utils import trim_generations
+
+
 from tqdm import tqdm
-
-
 import wandb
 
 from superhf.data import get_superhf_prompts
@@ -37,7 +37,6 @@ from superhf.utils import print_memory_utilization
 from superhf.training import SuperHFTrainingArguments, SuperHFTrainer
 from superhf.filtering import CompletionFilterTopK
 from superhf.mocking import MockRewardModel
-from superhf.constants import PROMPT_DELIMITER, PROMPT_DELIMITER_REGEX_MEDIUM
 
 # Default parameters
 WANDB_ENTITY_NAME = "stanfordaialignment"
@@ -390,48 +389,6 @@ def save_scores(scores_dict, filename) -> str:
         json.dump(scores_dict, file)
         file.write("\n")
     return filename
-
-
-def separate_prompt_from_completion(text: str) -> tuple[str, str]:
-    """
-    Given a completed prompt text, separate the part before and including the
-    prompt delimiter from the part after.
-    """
-    prompt, completion = text.split(PROMPT_DELIMITER, 1)
-    prompt += PROMPT_DELIMITER
-    return prompt, completion
-
-
-def trim_generations(raw_completions: list[str]) -> list[str]:
-    """
-    Trim the generated completions to remove extra simulated turns of conversation.
-
-    Return:
-        A list of string wtih the prompt and modell response without any extra simulated
-            conversation turns.
-    """
-    original_length = len(raw_completions)
-    prompts_and_completions = [
-        separate_prompt_from_completion(completion) for completion in raw_completions
-    ]
-    trimmed_completions: list[str] = []
-    model_completion_lengths: list[int] = []
-    for prompt, completion in prompts_and_completions:
-        if VERBOSE and completion == "":
-            tqdm.write("WARNING: Completion is empty.")
-        stripped_completion = re.split(
-            PROMPT_DELIMITER_REGEX_MEDIUM, completion, maxsplit=1
-        )[0].strip()
-        if VERBOSE and completion != "" and stripped_completion == "":
-            tqdm.write("WARNING: Stripped completion is empty but completion wasn't.")
-        trimmed_completions.append(prompt + " " + stripped_completion)
-        model_completion_lengths.append(len(stripped_completion))
-
-    assert len(trimmed_completions) == original_length, (
-        "The number of Trimmed completions should be the same as the number of original"
-        " completions."
-    )
-    return trimmed_completions
 
 
 def get_all_models(model_name: str, model_interval: tuple[int, int]) -> List[str]:
