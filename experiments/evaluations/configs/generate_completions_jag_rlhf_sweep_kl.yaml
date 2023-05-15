@@ -1,0 +1,53 @@
+
+completions_file:
+  desc: Path to the file containing the completions to score
+  value: "experiments/openai_generations/anthropic-harmless-base_completions_output.json"
+
+wandb_run_id:
+  desc: The wandb run id of the run to load completions from
+  value: null
+wandb_project_name:
+  desc: The wandb project name of the run to load completions from
+  value: null
+wandb_entity_name:
+  desc: The wandb entity name of the run to load completions from
+  value: null
+use_openai:
+  desc: Whether to use the openai reward model
+  value: false
+
+language_model_names:
+  desc: The name of the language model to use
+  value: ["peterchatain/rlhf-v3-kl-sweep-kl-0@sxyq16uf", "peterchatain/rlhf-v3-kl-sweep-kl-0.01@sxyq16uf", "peterchatain/rlhf-v3-kl-sweep-kl-0.05@sxyq16uf", "peterchatain/rlhf-v3-kl-sweep-kl-0.1@sxyq16uf", "peterchatain/rlhf-v3-kl-sweep-kl-0.15@sxyq16uf", "peterchatain/rlhf-v3-kl-sweep-kl-0.2@sxyq16uf", "peterchatain/rlhf-v3-kl-sweep-kl-0.25@sxyq16uf", "peterchatain/rlhf-v3-kl-sweep-kl-0.3@sxyq16uf", "peterchatain/rlhf-v3-kl-sweep-kl-0.35@sxyq16uf", "peterchatain/rlhf-v3-kl-sweep-kl-0.4@sxyq16uf"] # "mock"
+language_model_interval:
+  desc: The interval of models to use. 0,0 for to use all models
+  value: [0,0]
+starting_batch_size_lm:
+  desc: The starting batch size for the reward model scoring
+  value: 64
+max_new_tokens:
+  desc: The number of new tokens to generate
+  value: 64
+max_prompts_per_dataset:
+  desc: What subset of test prompts to use for each dataset
+  value: 128
+randomize_prompts_subset:
+  desc: Whether to randomize the prompts subset if using a subset
+  value: True
+
+reward_model:
+  desc: The name of the reward model to use
+  value: "mock" # "/nlp/scr/fongsu/rm_combined/gptneo_1.3B_second_half" # "mock"
+starting_batch_size_rm:
+  desc: The starting batch size for the reward model scoring
+  value: 64
+scoring_mode:
+  desc: Whether to score completions and save them or not.
+  value: False
+
+prompt_dataset_names:
+  desc: The list of datasets to use for prompts. See src/superhf/data.py for available datasets.
+  value: ["anthropic-red-team", "anthropic-helpful-base", "anthropic-harmless-base", "openai/webgpt_comparisons"]
+max_prompt_char_length:
+  desc: If generating completions, set's max length for input prompts.
+  value: 1024
