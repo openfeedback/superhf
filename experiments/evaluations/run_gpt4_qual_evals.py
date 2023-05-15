@@ -91,6 +91,9 @@ def strip_and_remove_newlines(text: str) -> str:
 
 def run_preferences(names_to_completions: dict[str, Any]) -> None:
     """Run the preferences evaluation."""
+
+    # pylint: disable=too-many-locals
+
     system_prompt = (
         "We are evaluating the holistic quality of two AI chatbot assistants, A and B."
         " Please select the response you prefer. Reply with just the letter and nothing"
@@ -106,11 +109,11 @@ def run_preferences(names_to_completions: dict[str, Any]) -> None:
                 range(PREFERENCE_COMPARISONS_PER_DATASET), desc="Comparison"
             ):
                 # Randomly choose 2 of the models to compare
-                model_names = np.random.choice(
+                model_names_np = np.random.choice(
                     list(names_to_completions.keys()), size=2, replace=False
                 )
-                np.random.shuffle(model_names)
-                model_names = [str(name) for name in model_names]
+                np.random.shuffle(model_names_np)
+                model_names = [str(name) for name in model_names_np]
 
                 # Get the completions for each model at this index
                 model_a_example = names_to_completions[model_names[0]][test_set][index]
