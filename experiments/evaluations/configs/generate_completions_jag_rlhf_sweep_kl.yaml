@@ -18,7 +18,7 @@ use_openai:
 
 language_model_names:
   desc: The name of the language model to use
-  value: ["peterchatain/rlhf-v3-kl-sweep-kl-0@sxyq16uf", "peterchatain/rlhf-v3-kl-sweep-kl-0.01@sxyq16uf", "peterchatain/rlhf-v3-kl-sweep-kl-0.05@sxyq16uf", "peterchatain/rlhf-v3-kl-sweep-kl-0.1@sxyq16uf", "peterchatain/rlhf-v3-kl-sweep-kl-0.15@sxyq16uf", "peterchatain/rlhf-v3-kl-sweep-kl-0.2@sxyq16uf", "peterchatain/rlhf-v3-kl-sweep-kl-0.25@sxyq16uf", "peterchatain/rlhf-v3-kl-sweep-kl-0.3@sxyq16uf", "peterchatain/rlhf-v3-kl-sweep-kl-0.35@sxyq16uf", "peterchatain/rlhf-v3-kl-sweep-kl-0.4@sxyq16uf"] # "mock"
+  value: ["peterchatain/rlhf-v3-kl-sweep-kl-0@sxyq16uf", "peterchatain/rlhf-v3-kl-sweep-kl-0.01@sxyq16uf", "peterchatain/rlhf-v3-kl-sweep-kl-0.1@sxyq16uf", "peterchatain/rlhf-v3-kl-sweep-kl-0.15@sxyq16uf", "peterchatain/rlhf-v3-kl-sweep-kl-0.2@sxyq16uf", "peterchatain/rlhf-v3-kl-sweep-kl-0.25@sxyq16uf", "peterchatain/rlhf-v3-kl-sweep-kl-0.3@sxyq16uf", "peterchatain/rlhf-v3-kl-sweep-kl-0.35@sxyq16uf", "peterchatain/rlhf-v3-kl-sweep-kl-0.4@sxyq16uf"] # "peterchatain/rlhf-v3-kl-sweep-kl-0.05@sxyq16uf",
 language_model_interval:
   desc: The interval of models to use. 0,0 for to use all models
   value: [0,0]
