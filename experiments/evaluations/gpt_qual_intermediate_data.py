@@ -12,7 +12,7 @@ import jsonlines
 from evaluation_utils import create_file_dir_if_not_exists
 from superhf.utils import set_seed
 
-OUTPUT_DIR = "./eval_results/gp4_qualitative"
+OUTPUT_DIR = "./eval_results/gpt4_qualitative"
 
 
 def load_data(file_path: str) -> list[dict[str, Any]]:
@@ -155,7 +155,7 @@ def save_elo_scores_to_file(elo_scores: dict[str, list[float]], file_path: str) 
 def main() -> None:
     """Main function."""
     set_seed(66)
-    data_file = "eval_results/gp4_qualitative/preferences.jsonl"
+    data_file = "eval_results/gpt4_qualitative/preferences.jsonl"
     win_rates_csv = os.path.join(OUTPUT_DIR, "win_rates.csv")
     elo_scores_file = os.path.join(OUTPUT_DIR, "elo_scores.json")
     create_file_dir_if_not_exists(win_rates_csv)

@@ -46,7 +46,7 @@ COMPLETION_PATHS = [
     "./experiments/openai_generations/gpt-4_2023-05-13_completions_output.json",
 ]
 OPENAI_MODEL = "gpt-4"
-OUTPUT_DIR = "./eval_results/gp4_qualitative"
+OUTPUT_DIR = "./eval_results/gpt4_qualitative"
 PREFERENCE_COMPARISONS_PER_DATASET = 256
 SINGLE_EXAMPLE_RATINGS_PER_DATASET = 32
 REQUEST_SLEEP_INTERVAL = 2  # seconds
