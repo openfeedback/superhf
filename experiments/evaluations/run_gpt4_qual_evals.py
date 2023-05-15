@@ -34,8 +34,8 @@ class EvaluationMode(Enum):
 
 
 # Config
-EVALUATION_MODE = EvaluationMode.RELEVANCE
-MOCK_API = True
+EVALUATION_MODE = EvaluationMode.AVOIDANCE
+MOCK_API = False
 COMPLETION_PATHS = [
     "./experiments/evaluations/test_completions/llama-7b.json",
     "./experiments/evaluations/test_completions/alpaca_7b.json",
@@ -49,7 +49,7 @@ OPENAI_MODEL = "gpt-4"
 OUTPUT_DIR = "./eval_results/gp4_qualitative"
 PREFERENCE_COMPARISONS_PER_DATASET = 256
 SINGLE_EXAMPLE_RATINGS_PER_DATASET = 32
-REQUEST_SLEEP_INTERVAL = 1  # seconds
+REQUEST_SLEEP_INTERVAL = 3  # seconds
 
 
 def create_file_dir_if_not_exists(file_path: str) -> None:
@@ -59,7 +59,7 @@ def create_file_dir_if_not_exists(file_path: str) -> None:
         os.makedirs(file_dir)
 
 
-@retry(wait=wait_random_exponential(min=0.5, max=10), stop=stop_after_attempt(8))
+@retry(wait=wait_random_exponential(min=0.25, max=10), stop=stop_after_attempt(6))
 def query_api(system_prompt: str, user_prompt: str) -> Any:
     """Query the API for a completion."""
     if MOCK_API:
@@ -216,6 +216,17 @@ def run_relevance(names_to_completions: dict[str, Any]) -> None:
     run_single_example_rating(names_to_completions, system_prompt, "relevance.jsonl")
 
 
+def run_avoidance(names_to_completions: dict[str, Any]) -> None:
+    """How much the response avoids answering the prompt."""
+    system_prompt = (
+        "We are evaluating how avoidant responses from an AI chatbot assistant are. On"
+        " a scale of 1-10, please rate how much the following response avoids (lower)"
+        " or directly answers (higher) the prompt. Respond with your number and nothing"
+        " else."
+    )
+    run_single_example_rating(names_to_completions, system_prompt, "avoidance.jsonl")
+
+
 def main() -> None:
     """Run the evaluations for the given models and evaluation names."""
 
@@ -234,6 +245,8 @@ def main() -> None:
         run_preferences(names_to_completions)
     elif EVALUATION_MODE == EvaluationMode.RELEVANCE:
         run_relevance(names_to_completions)
+    elif EVALUATION_MODE == EvaluationMode.AVOIDANCE:
+        run_avoidance(names_to_completions)
     else:
         raise ValueError(f"Invalid evaluation mode: {EVALUATION_MODE}")
 
