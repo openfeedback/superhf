@@ -7,8 +7,11 @@ import os
 from typing import Any
 from enum import Enum
 
+import backoff
 import jsonlines
 import numpy as np
+import openai
+from openai.error import RateLimitError
 from tqdm import tqdm
 
 from evaluation_utils import trim_generations
@@ -28,7 +31,7 @@ class EvaluationMode(Enum):
 
 # Config
 EVALUATION_MODE = EvaluationMode.PREFERENCES
-MOCK_API = True
+MOCK_API = False
 COMPLETION_PATHS = [
     "./experiments/evaluations/test_completions/llama-7b.json",
     "./experiments/evaluations/test_completions/alpaca_7b.json",
@@ -38,6 +41,7 @@ COMPLETION_PATHS = [
     "./experiments/openai_generations/gpt-3.5-turbo_2023-05-13_completions_output.json",
     "./experiments/openai_generations/gpt-4_2023-05-13_completions_output.json",
 ]
+OPENAI_MODEL = "gpt-4"
 OUTPUT_DIR = "./eval_results/gp4_qualitative"
 PREFERENCE_COMPARISONS_PER_DATASET = 256
 
@@ -49,11 +53,21 @@ def create_file_dir_if_not_exists(file_path: str) -> None:
         os.makedirs(file_dir)
 
 
+@backoff.on_exception(backoff.expo, RateLimitError)
 def query_api(system_prompt: str, user_prompt: str) -> Any:
     """Query the API for a completion."""
     if MOCK_API:
         return "A" if len(user_prompt) > len(system_prompt) else "B"
-    raise NotImplementedError
+    response = openai.ChatCompletion.create(
+        model=OPENAI_MODEL,
+        messages=[
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt},
+        ],
+        temperature=0.0,
+        max_tokens=1,
+    )
+    return response.choices[0].message.content
 
 
 def extract_prompt_and_completion(example: str) -> tuple[str, str]:
@@ -95,9 +109,8 @@ def run_preferences(names_to_completions: dict[str, Any]) -> None:
                 model_names = np.random.choice(
                     list(names_to_completions.keys()), size=2, replace=False
                 )
-
-                # Sort them randomly just to be sure
                 np.random.shuffle(model_names)
+                model_names = [str(name) for name in model_names]
 
                 # Get the completions for each model at this index
                 model_a_example = names_to_completions[model_names[0]][test_set][index]
