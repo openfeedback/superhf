@@ -176,8 +176,9 @@ def generate_for_dataset(args, dataset_name: str) -> List[str]:
         prompts = prompts[:5]
         assert len(prompts) < 10
     prompts = [
-        prompt.split("\n\nAssistant:")[0].strip("\n\nHuman: ") for prompt in prompts
+        prompt.split("\n\nAssistant:")[0].split("\n\nHuman: ")[0] for prompt in prompts
     ]
+    assert False, "This hasn't been double checked yet to be correct"
     print(
         f"Filtered {old_prompt_count - len(prompts)} prompts over "
         f"{args.max_prompt_char_length} chars from dataset {dataset_name}."
