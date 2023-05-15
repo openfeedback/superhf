@@ -34,8 +34,8 @@ class EvaluationMode(Enum):
 
 
 # Config
-EVALUATION_MODE = EvaluationMode.PREFERENCES
-MOCK_API = False
+EVALUATION_MODE = EvaluationMode.RELEVANCE
+MOCK_API = True
 COMPLETION_PATHS = [
     "./experiments/evaluations/test_completions/llama-7b.json",
     "./experiments/evaluations/test_completions/alpaca_7b.json",
@@ -48,6 +48,7 @@ COMPLETION_PATHS = [
 OPENAI_MODEL = "gpt-4"
 OUTPUT_DIR = "./eval_results/gp4_qualitative"
 PREFERENCE_COMPARISONS_PER_DATASET = 256
+SINGLE_EXAMPLE_RATINGS_PER_DATASET = 32
 REQUEST_SLEEP_INTERVAL = 1  # seconds
 
 
@@ -62,7 +63,7 @@ def create_file_dir_if_not_exists(file_path: str) -> None:
 def query_api(system_prompt: str, user_prompt: str) -> Any:
     """Query the API for a completion."""
     if MOCK_API:
-        return "A" if len(user_prompt) > len(system_prompt) else "B"
+        return "6" if "1-10" in system_prompt else "A"
     response = openai.ChatCompletion.create(
         model=OPENAI_MODEL,
         messages=[
@@ -129,7 +130,7 @@ def run_preferences(names_to_completions: dict[str, Any]) -> None:
                 model_a_completion = strip_and_remove_newlines(model_a_completion)
                 model_b_completion = strip_and_remove_newlines(model_b_completion)
 
-                # Also get the llama completion because we know it's prompt is good
+                # Also get the llama completion because we know its prompt is good
                 llama_example = names_to_completions["llama-7b.json"][test_set][index]
                 prompt, _ = extract_prompt_and_completion(llama_example)
 
@@ -158,6 +159,63 @@ def run_preferences(names_to_completions: dict[str, Any]) -> None:
                 )
 
 
+def run_single_example_rating(
+    names_to_completions: dict[str, Any], system_prompt: str, output_filename: str
+) -> None:
+    """Generic version for relevance, avoidance, gaming, and bias."""
+    output_path = os.path.join(OUTPUT_DIR, output_filename)
+    create_file_dir_if_not_exists(output_path)
+    with jsonlines.open(output_path, "w") as writer:
+        for model_name in tqdm(names_to_completions.keys(), desc="Model"):
+            for test_set in tqdm(
+                names_to_completions["llama-7b.json"].keys(), desc="Test set"
+            ):
+                for index in tqdm(
+                    range(SINGLE_EXAMPLE_RATINGS_PER_DATASET), desc="Example"
+                ):
+                    # Get the completions for each model at this index
+                    example = names_to_completions[model_name][test_set][index]
+                    _, completion = extract_prompt_and_completion(example)
+                    completion = strip_and_remove_newlines(completion)
+
+                    # Also get the llama completion because we know its prompt is good
+                    llama_example = names_to_completions["llama-7b.json"][test_set][
+                        index
+                    ]
+                    prompt, _ = extract_prompt_and_completion(llama_example)
+                    prompt = strip_and_remove_newlines(prompt)
+
+                    # Format the final user prompt
+                    user_prompt = f"Prompt: {prompt}\nResponse: {completion}"
+
+                    # Query the API
+                    rating = query_api(system_prompt, user_prompt)
+                    assert rating is not None
+
+                    # Write everything to the file
+                    writer.write(
+                        {
+                            "test_set": test_set,
+                            "index": index,
+                            "rating": rating,
+                            "model": model_name,
+                            "prompt": prompt,
+                            "completion": completion,
+                        }
+                    )
+
+
+def run_relevance(names_to_completions: dict[str, Any]) -> None:
+    """How relevant each completion is to the prompt."""
+    system_prompt = (
+        "We are evaluating the relevance of responses from an AI chatbot assistant. On"
+        " a scale of 1-10, please rate how unrelated (lower) or relevant (higher) this"
+        " model's response is to the given prompt. Respond with your number and nothing"
+        " else."
+    )
+    run_single_example_rating(names_to_completions, system_prompt, "relevance.jsonl")
+
+
 def main() -> None:
     """Run the evaluations for the given models and evaluation names."""
 
@@ -174,6 +232,8 @@ def main() -> None:
     print(f"Running evaluations for {EVALUATION_MODE.name}...")
     if EVALUATION_MODE == EvaluationMode.PREFERENCES:
         run_preferences(names_to_completions)
+    elif EVALUATION_MODE == EvaluationMode.RELEVANCE:
+        run_relevance(names_to_completions)
     else:
         raise ValueError(f"Invalid evaluation mode: {EVALUATION_MODE}")
 
