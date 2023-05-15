@@ -1,5 +1,6 @@
 """Intermediate data for the GPT-4 qualitative evals."""
 
+import json
 import os
 import random
 from collections import defaultdict
@@ -148,8 +149,7 @@ def save_elo_scores_to_file(elo_scores: dict[str, list[float]], file_path: str) 
         file_path (str): Path to the file.
     """
     with open(file_path, "w", encoding="utf-8") as file:
-        for model, scores in elo_scores.items():
-            file.write(f"{model}: {', '.join(map(str, scores))}\n")
+        json.dump(elo_scores, file, indent=4)
 
 
 def main() -> None:
@@ -157,7 +157,7 @@ def main() -> None:
     set_seed(66)
     data_file = "eval_results/gp4_qualitative/preferences.jsonl"
     win_rates_csv = os.path.join(OUTPUT_DIR, "win_rates.csv")
-    elo_scores_file = os.path.join(OUTPUT_DIR, "elo_scores.txt")
+    elo_scores_file = os.path.join(OUTPUT_DIR, "elo_scores.json")
     create_file_dir_if_not_exists(win_rates_csv)
 
     data = load_data(data_file)
