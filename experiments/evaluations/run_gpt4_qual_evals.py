@@ -18,7 +18,7 @@ import numpy as np
 import openai
 from tqdm import tqdm
 
-from evaluation_utils import trim_generations
+from evaluation_utils import trim_generations, create_file_dir_if_not_exists
 from superhf.utils import set_seed
 
 
@@ -50,13 +50,6 @@ OUTPUT_DIR = "./eval_results/gp4_qualitative"
 PREFERENCE_COMPARISONS_PER_DATASET = 256
 SINGLE_EXAMPLE_RATINGS_PER_DATASET = 32
 REQUEST_SLEEP_INTERVAL = 3  # seconds
-
-
-def create_file_dir_if_not_exists(file_path: str) -> None:
-    """Create the directory for a file if it doesn't already exist."""
-    file_dir = os.path.dirname(file_path)
-    if not os.path.exists(file_dir):
-        os.makedirs(file_dir)
 
 
 @retry(wait=wait_random_exponential(min=0.25, max=10), stop=stop_after_attempt(6))

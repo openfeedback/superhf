@@ -1,6 +1,6 @@
 """Utils for evaluation scripts."""
 
-
+import os
 import re
 
 from tqdm import tqdm
@@ -50,3 +50,10 @@ def trim_generations(raw_completions: list[str]) -> list[str]:
         " completions."
     )
     return trimmed_completions
+
+
+def create_file_dir_if_not_exists(file_path: str) -> None:
+    """Create the directory for a file if it doesn't already exist."""
+    file_dir = os.path.dirname(file_path)
+    if not os.path.exists(file_dir):
+        os.makedirs(file_dir)
