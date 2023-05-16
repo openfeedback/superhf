@@ -79,6 +79,13 @@ def create_file_dir_if_not_exists(file_path: str) -> None:
         os.makedirs(file_dir)
 
 
+def normalize_train_scores(scores: list[float]) -> list[float]:
+    """Normalize the train scores to the test score scale."""
+    # See experiments/evaluations/find_average_train_and_test_rm_scores.py
+    sd_ratio_test_over_train = 1.94 / 2.44
+    return [(score - -2.65) * sd_ratio_test_over_train for score in scores]
+
+
 def get_test_scores(file_path: str) -> list[Any]:
     """Get the test scores from a file."""
     file_data = load_json(file_path)
@@ -94,7 +101,7 @@ def get_test_scores(file_path: str) -> list[Any]:
     # Normalize scores (see experiments/evaluations/find_average_train_and_test_rm_scores.py)
     assert "train_scores" in file_path or "test_scores" in file_path
     if "train_scores" in file_path:
-        output = [score - -2.65 for score in output]
+        output = normalize_train_scores(scores)
     elif "test_scores" in file_path:
         output = [score - -2.22 for score in output]
 
