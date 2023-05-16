@@ -133,6 +133,7 @@ def _get_color_from_palette(index: int) -> Any:
 def model_type_to_palette_color(model_type: str) -> Any:
     """Standardize our use of models types to palette colors."""
     # TODO change to dict[str, int] and add final run names as options
+    model_type = model_type.lower()
     all_model_types = [
         "pretrained",
         "instruct",
