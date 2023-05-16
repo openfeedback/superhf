@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 import matplotlib.ticker as mtick
-import cha
+from chart_utils import set_plot_style, model_type_to_palette_color
 
 
 # Call the set_plot_style function to set the seaborn theme and other styling parameters
