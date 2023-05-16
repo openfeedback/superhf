@@ -1,58 +1,78 @@
 import requests
-import json
 import pandas as pd
-import numpy as np
+import seaborn as sns
 import matplotlib.pyplot as plt
 
-# Define the kl coefficients
-kl_coefficients = [0.01, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0]
+def main() -> None:
+    """Main function."""
 
-# Initialize a data frame to hold the scores
-data = pd.DataFrame(columns=["kl_coefficient", "score"])
+    # Initialize
+    set_seed(66)
+    set_plot_style()
 
-# Retrieve data from each file
-for kl in kl_coefficients:
-    url = f"https://raw.githubusercontent.com/openfeedback/superhf/evaluations/experiments/evaluations/test_scores/shf-7b-kl-{kl}.json"
-    r = requests.get(url)
-    file_data = r.json()
-    score_lists = file_data["anthropic-red-team"] + file_data["anthropic-helpful-base"] + file_data["openai/webgpt_comparisons"]
-    for score_list in score_lists:
-        average_score = np.mean(score_list)  # Compute the average score
-        data = data.append({"kl_coefficient": kl, "score": average_score}, ignore_index=True)
-    print(f"Score list for kl coefficient {kl}: {score_lists}")
+    # Define the model names
+    kl_coefficients = [0, 0.01, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4]
 
-# Convert data types
-data["kl_coefficient"] = data["kl_coefficient"].astype(float)
-data["score"] = data["score"].astype(float)
+    # Calculate plot values for data
+    all_data = []
+    all_data2 = []  # For the second dataset
+    for kl in kl_coefficients:
+        url = f"https://raw.githubusercontent.com/openfeedback/superhf/evaluations/experiments/evaluations/test_scores/shf-7b-kl-{kl}.json"
+        r = requests.get(url)
+        file_data = r.json()
+        scores = (
+            file_data["anthropic-red-team"]
+            + file_data["anthropic-helpful-base"]
+            + file_data["anthropic-harmless-base"]
+            + file_data["openai/webgpt_comparisons"]
+        )
+        
+        scores = flatten_2d_vector(scores)
+        all_data.extend([(kl, score, 'SuperHF') for score in scores])
+       
+        url2 = f"https://raw.githubusercontent.com/openfeedback/superhf/evaluations/experiments/evaluations/test_scores/rlhf-v3-kl-sweep-kl-{kl}@sxyq16uf.json"
+        r2 = requests.get(url2)
+        file_data2 = r2.json()
+        scores2 = (
+            file_data2["anthropic-red-team"]
+            + file_data2["anthropic-helpful-base"]
+            + file_data2["anthropic-harmless-base"]
+            + file_data2["openai/webgpt_comparisons"]
+        )
+        scores2 = flatten_2d_vector(scores2)
+        all_data2.extend([(kl, score, 'RLHF') for score in scores2])
 
-# Number of bootstrap iterations
-n_iterations = 1000
 
-# Initialize a dataframe to hold the bootstrap results
-bootstrap_results = pd.DataFrame(columns=["kl_coefficient", "mean", "std"])
 
-# Bootstrapping
-for kl in kl_coefficients:
-    bootstrap_means = []
-    bootstrap_stds = []
-    kl_scores = data[data["kl_coefficient"] == kl]["score"]
-    for _ in range(n_iterations):
-        bootstrap_sample = kl_scores.sample(len(kl_scores), replace=True)
-        bootstrap_means.append(bootstrap_sample.mean())
-        bootstrap_stds.append(bootstrap_sample.std())
-    bootstrap_results = bootstrap_results.append({"kl_coefficient": kl, "mean": np.mean(bootstrap_means), "std": np.mean(bootstrap_stds)}, ignore_index=True)
+    dataframe = pd.DataFrame(all_data, columns=["KL Coefficients", "Test Reward", "Model Type"])
+    dataframe2 = pd.DataFrame(all_data2, columns=["KL Coefficients", "Test Reward", "Model Type"])  # For the second dataset
 
-# Create the plot
-fig, ax = plt.subplots()
-ax.errorbar(bootstrap_results["kl_coefficient"], bootstrap_results["mean"], yerr=bootstrap_results["std"], fmt='o')
+    # Combine both dataframes into one
+    combined_dataframe = pd.concat([dataframe, dataframe2])
 
-# Set labels and title
-ax.set_xlabel('KL Coefficient')
-ax.set_ylabel('Average train score')
-ax.set_title('Average train score by KL coefficient')
+    # Create the plot
+    plot = sns.lineplot(
+        data=combined_dataframe,
+        x="KL Coefficients",
+        y="Test Reward",
+        hue="Model Type",
+        palette=[model_type_to_palette_color(m) for m in combined_dataframe['Model Type'].unique()],
+        ci=95
+    )
 
-# Display grid
-ax.grid(True)
+    # Set labels and title
+    plt.xlabel("KL Coefficients")
+    plt.ylabel("Test Reward")
+    plt.title("Test Reward at different KL Coefficients")
+    
+   
 
-# Show the plot
-plt.show()
+
+
+
+# Save the plot
+create_file_dir_if_not_exists(OUTPUT_FILE)
+plt.savefig(OUTPUT_FILE)
+
+if __name__ == "__main__":
+    main()
