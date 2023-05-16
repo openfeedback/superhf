@@ -39,6 +39,7 @@ def main() -> None:
         ("Relevance", "eval_results/gpt4_qualitative/relevance.jsonl"),
     ]
     tabular_data = {"group": QUALITATIVE_MODEL_ORDER}
+    # Manually add El
     for quality_name, file_path in named_files:
         data = load_data(file_path)
         # Drop rows where the rating isn't a 1-10 number
