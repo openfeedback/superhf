@@ -2,12 +2,16 @@ import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 import matplotlib.ticker as mtick
+import cha
 
-# Seaborn settings
-sns.set(style="white")
+
+# Call the set_plot_style function to set the seaborn theme and other styling parameters
+set_plot_style()
 
 # Set the width of the bars
 barWidth = 0.15
+
+
 
 # Set the data
 evaluations = ['MMLU', 'Common Sense', 'Safety']
@@ -21,7 +25,7 @@ SuperHF = np.array([0.34461623820506443, 0.6287948494238742, 0.6705171927145258]
 Alpaca -= Llama
 RLHF -= Llama
 SuperHF -= Llama
-Llama -= Llama
+Llama -= Llama - 0.2
 
 # Standard errors
 alpaca_7b_stderr = np.array([0.035145507173984965, 0.011640221046600886, 0.006787403716561199]) * 100
@@ -35,11 +39,11 @@ r2 = [x + barWidth for x in r1]
 r3 = [x + barWidth for x in r2]
 r4 = [x + barWidth for x in r3]
 
-# Make the plot
-plt.bar(r1, Llama, color='white', width=barWidth, edgecolor='grey', label='Llama (7B)', yerr=llama_7b_stderr, capsize=3)
-plt.bar(r2, Alpaca, color='b', width=barWidth, edgecolor='grey', label='Alpaca (7B)', yerr=alpaca_7b_stderr, capsize=3)
-plt.bar(r3, RLHF, color='g', width=barWidth, edgecolor='grey', label='RLHF', yerr=RLHF_stderr, capsize=3)
-plt.bar(r4, SuperHF, color='orange', width=barWidth, edgecolor='grey', label='SuperHF', yerr=SuperHF_stderr, capsize=3)
+plt.bar(r1, Llama, color=model_type_to_palette_color('pretrained'), width=barWidth, edgecolor='grey', label='Llama (7B)', yerr=llama_7b_stderr, capsize=3)
+plt.bar(r2, Alpaca, color=model_type_to_palette_color('instruct'), width=barWidth, edgecolor='grey', label='Alpaca (7B)', yerr=alpaca_7b_stderr, capsize=3)
+plt.bar(r3, RLHF, color=model_type_to_palette_color('RLHF'), width=barWidth, edgecolor='grey', label='RLHF', yerr=RLHF_stderr, capsize=3)
+plt.bar(r4, SuperHF, color=model_type_to_palette_color('SuperHF'), width=barWidth, edgecolor='grey', label='SuperHF', yerr=SuperHF_stderr, capsize=3)
+
 
 # Add xticks on the middle of the group bars
 plt.xlabel('Evaluations', fontweight='bold')
@@ -53,7 +57,7 @@ plt.ylim(min(np.min(Alpaca), np.min(RLHF), np.min(SuperHF)) - 10, max(np.max(Alp
 fmt = '%.0f%%'
 yticks = mtick.FormatStrFormatter(fmt)
 plt.gca().yaxis.set_major_formatter(yticks)
-
+plt.title('Downstream Evaluations')
 plt.legend()
 
 plt.savefig('plot.png', dpi=300)
