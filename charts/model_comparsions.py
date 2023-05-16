@@ -1,5 +1,6 @@
 """Held out test rewards across models."""
 
+import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
@@ -46,6 +47,8 @@ def main() -> None:
         # Unwra
         # Unwrap scores from 2D array
         scores = flatten_2d_vector(scores)
+
+        print(f"{model_name} mean score: {np.mean(scores):.2f}")
 
         # Add the data
         for score in scores:

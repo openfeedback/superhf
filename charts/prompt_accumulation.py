@@ -53,7 +53,7 @@ def main() -> None:
         data=dataframe,
         x="Prompt Accumulation",
         y="Score",
-        errorbar="ci",
+        errorbar="se",
         # marker="",
         # label="Pythia Base",
         color=model_type_to_palette_color("superhf"),

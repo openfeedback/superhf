@@ -45,7 +45,7 @@ def main() -> None:
     ]
     tabular_data: dict[str, Any] = {"group": QUALITATIVE_MODEL_ORDER}
     # Manually add Elo scores
-    tabular_data["Elo"] = [
+    tabular_data["Elo Score"] = [
         1220.91,  # LLaMA
         1507.60,  # Alpaca
         1311.50,  # SFT
@@ -74,7 +74,7 @@ def main() -> None:
         dataframe = dataframe.iloc[[1, 3, 4]]
 
     # Normalize each group to go from 0.1 (min) to 1 (max)
-    qualities = ["Elo", "Avoidance", "Bias", "Reward\nGaming", "Relevance"]
+    qualities = ["Elo Score", "Avoidance", "Bias", "Reward\nGaming", "Relevance"]
     for quality_name in qualities:
         dataframe[quality_name] = (
             dataframe[quality_name] - dataframe[quality_name].min()
