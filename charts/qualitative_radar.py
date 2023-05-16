@@ -1,6 +1,7 @@
 """Radar chart of qualitative data."""
 
 import math
+from typing import Any
 
 import jsonlines
 import pandas as pd
@@ -13,7 +14,11 @@ from chart_utils import (
     QUALITATIVE_MODEL_ORDER,
 )
 
-OUTPUT_FILE = "./charts/qualitative/qualitative_radar.png"
+SHOW_LIMITED_MODELS = True
+
+OUTPUT_FILE = "./charts/qualitative/qualitative_radar_all.png"
+if SHOW_LIMITED_MODELS:
+    OUTPUT_FILE = "./charts/qualitative/qualitative_radar_limited.png"
 
 
 def load_data(file_path: str) -> pd.DataFrame:
@@ -38,8 +43,17 @@ def main() -> None:
         ("Reward\nGaming", "eval_results/gpt4_qualitative/gaming.jsonl"),
         ("Relevance", "eval_results/gpt4_qualitative/relevance.jsonl"),
     ]
-    tabular_data = {"group": QUALITATIVE_MODEL_ORDER}
-    # Manually add El
+    tabular_data: dict[str, Any] = {"group": QUALITATIVE_MODEL_ORDER}
+    # Manually add Elo scores
+    tabular_data["Elo"] = [
+        1220.91,  # LLaMA
+        1507.60,  # Alpaca
+        1311.50,  # SFT
+        1444.27,  # RLHF
+        1527.14,  # SuperHF
+        1711.37,  # GPT-3.5
+        1777.20,  # GPT-4
+    ]
     for quality_name, file_path in named_files:
         data = load_data(file_path)
         # Drop rows where the rating isn't a 1-10 number
@@ -56,7 +70,8 @@ def main() -> None:
     dataframe = pd.DataFrame(tabular_data)
 
     # Normalize each group to go from 0.1 (min) to 1 (max)
-    for quality_name, _ in named_files:
+    qualities = ["Elo", "Avoidance", "Bias", "Reward\nGaming", "Relevance"]
+    for quality_name in qualities:
         dataframe[quality_name] = (
             dataframe[quality_name] - dataframe[quality_name].min()
         ) / (dataframe[quality_name].max() - dataframe[quality_name].min())
@@ -83,7 +98,8 @@ def main() -> None:
     # Draw ylabels
     axis.set_rlabel_position(0)
     # plt.yticks([10, 20, 30], ["10", "20", "30"], color="grey", size=7)
-    # plt.ylim(0, 40)
+    plt.ylim(0, 1.0)
+    # plt.yticks[0.1,]
 
     # ------- PART 2: Add plots
 
