@@ -24,7 +24,7 @@ def main() -> None:
     initialize_plot()
 
     # Define the model names
-    kl_coefficients = [0, 0.01, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4]
+    kl_coefficients = [0, 0.01, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4]
 
     # Calculate plot values for data
     all_data = []
