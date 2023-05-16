@@ -31,8 +31,8 @@ def main() -> None:
         "shf-pythia-1.4b.json",
         "shf-pythia-2.8b.json",
         "shf-pythia-6.9b.json",
-        # "shf-pythia-12b.json",  # 3e-5 LR
-        "shf-pythia-12B@v2.json",  # 5e-5 LR
+        "shf-pythia-12b.json",  # 3e-5 LR
+        # "shf-pythia-12B@v2.json",  # 5e-5 LR
         "pythia-70m-deduped.json",
         "pythia-160m-deduped.json",
         "pythia-410m-deduped.json",
