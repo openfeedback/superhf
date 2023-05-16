@@ -5,11 +5,11 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 
-from chart_utils import flatten_2d_vector, load_json, initialize_plot, save_plot
+from chart_utils import get_test_scores, initialize_plot, save_plot
 
 OUTPUT_FILE = "./charts/models/model_comparisons.png"
 
-SCORE_BIAS = 2.8
+SCORE_BIAS = 0.6
 
 
 def main() -> None:
@@ -37,16 +37,7 @@ def main() -> None:
     for model_name in model_names:
         # TODO refactor this into chart_utils.py
         file_path = f"./experiments/evaluations/test_scores/{model_name}"
-        file_data = load_json(file_path)
-        scores = (
-            file_data["anthropic-red-team"]
-            + file_data["anthropic-helpful-base"]
-            + file_data["anthropic-harmless-base"]
-            + file_data["openai/webgpt_comparisons"]
-        )
-        # Unwra
-        # Unwrap scores from 2D array
-        scores = flatten_2d_vector(scores)
+        scores = get_test_scores(file_path)
 
         print(f"{model_name} mean score: {np.mean(scores):.2f}")
 

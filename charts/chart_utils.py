@@ -79,9 +79,8 @@ def create_file_dir_if_not_exists(file_path: str) -> None:
         os.makedirs(file_dir)
 
 
-def get_test_scores(file_path: str) -> list[float]:
+def get_test_scores(file_path: str) -> list[Any]:
     """Get the test scores from a file."""
-    output = []
     file_data = load_json(file_path)
     scores = (
         file_data["anthropic-red-team"]
@@ -90,11 +89,16 @@ def get_test_scores(file_path: str) -> list[float]:
         + file_data["openai/webgpt_comparisons"]
     )
     # Unwrap scores from 2D array
-    scores = flatten_2d_vector(scores)
+    output = flatten_2d_vector(scores)
+
+    # Normalize scores (see experiments/evaluations/find_average_train_and_test_rm_scores.py)
+    assert "train_scores" in file_path or "test_scores" in file_path
+    if "train_scores" in file_path:
+        output = [score - -2.65 for score in output]
+    elif "test_scores" in file_path:
+        output = [score - -2.22 for score in output]
 
     # Add the data
-    for score in scores:
-        output.append(score)
     return output
 
 
