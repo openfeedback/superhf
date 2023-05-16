@@ -36,14 +36,19 @@ def main() -> None:
         for score in elo_scores:
             elo_data.append([MODEL_NAME_MAPPING[model_name], score])
 
-    dataframe = pd.DataFrame(elo_data, columns=["Model", "Score"])
+    dataframe = pd.DataFrame(elo_data, columns=["Model", "Elo"])
+
+    # Print out the average elo for each model
+    for model_name in QUALITATIVE_MODEL_ORDER:
+        model_scores = dataframe[dataframe["Model"] == model_name]["Score"]
+        print(f"{model_name}: {model_scores.mean():.2f}")
 
     # Create the plot
     plt.rcParams["lines.markersize"] = 1
     sns.barplot(
         data=dataframe,
         x="Model",
-        y="Score",
+        y="Elo",
         capsize=0.1,
         errorbar="ci",
         order=QUALITATIVE_MODEL_ORDER,
@@ -51,7 +56,7 @@ def main() -> None:
     )
 
     # Set the y-axis limits
-    plt.ylim(1150, 1850)
+    plt.ylim(1150, 1550)
 
     # Set labels and title
     plt.xlabel("Model Type")
