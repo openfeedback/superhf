@@ -51,6 +51,19 @@ def main() -> None:
         # color=model_type_to_palette_color("other"),
     )
 
+    # Add data labels to the bars
+    for i, value in enumerate(superhf_win_rates):
+        plot.text(
+            value - 2,
+            i,
+            f"{value:.1f}%",
+            color="white",
+            horizontalalignment="right",
+            verticalalignment="center",
+            # fontweight="bold",
+            fontsize=10,
+        )
+
     plot.set_xlabel("Win Rate (GPT-4's Preferences)", fontsize=10)
     plot.set_title("SuperHF Win Rates")
 
@@ -64,9 +77,6 @@ def main() -> None:
 
     # Tight layout
     plt.tight_layout()
-
-    # Minimal page margins
-    # plt.rcParams["savefig.pad_inches"] = 0
 
     # Save the chart
     save_plot(OUTPUT_FILE)
