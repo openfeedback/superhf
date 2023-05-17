@@ -26,7 +26,7 @@ def main() -> None:
     other_models = [
         "LLaMA",
         "Alpaca",
-        "SFT",
+        "FTP",
         "RLHF",
         "GPT-3.5",
         "GPT-4",

@@ -17,9 +17,9 @@ DEFAULT_COLOR_PALETTE = "colorblind"
 MODEL_NAME_MAPPING = {
     "llama-7b.json": "LLaMA",
     "alpaca_7b.json": "Alpaca",
-    "sft-on-preferences-v1.json": "SFT",
-    "rlhf-v3-lr-5.0e-6-batch-16@gold-run.json": "RLHF",
-    "shf-7b-default.json": "SuperHF",
+    "sft-on-preferences-v1.json": "FTP\n(Alpaca)",
+    "rlhf-v3-lr-5.0e-6-batch-16@gold-run.json": "RLHF\n(Alpaca)",
+    "shf-7b-default.json": "SuperHF\n(Alpaca)",
     "gpt-3.5-turbo_2023-05-13_completions_output.json": "GPT-3.5",
     "gpt-4_2023-05-13_completions_output.json": "GPT-4",
 }
@@ -27,9 +27,9 @@ MODEL_NAME_MAPPING = {
 QUALITATIVE_MODEL_ORDER = [
     "LLaMA",
     "Alpaca",
-    "SFT",
-    "RLHF",
-    "SuperHF",
+    "FTP\n(Alpaca)",
+    "RLHF\n(Alpaca)",
+    "SuperHF\n(Alpaca)",
     "GPT-3.5",
     "GPT-4",
 ]
@@ -147,13 +147,13 @@ def model_type_to_palette_color(model_type: str) -> Any:
     """Standardize our use of models types to palette colors."""
     model_type = model_type.lower()
     model_name_to_type = {
-        "llama": "pretrained",
-        "alpaca": "instruct",
-        "sft": "sft_preferences",
+        "ftp": "ftp_preferences",
         "rlhf": "rlhf",
         "superhf": "superhf",
         "shf": "superhf",
         "gpt-4": "gpt-3.5",
+        "llama": "pretrained",
+        "alpaca": "instruct",
     }
     for model_name, model_value in model_name_to_type.items():
         if model_name in model_type:
@@ -161,7 +161,7 @@ def model_type_to_palette_color(model_type: str) -> Any:
     all_model_types = [
         "pretrained",
         "instruct",
-        "sft_preferences",
+        "ftp_preferences",
         "rlhf",
         "superhf",
         "gpt-3.5",

@@ -28,6 +28,7 @@ def main() -> None:
     # Define the model names
     model_names = [
         "llama-7b.json",
+        "shf-llama-7b.json",
         "alpaca_7b.json",
         "sft-on-preferences-v1.json",
         # "test-save-alpaca@model-2048-prompts-batch-size-8.json",
@@ -38,7 +39,15 @@ def main() -> None:
     ]
 
     # Create an empty list for x-axis labels
-    x_labels = ["LLaMA", "Alpaca", "SFT", "RLHF", "SuperHF", "GPT-4"]
+    x_labels = [
+        "LLaMA",
+        "SuperHF\n(LLaMA)",
+        "Alpaca",
+        "FTP\n(Alpaca)",
+        "RLHF\n(Alpaca)",
+        "SuperHF\n(Alpaca)",
+        "GPT-4",
+    ]
 
     # Calculate plot values for data
     all_data = []
@@ -82,9 +91,14 @@ def main() -> None:
         x=x_labels,
         y=[Y_MIN if score > 0.0 else score - Y_MIN for score in all_mean_scores],
         bottom=[Y_MIN if score < 0.0 else 0.0 for score in all_mean_scores],
+        palette=palette,
     )
 
-    # Set bottom of each bar to bottom of graph
+    # Horizontal line at Alpaca
+    plt.axhline(
+        y=all_mean_scores[2], color="black", linestyle="--", label="Alpaca Mean"
+    )
+    plt.legend()
 
     # Set labels and title
     plt.xlabel("Model Type")
