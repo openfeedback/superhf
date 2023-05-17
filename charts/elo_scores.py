@@ -56,8 +56,15 @@ def main() -> None:
         # label="Pythia Base",
     )
 
+    # Horizontal line at 1500 for starting Elo
+    plt.axhline(y=1500, color="black", linestyle="--", label="Initial Elo")
+
+    # Add a legend
+    plt.legend()
+
     # Set the y-axis limits
-    plt.ylim(1200, 1550)
+    # plt.ylim(1200, 1550)
+    plt.ylim(1300, 1630)
     # plt.ylim(1200, 1800)
 
     # Set labels and title

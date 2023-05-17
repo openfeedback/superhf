@@ -120,6 +120,13 @@ def bootstrap_elo(
     )
     elo_scores: dict[str, Any] = {model: [] for model in models}
 
+    # Hack to not include GPT-3.5 and GPT-4 in the Elo calculations
+    denylist = []
+    denylist = [
+        "gpt-3.5-turbo_2023-05-13_completions_output.json",
+        "gpt-4_2023-05-13_completions_output.json",
+    ]
+
     for _ in range(iterations):
         random.shuffle(data)
         ratings = {model: 1500.0 for model in models}
@@ -128,6 +135,8 @@ def bootstrap_elo(
             if entry["rating"] in ["A", "B"]:
                 model_a = entry["model_a"]
                 model_b = entry["model_b"]
+                if model_a in denylist or model_b in denylist:
+                    continue
                 result_a = entry["rating"] == "A"
                 ratings[model_a], ratings[model_b] = elo_update(
                     ratings[model_a], ratings[model_b], result_a
