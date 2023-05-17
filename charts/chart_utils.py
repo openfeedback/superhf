@@ -34,6 +34,8 @@ QUALITATIVE_MODEL_ORDER = [
     "GPT-4",
 ]
 
+ALPACA_TEST_REWARD = -0.01
+
 
 def bootstrapped_stdev(data: list[Any], num_samples: int = 1000) -> Any:
     """
@@ -145,6 +147,10 @@ def model_type_to_palette_color(model_type: str) -> Any:
     """Standardize our use of models types to palette colors."""
     # TODO change to dict[str, int] and add final run names as options
     model_type = model_type.lower()
+    if "superhf" in model_type:
+        model_type = "superhf"
+    if "rlhf" in model_type:
+        model_type = "rlhf"
     all_model_types = [
         "pretrained",
         "instruct",
