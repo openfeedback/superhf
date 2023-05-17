@@ -29,8 +29,9 @@ def main() -> None:
         "SFT",
         "RLHF",
         "GPT-3.5",
+        "GPT-4",
     ]
-    superhf_win_rates = [80.56, 46.81, 76.6, 68.75, 29.27]
+    superhf_win_rates = [80.56, 46.81, 76.6, 68.75, 29.27, 19.57]
     other_win_rates = [100.0 - x for x in superhf_win_rates]
 
     # Create a stacked bar chart
@@ -53,12 +54,14 @@ def main() -> None:
 
     # Add data labels to the bars
     for i, value in enumerate(superhf_win_rates):
+        horizontal_align = "left" if value < 50 else "right"
+        horizontal_adjust = 2 if value < 50 else -2
         plot.text(
-            value - 2,
+            value + horizontal_adjust,
             i,
             f"{value:.1f}%",
             color="white",
-            horizontalalignment="right",
+            horizontalalignment=horizontal_align,
             verticalalignment="center",
             # fontweight="bold",
             fontsize=10,

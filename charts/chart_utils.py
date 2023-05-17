@@ -164,7 +164,7 @@ def model_type_to_palette_color(model_type: str) -> Any:
         "sft_preferences",
         "rlhf",
         "superhf",
-        "gpt",
+        "gpt-3.5",
         "gpt-4",
     ]
     assert model_type in all_model_types
