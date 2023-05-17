@@ -29,10 +29,10 @@ max_new_tokens:
   value: 64 # not uses, overidden to 128 :/
 max_prompts_per_dataset:
   desc: What subset of test prompts to use for each dataset. 0 means use the full dataset
-  value: 0 #
+  value: 512 #
 randomize_prompts_subset:
   desc: Whether to randomize the prompts subset if using a subset
-  value: False
+  value: True
 
 reward_model:
   desc: The name of the reward model to use
