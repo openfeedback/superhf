@@ -44,7 +44,7 @@ order = [
 def main() -> None:
     """Main function."""
     initialize_plot()
-    plt.figure(figsize=(6, 12))
+    plt.figure(figsize=(8, 12))
 
     for model_name, data_path in model_names_and_paths:
         # Load the data

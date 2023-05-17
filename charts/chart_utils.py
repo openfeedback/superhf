@@ -79,9 +79,15 @@ def create_file_dir_if_not_exists(file_path: str) -> None:
         os.makedirs(file_dir)
 
 
-def get_test_scores(file_path: str) -> list[float]:
+def normalize_train_scores(scores: list[float]) -> list[float]:
+    """Normalize the train scores to the test score scale."""
+    # See experiments/evaluations/find_average_train_and_test_rm_scores.py
+    sd_ratio_test_over_train = 1.94 / 2.44
+    return [(score - -2.65) * sd_ratio_test_over_train for score in scores]
+
+
+def get_test_scores(file_path: str) -> list[Any]:
     """Get the test scores from a file."""
-    output = []
     file_data = load_json(file_path)
     scores = (
         file_data["anthropic-red-team"]
@@ -90,11 +96,16 @@ def get_test_scores(file_path: str) -> list[float]:
         + file_data["openai/webgpt_comparisons"]
     )
     # Unwrap scores from 2D array
-    scores = flatten_2d_vector(scores)
+    output = flatten_2d_vector(scores)
+
+    # Normalize scores (see experiments/evaluations/find_average_train_and_test_rm_scores.py)
+    assert "train_scores" in file_path or "test_scores" in file_path
+    if "train_scores" in file_path:
+        output = normalize_train_scores(scores)
+    elif "test_scores" in file_path:
+        output = [score - -2.22 for score in output]
 
     # Add the data
-    for score in scores:
-        output.append(score)
     return output
 
 
@@ -133,6 +144,7 @@ def _get_color_from_palette(index: int) -> Any:
 def model_type_to_palette_color(model_type: str) -> Any:
     """Standardize our use of models types to palette colors."""
     # TODO change to dict[str, int] and add final run names as options
+    model_type = model_type.lower()
     all_model_types = [
         "pretrained",
         "instruct",

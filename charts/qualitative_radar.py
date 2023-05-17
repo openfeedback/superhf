@@ -1,6 +1,7 @@
 """Radar chart of qualitative data."""
 
 import math
+from typing import Any
 
 import jsonlines
 import pandas as pd
@@ -13,7 +14,11 @@ from chart_utils import (
     QUALITATIVE_MODEL_ORDER,
 )
 
-OUTPUT_FILE = "./charts/qualitative/qualitative_radar.png"
+SHOW_LIMITED_MODELS = True
+
+OUTPUT_FILE = "./charts/qualitative/qualitative_radar_all.png"
+if SHOW_LIMITED_MODELS:
+    OUTPUT_FILE = "./charts/qualitative/qualitative_radar_limited.png"
 
 
 def load_data(file_path: str) -> pd.DataFrame:
@@ -38,7 +43,17 @@ def main() -> None:
         ("Reward\nGaming", "eval_results/gpt4_qualitative/gaming.jsonl"),
         ("Relevance", "eval_results/gpt4_qualitative/relevance.jsonl"),
     ]
-    tabular_data = {"group": QUALITATIVE_MODEL_ORDER}
+    tabular_data: dict[str, Any] = {"group": QUALITATIVE_MODEL_ORDER}
+    # Manually add Elo scores
+    tabular_data["Elo Score"] = [
+        1220.91,  # LLaMA
+        1507.60,  # Alpaca
+        1311.50,  # SFT
+        1444.27,  # RLHF
+        1527.14,  # SuperHF
+        1711.37,  # GPT-3.5
+        1777.20,  # GPT-4
+    ]
     for quality_name, file_path in named_files:
         data = load_data(file_path)
         # Drop rows where the rating isn't a 1-10 number
@@ -54,12 +69,20 @@ def main() -> None:
         tabular_data[quality_name] = avg_data["rating"].tolist()
     dataframe = pd.DataFrame(tabular_data)
 
+    if SHOW_LIMITED_MODELS:
+        # Drop all rows but Alpaca, RLHF, and SuperHF
+        dataframe = dataframe.iloc[[1, 3, 4]]
+
     # Normalize each group to go from 0.1 (min) to 1 (max)
-    for quality_name, _ in named_files:
+    qualities = ["Elo Score", "Avoidance", "Bias", "Reward\nGaming", "Relevance"]
+    for quality_name in qualities:
         dataframe[quality_name] = (
             dataframe[quality_name] - dataframe[quality_name].min()
         ) / (dataframe[quality_name].max() - dataframe[quality_name].min())
-        dataframe[quality_name] = dataframe[quality_name] * 0.9 + 0.1
+        if SHOW_LIMITED_MODELS:
+            dataframe[quality_name] = dataframe[quality_name] * 0.5 + 0.5
+        else:
+            dataframe[quality_name] = dataframe[quality_name] * 0.9 + 0.1
 
     # number of variable
     categories = list(dataframe)[1:]
@@ -82,7 +105,8 @@ def main() -> None:
     # Draw ylabels
     axis.set_rlabel_position(0)
     # plt.yticks([10, 20, 30], ["10", "20", "30"], color="grey", size=7)
-    # plt.ylim(0, 40)
+    plt.ylim(0, 1.0)
+    # plt.yticks[0.1,]
 
     # ------- PART 2: Add plots
 
@@ -90,7 +114,7 @@ def main() -> None:
     # I don't make a loop, because plotting more than 3 groups makes the chart unreadable
 
     # Ind1
-    for model_name in QUALITATIVE_MODEL_ORDER:
+    for model_name in dataframe["group"]:
         values = (
             dataframe[dataframe["group"] == model_name]
             .drop("group", axis=1)
@@ -98,8 +122,10 @@ def main() -> None:
             .tolist()
         )
         values += values[:1]
-        axis.plot(angles, values, linewidth=3, linestyle="dashed", label=model_name)
-        # ax.fill(angles, values, "b", alpha=0.1)
+        line_style = "solid" if SHOW_LIMITED_MODELS else "dashed"
+        axis.plot(angles, values, linewidth=3, linestyle=line_style, label=model_name)
+        if SHOW_LIMITED_MODELS:
+            axis.fill(angles, values, alpha=0.15)
     # values = datafame.loc[0].drop("group").values.flatten().tolist()
     # values += values[:1]
     # ax.plot(angles, values, linewidth=1, linestyle="solid", label="group A")
@@ -117,7 +143,7 @@ def main() -> None:
     # Show the graph
     # plt.show()
 
-    plt.title("Model Performance on Different Axes")
+    plt.title("Qualitative Evaluations using GPT-4")
 
     # Save the plot
     save_plot(OUTPUT_FILE)
