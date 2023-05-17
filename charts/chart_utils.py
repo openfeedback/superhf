@@ -145,18 +145,26 @@ def _get_color_from_palette(index: int) -> Any:
 
 def model_type_to_palette_color(model_type: str) -> Any:
     """Standardize our use of models types to palette colors."""
-    # TODO change to dict[str, int] and add final run names as options
     model_type = model_type.lower()
+    model_name_to_type = {
+        "llama": "pretrained",
+        "alpaca": "instruct",
+        "sft": "sft_preferences",
+        "rlhf": "rlhf",
+    }
+    model_type = model_name_to_type.get(model_type, model_type)
     if "superhf" in model_type:
         model_type = "superhf"
     if "rlhf" in model_type:
         model_type = "rlhf"
+
     all_model_types = [
         "pretrained",
         "instruct",
         "sft_preferences",
         "rlhf",
         "superhf",
+        "gpt-3.5",
     ]
     assert model_type in all_model_types
     return _get_color_from_palette(all_model_types.index(model_type))
@@ -165,4 +173,4 @@ def model_type_to_palette_color(model_type: str) -> Any:
 def save_plot(file_path: str) -> None:
     """Save a plot to a file."""
     create_file_dir_if_not_exists(file_path)
-    plt.savefig(file_path)
+    plt.savefig(file_path, bbox_inches="tight", dpi=300)
