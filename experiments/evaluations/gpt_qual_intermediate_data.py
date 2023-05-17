@@ -148,6 +148,8 @@ def save_elo_scores_to_file(elo_scores: dict[str, list[float]], file_path: str) 
             lists of Elo scores.
         file_path (str): Path to the file.
     """
+    # Sort the elo scores by model name since dict is unordered
+    elo_scores = {model: elo_scores[model] for model in sorted(elo_scores)}
     with open(file_path, "w", encoding="utf-8") as file:
         json.dump(elo_scores, file, indent=4)
 
