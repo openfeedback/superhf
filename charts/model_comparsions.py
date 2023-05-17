@@ -5,7 +5,12 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 
-from chart_utils import get_test_scores, initialize_plot, save_plot
+from chart_utils import (
+    get_test_scores,
+    initialize_plot,
+    save_plot,
+    model_type_to_palette_color,
+)
 
 OUTPUT_FILE = "./charts/models/model_comparisons.png"
 
@@ -22,6 +27,7 @@ def main() -> None:
     model_names = [
         "llama-7b.json",
         "alpaca_7b.json",
+        "gpt-4_2023-05-13_completions_output.json",
         "sft-on-preferences-v1.json",
         # "test-save-alpaca@model-2048-prompts-batch-size-8.json",
         "rlhf-v3-lr-5.0e-6-batch-16@gold-run.json",
@@ -30,7 +36,7 @@ def main() -> None:
     ]
 
     # Create an empty list for x-axis labels
-    x_labels = ["LLaMA", "Alpaca", "SFT", "RLHF", "SuperHF"]
+    x_labels = ["LLaMA", "Alpaca", "GPT-4", "SFT", "RLHF", "SuperHF"]
 
     # Calculate plot values for data
     all_data = []
@@ -50,18 +56,20 @@ def main() -> None:
     # Create the plot
     errorbar = "ci"
     plt.rcParams["lines.markersize"] = 1
+    palette = [model_type_to_palette_color(model_name) for model_name in x_labels]
     sns.barplot(
         data=dataframe,
         x="Model",
         y="Score",
         capsize=0.1,
         errorbar=errorbar,
+        palette=palette,
         # color=model_type_to_palette_color("superhf"),
     )
 
     # Set labels and title
     plt.xlabel("Model Type")
-    plt.ylabel("Test Score")
+    plt.ylabel("Test Score (+2.8 Bias)")
     plt.title("Held-Out Test Scores")
 
     # Set x-ticks

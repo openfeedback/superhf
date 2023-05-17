@@ -151,20 +151,21 @@ def model_type_to_palette_color(model_type: str) -> Any:
         "alpaca": "instruct",
         "sft": "sft_preferences",
         "rlhf": "rlhf",
+        "superhf": "superhf",
+        "shf": "superhf",
+        "gpt-4": "gpt-3.5",
     }
-    model_type = model_name_to_type.get(model_type, model_type)
-    if "superhf" in model_type:
-        model_type = "superhf"
-    if "rlhf" in model_type:
-        model_type = "rlhf"
-
+    for model_name, model_value in model_name_to_type.items():
+        if model_name in model_type:
+            model_type = model_value
     all_model_types = [
         "pretrained",
         "instruct",
         "sft_preferences",
         "rlhf",
         "superhf",
-        "gpt-3.5",
+        "gpt",
+        "gpt-4",
     ]
     assert model_type in all_model_types
     return _get_color_from_palette(all_model_types.index(model_type))
