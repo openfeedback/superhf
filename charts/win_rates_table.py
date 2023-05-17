@@ -45,8 +45,18 @@ def main() -> None:
         latexfile.write(" & " + " & ".join(model_names) + " \\\\\n")
         latexfile.write("\\hline\n")
         for i, row in enumerate(matrix):
+            # latexfile.write(
+            #     model_names[i] + " & " + " & ".join(str(x) for x in row) + " \\\\\n"
+            # )
+            # Bold the >50% win rates
             latexfile.write(
-                model_names[i] + " & " + " & ".join(str(x) for x in row) + " \\\\\n"
+                model_names[i]
+                + " & "
+                + " & ".join(
+                    rf"\textbf{{{x}}}" if x != "-" and float(x[:-2]) > 50 else x
+                    for x in row
+                )
+                + " \\\\\n"
             )
             latexfile.write("\\hline\n")
         latexfile.write("\\end{tabular}\n")
