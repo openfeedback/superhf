@@ -27,16 +27,16 @@ def main() -> None:
     model_names = [
         "llama-7b.json",
         "alpaca_7b.json",
-        "gpt-4_2023-05-13_completions_output.json",
         "sft-on-preferences-v1.json",
         # "test-save-alpaca@model-2048-prompts-batch-size-8.json",
         "rlhf-v3-lr-5.0e-6-batch-16@gold-run.json",
         "shf-7b-default.json",
         # "shf-7b-gold-v1.json",
+        "gpt-4_2023-05-13_completions_output.json",
     ]
 
     # Create an empty list for x-axis labels
-    x_labels = ["LLaMA", "Alpaca", "GPT-4", "SFT", "RLHF", "SuperHF"]
+    x_labels = ["LLaMA", "Alpaca", "SFT", "RLHF", "SuperHF", "GPT-4"]
 
     # Calculate plot values for data
     all_data = []

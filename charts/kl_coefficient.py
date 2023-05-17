@@ -114,16 +114,16 @@ def main() -> None:
     plt.axhline(
         y=ALPACA_TEST_REWARD,
         color=model_type_to_palette_color("pretrained"),
-        linestyle="--",
+        # linestyle="--",
         label="Alpaca (Test)",
         marker="",
     )
     plt.legend()
 
     # Set labels and title
-    plt.xlabel("KL Coefficients")
-    plt.ylabel("Test Reward")
-    plt.title("Test Reward at different KL Coefficients")
+    plt.xlabel("KL Coefficient")
+    plt.ylabel("Score (Normalized to Test))")
+    plt.title("KL Divergence Loss Coefficients")
 
     # Save the plot
     save_plot(OUTPUT_FILE)

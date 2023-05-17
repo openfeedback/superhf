@@ -108,8 +108,8 @@ def main() -> None:
 
     # Set labels and title
     plt.xlabel("Parameters")
-    plt.ylabel("Test Score")
-    plt.title("SuperHF Scaling (Pythia Model Suite)")
+    plt.ylabel("Score (Normalized to Test)")
+    plt.title("Parameter Scaling (Pythia Model Suite)")
 
     # Save the plot
     save_plot(OUTPUT_FILE)
