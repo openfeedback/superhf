@@ -108,6 +108,9 @@ def main() -> None:
     plt.ylim(0, 1.0)
     # plt.yticks[0.1,]
 
+    # Move x-axis labels away from the plot
+    plt.tick_params(axis="x", pad=15)
+
     # ------- PART 2: Add plots
 
     # Plot each individual = each line of the data
@@ -139,11 +142,13 @@ def main() -> None:
 
     # Add legend
     plt.legend(loc="upper right", bbox_to_anchor=(0.1, 1))
+    if SHOW_LIMITED_MODELS:
+        plt.legend()
 
     # Show the graph
     # plt.show()
 
-    plt.title("Qualitative Evaluations using GPT-4")
+    plt.title("Normalized Qualitative Ratings using GPT-4")
 
     # Save the plot
     save_plot(OUTPUT_FILE)
