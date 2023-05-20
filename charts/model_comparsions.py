@@ -28,6 +28,7 @@ def main() -> None:
     # Define the model names
     model_names = [
         "llama-7b.json",
+        "rlhf-v4-llama.json",
         "shf-llama-7b.json",
         "alpaca_7b.json",
         "sft-on-preferences-v1.json",
@@ -41,6 +42,7 @@ def main() -> None:
     # Create an empty list for x-axis labels
     x_labels = [
         "LLaMA",
+        "RLHF\n(LLaMA)",
         "SuperHF\n(LLaMA)",
         "Alpaca",
         "FTP\n(Alpaca)",
@@ -96,7 +98,7 @@ def main() -> None:
 
     # Horizontal line at Alpaca
     plt.axhline(
-        y=all_mean_scores[2], color="black", linestyle="--", label="Alpaca Mean"
+        y=all_mean_scores[3], color="black", linestyle="--", label="Alpaca Mean"
     )
     plt.legend()
 
