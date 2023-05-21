@@ -11,6 +11,7 @@ from chart_utils import (
     initialize_plot,
     model_type_to_palette_color,
     save_plot,
+    normalize_train_scores,
 )
 
 INPUT_FILE = "./charts/data/accum_train_scores.csv"
@@ -49,9 +50,12 @@ def main() -> None:
     # Drop empty strings, convert strings to floats, put in a dataframe
     accums_to_scores = []
     for accum, scores in new_data.items():
+        if accum in DENYLIST:
+            continue
+        scores = [float(score) for score in scores if score != ""]
+        scores = normalize_train_scores(scores)
         for score in scores:
-            if score != "" and int(accum) not in DENYLIST:
-                accums_to_scores.append([float(accum), float(score)])
+            accums_to_scores.append([accum, score])
     assert len(accums_to_scores) > 0
 
     dataframe = pd.DataFrame(
