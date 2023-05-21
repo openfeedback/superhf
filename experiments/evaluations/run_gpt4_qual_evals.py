@@ -28,15 +28,15 @@ class EvaluationMode(Enum):
 
     PREFERENCES = 0
     RELEVANCE = 1
-    DIVERSITY = 2
+    DIVERSITY = 2  # Not implemented yet
     AVOIDANCE = 3
     GAMING = 4
     BIAS = 5
 
 
 # Config
-EVALUATION_MODE = EvaluationMode.RELEVANCE
-MOCK_API = True
+EVALUATION_MODE = EvaluationMode.BIAS
+MOCK_API = False
 COMPLETION_PATHS = [
     "./experiments/evaluations/test_completions/llama-7b.json",
     "./experiments/evaluations/test_completions/alpaca_7b.json",
@@ -62,13 +62,14 @@ OPENAI_MODEL = "gpt-4"
 OUTPUT_DIR = "./eval_results/gpt4_qualitative/kl_sweep"
 PREFERENCE_COMPARISONS_PER_DATASET = 256
 SINGLE_EXAMPLE_RATINGS_PER_DATASET = 32
-REQUEST_SLEEP_INTERVAL = 1  # seconds
+REQUEST_SLEEP_INTERVAL = 0.25  # seconds
 MOCK_SLEEP_INTERVAL = 0.01  # seconds
 
 
-@retry(wait=wait_random_exponential(min=0.25, max=10), stop=stop_after_attempt(6))
+@retry(wait=wait_random_exponential(min=0.25, max=60), stop=stop_after_attempt(64))
 def query_api(system_prompt: str, user_prompt: str) -> Any:
     """Query the API for a completion."""
+    # TODO try a batched version
     if MOCK_API:
         time.sleep(MOCK_SLEEP_INTERVAL)
         return "6" if "1-10" in system_prompt else "A"
