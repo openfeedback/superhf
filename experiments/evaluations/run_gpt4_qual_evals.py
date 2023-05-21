@@ -202,10 +202,10 @@ def run_single_example_rating(
 
                 outputs.append(
                     {
+                        "model": model_name,
                         "test_set": test_set,
                         "index": index,
                         "rating": rating,
-                        "model": model_name,
                         "prompt": prompt,
                         "completion": completion,
                     }
