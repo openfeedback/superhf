@@ -7,6 +7,7 @@ import json
 import os
 from typing import Any
 import time
+from concurrent.futures import ThreadPoolExecutor
 
 from tenacity import (
     retry,
@@ -62,12 +63,14 @@ OUTPUT_DIR = "./eval_results/gpt4_qualitative/kl_sweep"
 PREFERENCE_COMPARISONS_PER_DATASET = 256
 SINGLE_EXAMPLE_RATINGS_PER_DATASET = 32
 REQUEST_SLEEP_INTERVAL = 1  # seconds
+MOCK_SLEEP_INTERVAL = 0.01  # seconds
 
 
 @retry(wait=wait_random_exponential(min=0.25, max=10), stop=stop_after_attempt(6))
 def query_api(system_prompt: str, user_prompt: str) -> Any:
     """Query the API for a completion."""
     if MOCK_API:
+        time.sleep(MOCK_SLEEP_INTERVAL)
         return "6" if "1-10" in system_prompt else "A"
     response = openai.ChatCompletion.create(
         model=OPENAI_MODEL,
@@ -171,6 +174,37 @@ def run_single_example_rating(
 
     # pylint: disable=too-many-locals
 
+    def get_rating_function(model_name: str, test_set: str) -> Any:
+        def inner_function(index: int) -> dict[str, Any]:
+            """Map function for generating outputs."""
+            # Get the completions for each model at this index
+            example = names_to_completions[model_name][test_set][index]
+            _, completion = extract_prompt_and_completion(example)
+            completion = strip_and_remove_newlines(completion)
+
+            # Also get the first/llama completion because we know its prompt is good
+            known_good_example = list(names_to_completions.values())[0][test_set][index]
+            prompt, _ = extract_prompt_and_completion(known_good_example)
+            prompt = strip_and_remove_newlines(prompt)
+
+            # Format the final user prompt
+            user_prompt = f"Prompt: {prompt}\nResponse: {completion}"
+
+            # Query the API
+            rating = query_api(system_prompt, user_prompt)
+            assert rating is not None
+
+            return {
+                "model": model_name,
+                "test_set": test_set,
+                "index": index,
+                "rating": rating,
+                "prompt": prompt,
+                "completion": completion,
+            }
+
+        return inner_function
+
     output_path = os.path.join(OUTPUT_DIR, output_filename)
     create_file_dir_if_not_exists(output_path)
     outputs = []
@@ -178,38 +212,18 @@ def run_single_example_rating(
         for test_set in tqdm(
             list(names_to_completions.values())[0].keys(), desc="Test set"
         ):
-            for index in tqdm(
-                range(SINGLE_EXAMPLE_RATINGS_PER_DATASET), desc="Example"
-            ):
-                # Get the completions for each model at this index
-                example = names_to_completions[model_name][test_set][index]
-                _, completion = extract_prompt_and_completion(example)
-                completion = strip_and_remove_newlines(completion)
-
-                # Also get the first/llama completion because we know its prompt is good
-                known_good_example = list(names_to_completions.values())[0][test_set][
-                    index
-                ]
-                prompt, _ = extract_prompt_and_completion(known_good_example)
-                prompt = strip_and_remove_newlines(prompt)
-
-                # Format the final user prompt
-                user_prompt = f"Prompt: {prompt}\nResponse: {completion}"
-
-                # Query the API
-                rating = query_api(system_prompt, user_prompt)
-                assert rating is not None
-
-                outputs.append(
-                    {
-                        "model": model_name,
-                        "test_set": test_set,
-                        "index": index,
-                        "rating": rating,
-                        "prompt": prompt,
-                        "completion": completion,
-                    }
+            with ThreadPoolExecutor() as executor:
+                ratings = list(
+                    tqdm(
+                        executor.map(
+                            get_rating_function(model_name, test_set),
+                            range(SINGLE_EXAMPLE_RATINGS_PER_DATASET),
+                        ),
+                        total=SINGLE_EXAMPLE_RATINGS_PER_DATASET,
+                        desc="Example",
+                    )
                 )
+                outputs.extend(ratings)
 
     # Write everything to the file
     with jsonlines.open(output_path, "w") as writer:
