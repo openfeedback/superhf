@@ -35,7 +35,7 @@ class EvaluationMode(Enum):
 
 # Config
 EVALUATION_MODE = EvaluationMode.RELEVANCE
-MOCK_API = False
+MOCK_API = True
 COMPLETION_PATHS = [
     "./experiments/evaluations/test_completions/llama-7b.json",
     "./experiments/evaluations/test_completions/alpaca_7b.json",
@@ -45,11 +45,23 @@ COMPLETION_PATHS = [
     "./experiments/openai_generations/gpt-3.5-turbo_2023-05-13_completions_output.json",
     "./experiments/openai_generations/gpt-4_2023-05-13_completions_output.json",
 ]
+COMPLETION_PATHS = [  # KL sweep
+    "./experiments/evaluations/test_completions/shf-7b-kl-0.json",
+    "./experiments/evaluations/test_completions/shf-7b-kl-0.01.json",
+    "./experiments/evaluations/test_completions/shf-7b-kl-0.05.json",
+    "./experiments/evaluations/test_completions/shf-7b-kl-0.1.json",
+    "./experiments/evaluations/test_completions/shf-7b-kl-0.15.json",
+    "./experiments/evaluations/test_completions/shf-7b-kl-0.2.json",
+    "./experiments/evaluations/test_completions/shf-7b-kl-0.25.json",
+    "./experiments/evaluations/test_completions/shf-7b-kl-0.3.json",
+    "./experiments/evaluations/test_completions/shf-7b-kl-0.35.json",
+    "./experiments/evaluations/test_completions/shf-7b-kl-0.4.json",
+]
 OPENAI_MODEL = "gpt-4"
-OUTPUT_DIR = "./eval_results/gpt4_qualitative"
+OUTPUT_DIR = "./eval_results/gpt4_qualitative/kl_sweep"
 PREFERENCE_COMPARISONS_PER_DATASET = 256
 SINGLE_EXAMPLE_RATINGS_PER_DATASET = 32
-REQUEST_SLEEP_INTERVAL = 2  # seconds
+REQUEST_SLEEP_INTERVAL = 1  # seconds
 
 
 @retry(wait=wait_random_exponential(min=0.25, max=10), stop=stop_after_attempt(6))
@@ -156,46 +168,53 @@ def run_single_example_rating(
     names_to_completions: dict[str, Any], system_prompt: str, output_filename: str
 ) -> None:
     """Generic version for relevance, avoidance, gaming, and bias."""
+
+    # pylint: disable=too-many-locals
+
     output_path = os.path.join(OUTPUT_DIR, output_filename)
     create_file_dir_if_not_exists(output_path)
-    with jsonlines.open(output_path, "w") as writer:
-        for model_name in tqdm(names_to_completions.keys(), desc="Model"):
-            for test_set in tqdm(
-                names_to_completions["llama-7b.json"].keys(), desc="Test set"
+    outputs = []
+    for model_name in tqdm(names_to_completions.keys(), desc="Model"):
+        for test_set in tqdm(
+            list(names_to_completions.values())[0].keys(), desc="Test set"
+        ):
+            for index in tqdm(
+                range(SINGLE_EXAMPLE_RATINGS_PER_DATASET), desc="Example"
             ):
-                for index in tqdm(
-                    range(SINGLE_EXAMPLE_RATINGS_PER_DATASET), desc="Example"
-                ):
-                    # Get the completions for each model at this index
-                    example = names_to_completions[model_name][test_set][index]
-                    _, completion = extract_prompt_and_completion(example)
-                    completion = strip_and_remove_newlines(completion)
+                # Get the completions for each model at this index
+                example = names_to_completions[model_name][test_set][index]
+                _, completion = extract_prompt_and_completion(example)
+                completion = strip_and_remove_newlines(completion)
 
-                    # Also get the llama completion because we know its prompt is good
-                    llama_example = names_to_completions["llama-7b.json"][test_set][
-                        index
-                    ]
-                    prompt, _ = extract_prompt_and_completion(llama_example)
-                    prompt = strip_and_remove_newlines(prompt)
+                # Also get the first/llama completion because we know its prompt is good
+                known_good_example = list(names_to_completions.values())[0][test_set][
+                    index
+                ]
+                prompt, _ = extract_prompt_and_completion(known_good_example)
+                prompt = strip_and_remove_newlines(prompt)
 
-                    # Format the final user prompt
-                    user_prompt = f"Prompt: {prompt}\nResponse: {completion}"
+                # Format the final user prompt
+                user_prompt = f"Prompt: {prompt}\nResponse: {completion}"
 
-                    # Query the API
-                    rating = query_api(system_prompt, user_prompt)
-                    assert rating is not None
+                # Query the API
+                rating = query_api(system_prompt, user_prompt)
+                assert rating is not None
 
-                    # Write everything to the file
-                    writer.write(
-                        {
-                            "test_set": test_set,
-                            "index": index,
-                            "rating": rating,
-                            "model": model_name,
-                            "prompt": prompt,
-                            "completion": completion,
-                        }
-                    )
+                outputs.append(
+                    {
+                        "test_set": test_set,
+                        "index": index,
+                        "rating": rating,
+                        "model": model_name,
+                        "prompt": prompt,
+                        "completion": completion,
+                    }
+                )
+
+    # Write everything to the file
+    with jsonlines.open(output_path, "w") as writer:
+        for output in outputs:
+            writer.write(output)
 
 
 def run_relevance(names_to_completions: dict[str, Any]) -> None:
