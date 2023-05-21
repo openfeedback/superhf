@@ -1,8 +1,10 @@
 """
-Plot scores as a function of the prompt accumulation.
+Plot test as a function of the prompt accumulation.
 """
 
 import os
+from typing import Any
+
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
@@ -14,7 +16,7 @@ from chart_utils import (
     save_plot,
 )
 
-OUTPUT_FILE = "./charts/ablations/prompt_accumulation.png"
+OUTPUT_FILE = "./charts/ablations/prompt_accumulation_test.png"
 TEST_SCORES_DIRECTORY = "./experiments/evaluations/test_scores/"
 
 
@@ -28,7 +30,7 @@ def main() -> None:
     file_name_template = "shf-7b-accum-"
 
     # Find all the files in the test scores directory
-    accums_and_file_paths = []
+    accums_and_file_paths: list[tuple[Any, str]] = []
     for file_name in os.listdir(TEST_SCORES_DIRECTORY):
         if file_name.startswith(file_name_template):
             accum = int(file_name.split(file_name_template)[1].split(".")[0])
@@ -41,7 +43,7 @@ def main() -> None:
     for accum, file_path in accums_and_file_paths:
         # Handle 0, representing it as a break to the right of the graph
         if accum == 0:
-            accum = 0.3
+            accum = 1e4
         scores = get_test_scores(file_path)
         labeled_scores = [[accum, score] for score in scores]
         shf_data.extend(labeled_scores)
