@@ -9,6 +9,7 @@ ipython
 ipywidgets
 types-tqdm
 types-PyYAML
+seaborn
 sentencepiece
 lm-eval==0.3.0
 # protobuf<4.0.0  # Fix an issue with loading the T5 tokenizer

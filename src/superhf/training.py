@@ -756,7 +756,7 @@ class SuperHFTrainer:
             return_tensors="pt",
             padding=True,
             truncation=True,
-            max_length=self.training_args.max_length_rm,
+            max_length=self.training_args.max_length_rm,  # TODO: Should not be rm
         )
         encodings["labels"] = encodings["input_ids"].detach().clone()  # type: ignore
 

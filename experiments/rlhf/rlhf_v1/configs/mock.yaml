@@ -4,10 +4,6 @@ model_name:
 reward_model_name:
   desc: HuggingFace reward model to use, or "mock" for testing
   value: "mock" #  "OpenAssistant/reward-model-deberta-v3-base"
-test_reward_model_name:
-  desc: HuggingFace reward model to use for testing.
-  value: "mock"
-
 log_with:
   desc: "The logger to use"
   value: "wandb"
@@ -26,9 +22,6 @@ gradient_accumulation_steps:
 max_new_tokens:
   desc: "The maximum number of new tokens to generate per prompt"
   value: 32
-generation_kwargs:
-  desc: Extra args to pass to generation. Format is arg_name followed by value
-  value: ["eos_token_id", 2]
 max_prompt_char_length:
   desc: "The maximum number of characters in a prompt"
   value: 1024
@@ -53,17 +46,12 @@ debug_max_prompts:
 conversation_prompt:
   desc: A prompt to prepend to every prompt before generation to get the model more on distribution.
   value: "A human user sends a message, and a helpful and harmless AI assistant responds."
-
 save_every:
     desc: "Save the model every n epochs"
     value: 2
-extra_push_to_hub:
-  desc: Extra intervals to push to the hub
-  value: [1, 4, 16, 32]
 hub_repo_id:
     desc: "The ID of the HuggingFace Hub repo to save to. If empty, doesn't write to the Hub."
     value: ""
-
 scheduler_name:
   desc: Name of the scheduler to use for fine-tuning the language model.
   value: ""

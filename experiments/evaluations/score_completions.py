@@ -10,7 +10,6 @@ Language model naming conventions:
 import argparse
 import os
 import json
-import re
 from typing import Optional, List, Dict, Any
 import random
 import requests
@@ -27,9 +26,10 @@ from torch.utils.data import DataLoader, TensorDataset
 from accelerate import Accelerator, find_executable_batch_size
 
 from model_loading import load_eval_model_and_tokenizer
+from evaluation_utils import trim_generations
+
+
 from tqdm import tqdm
-
-
 import wandb
 
 from superhf.data import get_superhf_prompts
@@ -37,15 +37,14 @@ from superhf.utils import print_memory_utilization
 from superhf.training import SuperHFTrainingArguments, SuperHFTrainer
 from superhf.filtering import CompletionFilterTopK
 from superhf.mocking import MockRewardModel
-from superhf.constants import PROMPT_DELIMITER, PROMPT_DELIMITER_REGEX_MEDIUM
 
 # Default parameters
 WANDB_ENTITY_NAME = "stanfordaialignment"
 WANDB_PROJECT_NAME = "rlhf-trl-v1"
 
 # folder to be used for saving and loading test set eval data
-TEST_COMPLETIONS_DIR = "test_completions"
-TEST_SCORES_DIR = "test_scores"
+# TEST_COMPLETIONS_DIR = "test_completions"
+# TEST_SCORES_DIR = "test_scores"
 
 # Saved conversation prompt
 CONVERSATION_PROMPT = (
@@ -67,11 +66,25 @@ def parse_args() -> argparse.Namespace:
         default=None,
         help="Path to the config file containing the completions to score",
     )
+    parser.add_argument(
+        "--completions-dir",
+        type=str,
+        default="test_completions",
+        help="Directory name where the generations will be saved and read from,",
+    )
+    parser.add_argument(
+        "--scores-dir",
+        type=str,
+        default="test_scores",
+        help="The directory name where scores will be saved to.",
+    )
     args = parser.parse_args()
     with open(args.config, "r", encoding="utf-8") as file:
         yaml_args = yaml.safe_load(file)
 
     values_dict = {k: v["value"] for k, v in yaml_args.items()}
+    values_dict["completions_dir"] = args.completions_dir
+    values_dict["scores_dir"] = args.scores_dir
     return argparse.Namespace(**values_dict)
 
 
@@ -362,19 +375,9 @@ def save_completions(completions_dict, filename):
     """
     with open(filename, "w", encoding="utf-8") as file:
         json.dump(completions_dict, file)
+        file.write("\n")
     tqdm.write(f"Saved completions to {filename}")
     return filename
-
-    # if completions_file is not None:
-    #     if "openai" in args.completions_file:
-    #         completions = read_openai_completions(args.completions_file)
-    #     else:
-    #         # raise an unimplemented error
-    #         raise NotImplementedError(
-    #             "Need to implement general loading from a file. "
-    #             " Specify openai flag otherwsie"
-    #         )
-    # else:
 
 
 def save_scores(scores_dict, filename) -> str:
@@ -384,49 +387,8 @@ def save_scores(scores_dict, filename) -> str:
     tqdm.write(f"Saving scores to {filename}")
     with open(filename, "w", encoding="utf-8") as file:
         json.dump(scores_dict, file)
+        file.write("\n")
     return filename
-
-
-def separate_prompt_from_completion(text: str) -> tuple[str, str]:
-    """
-    Given a completed prompt text, separate the part before and including the
-    prompt delimiter from the part after.
-    """
-    prompt, completion = text.split(PROMPT_DELIMITER, 1)
-    prompt += PROMPT_DELIMITER
-    return prompt, completion
-
-
-def trim_generations(raw_completions: list[str]) -> list[str]:
-    """
-    Trim the generated completions to remove extra simulated turns of conversation.
-
-    Return:
-        A list of string wtih the prompt and modell response without any extra simulated
-            conversation turns.
-    """
-    original_length = len(raw_completions)
-    prompts_and_completions = [
-        separate_prompt_from_completion(completion) for completion in raw_completions
-    ]
-    trimmed_completions: list[str] = []
-    model_completion_lengths: list[int] = []
-    for prompt, completion in prompts_and_completions:
-        if VERBOSE and completion == "":
-            tqdm.write("WARNING: Completion is empty.")
-        stripped_completion = re.split(
-            PROMPT_DELIMITER_REGEX_MEDIUM, completion, maxsplit=1
-        )[0].strip()
-        if VERBOSE and completion != "" and stripped_completion == "":
-            tqdm.write("WARNING: Stripped completion is empty but completion wasn't.")
-        trimmed_completions.append(prompt + " " + stripped_completion)
-        model_completion_lengths.append(len(stripped_completion))
-
-    assert len(trimmed_completions) == original_length, (
-        "The number of Trimmed completions should be the same as the number of original"
-        " completions."
-    )
-    return trimmed_completions
 
 
 def get_all_models(model_name: str, model_interval: tuple[int, int]) -> List[str]:
@@ -475,6 +437,146 @@ def remove_extension(dir_names: List[str]) -> List[str]:
     return dir_names
 
 
+def generate_all_completions(
+    args: argparse.Namespace,
+    language_model_names,
+    test_completions_dir: str,
+) -> None:
+    """
+    loop over all the language models and generate completions for each of them
+    """
+    new_language_model_names = []
+    for name in language_model_names:
+        if "{N}" in name:
+            new_language_model_names.extend(
+                get_all_models(name, args.language_model_interval)
+            )
+        else:
+            new_language_model_names.append(name)
+    language_model_names = new_language_model_names
+    # print(f"Current directory is {os.getcwd()}")
+    if not os.path.exists(test_completions_dir):
+        os.makedirs(test_completions_dir)
+    already_generated_completions = os.listdir(test_completions_dir)
+    already_generated_completions = remove_extension(already_generated_completions)
+
+    # if args.wandb_run_id is not None:
+    #     # grab completions from wandb
+    #     completions_batched, scores_batched = load_completions_wandb(
+    #         entity_name=args.wandb_entity_name,
+    #         project_name=args.wandb_project_name,
+    #         run_id=args.wandb_run_id,
+    #     )
+    #     for batch in completions_batched:
+    #         completions.extend(batch)
+    #     for batch_scores in scores_batched:
+    #         scores.extend(batch_scores)
+    starting_batch_size_lm = args.starting_batch_size_lm
+    prompts_dict = load_prompts_dictionary(args)
+    prev_model = None
+    prev_tokenizer = None
+    for language_model_name in tqdm(language_model_names, desc="Language models"):
+        #  it does, don't generate here
+        language_model_base_name = language_model_name.split("/")[-1]
+        if language_model_base_name in already_generated_completions:
+            tqdm.write(
+                "Already generated completions for language model"
+                f" {language_model_name}"
+            )
+            continue
+        tqdm.write(f"Generating completions with language model {language_model_name}")
+        completions_dict, prev_model, prev_tokenizer, starting_batch_size_lm = (
+            generate_completions_from_lm(
+                starting_batch_size=starting_batch_size_lm,
+                language_model=language_model_name,
+                prev_language_model=prev_model,
+                prev_lm_tokenizer=prev_tokenizer,
+                prompts_dict=prompts_dict,
+            )
+        )
+        filename = os.path.join(
+            test_completions_dir, f"{language_model_base_name}.json"
+        )
+        save_completions(completions_dict, filename)
+
+
+def score_all_completions(args, script_path_dir: str, test_completions_dir: str):
+    """
+    Run the reward model in scoring mode
+    """
+    # pylint: disable=too-many-locals
+    scores_dict = {}
+    starting_batch_size_rm = args.starting_batch_size_rm
+    # we are in scoring mode, so score completions
+    accelerator = Accelerator()
+    try:
+        torch_dtype_lm_str = args.lm_dtype
+        torch_dtype_lm = getattr(torch, torch_dtype_lm_str)
+    except AttributeError:
+        torch_dtype_lm = torch.bfloat16
+
+    try:
+        trim_completions = args.trim_completions
+    except AttributeError:
+        trim_completions = False
+    reward_model, reward_tokenizer = load_eval_model_and_tokenizer(
+        args.reward_model, model_type="reward", torch_dtype=torch_dtype_lm
+    )
+    if not isinstance(reward_model, str):
+        reward_model = accelerator.prepare(reward_model)
+    print_memory_utilization()
+
+    already_generated_completions = os.listdir(test_completions_dir)
+    already_generated_completions = remove_extension(already_generated_completions)
+    test_scores_dir = os.path.join(script_path_dir, args.scores_dir)
+    if not os.path.exists(test_scores_dir):
+        os.makedirs(test_scores_dir)
+    already_generated_scores = os.listdir(test_scores_dir)
+    already_generated_scores = remove_extension(already_generated_scores)
+    for language_model_name in tqdm(
+        already_generated_completions, desc="Scoring per language models"
+    ):
+        if language_model_name in already_generated_scores:
+            tqdm.write(
+                f"Already generated scores for language model {language_model_name}"
+            )
+            continue
+        tqdm.write(f"Scoring completions for language model {language_model_name}")
+        language_model_base_name = language_model_name.split(os.path.sep)[-1]
+        completions_dict = load_completions_json(
+            os.path.join(test_completions_dir, f"{language_model_base_name}.json")
+        )
+        for dataset_name in tqdm(args.prompt_dataset_names, desc="Datasets"):
+            completions = completions_dict[dataset_name]
+            if trim_completions:
+                completions = trim_generations(completions)
+            if (
+                CONVERSATION_PROMPT not in completions[0]
+                and CONVERSATION_PROMPT not in completions[10]
+            ):
+                tqdm.write(
+                    "Adding conversation prompt to completions for dataset"
+                    f" {dataset_name}"
+                )
+                completions = [
+                    CONVERSATION_PROMPT + completion for completion in completions
+                ]
+            tqdm.write(
+                f"Here is the first completion that we are scoriing: {completions[0]!r}"
+            )
+
+            scores, starting_batch_size_rm = find_executable_batch_size(
+                score_completions, starting_batch_size_rm
+            )(
+                reward_model=reward_model,
+                reward_model_tokenizer=reward_tokenizer,
+                completions=completions,
+            )
+            scores_dict[dataset_name] = scores.tolist()
+        filename = os.path.join(test_scores_dir, f"{language_model_base_name}.json")
+        save_scores(scores_dict, filename)
+
+
 def main() -> None:
     """
     Main function for running the reward model
@@ -494,151 +596,19 @@ def main() -> None:
     except AttributeError:
         scoring_mode = False
 
-    if language_model_names is not None and not scoring_mode:
-        new_language_model_names = []
-        for name in language_model_names:
-            if "{N}" in name:
-                new_language_model_names.extend(
-                    get_all_models(name, args.language_model_interval)
-                )
-            else:
-                new_language_model_names.append(name)
-        language_model_names = new_language_model_names
-        # print(f"Current directory is {os.getcwd()}")
-        script_path_dir = os.path.dirname(os.path.abspath(__file__))
-        # get all the filenames in TEST_COMPLETIONS_DIR
-        test_completions_dir = os.path.join(script_path_dir, TEST_COMPLETIONS_DIR)
-        if not os.path.exists(test_completions_dir):
-            os.makedirs(test_completions_dir)
-        already_generated_completions = os.listdir(test_completions_dir)
-        already_generated_completions = remove_extension(already_generated_completions)
+    script_path_dir = os.path.dirname(os.path.abspath(__file__))
+    # get all the filenames in TEST_COMPLETIONS_DIR
+    test_completions_dir = os.path.join(script_path_dir, args.completions_dir)
 
-        # if args.wandb_run_id is not None:
-        #     # grab completions from wandb
-        #     completions_batched, scores_batched = load_completions_wandb(
-        #         entity_name=args.wandb_entity_name,
-        #         project_name=args.wandb_project_name,
-        #         run_id=args.wandb_run_id,
-        #     )
-        #     for batch in completions_batched:
-        #         completions.extend(batch)
-        #     for batch_scores in scores_batched:
-        #         scores.extend(batch_scores)
-        starting_batch_size_lm = args.starting_batch_size_lm
-        prompts_dict = load_prompts_dictionary(args)
-        prev_model = None
-        prev_tokenizer = None
-        for language_model_name in tqdm(language_model_names, desc="Language models"):
-            #  it does, don't generate here
-            language_model_base_name = language_model_name.split(os.path.sep)[-1]
-            if language_model_base_name in already_generated_completions:
-                tqdm.write(
-                    "Already generated completions for language model"
-                    f" {language_model_name}"
-                )
-                continue
-            tqdm.write(
-                f"Generating completions with language model {language_model_name}"
-            )
-            completions_dict, prev_model, prev_tokenizer, starting_batch_size_lm = (
-                generate_completions_from_lm(
-                    starting_batch_size=starting_batch_size_lm,
-                    language_model=language_model_name,
-                    prev_language_model=prev_model,
-                    prev_lm_tokenizer=prev_tokenizer,
-                    prompts_dict=prompts_dict,
-                )
-            )
-            filename = os.path.join(
-                test_completions_dir, f"{language_model_base_name}.json"
-            )
-            save_completions(completions_dict, filename)
-
-        # del prompts_dict
-        # del prev_model
+    if language_model_names is not None and len(language_model_names) != 0:
+        generate_all_completions(args, language_model_names, test_completions_dir)
     elif not scoring_mode:
         raise NotImplementedError(
             "Must specify at least a language model or wandb to load generations from,"
             " or a completions file with completions from openAI. Or be in scoring mode"
         )
-
-    scores_dict = {}
     if scoring_mode:
-        starting_batch_size_rm = args.starting_batch_size_rm
-        # we are in scoring mode, so score completions
-        accelerator = Accelerator()
-        try:
-            torch_dtype_lm_str = args.lm_dtype
-            torch_dtype_lm = getattr(torch, torch_dtype_lm_str)
-        except AttributeError:
-            torch_dtype_lm = torch.bfloat16
-
-        try:
-            trim_completions = args.trim_completions
-        except AttributeError:
-            trim_completions = False
-        reward_model, reward_tokenizer = load_eval_model_and_tokenizer(
-            args.reward_model, model_type="reward", torch_dtype=torch_dtype_lm
-        )
-        if not isinstance(reward_model, str):
-            reward_model = accelerator.prepare(reward_model)
-        print_memory_utilization()
-
-        already_generated_completions = os.listdir(test_completions_dir)
-        already_generated_completions = remove_extension(already_generated_completions)
-        test_scores_dir = os.path.join(script_path_dir, TEST_SCORES_DIR)
-        if not os.path.exists(test_scores_dir):
-            os.makedirs(test_scores_dir)
-        already_generated_scores = os.listdir(test_scores_dir)
-        already_generated_scores = remove_extension(already_generated_scores)
-        for language_model_name in tqdm(
-            already_generated_completions, desc="Scoring per language models"
-        ):
-            if language_model_name in already_generated_scores:
-                tqdm.write(
-                    f"Already generated scores for language model {language_model_name}"
-                )
-                continue
-            tqdm.write(f"Scoring completions for language model {language_model_name}")
-            language_model_base_name = language_model_name.split(os.path.sep)[-1]
-            completions_dict = load_completions_json(
-                os.path.join(test_completions_dir, f"{language_model_base_name}.json")
-            )
-            for dataset_name in tqdm(args.prompt_dataset_names, desc="Datasets"):
-                completions = completions_dict[dataset_name]
-                if trim_completions:
-                    completions = trim_generations(completions)
-                if (
-                    CONVERSATION_PROMPT not in completions[0]
-                    and CONVERSATION_PROMPT not in completions[10]
-                ):
-                    tqdm.write(
-                        "Adding conversation prompt to completions for dataset"
-                        f" {dataset_name}"
-                    )
-                    completions = [
-                        CONVERSATION_PROMPT + completion for completion in completions
-                    ]
-                tqdm.write(
-                    "Here is the first completion that we are scoriing:"
-                    f" {completions[0]!r}"
-                )
-
-                scores, starting_batch_size_rm = find_executable_batch_size(
-                    score_completions, starting_batch_size_rm
-                )(
-                    reward_model=reward_model,
-                    reward_model_tokenizer=reward_tokenizer,
-                    completions=completions,
-                )
-                scores_dict[dataset_name] = scores.tolist()
-            filename = os.path.join(test_scores_dir, f"{language_model_base_name}.json")
-            save_scores(scores_dict, filename)
-
-    # statistics lilke mean, std, quartiles per dagtaset
-    # for language models grab just the last part, and include the @
-
-    # try decreasing learning rate as we increase batch size
+        score_all_completions(args, script_path_dir, test_completions_dir)
 
 
 if __name__ == "__main__":

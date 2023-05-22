@@ -591,13 +591,6 @@ def main(script_args: ScriptArguments):
                 "⚠️ WARNING: Error during this training iteration. Total OOM count:"
                 f" {oom_count}/{MAX_OOM_ALLOWED}"
             )
-            if ppo_trainer.config.mini_batch_size > 1:
-                print("reducing minibatch size by half and decrementing oom count")
-                ppo_trainer.config.mini_batch_size = (
-                    ppo_trainer.config.mini_batch_size // 2
-                )
-                print("Minibatch size is now", ppo_trainer.config.mini_batch_size)
-                oom_count -= 1
             if oom_count > MAX_OOM_ALLOWED:
                 raise exc
 
@@ -609,7 +602,7 @@ def main(script_args: ScriptArguments):
             tqdm.write(
                 f"Pushing model and tokenizer to the Hub! Location: {hub_repo_id}"
             )
-            repo_name = hub_repo_id[0] if isinstance(hub_repo_id, list) else hub_repo_id
+            repo_name = hub_repo_id
             if (
                 script_args.sweep_param_name is not None
                 and script_args.sweep_param_name != ""
