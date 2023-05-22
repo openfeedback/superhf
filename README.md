@@ -5,10 +5,10 @@ This project is a research prototype for the paper `Supervised Iterative Fine-Tu
 ## Directory structure
 
 - `src/superhf/` contains the code for the SuperHFTrainer class and superhf code.
-- `src/reward_modeling/` contains the code for the training our reward model.
+- `src/reward_modeling/` contains the code for training the reward model.
 - `experiments/` contains the code for calling the trainers and running various experiments reported in the paper.
-- `experiments/superhf/superhf_iterative_v1` contains the code for the superhf experiments that were used.
-- `experiments/rlhf/rlhf_v1` contains the code for the rlhf experiments.
+- `experiments/superhf/superhf_iterative_v1` contains the code for running the superhf experiments that were used.
+- `experiments/rlhf/rlhf_v1` contains the code for running the rlhf experiments.
 - `experiments/evaluations/` contains the code for evaluating the trained models.
 
 
