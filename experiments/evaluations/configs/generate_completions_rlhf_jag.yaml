@@ -17,13 +17,13 @@ use_openai:
 
 language_model_names:
   desc: The name of the language model to use
-  value: ["peterchatain/rlhf-v3-lr-5.0e-6-batch-16@gold-run"]
+  value: ["peterchatain/rlhf-v4-llama"]
 starting_batch_size_lm:
   desc: The starting batch size for the reward model scoring
   value: 64
 max_new_tokens:
   desc: The number of new tokens to generate
-  value: 64
+  value: 64 # actually uses 128 :/
 reward_model:
   desc: The name of the reward model to use
   value: "mock" # "/nlp/scr/fongsu/rm_combined/gptneo_1.3B_second_half" # "mock"
