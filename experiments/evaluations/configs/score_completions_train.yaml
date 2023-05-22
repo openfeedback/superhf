@@ -1,0 +1,36 @@
+completions_file:
+  desc: Path to the file containing the completions to score
+  value: null # "experiments/openai_generations/anthropic-harmless-base_completions_output.json"
+
+wandb_run_id:
+  desc: The wandb run id of the run to load completions from
+  value: null
+wandb_project_name:
+  desc: The wandb project name of the run to load completions from
+  value: null
+wandb_entity_name:
+  desc: The wandb entity name of the run to load completions from
+  value: null
+use_openai:
+  desc: Whether to use the openai reward model
+  value: false
+
+reward_model:
+  desc: The name of the reward model to use
+  value: "/nlp/scr/fongsu/rm_combined/gptneo_1.3B_first_half" # "mock"
+starting_batch_size_rm:
+  desc: The starting batch size for the reward model scoring
+  value: 64
+scoring_mode:
+  desc: Whether to score completions and save them or not.
+  value: True
+trim_completions:
+  desc: Whether to trim the completions from extra turns of generation
+  value: True
+
+prompt_dataset_names:
+  desc: The list of datasets to use for prompts. See src/superhf/data.py for available datasets.
+  value: ["anthropic-red-team", "anthropic-helpful-base", "anthropic-harmless-base", "openai/webgpt_comparisons"]
+max_prompt_char_length:
+  desc: If generating completions, set's max length for input prompts.
+  value: 1024

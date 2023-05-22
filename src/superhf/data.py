@@ -18,6 +18,8 @@ from typing import Iterator, TypeVar
 from datasets.load import load_dataset
 from torch.utils.data import IterableDataset
 
+from superhf.constants import SUPPORTED_DATASETS
+
 T = TypeVar("T")
 
 TEST_SET_SIZE_PER_DATASET = 2300
@@ -30,6 +32,10 @@ def get_superhf_prompts(dataset_name: str, split: str = "train") -> list[str]:
     Args:
         dataset_name: The name of the dataset to load. One of:
             - 'anthropic-red-team'
+            - 'webgpt_comparisons'
+            - 'anthropic-harmless-base'
+            - 'anthropic-helpful-base'
+            - 'mock'
         split: The split of the dataset to load.
 
     Returns:
@@ -41,27 +47,53 @@ def get_superhf_prompts(dataset_name: str, split: str = "train") -> list[str]:
         dataset = load_dataset(
             "Anthropic/hh-rlhf",
             data_dir="red-team-attempts",
-            split=split,
+            split="train",
             keep_in_memory=False,
         )
-        prompts.extend(
-            [
-                dict(row)["transcript"].split("\n\nAssistant:")[0] + "\n\nAssistant:"
-                for row in dataset
-            ][:-TEST_SET_SIZE_PER_DATASET]
-        )
+        if split == "train":
+            prompts.extend(
+                [
+                    dict(row)["transcript"].split("\n\nAssistant:")[0]
+                    + "\n\nAssistant:"
+                    for row in dataset
+                ][:-TEST_SET_SIZE_PER_DATASET]
+            )
+        elif split == "test":
+            prompts.extend(
+                [
+                    dict(row)["transcript"].split("\n\nAssistant:")[0]
+                    + "\n\nAssistant:"
+                    for row in dataset
+                ][-TEST_SET_SIZE_PER_DATASET:]
+            )
+        else:
+            raise ValueError(
+                f"split must be one of 'test' or 'train'. Instead got {split}"
+            )
     elif dataset_name == "openai/webgpt_comparisons":
         dataset = load_dataset(
             dataset_name,
-            split=split,
+            split="train",
             keep_in_memory=False,
         )
-        prompts.extend(
-            [
-                "\n\nHuman: " + row["question"]["full_text"] + "\n\nAssistant:"
-                for row in dataset
-            ][:-TEST_SET_SIZE_PER_DATASET]
-        )
+        if split == "train":
+            prompts.extend(
+                [
+                    "\n\nHuman: " + row["question"]["full_text"] + "\n\nAssistant:"
+                    for row in dataset
+                ][:-TEST_SET_SIZE_PER_DATASET]
+            )
+        elif split == "test":
+            prompts.extend(
+                [
+                    "\n\nHuman: " + row["question"]["full_text"] + "\n\nAssistant:"
+                    for row in dataset
+                ][-TEST_SET_SIZE_PER_DATASET:]
+            )
+        else:
+            raise ValueError(
+                f"split must be one of 'test' or 'train'. Instead got {split}"
+            )
     elif dataset_name == "anthropic-harmless-base":
         dataset = load_dataset(
             "Anthropic/hh-rlhf",
@@ -96,7 +128,10 @@ def get_superhf_prompts(dataset_name: str, split: str = "train") -> list[str]:
             ]
         )
     else:
-        raise ValueError(f"Unknown dataset: {dataset_name}")
+        raise ValueError(
+            f"Unknown dataset: {dataset_name}. Must be one of the following "
+            + f"supported datasets: {SUPPORTED_DATASETS}"
+        )
 
     return prompts
 

@@ -34,6 +34,11 @@ function Upgrade-Requirements {
     # TODO use --resolver=backtracking once https://github.com/jazzband/pip-tools/pull/1808 is merged
     Invoke-Expression "pip-compile --upgrade -v requirements/prod.in"
     Invoke-Expression "pip-compile --upgrade -v requirements/dev.in"
+
+    # Remove pywin from dev.text by commenting out the line starting with pywin32==
+    $devText = Get-Content requirements/dev.txt
+    $devText = $devText -replace "^pywin32==", "# COMMENTED OUT TO EXCLUDE PYWIN FOR MULTIPLATFORM pywin32=="
+    $devText | Set-Content requirements/dev.txt
 }
 
 # Install frozen pip packages and PyTorch
@@ -44,6 +49,7 @@ function Install {
     Invoke-Expression "pip install --upgrade torch --extra-index-url https://download.pytorch.org/whl/cu118 --user"
     Invoke-Expression "pip install -e ."
     Invoke-Expression "mypy --install-types"
+    Invoke-Expression "pip install pywin32"
     Invoke-Expression "pre-commit install"
 }
 

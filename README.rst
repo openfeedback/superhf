@@ -30,11 +30,11 @@
 |
 
 =======
-superhf
+SuperHF
 =======
 
 
-    Add a short description here!
+    Supervised Iterative Fine-Tuning From Human Preferences
 
 
 A longer description of your project goes here...

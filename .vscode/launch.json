@@ -87,6 +87,33 @@
             "justMyCode": false
         },
         {
+            "name": "GPT Generation Script",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/experiments/openai_generations/generate_anwers.py",
+            "console": "integratedTerminal",
+            "args": [
+                "--key",
+                "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",
+                "--engine",
+                "gpt-3.5-turbo",
+                "--debug"
+            ],
+            "justMyCode": false
+        },
+        {
+            "name": "RLHF (Mock)",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/experiments/rlhf/rlhf_v1/run_rlhf.py",
+            "console": "integratedTerminal",
+            "args": [
+                "--config",
+                "${workspaceFolder}/experiments//rlhf/rlhf_v1/configs/mock.yaml",
+            ],
+            "justMyCode": false
+        },
+        {
             "name": "SHF Debug (Sweep)",
             "type": "python",
             "request": "launch",
@@ -97,6 +124,75 @@
                 "${workspaceFolder}/experiments/superhf/shf_iterative_v1/configs/debug.yaml",
                 "--sweep",
                 "${workspaceFolder}/experiments/superhf/shf_iterative_v1/sweeps/params.yaml",
+            ],
+            "justMyCode": false
+        },
+        {
+            "name": "Test set evalulation",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/experiments/evaluations/score_completions.py",
+            "console": "integratedTerminal",
+            "args": [
+                "--config",
+                "${workspaceFolder}/experiments/evaluations/configs/debug.yaml",
+            ],
+            "justMyCode": true
+        },
+        {
+            "name": "Test set evalulation (real lm)",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/experiments/evaluations/score_completions.py",
+            "console": "integratedTerminal",
+            "args": [
+                "--config",
+                "${workspaceFolder}/experiments/evaluations/configs/generate_completions_jag_pythia_eleuther_0_6.yaml",
+            ],
+            "justMyCode": true
+        },
+        {
+            "name": "LM Evals Debug",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/experiments/evaluations/run_lm_evals.py",
+            "console": "integratedTerminal",
+            "args": [
+                "--models",
+                // "EleutherAI/pythia-70m-deduped",
+                "gmukobi/model-test-pythia-70m-A@step-0001",
+                "gmukobi/model-test-pythia-70m-A",
+                // "gmukobi/model-test-pythia-70m-B",
+                "facebook/opt-125m",
+                // "gmukobi/model-test-opt-125m-C",
+                "--tasks",
+                // "math_precalc",
+                "hendrycksTest-global_facts",
+                "cb",
+                "--output_folder",
+                "debug",
+                "--batch_size",
+                "16",
+            ],
+            "justMyCode": false
+        },
+        {
+            "name": "Advanced AI Risk Evals Debug",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/experiments/evaluations/run_advanced_ai_risk_evals.py",
+            "console": "integratedTerminal",
+            "args": [
+                "--models",
+                "EleutherAI/pythia-70m-deduped",
+                "facebook/opt-125m",
+                "gpt2",
+                "EleutherAI/pythia-1b-deduped",
+                // "gmukobi/model-test-pythia-70m-A@step-0001",
+                // "gmukobi/model-test-pythia-70m-A",
+                // "gmukobi/model-test-pythia-70m-B",
+                "--batch_size",
+                "4",
             ],
             "justMyCode": false
         },

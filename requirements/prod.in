@@ -8,4 +8,12 @@ torchtyping
 peft<=0.2.0
 pynvml
 nvidia-ml-py
+peft
+sentencepiece
+huggingface-hub>=0.14.1
+urllib3>=1.26.15
+wandb
+openai
+tenacity
 # deepspeed # Breaks windows, install manually
+# install trl from openfeedback in pip install -e .

@@ -1,29 +1,0 @@
-Using custom data configuration Anthropic--hh-rlhf-c8cd8dc58ab67414
-Using custom data configuration Anthropic--hh-rlhf-c8cd8dc58ab67414
-Found cached dataset json (/sailhome/fongsu/.cache/huggingface/datasets/Anthropic___json/Anthropic--hh-rlhf-c8cd8dc58ab67414/0.0.0/0f7e3662623656454fcd2b650f34e886a7db4b9104504885bd462096cc7a9f51)
-  0%|          | 0/2 [00:00<?, ?it/s]Found cached dataset json (/sailhome/fongsu/.cache/huggingface/datasets/Anthropic___json/Anthropic--hh-rlhf-c8cd8dc58ab67414/0.0.0/0f7e3662623656454fcd2b650f34e886a7db4b9104504885bd462096cc7a9f51)
-  0%|          | 0/2 [00:00<?, ?it/s] 50%|█████     | 1/2 [00:03<00:03,  3.74s/it] 50%|█████     | 1/2 [00:03<00:03,  3.69s/it]100%|██████████| 2/2 [00:04<00:00,  1.72s/it]100%|██████████| 2/2 [00:04<00:00,  1.70s/it]100%|██████████| 2/2 [00:04<00:00,  2.03s/it]
-100%|██████████| 2/2 [00:04<00:00,  2.00s/it]
-Using pad_token, but it is not set yet.
-Using pad_token, but it is not set yet.
-Some weights of GPTNeoModel were not initialized from the model checkpoint at EleutherAI/gpt-neo-1.3B and are newly initialized: ['transformer.h.13.attn.attention.bias', 'transformer.h.21.attn.attention.bias', 'transformer.h.9.attn.attention.bias', 'transformer.h.11.attn.attention.bias', 'transformer.h.23.attn.attention.bias', 'transformer.h.5.attn.attention.bias', 'transformer.h.1.attn.attention.bias', 'transformer.h.7.attn.attention.bias', 'transformer.h.3.attn.attention.bias', 'transformer.h.15.attn.attention.bias', 'transformer.h.19.attn.attention.bias', 'transformer.h.17.attn.attention.bias']
-You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
-Some weights of GPTNeoModel were not initialized from the model checkpoint at EleutherAI/gpt-neo-1.3B and are newly initialized: ['transformer.h.17.attn.attention.bias', 'transformer.h.15.attn.attention.bias', 'transformer.h.21.attn.attention.bias', 'transformer.h.7.attn.attention.bias', 'transformer.h.9.attn.attention.bias', 'transformer.h.3.attn.attention.bias', 'transformer.h.19.attn.attention.bias', 'transformer.h.13.attn.attention.bias', 'transformer.h.5.attn.attention.bias', 'transformer.h.11.attn.attention.bias', 'transformer.h.1.attn.attention.bias', 'transformer.h.23.attn.attention.bias']
-You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
-Using custom data configuration Anthropic--hh-rlhf-161bcf33652d7a11
-Using custom data configuration Anthropic--hh-rlhf-161bcf33652d7a11
-Found cached dataset json (/sailhome/fongsu/.cache/huggingface/datasets/Anthropic___json/Anthropic--hh-rlhf-161bcf33652d7a11/0.0.0/0f7e3662623656454fcd2b650f34e886a7db4b9104504885bd462096cc7a9f51)
-  0%|          | 0/2 [00:00<?, ?it/s]Found cached dataset json (/sailhome/fongsu/.cache/huggingface/datasets/Anthropic___json/Anthropic--hh-rlhf-161bcf33652d7a11/0.0.0/0f7e3662623656454fcd2b650f34e886a7db4b9104504885bd462096cc7a9f51)
-  0%|          | 0/2 [00:00<?, ?it/s] 50%|█████     | 1/2 [00:00<00:00,  1.45it/s] 50%|█████     | 1/2 [00:00<00:00,  1.43it/s]100%|██████████| 2/2 [00:00<00:00,  2.63it/s]100%|██████████| 2/2 [00:00<00:00,  2.59it/s]
-
-Using custom data configuration Anthropic--hh-rlhf-161bcf33652d7a11
-Using custom data configuration Anthropic--hh-rlhf-161bcf33652d7a11
-Found cached dataset json (/sailhome/fongsu/.cache/huggingface/datasets/Anthropic___json/Anthropic--hh-rlhf-161bcf33652d7a11/0.0.0/0f7e3662623656454fcd2b650f34e886a7db4b9104504885bd462096cc7a9f51)
-  0%|          | 0/2 [00:00<?, ?it/s]Found cached dataset json (/sailhome/fongsu/.cache/huggingface/datasets/Anthropic___json/Anthropic--hh-rlhf-161bcf33652d7a11/0.0.0/0f7e3662623656454fcd2b650f34e886a7db4b9104504885bd462096cc7a9f51)
-  0%|          | 0/2 [00:00<?, ?it/s]100%|██████████| 2/2 [00:00<00:00, 405.17it/s]
-100%|██████████| 2/2 [00:00<00:00, 236.91it/s]
-/sailhome/fongsu/rm/lib/python3.8/site-packages/transformers/optimization.py:306: FutureWarning: This implementation of AdamW is deprecated and will be removed in a future version. Use the PyTorch implementation torch.optim.AdamW instead, or set `no_deprecation_warning=True` to disable this warning
-  warnings.warn(
-/sailhome/fongsu/rm/lib/python3.8/site-packages/transformers/optimization.py:306: FutureWarning: This implementation of AdamW is deprecated and will be removed in a future version. Use the PyTorch implementation torch.optim.AdamW instead, or set `no_deprecation_warning=True` to disable this warning
-  warnings.warn(
-slurmstepd: error: *** JOB 5990255 ON jagupard36 CANCELLED AT 2023-03-30T17:18:40 ***

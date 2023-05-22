@@ -80,7 +80,7 @@ class SuperHFTrainingArguments:
     scheduler_warmup_steps: int = 0
     kl_coefficient: float = 0.0
     validation_interval: int = 0
-    max_oom_count: int = 0
+    max_exception_count: int = 0
 
     # Dataset settings
     prompt_delimiter: str = constants.PROMPT_DELIMITER
@@ -203,10 +203,11 @@ class SuperHFTrainer:
         self.scheduler: Optional[torch.optim.lr_scheduler.LambdaLR] = None
 
         # Check that we're using a LoRA model if using a KL loss term
-        if self.training_args.kl_coefficient > 0:
-            assert hasattr(
-                self.language_model, "disable_adapter"
-            ), "KL loss term only supported for LoRA models."
+        if self.training_args.kl_coefficient >= 0:
+            assert hasattr(self.language_model, "disable_adapter"), (
+                "KL divergence only supported for LoRA models (set kl_coefficient to"
+                " -1 to disable)."
+            )
             self.kl_loss = torch.nn.KLDivLoss(reduction="batchmean", log_target=True)
 
     def train(self, prompts: list[str]) -> None:
@@ -241,7 +242,7 @@ class SuperHFTrainer:
         assert self.scheduler is not None
 
         # Track how many times we OOM and starting batch sizes
-        oom_count = 0
+        exception_count = 0
         batch_size_generating_initial = self.training_args.minibatch_size_generating
         batch_size_scoring_initial = self.training_args.minibatch_size_scoring
         batch_size_finetuning_initial = self.training_args.minibatch_size_finetuning
@@ -340,24 +341,28 @@ class SuperHFTrainer:
 
                 # Optionally, push the model to the hub
                 self.consider_pushing_to_hub(superbatch_index + 1, num_superbatches)
-            except RuntimeError as exc:
-                oom_count += 1
+            except Exception as exc:  # pylint: disable=broad-exception-caught
+                exception_count += 1
                 print(exc)
                 print(
-                    "⚠️ WARNING: Error during this training iteration. Total OOM count:"
-                    f" {oom_count}/{self.training_args.max_oom_count}"
+                    "⚠️ WARNING: Error during this training iteration. Total exception"
+                    " count:"
+                    f" {exception_count}/{self.training_args.max_exception_count}"
                 )
-                if oom_count > self.training_args.max_oom_count:
+                if exception_count > self.training_args.max_exception_count:
                     raise exc
 
-                # Reset batch sizes to starting values
-                self.training_args.minibatch_size_generating = (
-                    batch_size_generating_initial
-                )
-                self.training_args.minibatch_size_scoring = batch_size_scoring_initial
-                self.training_args.minibatch_size_finetuning = (
-                    batch_size_finetuning_initial
-                )
+                # Reset batch sizes to starting values if a CUDA error
+                if isinstance(exc, RuntimeError):
+                    self.training_args.minibatch_size_generating = (
+                        batch_size_generating_initial
+                    )
+                    self.training_args.minibatch_size_scoring = (
+                        batch_size_scoring_initial
+                    )
+                    self.training_args.minibatch_size_finetuning = (
+                        batch_size_finetuning_initial
+                    )
 
     def consider_pushing_to_hub(
         self, superbatch_index: int, total_superbatches: int
@@ -751,7 +756,7 @@ class SuperHFTrainer:
             return_tensors="pt",
             padding=True,
             truncation=True,
-            max_length=self.training_args.max_length_rm,
+            max_length=self.training_args.max_length_rm,  # TODO: Should not be rm
         )
         encodings["labels"] = encodings["input_ids"].detach().clone()  # type: ignore
 
@@ -820,7 +825,7 @@ class SuperHFTrainer:
                 loss = loss + self.training_args.inverse_loss_penalty / loss
 
             # KL divergence penalty
-            if self.training_args.kl_coefficient > 0:
+            if self.training_args.kl_coefficient >= 0:
                 # Calculate the log probabilities of the generated tokens
                 logp_online_model = torch.log_softmax(outputs.logits, dim=2)
 
@@ -849,10 +854,12 @@ class SuperHFTrainer:
                     kl_divergence = self.kl_loss(
                         logp_online_model_i, logp_original_model_i
                     )
-                    # Clamp KL to be positive to avoid negative KL gaming
-                    kl_divergence = torch.maximum(kl_divergence, torch.tensor(0.0))
                     sum_kl_divergence += kl_divergence.item()
-                    loss = loss + self.training_args.kl_coefficient * kl_divergence
+
+                    # Clamp KL to be positive to avoid negative KL gaming due to the approximation
+                    kl_divergence = torch.maximum(kl_divergence, torch.tensor(0.0))
+                    if self.training_args.kl_coefficient > 0.0:
+                        loss = loss + self.training_args.kl_coefficient * kl_divergence
 
             sum_loss += loss.item()
             self.accelerator.backward(loss)

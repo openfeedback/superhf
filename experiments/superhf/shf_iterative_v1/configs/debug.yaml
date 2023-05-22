@@ -20,8 +20,8 @@ scheduler_warmup_steps:
   desc: Number of warmup steps for the scheduler.
   value: 32
 kl_coefficient:
-  desc: Coefficient for the KL loss term added to the CLM loss. Requires LoRA. Set to 0 to disable.
-  value: 0.3
+  desc: Coefficient for the KL loss term added to the CLM loss. Requires LoRA. Set to -1 to disable (0.0 still calculates KL but adds nothing to the loss).
+  value: 0.23
 inverse_loss_penalty:
   desc: Regularizes loss by C with loss' = loss + C / loss. Set to 0 to disable.
   value: 0.0
@@ -98,13 +98,13 @@ length_penalty:
 validation_interval:
   desc: The number of superbatches to train before running the validation reward model.
   value: 2
-max_oom_count:
+max_exception_count:
   desc: The number of times to allow the model to run out of memory before stopping.
   value: 0
 hub_repo_id:
   desc: The ID of the HuggingFace Hub repo to use for storing the model. If empty, no model will be stored.
-  # value: ""
-  value: "model-test-pythia-70m-A"
+  value: ""
+  # value: "model-test-pythia-70m-A"
 push_to_hub_interval:
   desc: The number of superbatches to train before pushing to the HuggingFace Hub. If 0, no model will be stored.
   # value: 1
