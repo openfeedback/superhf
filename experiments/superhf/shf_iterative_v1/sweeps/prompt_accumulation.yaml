@@ -1,0 +1,23 @@
+program: experiments/superhf/shf_iterative_v1/run_shf_iterative.py
+method: grid
+metric:
+  goal: maximize
+  name: score_train_avg.mean
+parameters:
+  prompt_accumulation_steps:
+    values:
+      - 0
+      - 1
+      - 2
+      - 3
+      - 4
+      - 8
+      - 16
+      - 32
+      - 64
+      - 128
+  scheduler_warmup_steps:
+    # No warmup since variable num steps
+    value: 0
+  sweep_param_name:
+    value: "accum"

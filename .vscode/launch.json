@@ -10,7 +10,7 @@
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
-            "justMyCode": true
+            "justMyCode": false
         },
         {
             "name": "SHF Iter (Mock)",
@@ -37,14 +37,40 @@
             "justMyCode": false
         },
         {
-            "name": "SHF Iter (Neo-1.3B)",
+            "name": "SHF Iter (Default)",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/experiments/superhf/shf_iterative_v1/run_shf_iterative.py",
             "console": "integratedTerminal",
             "args": [
                 "--config",
-                "${workspaceFolder}/experiments/superhf/shf_iterative_v1/configs/gpt-neo-1.3B.yaml",
+                "${workspaceFolder}/experiments/superhf/shf_iterative_v1/configs/default.yaml",
+            ],
+            "justMyCode": false
+        },
+        {
+            "name": "SHF Iter (Debug)",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/experiments/superhf/shf_iterative_v1/run_shf_iterative.py",
+            "console": "integratedTerminal",
+            "args": [
+                "--config",
+                "${workspaceFolder}/experiments/superhf/shf_iterative_v1/configs/debug.yaml",
+            ],
+            "justMyCode": false
+        },
+        {
+            "name": "SHF Iter (Pythia 3B Debug Offload)",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/experiments/superhf/shf_iterative_v1/run_shf_iterative.py",
+            "console": "integratedTerminal",
+            "args": [
+                "--config",
+                "${workspaceFolder}/experiments/superhf/shf_iterative_v1/configs/debug.yaml",
+                "language_model_name=theblackcat102/pythia-3b-deduped-sft-r1",
+                "cpu_offload=True",
             ],
             "justMyCode": false
         },
@@ -55,6 +81,20 @@
             "program": "${workspaceFolder}/experiments/superhf/shf_iterative_v1/run_shf_iterative.py",
             "console": "integratedTerminal",
             "args": [
+                "--sweep",
+                "${workspaceFolder}/experiments/superhf/shf_iterative_v1/sweeps/params.yaml",
+            ],
+            "justMyCode": false
+        },
+        {
+            "name": "SHF Debug (Sweep)",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/experiments/superhf/shf_iterative_v1/run_shf_iterative.py",
+            "console": "integratedTerminal",
+            "args": [
+                "--config",
+                "${workspaceFolder}/experiments/superhf/shf_iterative_v1/configs/debug.yaml",
                 "--sweep",
                 "${workspaceFolder}/experiments/superhf/shf_iterative_v1/sweeps/params.yaml",
             ],

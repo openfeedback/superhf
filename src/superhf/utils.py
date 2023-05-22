@@ -9,6 +9,7 @@ from tqdm import tqdm
 import numpy as np
 import torch
 from pynvml import nvmlInit, nvmlDeviceGetHandleByIndex, nvmlDeviceGetMemoryInfo
+import psutil
 
 from superhf import constants
 
@@ -32,6 +33,16 @@ def separate_prompt_from_completion(text: str) -> tuple[str, str]:
 
 
 def print_gpu_utilization() -> None:
+    """Deprecated. Use print_memory_utilization instead."""
+    # Give a warning
+    print(
+        "WARNING: print_gpu_utilization is deprecated. Use print_memory_utilization"
+        " instead."
+    )
+    print_memory_utilization()
+
+
+def print_memory_utilization() -> None:
     """
     Print the GPU memory occupied using nvidia-smi. If no GPU is available, do nothing.
     """
@@ -46,10 +57,17 @@ def print_gpu_utilization() -> None:
     # get the number of GPUs
     n_gpu = torch.cuda.device_count()
 
+    # Also print CPU RAM usage
+    ram_percent = psutil.virtual_memory().percent
+    ram_gb = psutil.virtual_memory().used / 1024**3
+    output = f"💾 CPU RAM Usage: {ram_gb:.2f} GB ({ram_percent:.2f}%)"
+
     # for each GPU, get the name and the memory occupied
-    tqdm.write("GPU memory occupied:", end="")
+    output += " | GPU VRAM Usage:"
     for i in range(n_gpu):
         handle = nvmlDeviceGetHandleByIndex(i)
         info = nvmlDeviceGetMemoryInfo(handle)
-        tqdm.write(f" Device{i}: {info.used//1024**2} MB", end=";")
-    tqdm.write("")
+        vram_gb = info.used / 1024**3
+        vram_percent = info.used / info.total * 100
+        output += f" {i}: {vram_gb:.2f} GB ({vram_percent:.2f}%)"
+    tqdm.write(output)

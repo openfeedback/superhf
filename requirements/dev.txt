@@ -4,124 +4,123 @@
 #
 #    pip-compile requirements/dev.in
 #
-alabaster==0.7.13
-    # via sphinx
+accelerate==0.18.0
+    # via
+    #   -c requirements\prod.txt
+    #   peft
 appdirs==1.4.4
-    # via
-    #   esbonio
-    #   wandb
-appnope==0.1.3
-    # via
-    #   ipykernel
-    #   ipython
-astroid==2.14.2
+    # via wandb
+astroid==2.15.3
     # via pylint
 asttokens==2.2.1
     # via stack-data
-attrs==22.2.0
-    # via
-    #   -c requirements/prod.txt
-    #   cattrs
-    #   lsprotocol
-babel==2.11.0
-    # via sphinx
 backcall==0.2.0
     # via ipython
-black==23.1.0
+black==23.3.0
     # via -r requirements/dev.in
-cattrs==22.2.0
-    # via lsprotocol
 certifi==2022.12.7
     # via
-    #   -c requirements/prod.txt
+    #   -c requirements\prod.txt
     #   requests
     #   sentry-sdk
 cfgv==3.3.1
     # via pre-commit
-charset-normalizer==3.0.1
+charset-normalizer==3.1.0
     # via
-    #   -c requirements/prod.txt
+    #   -c requirements\prod.txt
     #   requests
 click==8.1.3
     # via
     #   black
     #   wandb
-comm==0.1.2
+colorama==0.4.6
+    # via
+    #   -c requirements\prod.txt
+    #   click
+    #   ipython
+    #   pylint
+    #   tqdm
+comm==0.1.3
     # via ipykernel
-debugpy==1.6.6
+debugpy==1.6.7
     # via ipykernel
 decorator==5.1.1
     # via ipython
 dill==0.3.6
     # via
-    #   -c requirements/prod.txt
+    #   -c requirements\prod.txt
     #   pylint
 distlib==0.3.6
     # via virtualenv
 docker-pycreds==0.4.0
     # via wandb
-docutils==0.19
-    # via sphinx
-esbonio==0.16.1
-    # via -r requirements/dev.in
-exceptiongroup==1.1.0
-    # via cattrs
 executing==1.2.0
     # via stack-data
-filelock==3.9.0
+filelock==3.12.0
     # via
-    #   -c requirements/prod.txt
+    #   -c requirements\prod.txt
+    #   huggingface-hub
+    #   torch
+    #   transformers
     #   virtualenv
 gitdb==4.0.10
     # via gitpython
 gitpython==3.1.31
     # via wandb
-identify==2.5.18
+huggingface-hub==0.13.4
+    # via
+    #   -c requirements\prod.txt
+    #   transformers
+identify==2.5.22
     # via pre-commit
 idna==3.4
     # via
-    #   -c requirements/prod.txt
+    #   -c requirements\prod.txt
     #   requests
-imagesize==1.4.1
-    # via sphinx
-ipykernel==6.21.2
+ipykernel==6.22.0
     # via
     #   -r requirements/dev.in
     #   ipywidgets
-ipython==8.10.0
+ipython==8.12.0
     # via
     #   -r requirements/dev.in
     #   ipykernel
     #   ipywidgets
-ipywidgets==8.0.4
+ipywidgets==8.0.6
     # via -r requirements/dev.in
 isort==5.12.0
     # via pylint
 jedi==0.18.2
     # via ipython
 jinja2==3.1.2
-    # via sphinx
-jupyter-client==8.0.3
+    # via
+    #   -c requirements\prod.txt
+    #   torch
+jupyter-client==8.2.0
     # via ipykernel
-jupyter-core==5.2.0
+jupyter-core==5.3.0
     # via
     #   ipykernel
     #   jupyter-client
-jupyterlab-widgets==3.0.5
+jupyterlab-widgets==3.0.7
     # via ipywidgets
 lazy-object-proxy==1.9.0
     # via astroid
-lsprotocol==2022.0.0a10
-    # via pygls
 markupsafe==2.1.2
-    # via jinja2
+    # via
+    #   -c requirements\prod.txt
+    #   jinja2
 matplotlib-inline==0.1.6
     # via
     #   ipykernel
     #   ipython
 mccabe==0.7.0
     # via pylint
-mypy==1.0.1
+mpmath==1.3.0
+    # via
+    #   -c requirements\prod.txt
+    #   sympy
+mypy==1.2.0
     # via -r requirements/dev.in
 mypy-extensions==1.0.0
     # via
@@ -129,120 +128,138 @@ mypy-extensions==1.0.0
     #   mypy
 nest-asyncio==1.5.6
     # via ipykernel
+networkx==3.1
+    # via
+    #   -c requirements\prod.txt
+    #   torch
 nodeenv==1.7.0
     # via pre-commit
-packaging==23.0
+numpy==1.24.2
     # via
-    #   -c requirements/prod.txt
+    #   -c requirements\prod.txt
+    #   accelerate
+    #   peft
+    #   transformers
+packaging==23.1
+    # via
+    #   -c requirements\prod.txt
+    #   accelerate
     #   black
+    #   huggingface-hub
     #   ipykernel
-    #   sphinx
+    #   peft
+    #   transformers
 parso==0.8.3
     # via jedi
-pathspec==0.11.0
+pathspec==0.11.1
     # via black
 pathtools==0.1.2
     # via wandb
-pexpect==4.8.0
-    # via ipython
+peft==0.2.0
+    # via -r requirements/dev.in
 pickleshare==0.7.5
     # via ipython
-platformdirs==3.0.0
+platformdirs==3.2.0
     # via
     #   black
     #   jupyter-core
     #   pylint
     #   virtualenv
-pre-commit==3.1.0
+pre-commit==3.2.2
     # via -r requirements/dev.in
-prompt-toolkit==3.0.37
+prompt-toolkit==3.0.38
     # via ipython
-protobuf==4.22.0
-    # via wandb
-psutil==5.9.4
+protobuf==3.20.3
     # via
-    #   -c requirements/prod.txt
-    #   ipykernel
+    #   -r requirements/dev.in
     #   wandb
-ptyprocess==0.7.0
-    # via pexpect
+psutil==5.9.5
+    # via
+    #   -c requirements\prod.txt
+    #   accelerate
+    #   ipykernel
+    #   peft
+    #   wandb
 pure-eval==0.2.2
     # via stack-data
-pygls==1.0.1
-    # via esbonio
-pygments==2.14.0
-    # via
-    #   ipython
-    #   sphinx
-pylint==2.16.2
+pygments==2.15.1
+    # via ipython
+pylint==2.17.2
     # via -r requirements/dev.in
-pyspellchecker==0.7.1
-    # via esbonio
 python-dateutil==2.8.2
     # via
-    #   -c requirements/prod.txt
+    #   -c requirements\prod.txt
     #   jupyter-client
-pytz==2022.7.1
-    # via
-    #   -c requirements/prod.txt
-    #   babel
+pywin32==306
+    # via jupyter-core
 pyyaml==6.0
     # via
-    #   -c requirements/prod.txt
+    #   -c requirements\prod.txt
+    #   accelerate
+    #   huggingface-hub
+    #   peft
     #   pre-commit
+    #   transformers
     #   wandb
-pyzmq==25.0.0
+pyzmq==25.0.2
     # via
     #   ipykernel
     #   jupyter-client
+regex==2023.3.23
+    # via
+    #   -c requirements\prod.txt
+    #   transformers
 requests==2.28.2
     # via
-    #   -c requirements/prod.txt
-    #   sphinx
+    #   -c requirements\prod.txt
+    #   huggingface-hub
+    #   transformers
     #   wandb
-sentry-sdk==1.15.0
+sentencepiece==0.1.98
+    # via -r requirements/dev.in
+sentry-sdk==1.20.0
     # via wandb
 setproctitle==1.3.2
     # via wandb
 six==1.16.0
     # via
-    #   -c requirements/prod.txt
+    #   -c requirements\prod.txt
     #   asttokens
     #   docker-pycreds
     #   python-dateutil
 smmap==5.0.0
     # via gitdb
-snowballstemmer==2.2.0
-    # via sphinx
-sphinx==6.1.3
-    # via
-    #   -r requirements/dev.in
-    #   esbonio
-sphinxcontrib-applehelp==1.0.4
-    # via sphinx
-sphinxcontrib-devhelp==1.0.2
-    # via sphinx
-sphinxcontrib-htmlhelp==2.0.1
-    # via sphinx
-sphinxcontrib-jsmath==1.0.1
-    # via sphinx
-sphinxcontrib-qthelp==1.0.3
-    # via sphinx
-sphinxcontrib-serializinghtml==1.1.5
-    # via sphinx
 stack-data==0.6.2
     # via ipython
+sympy==1.11.1
+    # via
+    #   -c requirements\prod.txt
+    #   torch
+tokenizers==0.13.3
+    # via
+    #   -c requirements\prod.txt
+    #   transformers
 tomli==2.0.1
     # via
     #   black
     #   mypy
     #   pylint
-tomlkit==0.11.6
+tomlkit==0.11.7
     # via pylint
-tornado==6.2
+torch==2.0.0
+    # via
+    #   -c requirements\prod.txt
+    #   accelerate
+    #   peft
+tornado==6.3
     # via
     #   ipykernel
     #   jupyter-client
+tqdm==4.65.0
+    # via
+    #   -c requirements\prod.txt
+    #   huggingface-hub
+    #   transformers
 traitlets==5.9.0
     # via
     #   comm
@@ -252,29 +269,33 @@ traitlets==5.9.0
     #   jupyter-client
     #   jupyter-core
     #   matplotlib-inline
-typeguard==2.13.3
+transformers==4.28.1
     # via
-    #   -c requirements/prod.txt
-    #   pygls
-types-tqdm==4.64.7.16
+    #   -c requirements\prod.txt
+    #   peft
+types-pyyaml==6.0.12.9
+    # via -r requirements/dev.in
+types-tqdm==4.65.0.1
     # via -r requirements/dev.in
 typing-extensions==4.5.0
     # via
-    #   -c requirements/prod.txt
+    #   -c requirements\prod.txt
     #   astroid
+    #   huggingface-hub
     #   mypy
-urllib3==1.26.14
+    #   torch
+urllib3==1.26.15
     # via
-    #   -c requirements/prod.txt
+    #   -c requirements\prod.txt
     #   requests
     #   sentry-sdk
-virtualenv==20.19.0
+virtualenv==20.21.1
     # via pre-commit
-wandb==0.13.10
+wandb==0.15.0
     # via -r requirements/dev.in
 wcwidth==0.2.6
     # via prompt-toolkit
-widgetsnbextension==4.0.5
+widgetsnbextension==4.0.7
     # via ipywidgets
 wrapt==1.15.0
     # via astroid

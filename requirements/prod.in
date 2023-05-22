@@ -5,6 +5,7 @@ datasets
 accelerate
 torch>=1.13.1
 torchtyping
+peft<=0.2.0
 pynvml
 nvidia-ml-py
-deepspeed
+# deepspeed # Breaks windows, install manually
