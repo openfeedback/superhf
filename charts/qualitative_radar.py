@@ -99,24 +99,16 @@ def main() -> None:
     axis.set_theta_offset(math.pi / 2)
     axis.set_theta_direction(-1)
 
-    # Draw one axe per variable + add labels
-    plt.xticks(angles[:-1], categories)
-
     # Draw ylabels
     axis.set_rlabel_position(0)
-    # plt.yticks([10, 20, 30], ["10", "20", "30"], color="grey", size=7)
+
+    # Set y-axis limits
     plt.ylim(0, 1.0)
-    # plt.yticks[0.1,]
 
     # Move x-axis labels away from the plot
     plt.tick_params(axis="x", pad=15)
 
-    # ------- PART 2: Add plots
-
-    # Plot each individual = each line of the data
-    # I don't make a loop, because plotting more than 3 groups makes the chart unreadable
-
-    # Ind1
+    # Add plots to the radar chart
     for model_name in dataframe["group"]:
         values = (
             dataframe[dataframe["group"] == model_name]
@@ -129,21 +121,21 @@ def main() -> None:
         axis.plot(angles, values, linewidth=3, linestyle=line_style, label=model_name)
         if SHOW_LIMITED_MODELS:
             axis.fill(angles, values, alpha=0.15)
-    # values = datafame.loc[0].drop("group").values.flatten().tolist()
-    # values += values[:1]
-    # ax.plot(angles, values, linewidth=1, linestyle="solid", label="group A")
-    # # ax.fill(angles, values, "b", alpha=0.1)
-
-    # # Ind2
-    # values = datafame.loc[1].drop("group").values.flatten().tolist()
-    # values += values[:1]
-    # ax.plot(angles, values, linewidth=1, linestyle="solid", label="group B")
-    # ax.fill(angles, values, "r", alpha=0.1)
 
     # Add legend
     plt.legend(loc="upper right", bbox_to_anchor=(0.1, 1))
     if SHOW_LIMITED_MODELS:
         plt.legend()
+
+    # Set the title of the plot
+    plt.title("Normalized Qualitative Ratings using GPT-4")
+
+    # Save the plot
+    save_plot(OUTPUT_FILE)
+
+
+if __name__ == "__main__":
+    main()
 
     # Show the graph
     # plt.show()

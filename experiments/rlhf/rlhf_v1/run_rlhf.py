@@ -1,18 +1,19 @@
 """
 Script for running RLHF to compare with SuperHF.
 
-Utilizes hugging face pipelines for the reward model, and PPO trainer from TRL
-to train the language model. If a large reward model, does manual generation
+Utilizes the PPO trainer from TRL to train the language model.
+If using our custom reward model, calls the model's generate function dirctly.
 
 Implements LoRA based on this guide -
-https://github.com/lvwerra/trl/blob/52fecee8839ad826ad1e6c83a95c99a4116e98d2/
-examples/sentiment/scripts/gpt-neox-20b_peft/gpt-neo-20b_sentiment_peft.py
+https://github.com/lvwerra/trl/blob/52fecee8839ad826ad1e6c83a95c99a4116e98d2 \
+/examples/stack_llama/scripts/rl_training.py
 
 Example usage:
     python run_rlhf.py \
         --config configs/rlhf_v1.yaml \
-        --notes "Testing RLHF with TRL"
-        --sweep_id xxxxx
+        --notes "Testing RLHF with TRL" \
+        --sweep_id xxxxx \
+        --sweep_param_name kl \
 """
 
 import os
@@ -64,6 +65,11 @@ T = TypeVar("T")
 WANDB_ENTITY_NAME = "stanfordaialignment"
 WANDB_PROJECT_NAME = "rlhf-trl-v1"
 MAX_OOM_ALLOWED = 5
+
+DEFAULT_PAD_TOKEN = "[PAD]"
+DEFAULT_EOS_TOKEN = "</s>"
+DEFAULT_BOS_TOKEN = "</s>"
+DEFAULT_UNK_TOKEN = "</s>"
 
 
 # We first define the configuration of the experiment, defining the model, the dataset,
@@ -122,7 +128,6 @@ def build_dataset(
         a pytorch dataset that implements the __getitem__ and __len__ methods.
         PPO trainer converts this to a pytorch dataloader.
         torch.utils.data.Dataset
-    # TODO move into src/data.py
     """
     set_seed(seed)
     prompts: list[str] = []
@@ -216,7 +221,7 @@ def load_reward_model(
         reward_model_train = reward_model_name
         reward_model_pipe = pipeline(
             model=reward_model_name,
-            device=device,  # TODO move device out of here for style reasons.
+            device=device,
         )
     return reward_model_train, reward_model_pipe
 
@@ -284,11 +289,19 @@ def get_configs():
         language_tokenizer = LlamaTokenizer.from_pretrained(
             ppo_config.model_name, padding_side="left"
         )
+        language_tokenizer.add_special_tokens(
+            {
+                "eos_token": DEFAULT_EOS_TOKEN,
+                "bos_token": DEFAULT_BOS_TOKEN,
+                "unk_token": DEFAULT_UNK_TOKEN,
+                "pad_token": DEFAULT_PAD_TOKEN,
+            }
+        )
     else:
         language_tokenizer = AutoTokenizer.from_pretrained(
             ppo_config.model_name, padding_side="left"
         )
-
+        language_tokenizer.pad_token = language_tokenizer.eos_token
     # We then define the arguments to pass to the `generate` function. These arguments
     # are passed to the `generate` function of the PPOTrainer, which is a wrapper around
     # the `generate` function of the trained model.
@@ -298,7 +311,7 @@ def get_configs():
         "top_k": 0.0,
         "top_p": wandb.config.top_p,
         "do_sample": True,
-        "pad_token_id": language_tokenizer.eos_token_id,
+        "pad_token_id": language_tokenizer.pad_token_id,
         "max_new_tokens": wandb.config.max_new_tokens,
     }
     # loop over extra_generation_args two at a time
@@ -353,7 +366,9 @@ def score_completions(
 
 def main(script_args: ScriptArguments):
     """
-    Main function
+    Main function. Downloads the prompt dataset, reads the config file, and then
+    executes the main PPO training loop. For the gradient updates, it uses the
+    trl library's PPOTrainer class.
     """
     # pylint: disable=too-many-locals
     # pylint: disable=too-many-statements
@@ -406,13 +421,11 @@ def main(script_args: ScriptArguments):
         model_ref = AutoModelForCausalLMWithValueHead.from_pretrained(
             ppo_config.model_name
         )
-    # TODO: potential optimization: maybe the value head isn't loaded in peft and it should be
     language_model = AutoModelForCausalLMWithValueHead.from_pretrained(language_model)
 
     # set seed before initializing value head for deterministic eval
     dataset = build_dataset(
         wandb.config.dataset_names,
-        # language_tokenizer,
         max_prompt_char_length=wandb.config.max_prompt_char_length,
         debug_max_prompts=wandb.config.debug_max_prompts,
         conversation_prompt=wandb.config.conversation_prompt,
@@ -501,6 +514,7 @@ def main(script_args: ScriptArguments):
     for epoch, batch in tqdm(
         enumerate(ppo_trainer.dataloader), total=len(ppo_trainer.dataloader)
     ):
+        # main RLHF Loop
         try:
             tqdm.write(f"Epoch {epoch}")
             print_memory_utilization()
@@ -607,8 +621,11 @@ def main(script_args: ScriptArguments):
                     "batch": (
                         ppo_config.batch_size * ppo_config.gradient_accumulation_steps
                     ),
-                    "pythia": ppo_config.model_name,
                 }
+                if "pythia" == script_args.sweep_param_name:
+                    param_name_to_value["pythia"] = (
+                        ppo_config.model_name.split("-")[1],
+                    )
                 # get the param value specified by the sweep
                 param_value = param_name_to_value[script_args.sweep_param_name]
                 repo_name += f"-{script_args.sweep_param_name}-{param_value}"
