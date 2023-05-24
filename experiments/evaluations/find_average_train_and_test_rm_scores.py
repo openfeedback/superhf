@@ -8,28 +8,24 @@ from tabulate import tabulate
 
 import numpy as np
 
+from evaluation_utils import rename_model_name, reformat_folder_name
+
 TRAIN_FOLDER = "experiments/evaluations/train_scores"
 TEST_FOLDER = "experiments/evaluations/test_scores"
 
 MODELS = [
     "alpaca_7b",
-    # "llama-7b",
+    "llama-7b",
     # "sft-on-preferences-v1",
     "rlhf-v3-lr-5.0e-6-batch-16@gold-run",
-    "test-save-alpaca@model-2048-prompts-batch-size-8",
-    "shf-7b-gold-v1@step-0064",
-    "shf-7b-gold-v1@step-8192",
-    # "shf-7b-default",
+    # "test-save-alpaca@model-2048-prompts-batch-size-8",
+    # "shf-7b-gold-v1@step-0064",
+    # "shf-7b-gold-v1@step-8192",
+    "shf-7b-default",
+    "shf-pythia-12B@v3",
+    "pythia-12B-deduped",
     # "pythia-6.9B-deduped",
 ]
-
-
-def reformat_folder_name(name):
-    """
-    Given a folder name in format experiments/evaluations/train_scores
-    reformat to just 'test' or 'train'
-    """
-    return name.split(os.path.sep, maxsplit=2)[2].split("_")[0]
 
 
 def main() -> None:
@@ -46,6 +42,7 @@ def main() -> None:
             "Max",
         ]
 
+        # pylint: disable=duplicate-code
         for model in MODELS:
             model_scores = []
             scores_per_dataset = {}
@@ -56,10 +53,8 @@ def main() -> None:
                     scores_per_dataset[dataset] = []
                 scores_per_dataset[dataset].extend(scores_file[dataset])
                 model_scores.extend(scores_file[dataset])
-            if "test-save-alpaca" in model:
-                model = "rlhf-gold-v1"
-            elif "rlhf-v3-lr-5.0e-6-batch-16@gold-run" == model:
-                model = "rlhf-gold-final-v3"
+
+            model = rename_model_name(model)
             table_data.append(
                 [
                     model,

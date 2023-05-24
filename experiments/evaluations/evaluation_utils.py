@@ -57,3 +57,28 @@ def create_file_dir_if_not_exists(file_path: str) -> None:
     file_dir = os.path.dirname(file_path)
     if not os.path.exists(file_dir):
         os.makedirs(file_dir)
+
+
+def rename_model_name(name):
+    """
+    Renames model names for the graphs in the appendix to match model names in the paper.
+    """
+    if name == "shf-pythia-12B@v3":
+        name = "shf-pythia-12B"
+    elif "test-save-alpaca" in name:
+        name = "rlhf-gold-v1"
+    elif "rlhf-v3-lr-5.0e-6-batch-16@gold-run" == name:
+        name = "RLHF (Alpaca)"
+    elif "shf-7b-default" == name:
+        name = "SuperHF (Alpaca)"
+    elif "sft-on-preferences-v1" == name:
+        name = "FTP (Alpaca)"
+    return name
+
+
+def reformat_folder_name(name):
+    """
+    Given a folder name in format experiments/evaluations/train_scores
+    reformat to just 'test' or 'train'
+    """
+    return name.split(os.path.sep, maxsplit=2)[2].split("_")[0]

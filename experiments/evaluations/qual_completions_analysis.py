@@ -15,9 +15,9 @@ MODELS = [
     "rlhf-v3-lr-5.0e-6-batch-16@gold-run",
     "test-save-alpaca@model-2048-prompts-batch-size-8",
     # "shf-7b-gold-v1",
-    "shf-7b-gold-v1@step-0064",
-    "shf-7b-gold-v1@step-1024",
-    "shf-7b-gold-v1@step-8192",
+    # "shf-7b-gold-v1@step-0064",
+    # "shf-7b-gold-v1@step-1024",
+    # "shf-7b-gold-v1@step-8192",
     "shf-pythia-12B@v3",
     "pythia-12B-deduped",
     "shf-7b-default",
@@ -32,6 +32,7 @@ def main():
     """
     dataset_means = {}
 
+    # pylint: disable=duplicate-code
     for model in MODELS:
         # load completions
         with open(

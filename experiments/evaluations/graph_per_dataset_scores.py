@@ -13,33 +13,27 @@ import plotly.graph_objects as go
 
 import numpy as np
 
+from evaluation_utils import rename_model_name, reformat_folder_name
+
 TRAIN_FOLDER = "experiments/evaluations/train_scores"
 TEST_FOLDER = "experiments/evaluations/test_scores"
 ERROR_BARS = False
 
 MODELS = [
+    "llama-7b",
     "alpaca_7b",
-    # "llama-7b",
-    # "sft-on-preferences-v1",
+    "sft-on-preferences-v1",
     "rlhf-v3-lr-5.0e-6-batch-16@gold-run",
-    "test-save-alpaca@model-2048-prompts-batch-size-8",
-    "shf-7b-gold-v1",
-    "shf-7b-gold-v1@step-0064",
-    "shf-7b-gold-v1@step-1024",
-    "shf-7b-gold-v1@step-8192",
-    "shf-pythia-12B@v3",
-    "pythia-12B-deduped",
-    # "shf-7b-default",
+    # "test-save-alpaca@model-2048-prompts-batch-size-8",
+    # "shf-7b-gold-v1",
+    # "shf-7b-gold-v1@step-0064",
+    # "shf-7b-gold-v1@step-1024",
+    # "shf-7b-gold-v1@step-8192",
+    # "shf-pythia-12B@v3",
+    # "pythia-12B-deduped",
+    "shf-7b-default",
     # "pythia-6.9B-deduped",
 ]
-
-
-def reformat_folder_name(name):
-    """
-    Given a folder name in format experiments/evaluations/train_scores
-    reformat to just 'test' or 'train'
-    """
-    return name.split(os.path.sep, maxsplit=2)[2].split("_")[0]
 
 
 def create_bar_plot(folder):
@@ -48,6 +42,7 @@ def create_bar_plot(folder):
     """
     data = []
     datasets = []
+    # pylint: disable=duplicate-code
     for model in MODELS:
         model_scores = []
         scores_per_dataset = {}
@@ -60,10 +55,8 @@ def create_bar_plot(folder):
                 scores_per_dataset[dataset] = []
             scores_per_dataset[dataset].extend(scores_file[dataset])
             model_scores.extend(scores_file[dataset])
-        if "test-save-alpaca" in model:
-            model = "rlhf-gold-v1"
-        elif "rlhf-v3-lr-5.0e-6-batch-16@gold-run" == model:
-            model = "rlhf-gold-final-v3"
+
+        model = rename_model_name(model)
         mean_scores = [
             (
                 np.mean(scores_per_dataset[dataset]).round(2)
@@ -94,6 +87,7 @@ def create_bar_plot(folder):
 
     fig = go.Figure(data=data)
     fig.update_layout(
+        font={"size": 18},
         barmode="group",
         xaxis_title="Dataset",
         yaxis_title="Mean Score",
