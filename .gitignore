@@ -69,3 +69,4 @@ artifact
 artifacts
 # Slurm output files
 *.out
+**-job-*.out # test commment to push from cluster

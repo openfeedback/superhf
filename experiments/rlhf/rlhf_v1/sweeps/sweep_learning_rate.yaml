@@ -5,8 +5,12 @@ metric:
 parameters:
   learning_rate:
     values:
-      - 0.01
-      - 0.001
-      - 1.0e-4
       - 1.0e-5
+      - 5.0e-5
+      - 1.0e-6
+      - 1.0e-4
+      - 1.0e-3
 program: experiments/superhf/rlhf/rlhf_v1/run_rlhf.py
+sweep_param_name:
+    values:
+      - "lr"

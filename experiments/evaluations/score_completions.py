@@ -1,35 +1,56 @@
 """
 This is a file for running a reward model to score a text file of completions
+
+Language model naming conventions:
+    if @ is in it, what follows is a revision / branch name
+    if "{N}" is in it, then the name must be author/model_name-{N} where
+        we search the hub for all models of this form under author's account
 """
 
 import argparse
 import os
 import json
 from typing import Optional, List, Dict, Any
+import random
+import requests
 import yaml
 
 from transformers import (
     PreTrainedTokenizer,
     PreTrainedModel,
+    GPT2Tokenizer,
 )
 import torch
+from torch.utils.data import DataLoader, TensorDataset
 
 from accelerate import Accelerator, find_executable_batch_size
 
 from model_loading import load_eval_model_and_tokenizer
+from evaluation_utils import trim_generations
+
+
 from tqdm import tqdm
-
-
 import wandb
 
 from superhf.data import get_superhf_prompts
-from superhf.utils import print_gpu_utilization
+from superhf.utils import print_memory_utilization
 from superhf.training import SuperHFTrainingArguments, SuperHFTrainer
 from superhf.filtering import CompletionFilterTopK
 from superhf.mocking import MockRewardModel
 
+# Default parameters
 WANDB_ENTITY_NAME = "stanfordaialignment"
 WANDB_PROJECT_NAME = "rlhf-trl-v1"
+
+# folder to be used for saving and loading test set eval data
+# TEST_COMPLETIONS_DIR = "test_completions"
+# TEST_SCORES_DIR = "test_scores"
+
+# Saved conversation prompt
+CONVERSATION_PROMPT = (
+    "A human user sends a message, and a helpful and harmless AI assistant responds."
+)
+VERBOSE = False
 
 
 def parse_args() -> argparse.Namespace:
@@ -45,11 +66,26 @@ def parse_args() -> argparse.Namespace:
         default=None,
         help="Path to the config file containing the completions to score",
     )
+    parser.add_argument(
+        "--completions-dir",
+        type=str,
+        default="test_completions",
+        help="Directory name where the generations will be saved and read from,",
+    )
+    parser.add_argument(
+        "--scores-dir",
+        type=str,
+        default="test_scores",
+        help="The directory name where scores will be saved to.",
+    )
     args = parser.parse_args()
     with open(args.config, "r", encoding="utf-8") as file:
         yaml_args = yaml.safe_load(file)
 
-    return yaml_args
+    values_dict = {k: v["value"] for k, v in yaml_args.items()}
+    values_dict["completions_dir"] = args.completions_dir
+    values_dict["scores_dir"] = args.scores_dir
+    return argparse.Namespace(**values_dict)
 
 
 def load_completions_wandb(
@@ -131,6 +167,7 @@ def read_openai_completions(input_file: str) -> list[str]:
 
 
 def score_completions(
+    starting_batch_size_rm: int,
     reward_model: PreTrainedModel,
     reward_model_tokenizer: PreTrainedTokenizer,
     completions: List[str],
@@ -159,64 +196,83 @@ def score_completions(
     completions_tokenized = completions_tokenized.to(reward_model.device)
     tqdm.write(f"Moved completions to {reward_model.device}.")
     assert reward_model.device != "cpu", "Reward model must be on GPU."
+
+    # Create a DataLoader
+    tensor_dataset = TensorDataset(
+        completions_tokenized["input_ids"], completions_tokenized["attention_mask"]
+    )
+    data_loader = DataLoader(tensor_dataset, batch_size=starting_batch_size_rm)
+
+    scores = []
     with torch.no_grad():
         tqdm.write("Scoring completions.")
-        scores = reward_model(**completions_tokenized, **reward_model_kwargs)
-    if not isinstance(scores, torch.Tensor):
-        scores: torch.Tensor = scores.logits
-    return scores
+        for batch in tqdm(data_loader, desc="scoring completion batch"):
+            input_ids, attention_mask = batch
+            model_inputs = {
+                "input_ids": input_ids,
+                "attention_mask": attention_mask,
+                **reward_model_kwargs,
+            }
+            batch_scores = reward_model(**model_inputs)
+            if not isinstance(batch_scores, torch.Tensor):
+                batch_scores: torch.Tensor = batch_scores.logits
+            scores.append(batch_scores)
+    return torch.cat(scores), starting_batch_size_rm
 
 
-def generate_completions_from_lm(args):
+def generate_completions_from_lm(
+    starting_batch_size,
+    language_model,
+    prev_language_model,
+    prev_lm_tokenizer,
+    prompts_dict,
+):
     """
-    Given a language model, loads in test prompts and then generates completions
+    Given a language model and test prompts and then generates completions
+
+    Args:
+        starting_batch_size: The batch size to use for the first batch.
+        language_model: The language model to use.
+        prev_language_model: The previous language model to use.
+        prev_lm_tokenizer: The previous language model tokenizer to use.
+        prompts_dict: The prompts to use.
+
+    Returns:
+        A list of completions and cached model and tokenizer, as well as a potentially
+        reduced batch size due to cuda oom.
     """
     # pylint: disable=too-many-locals
-    # Get the prompt dataset
-    prompts: list[str] = []
-    for dataset_name in wandb.config.prompt_dataset_names:
-        prompts.extend(get_superhf_prompts(dataset_name, split="test"))
+    print_memory_utilization()
 
-    # Filter out prompts that are too long
-    old_prompt_count = len(prompts)
-    prompts = [
-        prompt
-        for prompt in prompts
-        if len(prompt) < wandb.config.max_prompt_char_length
-    ]
-    print(
-        f"Filtered {old_prompt_count - len(prompts)} prompts over "
-        f"{wandb.config.max_prompt_char_length} chars."
-    )
-    print(f"Loaded {len(prompts)} prompts.")
-    print_gpu_utilization()
-
-    language_model_path = args.language_model.split("@")[0]
+    language_model_path = language_model.split("@")[0]
     try:
-        revision = args.language_model.split("@")[1]
+        revision = language_model.split("@")[1]
     except IndexError:
         revision = None
     language_model, language_tokenizer = load_eval_model_and_tokenizer(
-        language_model_path, revision=revision
+        model_path=language_model_path,
+        prev_model=prev_language_model,
+        prev_tokenizer=prev_lm_tokenizer,
+        revision=revision,
+        model_type="language",
+        tokenizer_padding_side="left",
+        torch_dtype=torch.bfloat16,  # kwargs
     )
-    print_gpu_utilization()
-
-    # Check for unix
-    if os.name == "posix":
-        print("Compiling models...")
-        print(type(language_model))
-        language_model = torch.compile(language_model)
-        print("Compiled models.")
-        print_gpu_utilization()
+    print_memory_utilization()
 
     training_args = SuperHFTrainingArguments(
-        minibatch_size_generating=16, max_new_tokens=128, temperature=0.7
+        max_new_tokens=128,
+        temperature=0.7,
+        kl_coefficient=-1,
+        superbatch_size=1,  # we don't want to duplicate prompts
+        minibatch_size_generating=starting_batch_size,
     )
     # this completion filter is not used because we do not call trainer.train
     completion_filter = CompletionFilterTopK(1)
 
     reward_model_train = MockRewardModel()
-    reward_tokenizer_train = None  # load_reward_tokenizer("mock")
+    # load gpt2 tokenizer
+    reward_tokenizer_train = GPT2Tokenizer.from_pretrained("gpt2")
 
     trainer = SuperHFTrainer(
         language_model=language_model,
@@ -229,17 +285,296 @@ def generate_completions_from_lm(args):
         training_args=training_args,
     )
 
-    if prompt_batch_size == 0:
-        prompt_batch_size = len(prompts)
+    completions_dict = {}
+    for dataset_name in tqdm(prompts_dict.keys(), desc="Datasets"):
+        prompts = prompts_dict[dataset_name]
+        if starting_batch_size == 0:
+            starting_batch_size = len(prompts)
 
-    completions_raw = find_executable_batch_size(
-        trainer.generate_completions,
+        completions_raw = find_executable_batch_size(
+            trainer.generate_completions,
+            trainer.training_args.minibatch_size_generating,
+        )(prompts)
+
+        tqdm.write(
+            f"The length of completions is {len(completions_raw)} for dataset"
+            f" {dataset_name}"
+        )
+        print_memory_utilization()
+        completions_filtered = trim_generations(completions_raw)
+        completions_dict[dataset_name] = completions_filtered
+
+    return (
+        completions_dict,
+        language_model,
+        language_tokenizer,
         trainer.training_args.minibatch_size_generating,
-    )(prompts)
+    )
 
-    print(f"The length of completions is {len(completions_raw)}")
 
-    return completions_raw
+def load_prompts_dictionary(args):
+    """
+    Args:
+        prompt_dataset_names: the list of dataets to load
+    Returns:
+        A dicitonary with the dataset name: list of prompts
+    """
+    # Get the prompt dataset
+    completions_dict = {}
+    for dataset_name in args.prompt_dataset_names:
+        prompts = get_superhf_prompts(dataset_name, split="test")
+
+        # Filter out prompts that are too long
+        old_prompt_count = len(prompts)
+        prompts = [
+            prompt for prompt in prompts if len(prompt) < args.max_prompt_char_length
+        ]
+        try:
+            max_prompts_per_dataset = args.max_prompts_per_dataset
+        except AttributeError:
+            max_prompts_per_dataset = 0
+        if max_prompts_per_dataset > 0:
+            if args.randomize_prompts_subset:
+                prompts = random.sample(prompts, max_prompts_per_dataset)
+            else:
+                prompts = prompts[:max_prompts_per_dataset]
+        print(
+            f"Filtered {old_prompt_count - len(prompts)} prompts over "
+            f"{args.max_prompt_char_length} chars from dataset {dataset_name}."
+            f"max_prompts_per_dataset={max_prompts_per_dataset}"
+        )
+        print(f"Loaded {len(prompts)} prompts for dataset {dataset_name}")
+        completions_dict[dataset_name] = prompts
+    return completions_dict
+
+
+def load_completions_json(completions_file):
+    """
+    Loads completions from a json file
+
+    Args:
+        completions_file: the json file to load
+
+    Returns:
+        A dictionary with dataset name: list of completions
+    """
+    with open(completions_file, "r", encoding="utf-8") as file:
+        completions_dict = json.load(file)
+    return completions_dict
+
+
+def save_completions(completions_dict, filename):
+    """
+    Saves completions as a json to TEST_COMPLETIONS_DIR
+
+    Args:
+        completions_dict:
+
+    Returns:
+        The filename of where the completions were saved as a json file
+    """
+    with open(filename, "w", encoding="utf-8") as file:
+        json.dump(completions_dict, file)
+        file.write("\n")
+    tqdm.write(f"Saved completions to {filename}")
+    return filename
+
+
+def save_scores(scores_dict, filename) -> str:
+    """
+    Saves scores as a json to TEST_SCORES_DIR
+    """
+    tqdm.write(f"Saving scores to {filename}")
+    with open(filename, "w", encoding="utf-8") as file:
+        json.dump(scores_dict, file)
+        file.write("\n")
+    return filename
+
+
+def get_all_models(model_name: str, model_interval: tuple[int, int]) -> List[str]:
+    """
+    Uses the hugging face api to get all the models that match the model name,
+    and that fall wihin the model interval. Assumes model_name is of the form
+
+    Args:
+        model_name: the name of the model to get
+        model_interval: the first model to grab and the last one, zero indexed
+                        if (0,0), then load all models
+
+    Returns:
+        A list of model names with length model_interval[1] - model_interval[0]
+        or if there is no placeholder {N}, just the model name
+    """
+    # Define the base URL for the Hugging Face Model Hub API
+    base_url = "https://huggingface.co/api/"
+
+    author, model_base_name = model_name.split("{N}")[0].split("/")
+    path_pattern = author + "/" + model_base_name
+
+    query_params = {"author": author}
+    response = requests.get(base_url + "models", params=query_params, timeout=20)
+    models_list = response.json()
+
+    valid_models = [
+        model["modelId"] for model in models_list if path_pattern in model["modelId"]
+    ]
+    valid_models.sort()
+
+    if model_interval[0] == 0 and model_interval[1] == 0:
+        model_interval = (0, len(valid_models))
+
+    loaded_model_names = valid_models[model_interval[0] : model_interval[1]]
+    print(f"Loaded model names {loaded_model_names}")
+    return loaded_model_names
+
+
+def remove_extension(dir_names: List[str]) -> List[str]:
+    """
+    Given a list of directory names reformat them to remove the .json
+    """
+
+    dir_names = [".".join(dir_name.split(".")[:-1]) for dir_name in dir_names]
+    return dir_names
+
+
+def generate_all_completions(
+    args: argparse.Namespace,
+    language_model_names,
+    test_completions_dir: str,
+) -> None:
+    """
+    loop over all the language models and generate completions for each of them
+    """
+    new_language_model_names = []
+    for name in language_model_names:
+        if "{N}" in name:
+            new_language_model_names.extend(
+                get_all_models(name, args.language_model_interval)
+            )
+        else:
+            new_language_model_names.append(name)
+    language_model_names = new_language_model_names
+    # print(f"Current directory is {os.getcwd()}")
+    if not os.path.exists(test_completions_dir):
+        os.makedirs(test_completions_dir)
+    already_generated_completions = os.listdir(test_completions_dir)
+    already_generated_completions = remove_extension(already_generated_completions)
+
+    # if args.wandb_run_id is not None:
+    #     # grab completions from wandb
+    #     completions_batched, scores_batched = load_completions_wandb(
+    #         entity_name=args.wandb_entity_name,
+    #         project_name=args.wandb_project_name,
+    #         run_id=args.wandb_run_id,
+    #     )
+    #     for batch in completions_batched:
+    #         completions.extend(batch)
+    #     for batch_scores in scores_batched:
+    #         scores.extend(batch_scores)
+    starting_batch_size_lm = args.starting_batch_size_lm
+    prompts_dict = load_prompts_dictionary(args)
+    prev_model = None
+    prev_tokenizer = None
+    for language_model_name in tqdm(language_model_names, desc="Language models"):
+        #  it does, don't generate here
+        language_model_base_name = language_model_name.split("/")[-1]
+        if language_model_base_name in already_generated_completions:
+            tqdm.write(
+                "Already generated completions for language model"
+                f" {language_model_name}"
+            )
+            continue
+        tqdm.write(f"Generating completions with language model {language_model_name}")
+        completions_dict, prev_model, prev_tokenizer, starting_batch_size_lm = (
+            generate_completions_from_lm(
+                starting_batch_size=starting_batch_size_lm,
+                language_model=language_model_name,
+                prev_language_model=prev_model,
+                prev_lm_tokenizer=prev_tokenizer,
+                prompts_dict=prompts_dict,
+            )
+        )
+        filename = os.path.join(
+            test_completions_dir, f"{language_model_base_name}.json"
+        )
+        save_completions(completions_dict, filename)
+
+
+def score_all_completions(args, script_path_dir: str, test_completions_dir: str):
+    """
+    Run the reward model in scoring mode
+    """
+    # pylint: disable=too-many-locals
+    scores_dict = {}
+    starting_batch_size_rm = args.starting_batch_size_rm
+    # we are in scoring mode, so score completions
+    accelerator = Accelerator()
+    try:
+        torch_dtype_lm_str = args.lm_dtype
+        torch_dtype_lm = getattr(torch, torch_dtype_lm_str)
+    except AttributeError:
+        torch_dtype_lm = torch.bfloat16
+
+    try:
+        trim_completions = args.trim_completions
+    except AttributeError:
+        trim_completions = False
+    reward_model, reward_tokenizer = load_eval_model_and_tokenizer(
+        args.reward_model, model_type="reward", torch_dtype=torch_dtype_lm
+    )
+    if not isinstance(reward_model, str):
+        reward_model = accelerator.prepare(reward_model)
+    print_memory_utilization()
+
+    already_generated_completions = os.listdir(test_completions_dir)
+    already_generated_completions = remove_extension(already_generated_completions)
+    test_scores_dir = os.path.join(script_path_dir, args.scores_dir)
+    if not os.path.exists(test_scores_dir):
+        os.makedirs(test_scores_dir)
+    already_generated_scores = os.listdir(test_scores_dir)
+    already_generated_scores = remove_extension(already_generated_scores)
+    for language_model_name in tqdm(
+        already_generated_completions, desc="Scoring per language models"
+    ):
+        if language_model_name in already_generated_scores:
+            tqdm.write(
+                f"Already generated scores for language model {language_model_name}"
+            )
+            continue
+        tqdm.write(f"Scoring completions for language model {language_model_name}")
+        language_model_base_name = language_model_name.split(os.path.sep)[-1]
+        completions_dict = load_completions_json(
+            os.path.join(test_completions_dir, f"{language_model_base_name}.json")
+        )
+        for dataset_name in tqdm(args.prompt_dataset_names, desc="Datasets"):
+            completions = completions_dict[dataset_name]
+            if trim_completions:
+                completions = trim_generations(completions)
+            if (
+                CONVERSATION_PROMPT not in completions[0]
+                and CONVERSATION_PROMPT not in completions[10]
+            ):
+                tqdm.write(
+                    "Adding conversation prompt to completions for dataset"
+                    f" {dataset_name}"
+                )
+                completions = [
+                    CONVERSATION_PROMPT + completion for completion in completions
+                ]
+            tqdm.write(
+                f"Here is the first completion that we are scoriing: {completions[0]!r}"
+            )
+
+            scores, starting_batch_size_rm = find_executable_batch_size(
+                score_completions, starting_batch_size_rm
+            )(
+                reward_model=reward_model,
+                reward_model_tokenizer=reward_tokenizer,
+                completions=completions,
+            )
+            scores_dict[dataset_name] = scores.tolist()
+        filename = os.path.join(test_scores_dir, f"{language_model_base_name}.json")
+        save_scores(scores_dict, filename)
 
 
 def main() -> None:
@@ -250,206 +585,31 @@ def main() -> None:
     # pylint: disable=too-many-statements
     # pylint: disable=too-many-branches
     args = parse_args()
+    random.seed(0)
 
-    completions: List[str] = []
-    scores: List[float] = []
-    if args.completions_file is not None:
-        if args.openai:
-            completions = read_openai_completions(args.completions_file)
-        else:
-            # raise an unimplemented error
-            raise NotImplementedError(
-                "Need to implement general loading from a file. "
-                " Specify openai flag otherwsie"
-            )
+    try:
+        language_model_names = args.language_model_names
+    except AttributeError:
+        language_model_names = None
+    try:
+        scoring_mode = args.scoring_mode
+    except AttributeError:
+        scoring_mode = False
 
-    else:
-        if args.wandb_run_id is not None:
-            completions_batched, scores_batched = load_completions_wandb(
-                entity_name=args.wandb_entity_name,
-                project_name=args.wandb_project_name,
-                run_id=args.wandb_run_id,
-            )
-            for batch in completions_batched:
-                completions.extend(batch)
-            for batch_scores in scores_batched:
-                scores.extend(batch_scores)
-        elif args.language_model is not None:
-            print(f"Generating completions with language model {args.language_model}")
-            completions = generate_completions_from_lm(args)
-        else:
-            raise NotImplementedError(
-                "Must specify at least a language model or wandb to load generations"
-                " from, or a comletions file with completions"
-            )
-    print("first completion is:")
-    print(completions[0])
-    if not scores:
-        accelerator = Accelerator()
-        reward_model_name = args.reward_model
-        device = 0 if torch.cuda.is_available() else "cpu"
+    script_path_dir = os.path.dirname(os.path.abspath(__file__))
+    # get all the filenames in TEST_COMPLETIONS_DIR
+    test_completions_dir = os.path.join(script_path_dir, args.completions_dir)
 
-        reward_model, reward_tokenizer = load_eval_model_and_tokenizer(
-            args.reward_model
+    if language_model_names is not None and len(language_model_names) != 0:
+        generate_all_completions(args, language_model_names, test_completions_dir)
+    elif not scoring_mode:
+        raise NotImplementedError(
+            "Must specify at least a language model or wandb to load generations from,"
+            " or a completions file with completions from openAI. Or be in scoring mode"
         )
-        if not isinstance(reward_model, str):
-            reward_model = accelerator.prepare(reward_model)
-        print(f"Instantiated reward model: {reward_model_name} on device {device}")
-        print(f"The device is {device}, with reward model placed on device.")
-        print_gpu_utilization()
-        scores = score_completions(
-            reward_model=reward_model,
-            reward_model_tokenizer=reward_tokenizer,
-            completions=completions,
-        )
-    print("First score is:")
-    print(scores[0])
+    if scoring_mode:
+        score_all_completions(args, script_path_dir, test_completions_dir)
 
 
 if __name__ == "__main__":
     main()
-
-
-#     completions_raw = find_executable_batch_size(
-#                 self.generate_completions,
-#                 self.training_args.minibatch_size_generating,
-#             )(superbatch_prompts)
-
-# class LMResponseGenerator():
-#     def __init__(self,
-#         language_model: PreTrainedModel,
-#         reward_model_train: PreTrainedModel,
-#         reward_model_val: Optional[PreTrainedModel],
-#         language_tokenizer: PreTrainedTokenizerBase,
-#         reward_tokenizer_train: PreTrainedTokenizerBase,
-#         reward_tokenizer_val: Optional[PreTrainedTokenizerBase],
-#         completion_filter: CompletionFilterBase,
-#         training_args: SuperHFTrainingArguments):
-
-
-#     def collate_fn_lm_completions(self, batch: list[str]) -> BatchEncoding:
-#         """
-#         Collate function for the language model completions DataLoader.
-
-#         Prepends the system prompt to each prompt. By default this is the empty string.
-#         """
-#         return self.language_tokenizer(
-#             batch,
-#             return_tensors="pt",
-#             padding=True,
-#             truncation=True,
-#             max_length=self.training_args.max_length_rm,
-#         )
-
-#     def generate_completions(
-#         self,
-#         minibatch_size: int,
-#         superbatch_prompts: list[str],
-#     ) -> list[str]:
-#         """
-#         Generate completions for the prompts in the superbatch.
-
-#         Args:
-#             minibatch_size: The minibatch size to use for generation.
-#             superbatch_prompts: The prompts in the superbatch.
-#         """
-
-#         tqdm.write(f"Trying generation with batch size {minibatch_size}")
-#         print_gpu_utilization()
-
-#         # Duplicate each prompt superbatch_size numbers time with system prompt
-#         system_prompt = self.training_args.conversation_prompt
-#         prompt_batch_duplicated = [
-#             system_prompt + prompt
-#             for prompt in superbatch_prompts
-#             for _ in range(self.training_args.superbatch_size)
-#         ]
-
-#         completion_dataloader = DataLoader(
-#             ListDataset(prompt_batch_duplicated),
-#             batch_size=minibatch_size,
-#             collate_fn=self.collate_fn_lm_completions,
-#             pin_memory=True,
-#         )
-
-#         completions_encoded: list[TensorType["batch", "seq_len"]] = []
-#         with torch.no_grad():
-#             for minibatch in tqdm(
-#                 completion_dataloader,
-#                 desc="Generation",
-#                 total=len(completion_dataloader),
-#                 file=sys.stdout,
-#             ):
-#                 encodings = minibatch
-#                 # with torch.cuda.amp.autocast(dtype=self.training_args.dtype):  # type: ignore
-#                 encodings.to(self.language_model.device)
-#                 outputs = self.language_model.generate(  # type: ignore
-#                     **encodings,
-#                     max_new_tokens=self.training_args.max_new_tokens,
-#                     temperature=self.training_args.temperature,
-#                     top_p=self.training_args.top_p,
-#                     do_sample=True,
-#                     num_return_sequences=1,
-#                     pad_token_id=self.language_tokenizer.pad_token_id,
-#                     logits_processor=self.training_args.logits_processors,
-#                 )
-#                 completions_encoded.extend(outputs.to("cpu"))
-#         # completions_gathered: list[str] = accelerator.gather(
-#         #     completions
-#         # )  # Not needed on single GPU
-#         completions_text: list[str] = self.language_tokenizer.batch_decode(
-#             completions_encoded, skip_special_tokens=True
-#         )
-#         return completions_text
-
-#     def collate_fn_rm_train(
-#         self, completions: list[str]
-#     ) -> tuple[list[str], BatchEncoding, list[int]]:
-#         """
-#         Collate function for the reward model's dataloader.
-
-#         Takes encoded completions from the language model, decodes them, encodes them for the
-#         reward model, and returns both the decoded completion text and re-encoded completions.
-#         """
-
-#         # Remove completions after any extra "\n\nHuman:", "\n\nA:", "\n\nH:", or similar.
-#         # This is to prevent the model from learning to generate additional turns of conversation.
-#         prompts_and_completions = [
-#             separate_prompt_from_completion(completion) for completion in completions
-#         ]
-#         completions_for_lm: list[str] = []
-#         completions_for_rm: list[str] = []
-#         completion_lengths: list[int] = []
-#         for prompt, completion in prompts_and_completions:
-#             stripped_completion = re.split(
-#                 constants.PROMPT_DELIMITER_REGEX_MEDIUM, completion, maxsplit=1
-#             )[0].strip()
-#             completion_lengths.append(len(stripped_completion))
-#             joined_completion_normal = prompt + " " + stripped_completion
-#             completions_for_lm.append(joined_completion_normal)
-#             if self.training_args.reward_model_is_steamshp:
-#                 # Handle the weird SteamSHP format
-#                 prompt_only = prompt.split(constants.HUMAN_DELIMITER)[1].split(
-#                     constants.PROMPT_DELIMITER
-#                 )[0]
-#                 joined_completion_shp = (
-#                     f"POST:{prompt_only}\n\n"
-#                     f" RESPONSE A: {stripped_completion}\n\n RESPONSE B: .\n\n Which"
-#                     " response is better? RESPONSE"
-#                 )
-#                 completions_for_rm.append(joined_completion_shp)
-#             else:
-#                 # Concat normally
-#                 completions_for_rm.append(joined_completion_normal)
-
-#         return (
-#             completions_for_lm,
-#             self.reward_tokenizer_train(
-#                 completions_for_rm,
-#                 return_tensors="pt",
-#                 padding=True,
-#                 truncation=True,
-#                 max_length=self.training_args.max_length_rm,
-#             ).to(self.reward_model_train.device),
-#             completion_lengths,
-#         )

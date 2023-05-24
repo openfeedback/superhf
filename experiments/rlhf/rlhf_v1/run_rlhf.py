@@ -1,18 +1,19 @@
 """
 Script for running RLHF to compare with SuperHF.
 
-Utilizes hugging face pipelines for the reward model, and PPO trainer from TRL
-to train the language model.
+Utilizes the PPO trainer from TRL to train the language model.
+If using our custom reward model, calls the model's generate function dirctly.
 
 Implements LoRA based on this guide -
-https://github.com/lvwerra/trl/blob/52fecee8839ad826ad1e6c83a95c99a4116e98d2/
-examples/sentiment/scripts/gpt-neox-20b_peft/gpt-neo-20b_sentiment_peft.py
+https://github.com/lvwerra/trl/blob/52fecee8839ad826ad1e6c83a95c99a4116e98d2 \
+/examples/stack_llama/scripts/rl_training.py
 
 Example usage:
     python run_rlhf.py \
         --config configs/rlhf_v1.yaml \
-        --notes "Testing RLHF with TRL"
-        --sweep_id xxxxx
+        --notes "Testing RLHF with TRL" \
+        --sweep_id xxxxx \
+        --sweep_param_name kl \
 """
 
 import os
@@ -54,7 +55,7 @@ import wandb
 
 from superhf import constants
 from superhf.data import get_superhf_prompts
-from superhf.utils import set_seed, print_gpu_utilization
+from superhf.utils import set_seed, print_memory_utilization
 from superhf.mocking import MockRewardModel
 from superhf.constants import PROMPT_DELIMITER
 from reward_modelling.reward_model import RewardModel
@@ -64,6 +65,11 @@ T = TypeVar("T")
 WANDB_ENTITY_NAME = "stanfordaialignment"
 WANDB_PROJECT_NAME = "rlhf-trl-v1"
 MAX_OOM_ALLOWED = 5
+
+DEFAULT_PAD_TOKEN = "[PAD]"
+DEFAULT_EOS_TOKEN = "</s>"
+DEFAULT_BOS_TOKEN = "</s>"
+DEFAULT_UNK_TOKEN = "</s>"
 
 
 # We first define the configuration of the experiment, defining the model, the dataset,
@@ -81,7 +87,7 @@ class ScriptArguments:
     # NOTE: gpt2 models use Conv1D instead of Linear layers which are not yet supported in 8 bit
     # mode models like gpt-neo* models are more suitable.
     config: Optional[str] = field(
-        # Get file pa`th relative to this file
+        # Get file path relative to this file
         default=os.path.join(os.path.dirname(__file__), "configs", "rlhf_config.yaml"),
         metadata={"help": "The name of the Weights and Biases config to use."},
     )
@@ -90,6 +96,9 @@ class ScriptArguments:
     )
     sweep_id: Optional[str] = field(
         default="", metadata={"help": "sweep id to use to for a sweep"}
+    )
+    sweep_param_name: Optional[str] = field(
+        default="", metadata={"help": "sweep parameter name"}
     )
 
 
@@ -101,16 +110,6 @@ def parse_args():
     parser = HfArgumentParser(ScriptArguments)
     script_args = parser.parse_args_into_dataclasses()[0]
     return script_args
-
-
-def separate_prompt_from_completion(text: str) -> tuple[str, str]:
-    """
-    Given a completed prompt text, separate the part before and including the
-    prompt delimiter from the part after.
-    """
-    prompt, completion = text.split(PROMPT_DELIMITER, 1)
-    prompt += PROMPT_DELIMITER
-    return prompt, completion
 
 
 def build_dataset(
@@ -129,7 +128,6 @@ def build_dataset(
         a pytorch dataset that implements the __getitem__ and __len__ methods.
         PPO trainer converts this to a pytorch dataloader.
         torch.utils.data.Dataset
-    # TODO move into src/data.py
     """
     set_seed(seed)
     prompts: list[str] = []
@@ -223,7 +221,7 @@ def load_reward_model(
         reward_model_train = reward_model_name
         reward_model_pipe = pipeline(
             model=reward_model_name,
-            device=device,  # TODO move device out of here for style reasons.
+            device=device,
         )
     return reward_model_train, reward_model_pipe
 
@@ -236,7 +234,7 @@ def get_configs():
         model_name=wandb.config.model_name,
         steps=20000,
         learning_rate=wandb.config.learning_rate,
-        adap_kl_ctrl=True,
+        adap_kl_ctrl=False,
         init_kl_coef=wandb.config.init_kl_coef,
         clip_kl=wandb.config.clip_kl,
         target=6,
@@ -291,22 +289,34 @@ def get_configs():
         language_tokenizer = LlamaTokenizer.from_pretrained(
             ppo_config.model_name, padding_side="left"
         )
+        language_tokenizer.add_special_tokens(
+            {
+                "eos_token": DEFAULT_EOS_TOKEN,
+                "bos_token": DEFAULT_BOS_TOKEN,
+                "unk_token": DEFAULT_UNK_TOKEN,
+                "pad_token": DEFAULT_PAD_TOKEN,
+            }
+        )
     else:
         language_tokenizer = AutoTokenizer.from_pretrained(
             ppo_config.model_name, padding_side="left"
         )
-
+        language_tokenizer.pad_token = language_tokenizer.eos_token
     # We then define the arguments to pass to the `generate` function. These arguments
     # are passed to the `generate` function of the PPOTrainer, which is a wrapper around
     # the `generate` function of the trained model.
+    extra_generation_args = wandb.config.generation_kwargs
     generation_kwargs = {
         "min_length": -1,
         "top_k": 0.0,
         "top_p": wandb.config.top_p,
         "do_sample": True,
-        "pad_token_id": language_tokenizer.eos_token_id,
+        "pad_token_id": language_tokenizer.pad_token_id,
         "max_new_tokens": wandb.config.max_new_tokens,
     }
+    # loop over extra_generation_args two at a time
+    for i in range(len(extra_generation_args) // 2):
+        generation_kwargs[extra_generation_args[i]] = extra_generation_args[i + 1]
 
     return (
         ppo_config,
@@ -356,7 +366,9 @@ def score_completions(
 
 def main(script_args: ScriptArguments):
     """
-    Main function
+    Main function. Downloads the prompt dataset, reads the config file, and then
+    executes the main PPO training loop. For the gradient updates, it uses the
+    trl library's PPOTrainer class.
     """
     # pylint: disable=too-many-locals
     # pylint: disable=too-many-statements
@@ -384,9 +396,11 @@ def main(script_args: ScriptArguments):
     run_name = wandb.run.name
     hub_repo_id = wandb.config.hub_repo_id
     save_every = wandb.config.save_every
+    extra_push_to_hub = wandb.config.extra_push_to_hub
     reward_mean = wandb.config.reward_mean
     offset_reward = wandb.config.offset_reward
     reward_model_name = wandb.config.reward_model_name
+    test_reward_model_name = wandb.config.test_reward_model_name
 
     (
         ppo_config,
@@ -412,7 +426,6 @@ def main(script_args: ScriptArguments):
     # set seed before initializing value head for deterministic eval
     dataset = build_dataset(
         wandb.config.dataset_names,
-        # language_tokenizer,
         max_prompt_char_length=wandb.config.max_prompt_char_length,
         debug_max_prompts=wandb.config.debug_max_prompts,
         conversation_prompt=wandb.config.conversation_prompt,
@@ -467,6 +480,8 @@ def main(script_args: ScriptArguments):
     reward_model, reward_model_pipe = load_reward_model(
         reward_model_name, device=device
     )
+    if test_reward_model_name != "":
+        test_reward_model, _ = load_reward_model(test_reward_model_name, device=device)
 
     if not isinstance(reward_model, str):
         reward_model = ppo_trainer.accelerator.prepare(reward_model)
@@ -474,14 +489,20 @@ def main(script_args: ScriptArguments):
         f"Instantiated reward model: {reward_model_name} on device"
         f" {reward_model.device}"
     )
+    if test_reward_model_name != "":
+        test_reward_model = ppo_trainer.accelerator.prepare(test_reward_model)
+        print(
+            f"Instantiated test reward model: {test_reward_model_name} on device"
+            f" {test_reward_model.device}"
+        )
     if "llama" in reward_model_name or "alpaca" in reward_model_name:
         assert device == 0, "LLAMA and Alpaca models only work on GPU 0"
         if not isinstance(reward_model, str):
             assert (
                 reward_model.device == 0
             ), "LLAMA and Alpaca models only work on GPU 0"
-    print(f"The device is {device}, with reward model placed on device.")
-    print_gpu_utilization()
+    print(f"The device is {device}, with reward model(s) placed on device.")
+    print_memory_utilization()
 
     # input_size = LengthSampler(input_min_text_length, input_max_text_length)
 
@@ -493,9 +514,10 @@ def main(script_args: ScriptArguments):
     for epoch, batch in tqdm(
         enumerate(ppo_trainer.dataloader), total=len(ppo_trainer.dataloader)
     ):
+        # main RLHF Loop
         try:
             tqdm.write(f"Epoch {epoch}")
-            print_gpu_utilization()
+            print_memory_utilization()
 
             query_tensors = [
                 language_tokenizer(q, return_tensors="pt")["input_ids"]
@@ -518,11 +540,12 @@ def main(script_args: ScriptArguments):
             tqdm.write(
                 f"Finished generating responses. took {time.time() - start_time}"
             )
-            print_gpu_utilization()
+            print_memory_utilization()
 
             # Compute sentiment score
             start_time = time.time()
             texts = [q + r for q, r in zip(batch["query"], batch["response"])]
+            test_rewards = []
             if reward_model_pipe is not None:
                 pipe_outputs = reward_model_pipe(texts, **reward_model_kwargs)
                 original_rewards = [
@@ -535,6 +558,12 @@ def main(script_args: ScriptArguments):
                     reward_model_tokenizer=reward_model_tokenizer,
                     completions=texts,
                 )
+                if test_reward_model_name != "":
+                    test_rewards = score_completions(
+                        reward_model=test_reward_model,
+                        reward_model_tokenizer=reward_model_tokenizer,
+                        completions=texts,
+                    )
                 original_rewards = [datum.item() for datum in rewards]
             tqdm.write(f"Time to score completions: {time.time() - start_time}")
 
@@ -550,10 +579,10 @@ def main(script_args: ScriptArguments):
             start_time = time.time()
             tqdm.write("Running PPO step")
             stats = ppo_trainer.step(query_tensors, response_tensors, rewards)
-            ppo_trainer.log_stats(stats, batch, original_rewards)
+            ppo_trainer.log_stats(stats, batch, original_rewards, test_rewards)
 
             tqdm.write(f"Finished PPO step. Took {time.time() - start_time} seconds.")
-            print_gpu_utilization()
+            print_memory_utilization()
         # catch cuda OOM exception
         except RuntimeError as exc:
             oom_count += 1
@@ -567,19 +596,61 @@ def main(script_args: ScriptArguments):
 
         if len(hub_repo_id) > 0 and (
             epoch == len(ppo_trainer.dataloader) - 1
-            or (epoch > 0 and epoch % save_every == 0)
+            or (epoch % save_every == 0)
+            or epoch in extra_push_to_hub
         ):
             tqdm.write(
                 f"Pushing model and tokenizer to the Hub! Location: {hub_repo_id}"
             )
-            ppo_trainer.model.push_to_hub(
-                repo_id=hub_repo_id,
-                commit_message=f"Upload model from batch {epoch}, run {run_name}",
+            repo_name = hub_repo_id
+            if (
+                script_args.sweep_param_name is not None
+                and script_args.sweep_param_name != ""
+            ):
+                assert (
+                    script_args.sweep_param_name != "pythia"
+                    or "pythia" in ppo_config.model_name
+                ), (
+                    "Must use a pythia model to add a pythia model size to the repo"
+                    " name."
+                )
+                param_name_to_value = {
+                    # get the actual params
+                    "kl": ppo_config.init_kl_coef,
+                    "lr": ppo_config.learning_rate,
+                    "batch": (
+                        ppo_config.batch_size * ppo_config.gradient_accumulation_steps
+                    ),
+                }
+                if "pythia" == script_args.sweep_param_name:
+                    param_name_to_value["pythia"] = (
+                        ppo_config.model_name.split("-")[1],
+                    )
+                # get the param value specified by the sweep
+                param_value = param_name_to_value[script_args.sweep_param_name]
+                repo_name += f"-{script_args.sweep_param_name}-{param_value}"
+
+            tqdm.write(
+                str(
+                    ppo_trainer.model.push_to_hub(
+                        repo_id=repo_name,
+                        commit_message=(
+                            f"Upload model from batch {epoch}, run {run_name}"
+                        ),
+                    )
+                )
             )
-            ppo_trainer.tokenizer.push_to_hub(
-                repo_id=hub_repo_id,
-                commit_message=f"Upload tokenizer from batch {epoch}, run {run_name}",
+            tqdm.write(
+                str(
+                    ppo_trainer.tokenizer.push_to_hub(
+                        repo_id=repo_name,
+                        commit_message=(
+                            f"Upload tokenizer from batch {epoch}, run {run_name}"
+                        ),
+                    )
+                )
             )
+
     # Explicit finish to avoid wandb hanging
     wandb.alert(
         title="FINISHED SuperHF run!", text="FINISHED SuperHF run! <@W011580CVSN>"
@@ -587,10 +658,23 @@ def main(script_args: ScriptArguments):
     wandb.finish()
 
 
+def separate_prompt_from_completion(text: str) -> tuple[str, str]:
+    """
+    Given a completed prompt text, separate the part before and including the
+    prompt delimiter from the part after.
+    """
+    prompt, completion = text.split(PROMPT_DELIMITER, 1)
+    prompt += PROMPT_DELIMITER
+    return prompt, completion
+
+
 def trim_generations(raw_completions: list[str]) -> list[str]:
     """
-    Trim the generated completions to remove the prompt and the model's
-    repetition of the prompt. Copied from SuperHF code
+      Trim the generated completions to remove extra simulated turns of conversation.
+
+    Return:
+        A list of string wtih the prompt and modell response without any extra simulated
+            conversation turns. Copied from Superhf
     """
     original_length = len(raw_completions)
     prompts_and_completions = [
@@ -620,7 +704,12 @@ if __name__ == "__main__":
     args = parse_args()
     if args.sweep_id != "":
         # Run sweeps
-        # with open(args.sweep, encoding="utf-8") as f:
+        # try:
+        #     print(f"{args.sweep_id}")
+        # except AttributeError:
+        #     print("No sweep id found. If doing a sweep, must provide a --sweep-id")
+        #     raise AttributeError
+        # with open(args.sweep, mode="r", encoding="utf-8") as f:
         #     sweep_params = yaml.load(f, Loader=yaml.FullLoader)
         wandb.agent(
             args.sweep_id,

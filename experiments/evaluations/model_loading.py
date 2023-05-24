@@ -29,12 +29,15 @@ import torch
 from transformers import (
     AutoModelForCausalLM,
     AutoTokenizer,
+    AutoModelForSequenceClassification,
     PreTrainedTokenizerBase,
     LlamaTokenizer,
 )
 from tqdm import tqdm
 
 from superhf.utils import print_memory_utilization
+from superhf.mocking import MockLanguageModel, MockRewardModel
+from reward_modelling.reward_model import RewardModel
 
 
 def load_eval_model_and_tokenizer(
@@ -43,6 +46,8 @@ def load_eval_model_and_tokenizer(
     prev_tokenizer: Optional[PreTrainedTokenizerBase] = None,
     verbose: bool = False,
     revision: Optional[str] = None,
+    model_type: Optional[str] = "language",
+    tokenizer_padding_side: Optional[str] = None,
     **model_kwargs: Any,
 ) -> tuple[torch.nn.Module, PreTrainedTokenizerBase]:
     """
@@ -55,8 +60,20 @@ def load_eval_model_and_tokenizer(
     with the new adapters. If not, it will reload a new base model and then add the LoRA adapters.
 
     A similar process happens with loading the appropriate tokenizer.
+
+    Args:
+        model_path: The path to the model to load.
+        prev_model: The previous model to reuse weights from.
+        prev_tokenizer: The previous tokenizer to reuse weights from.
+        verbose: Whether to print out progress.
+        revision: The hugging face branch of the model to load.
+        model_type: The type of model to load, either "language" or "reward".
+        **model_kwargs: Any additional kwargs to pass to the model such as bfloat16.
     """
     # pylint: disable=protected-access
+    # pylint: disable=too-many-branches
+    # pylint: disable=too-many-statements
+    # pylint: disable=too-many-locals
 
     assert (prev_model is None and prev_tokenizer is None) or (
         prev_model is not None and prev_tokenizer is not None
@@ -71,6 +88,9 @@ def load_eval_model_and_tokenizer(
         peft_config = None
         base_model_path = model_path
         tokenizer_path = model_path
+
+    if tokenizer_path == "mock":
+        tokenizer_path = "gpt2"
 
     if (
         prev_model is not None
@@ -97,7 +117,33 @@ def load_eval_model_and_tokenizer(
 
         if verbose:
             tqdm.write(f"Loading model and tokenizer from scratch for {model_path}.")
-        model = AutoModelForCausalLM.from_pretrained(base_model_path, **model_kwargs)
+        if "reward" in model_type:
+            # load a reward model
+            tqdm.write("Loading a reward model")
+            if base_model_path == "mock":
+                model = MockRewardModel()
+            elif "rm_combined" in base_model_path or "oliversssf2" in base_model_path:
+                model = RewardModel.from_pretrained(
+                    base_model_path,
+                    low_cpu_mem_usage=True,
+                    **model_kwargs,
+                )
+                tokenizer_path = "EleutherAI/gpt-neo-1.3B"
+            else:
+                model = AutoModelForSequenceClassification.from_pretrained(
+                    base_model_path,
+                    low_cpu_mem_usage=True,
+                )
+        else:
+            # load a language model that is not a peft model
+            model = (
+                MockLanguageModel()
+                if base_model_path == "mock"
+                else AutoModelForCausalLM.from_pretrained(
+                    base_model_path, **model_kwargs
+                )
+            )
+
         # Fix for misnamed class in the NLP Cluster's Alpaca tokenizer config
         tokenizer_class = (
             LlamaTokenizer
@@ -129,6 +175,16 @@ def load_eval_model_and_tokenizer(
     # Set device
     model = model.to(torch.device("cuda" if torch.cuda.is_available() else "cpu"))
 
+    prev_padding_side = tokenizer.padding_side
+    if (
+        tokenizer_padding_side is not None
+        and tokenizer_padding_side != prev_padding_side
+    ):
+        tqdm.write(
+            f"Changing padding side from {prev_padding_side} to"
+            f" {tokenizer_padding_side}."
+        )
+        tokenizer.padding_side = tokenizer_padding_side
     return model, tokenizer
 
 

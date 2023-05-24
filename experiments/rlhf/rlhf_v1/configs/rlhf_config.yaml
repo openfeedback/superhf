@@ -16,13 +16,13 @@ mini_batch_size:
   value: 1 # 2 causes oom
 batch_size:
   desc: "The batch size" # default 256 in og code
-  value: 4
+  value: 8
 gradient_accumulation_steps:
   desc: "The number of gradient accumulation steps"
-  value: 2
+  value: 1
 max_new_tokens:
   desc: "The maximum number of new tokens to generate per prompt"
-  value: 32
+  value: 64
 max_prompt_char_length:
   desc: "The maximum number of characters in a prompt"
   value: 1024
