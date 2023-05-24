@@ -10,7 +10,7 @@
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
-            "justMyCode": false
+            "justMyCode": true
         },
         {
             "name": "SHF Iter (Mock)",
@@ -175,6 +175,32 @@
                 "16",
             ],
             "justMyCode": false
+        },
+        {
+            "name": "SFT on Prefs Debug",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/experiments/sft/sft_on_preferences.py",
+            "console": "integratedTerminal",
+            "args": [
+                "--model_name",
+                "EleutherAI/pythia-70m-deduped",
+                "--num_examples",
+                "512",
+                "--batch_size",
+                "8",
+                "--scheduler_warmup_steps",
+                "1",
+                "--mixed_precision",
+                "none",
+                "--lora_target_modules",
+                "query_key_value",
+                "--hub_repo_id",
+                "test-sft-on-preferences",
+                "--push_interval",
+                "64",
+            ],
+            "justMyCode": false,
         },
         {
             "name": "Advanced AI Risk Evals Debug",
