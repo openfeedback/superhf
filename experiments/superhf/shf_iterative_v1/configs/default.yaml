@@ -6,8 +6,8 @@ reward_model_train_name:
   value: "/nlp/scr/fongsu/rm_combined/gptneo_1.3B_first_half"
 reward_model_val_name:
   desc: HuggingFace reward model to use, or "mock" for testing, or blank for no validation.
-  # value: "/nlp/scr/fongsu/rm_combined/gptneo_1.3B_second_half"
-  value: ""  # Disabled for most runs to save time and memory
+  value: "/nlp/scr/fongsu/rm_combined/gptneo_1.3B_second_half"
+  # value: ""  # Disabled for most runs to save time and memory
 learning_rate:
   desc: Learning rate for fine-tuning the language model.
   value: 1.5e-5
@@ -96,7 +96,7 @@ validation_interval:
   value: 8
 max_exception_count:
   desc: The number of times to allow the model to run out of memory before stopping.
-  value: 5
+  value: 16
 hub_repo_id:
   desc: The ID of the HuggingFace Hub repo to use for storing the model. If empty, no model will be stored.
   # value: "test-repo"
