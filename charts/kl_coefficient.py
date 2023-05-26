@@ -37,6 +37,12 @@ def main() -> None:
 
         all_data.extend([(kl_coefficient, score, "SuperHF (Test)") for score in scores])
 
+        # Print average test score
+        print(
+            f"SuperHF average test score for kl_coefficient={kl_coefficient}:"
+            f" {sum(scores)/len(scores):.3f}"
+        )
+
         url2 = (
             f"experiments/evaluations/test_scores/rlhf-v3-kl-sweep-kl-{kl_coefficient}"
             "@sxyq16uf.json"

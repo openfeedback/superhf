@@ -1,3 +1,6 @@
 [submodule "trl"]
 	path = trl
 	url = https://github.com/openfeedback/trl.git
+[submodule "mmlu_and_hhh_evals"]
+	path = mmlu_and_hhh_evals
+	url = https://github.com/openfeedback/mmlu_and_hhh_evals.git

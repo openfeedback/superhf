@@ -118,7 +118,7 @@ idna==3.4
     #   -c requirements\prod.txt
     #   requests
     #   yarl
-ipykernel==6.23.0
+ipykernel==6.23.1
     # via
     #   -r requirements/dev.in
     #   ipywidgets
@@ -219,7 +219,7 @@ numpy==1.24.3
     #   scipy
     #   seaborn
     #   transformers
-openai==0.27.6
+openai==0.27.7
     # via
     #   -c requirements\prod.txt
     #   lm-eval
@@ -256,7 +256,7 @@ platformdirs==3.5.1
     #   virtualenv
 portalocker==2.7.0
     # via sacrebleu
-pre-commit==3.3.1
+pre-commit==3.3.2
     # via -r requirements/dev.in
 prompt-toolkit==3.0.38
     # via ipython
@@ -314,7 +314,7 @@ regex==2023.5.5
     #   -c requirements\prod.txt
     #   nltk
     #   transformers
-requests==2.30.0
+requests==2.31.0
     # via
     #   -c requirements\prod.txt
     #   datasets
@@ -400,7 +400,7 @@ traitlets==5.9.0
     #   jupyter-client
     #   jupyter-core
     #   matplotlib-inline
-transformers==4.29.1
+transformers==4.29.2
     # via
     #   -c requirements\prod.txt
     #   lm-eval
@@ -409,11 +409,11 @@ typepy[datetime]==1.3.0
     #   dataproperty
     #   pytablewriter
     #   tabledata
-types-pyyaml==6.0.12.9
+types-pyyaml==6.0.12.10
     # via -r requirements/dev.in
 types-tqdm==4.65.0.1
     # via -r requirements/dev.in
-typing-extensions==4.5.0
+typing-extensions==4.6.1
     # via
     #   -c requirements\prod.txt
     #   astroid
@@ -424,7 +424,7 @@ tzdata==2023.3
     # via
     #   -c requirements\prod.txt
     #   pandas
-urllib3==1.26.15
+urllib3==1.26.16
     # via
     #   -c requirements\prod.txt
     #   requests
