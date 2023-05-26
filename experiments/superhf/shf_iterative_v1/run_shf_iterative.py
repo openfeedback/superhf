@@ -41,7 +41,7 @@ from superhf.utils import set_seed, print_memory_utilization
 from reward_modelling.reward_model import RewardModel
 
 WANDB_ENTITY_NAME = "stanfordaialignment"
-WANDB_PROJECT_NAME = "superhf-v3"
+WANDB_PROJECT_NAME = "superhf-v4"
 
 
 def main(argparse_args: argparse.Namespace, extra_args: list[str]) -> None:
