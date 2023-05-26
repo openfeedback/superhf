@@ -10,7 +10,7 @@ reward_model_val_name:
   value: ""  # Disabled for most runs to save time and memory
 learning_rate:
   desc: Learning rate for fine-tuning the language model.
-  value: 3.0e-5
+  value: 1.5e-5
 scheduler_name:
   desc: Name of the scheduler to use for fine-tuning the language model.
   value: "cosine"
@@ -34,7 +34,7 @@ top_p:
   value: 0.95
 num_prompts:
   desc: Maximum number of prompts to use, or 0 for unlimited (up to the training set size).
-  value: 2048
+  value: 32768
 prompt_accumulation_steps:
   desc: Number of prompts to generate, score, and filter before finetuning, or 0 for num_prompts.
   value: 1
@@ -100,7 +100,7 @@ max_exception_count:
 hub_repo_id:
   desc: The ID of the HuggingFace Hub repo to use for storing the model. If empty, no model will be stored.
   # value: "test-repo"
-  value: "shf-7b"
+  value: "shf-7b-long"
 push_to_hub_interval:
   desc: The number of superbatches to train before pushing to the HuggingFace Hub. If 0, no model will be stored.
   value: 99999  # Set high to only save at the end
@@ -109,4 +109,4 @@ push_to_hub_additional_indices:
   value: []
 sweep_param_name:
   desc: If running a sweep, one of the a list of short parameter names to add to the saved hub repo name.
-  value: ""
+  value: "accum"
