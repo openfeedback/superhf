@@ -311,6 +311,12 @@ class SuperHFTrainer:
                     completion_lengths,
                 )
 
+                # Print the filtered completions (hack since wandb artifacts are screwed)
+                tqdm.write("Filtered completions:")
+                for filtered_completion in filtered_completions:
+                    # Don't print \n as newlines, print it as a literal string
+                    print(filtered_completion.replace("\n", "\\n"))
+
                 # Fine-tune the language model on the filtered completions
                 average_loss, average_kl_div = find_executable_batch_size(
                     self.finetune_language_model,
@@ -455,7 +461,7 @@ class SuperHFTrainer:
                 # Create a new branch with the superbatch index as the name
                 hf_username = self.hf_api.whoami()["name"]
                 repo_id = hf_username + "/" + repo_name
-                branch = f"step-{prompt_index:04}"
+                branch = f"step-{prompt_index:05}"
                 try:
                     result = self.hf_api.create_branch(repo_id=repo_id, branch=branch)
                 except HfHubHTTPError:
