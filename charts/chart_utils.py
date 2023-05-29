@@ -103,7 +103,7 @@ def get_test_scores(file_path: str) -> list[Any]:
     # Normalize scores (see experiments/evaluations/find_average_train_and_test_rm_scores.py)
     assert "train_scores" in file_path or "test_scores" in file_path
     if "train_scores" in file_path:
-        output = normalize_train_scores(scores)
+        output = normalize_train_scores(output)
     elif "test_scores" in file_path:
         output = [score - -2.22 for score in output]
 
