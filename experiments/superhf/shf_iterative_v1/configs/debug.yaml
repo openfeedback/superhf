@@ -88,7 +88,7 @@ no_repeat_ngram_size:
   value: 0
 prompt_dataset_names:
   desc: The list of datasets to use for prompts. See src/superhf/data.py for available datasets.
-  value: ["anthropic-harmless-base"]
+  value: ["self_instruct"]
 same_prompt_per_superbatch:
   desc: Whether to duplicate each prompt so the superbatch is variations on the same prompt.
   value: True

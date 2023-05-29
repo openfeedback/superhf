@@ -123,6 +123,23 @@ def get_superhf_prompts(
                 row["chosen"].split("\n\nAssistant:")[0] + "\n\nAssistant:"
                 for row in dataset
             ]
+    elif dataset_name == "self_instruct":
+        assert (
+            not load_whole_completion
+        ), f"{dataset_name} not supported for chosen completions."
+        dataset = load_dataset(
+            "yizhongw/self_instruct",
+            # data_dir="self_instruct",
+            split="train",
+            keep_in_memory=False,
+        )
+        if load_whole_completion:
+            output = [row["chosen"] for row in dataset]
+        else:
+            output = [
+                row["chosen"].split("\n\nAssistant:")[0] + "\n\nAssistant:"
+                for row in dataset
+            ]
     elif dataset_name == "mock":
         output.extend(
             [
