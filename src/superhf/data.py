@@ -26,7 +26,10 @@ TEST_SET_SIZE_PER_DATASET = 2300
 
 
 def get_superhf_prompts(
-    dataset_name: str, split: str = "train", load_whole_completion: bool = False
+    dataset_name: str,
+    split: str = "train",
+    max_length_chars: int = -1,
+    load_whole_completion: bool = False,
 ) -> list[str]:
     """
     Get a list of prompts from a dataset.
@@ -39,6 +42,7 @@ def get_superhf_prompts(
             - 'anthropic-helpful-base'
             - 'mock'
         split: The split of the dataset to load.
+        max_length_chars: Filter prompts longer than this many chars, or -1 for all prompts.
         load_whole_completion: Whether to load the whole completion or just the prompt.
 
     Returns:
@@ -152,6 +156,15 @@ def get_superhf_prompts(
         raise ValueError(
             f"Unknown dataset: {dataset_name}. Must be one of the following "
             + f"supported datasets: {SUPPORTED_DATASETS}"
+        )
+
+    # Filter prompts longer than max_length_chars
+    if max_length_chars > 0:
+        old_length = len(output)
+        output = [prompt for prompt in output if len(prompt) <= max_length_chars]
+        print(
+            f"Filtered {old_length - len(output)} prompts longer than"
+            f" {max_length_chars} chars."
         )
 
     return output

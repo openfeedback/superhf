@@ -95,22 +95,12 @@ def main(argparse_args: argparse.Namespace, extra_args: list[str]) -> None:
     # Get the prompt dataset
     prompts: list[str] = []
     for dataset_name in wandb.config.prompt_dataset_names:
-        new_prompts = get_superhf_prompts(dataset_name)
+        new_prompts = get_superhf_prompts(
+            dataset_name, max_length_chars=wandb.config.max_prompt_char_length
+        )
         print(f"Loaded {len(new_prompts)} prompts from {dataset_name}.")
         prompts.extend(new_prompts)
     random.shuffle(prompts)
-
-    # Filter out prompts that are too long
-    old_prompt_count = len(prompts)
-    prompts = [
-        prompt
-        for prompt in prompts
-        if len(prompt) < wandb.config.max_prompt_char_length
-    ]
-    print(
-        f"Filtered {old_prompt_count - len(prompts)} prompts over "
-        f"{wandb.config.max_prompt_char_length} chars."
-    )
 
     # Only load the first section of prompts
     if wandb.config.num_prompts != 0:
