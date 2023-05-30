@@ -133,13 +133,14 @@ def get_superhf_prompts(
             split="train",
             keep_in_memory=False,
         )
-        if load_whole_completion:
-            output = [row["chosen"] for row in dataset]
-        else:
-            output = [
-                row["chosen"].split("\n\nAssistant:")[0] + "\n\nAssistant:"
-                for row in dataset
-            ]
+        output = [
+            "\n\nHuman: " + row["prompt"].split("Output:")[0].strip() + "\n\nAssistant:"
+            for row in dataset
+        ]
+        if split == "train":
+            output = output[:-TEST_SET_SIZE_PER_DATASET]
+        elif split == "test":
+            output = output[-TEST_SET_SIZE_PER_DATASET:]
     elif dataset_name == "mock":
         output.extend(
             [
