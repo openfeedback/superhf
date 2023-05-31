@@ -14,7 +14,7 @@ seed:
   value: 66
 learning_rate:
   desc: Learning rate for fine-tuning the language model.
-  value: 3.0e-5
+  value: 2.0e-5
 scheduler_name:
   desc: Name of the scheduler to use for fine-tuning the language model.
   value: "cosine"
