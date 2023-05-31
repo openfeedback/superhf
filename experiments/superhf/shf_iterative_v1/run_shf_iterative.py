@@ -94,19 +94,21 @@ def main(argparse_args: argparse.Namespace, extra_args: list[str]) -> None:
 
     # Get the prompt dataset
     prompts: list[str] = []
+    num_datasets = len(wandb.config.prompt_dataset_names)
+    num_prompts_per_dataset = (
+        wandb.config.num_prompts // num_datasets if wandb.config.num_prompts > 0 else 0
+    )
     for dataset_name in wandb.config.prompt_dataset_names:
         new_prompts = get_superhf_prompts(
             dataset_name, max_length_chars=wandb.config.max_prompt_char_length
         )
         print(f"Loaded {len(new_prompts)} prompts from {dataset_name}.")
+        if num_prompts_per_dataset != 0:
+            new_prompts = new_prompts[:num_prompts_per_dataset]
         prompts.extend(new_prompts)
     random.shuffle(prompts)
 
-    # Only load the first section of prompts
-    if wandb.config.num_prompts != 0:
-        prompts = prompts[: wandb.config.num_prompts]
-
-    print(f"Loaded {len(prompts)} prompts.")
+    print(f"Loaded {len(prompts)} total prompts.")
     print_memory_utilization()
     print("Instantiating models...")
 
