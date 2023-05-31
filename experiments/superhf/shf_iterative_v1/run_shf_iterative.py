@@ -102,9 +102,11 @@ def main(argparse_args: argparse.Namespace, extra_args: list[str]) -> None:
         new_prompts = get_superhf_prompts(
             dataset_name, max_length_chars=wandb.config.max_prompt_char_length
         )
-        print(f"Loaded {len(new_prompts)} prompts from {dataset_name}.")
+        total_loaded = len(new_prompts)
         if num_prompts_per_dataset != 0:
             new_prompts = new_prompts[:num_prompts_per_dataset]
+        total_filtered = len(new_prompts)
+        print(f"Loaded {total_filtered}/{total_loaded} prompts from {dataset_name}.")
         prompts.extend(new_prompts)
     random.shuffle(prompts)
 
