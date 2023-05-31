@@ -57,9 +57,6 @@ def main(argparse_args: argparse.Namespace, extra_args: list[str]) -> None:
     # Attempt to fix too many open files issue on SLURM
     torch.multiprocessing.set_sharing_strategy("file_system")
 
-    # Configure seed
-    set_seed(66)
-
     # Enable tf32 training if supported
     if torch.cuda.is_available() and torch.cuda.get_device_capability()[0] >= 8:
         print("Enabling tf32 training.")
@@ -75,6 +72,9 @@ def main(argparse_args: argparse.Namespace, extra_args: list[str]) -> None:
         config=argparse_args.config,
     )
     assert run is not None
+
+    # Configure seed
+    set_seed(wandb.config.seed)
 
     # Process any extra arguments, converting values to appropriate types
     extra_args_dict = {}
@@ -170,6 +170,7 @@ def main(argparse_args: argparse.Namespace, extra_args: list[str]) -> None:
         else torch.bfloat16 if wandb.config.mixed_precision == "bf16" else torch.float32
     )
     training_args = SuperHFTrainingArguments(
+        seed=wandb.config.seed,
         temperature=wandb.config.temperature,
         top_p=wandb.config.top_p,
         superbatch_size=wandb.config.superbatch_size,

@@ -10,6 +10,9 @@ reward_model_val_name:
   desc: HuggingFace reward model to use, or "mock" for testing, or blank for no validation.
   value: "None"
   # value: "vincentmin/opt-125m-eli5-reward"
+seed:
+  desc: Random seed to use for reproducibility.
+  value: 66
 learning_rate:
   desc: Learning rate for fine-tuning the language model.
   value: 1.0e-1

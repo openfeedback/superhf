@@ -40,6 +40,7 @@ class SuperHFTrainingArguments:
     # pylint: disable=too-many-instance-attributes
 
     # Generation
+    seed: int = 0
     temperature: float = 1.0
     top_p: float = 0.95
     superbatch_size: int = field(
@@ -427,6 +428,7 @@ class SuperHFTrainer:
                     "lr": self.training_args.learning_rate,
                     "sbs": self.training_args.superbatch_size,
                     "pythia": model_size_or_name,
+                    "seed": self.training_args.seed,
                 }
                 param_value = param_name_to_value[self.training_args.sweep_param_name]
                 repo_name += f"-{self.training_args.sweep_param_name}-{param_value}"
