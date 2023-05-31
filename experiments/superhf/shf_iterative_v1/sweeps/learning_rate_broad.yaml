@@ -1,13 +1,19 @@
 program: experiments/superhf/shf_iterative_v1/run_shf_iterative.py
-method: bayes
+method: grid
 metric:
-  goal: minimize
-  name: average_kl_div.mean
+  goal: maximize
+  name: score_train_avg.mean
 parameters:
   learning_rate:
-    distribution: uniform
-    min: 1.5e-5
-    max: 3.0e-5
+    values:
+      - 3.0e-6
+      - 1.0e-5
+      - 1.5e-5
+      - 2.0e-5
+      - 3.0e-5
+      - 5.0e-5
+      - 7.5e-5
+      - 1.0e-4
   num_prompts:
     value: 2500
   sweep_param_name:
