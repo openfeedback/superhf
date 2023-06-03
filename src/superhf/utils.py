@@ -3,9 +3,12 @@ Assorted utility functions.
 """
 
 import gc
+from itertools import permutations
 import random
+from typing import Optional
 from tqdm import tqdm
 
+from nltk.translate.meteor_score import meteor_score
 import numpy as np
 import torch
 from pynvml import nvmlInit, nvmlDeviceGetHandleByIndex, nvmlDeviceGetMemoryInfo
@@ -71,3 +74,22 @@ def print_memory_utilization() -> None:
         vram_percent = info.used / info.total * 100
         output += f" {i}: {vram_gb:.2f} GB ({vram_percent:.2f}%)"
     tqdm.write(output)
+
+
+def calculate_meteor_similarity(strings: list[str]) -> float:
+    """Calculates the average METEOR similarity between all pairs of strings."""
+    scores = []
+    for string1, string2 in permutations(strings, 2):
+        score = meteor_score([string1.split()], string2.split())
+        scores.append(score)
+    return float(np.mean(scores))
+
+
+def calculate_superbatch_similarity(completions: list[str]) -> Optional[float]:
+    """Separate completions from a superbatch then calculate METEOR similarity."""
+    if len(completions) < 2:
+        return None
+    non_prompt_completions = [
+        separate_prompt_from_completion(completion)[1] for completion in completions
+    ]
+    return calculate_meteor_similarity(non_prompt_completions)

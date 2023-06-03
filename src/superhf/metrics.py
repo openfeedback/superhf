@@ -9,6 +9,7 @@ import time
 
 import numpy as np
 import wandb
+from superhf.utils import calculate_superbatch_similarity
 
 # from superhf.filtering import CompletionFilterTopK
 
@@ -54,6 +55,8 @@ def report_metrics_print(metrics: SuperHFMetrics) -> None:
     score_val_avg = np.mean(metrics.scores_val) if metrics.scores_val else np.nan
     score_val_std = np.std(metrics.scores_val) if metrics.scores_val else np.nan
     score_filtered_avg = np.mean(metrics.filtered_scores)
+    similarity = calculate_superbatch_similarity(metrics.filtered_completions)
+    similarity = similarity if similarity is not None else np.nan
     print(
         "\n📊 Metrics at time"
         f" {time.strftime('%H:%M:%S', time.localtime())}\nSuperbatch"
@@ -65,7 +68,7 @@ def report_metrics_print(metrics: SuperHFMetrics) -> None:
         f" {score_train_avg:.3f} ±{score_train_std:.3f}, val score"
         f" {score_val_avg:.3f} ±{score_val_std:.3f}, filtered score"
         f" {score_filtered_avg:.3f}\nloss {metrics.average_loss:.3f},  KL"
-        f" {metrics.average_kl_div:.3f}."
+        f" {metrics.average_kl_div:.3f}, similarity: {similarity:.3f}."
     )
 
 
@@ -115,6 +118,7 @@ def report_metrics_wandb(metrics: SuperHFMetrics) -> None:
     score_val_hist = wandb.Histogram(metrics.scores_val) if metrics.scores_val else None
     score_filtered_avg = np.mean(metrics.filtered_scores)
     prompt_index = metrics.superbatches_complete * len(metrics.filtered_completions)
+    similarity = calculate_superbatch_similarity(metrics.filtered_completions)
 
     # # Create plot data of average score if we filtered different top-K numbers
     # max_top_k_to_explore = 48
@@ -142,6 +146,7 @@ def report_metrics_wandb(metrics: SuperHFMetrics) -> None:
             # "filtered_score_histogram": wandb.Histogram(metrics.filtered_scores),
             "average_loss": metrics.average_loss,
             "average_kl_div": metrics.average_kl_div,
+            "similarity": similarity,
             "scheduler_lr": metrics.scheduler_lr,
             "average_completion_length": np.mean(metrics.completion_lengths),
             # "completion_length_histogram": wandb.Histogram(metrics.completion_lengths),
