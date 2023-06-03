@@ -859,12 +859,8 @@ class SuperHFTrainer:
                     logp_original_model_i = logp_original_model[i, mask, :]
 
                     # Compute the KL divergence
-                    # kl_divergence = self.kl_loss(
-                    #     logp_online_model_i, logp_original_model_i
-                    # )
-                    # TEST: Do KL backwards because it makes the theory better
                     kl_divergence = self.kl_loss(
-                        logp_original_model_i, logp_online_model_i
+                        logp_online_model_i, logp_original_model_i
                     )
                     sum_kl_divergence += kl_divergence.item()
 
