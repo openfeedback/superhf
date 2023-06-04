@@ -58,19 +58,12 @@ def main() -> None:
         description="Train a model on the preferences dataset."
     )
     parser.add_argument(
-        "--model_name", type=str, default="/juice5/scr5/nlp/llama_model/alpaca_7b"
-    )
-    parser.add_argument(
-        "--datasets",
+        "--model_name",
         type=str,
-        nargs="+",
-        default=[
-            "anthropic-helpful-base",
-            "anthropic-harmless-base",
-        ],
+        default="/juice5/scr5/nlp/llama_model/llama_hf_latest/llama-7b",
     )
     parser.add_argument("--data_type", type=str, choices=["ftp", "instruct"])
-    parser.add_argument("--num_examples", type=int, default=8192)
+    parser.add_argument("--num_examples", type=int, default=15000)
     parser.add_argument("--max_example_char_length", type=int, default=8192)
     parser.add_argument("--lr", type=float, default=1e-5)
     parser.add_argument("--batch_size", type=int, default=4)
