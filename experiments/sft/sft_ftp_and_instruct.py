@@ -66,8 +66,9 @@ def main() -> None:
     parser.add_argument("--num_examples", type=int, default=15000)
     parser.add_argument("--max_example_char_length", type=int, default=2048)
     parser.add_argument("--lr", type=float, default=1e-5)
-    parser.add_argument("--batch_size", type=int, default=4)
-    parser.add_argument("--scheduler_warmup_steps", type=int, default=32)
+    parser.add_argument("--batch_size", type=int, default=2)
+    parser.add_argument("--gradient_accumulation", type=int, default=4)
+    parser.add_argument("--scheduler_warmup_steps", type=int, default=0)
     parser.add_argument("--mixed_precision", type=str, default="bf16")
     parser.add_argument("--lora_r", type=int, default=4)
     parser.add_argument("--lora_alpha", type=int, default=32)
@@ -142,6 +143,7 @@ def main() -> None:
         output_dir="./sft_training_output/",
         num_train_epochs=1,
         per_device_train_batch_size=wandb.config.batch_size,
+        gradient_accumulation_steps=wandb.config.gradient_accumulation,
         bf16=wandb.config.mixed_precision == "bf16",
         report_to=["wandb"],
         lr_scheduler_type="cosine",
