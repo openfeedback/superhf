@@ -28,7 +28,7 @@ from peft import get_peft_model, LoraConfig
 from tqdm import tqdm
 import wandb
 
-from superhf.data import get_superhf_prompts
+from superhf.data import get_superhf_prompts, get_instruct_dataset
 from superhf.utils import print_memory_utilization, set_seed
 
 
@@ -71,7 +71,7 @@ def main() -> None:
     )
     parser.add_argument("--data_type", type=str, choices=["ftp", "instruct"])
     parser.add_argument("--num_examples", type=int, default=8192)
-    parser.add_argument("--max_example_char_length", type=int, default=2048)
+    parser.add_argument("--max_example_char_length", type=int, default=8192)
     parser.add_argument("--lr", type=float, default=1e-5)
     parser.add_argument("--batch_size", type=int, default=4)
     parser.add_argument("--scheduler_warmup_steps", type=int, default=32)
@@ -96,32 +96,26 @@ def main() -> None:
     assert run is not None
 
     # Format repo name
-    hub_repo_id = "llama-ftp" if wandb.config.data_type == "ftp" else "llama-instruct"
-    hub_repo_id += f"-{wandb.config.num_examples}"
+    hub_repo_id = "llama-" + wandb.config.data_type + f"-{wandb.config.num_examples}"
 
     # Load dataset
     examples: list[str] = []
     if wandb.config.data_type == "ftp":
         for dataset_name in ["anthropic-helpful-base", "anthropic-harmless-base"]:
             examples.extend(
-                get_superhf_prompts(dataset_name, load_whole_completion=True)
+                get_superhf_prompts(
+                    dataset_name,
+                    load_whole_completion=True,
+                    max_length_chars=wandb.config.max_example_char_length,
+                )
             )
     elif wandb.config.data_type == "instruct":
-        raise NotImplementedError
+        examples.extend(
+            get_instruct_dataset(
+                max_length_chars=wandb.config.max_example_char_length,
+            )
+        )
     random.shuffle(examples)
-
-    # Filter out prompts that are too long
-    old_prompt_count = len(examples)
-    filtered = [
-        prompt
-        for prompt in examples
-        if len(prompt) < wandb.config.max_example_char_length
-    ]
-    print(
-        f"Filtered {old_prompt_count - len(filtered)} prompts over "
-        f"{wandb.config.max_example_char_length} chars."
-    )
-    examples = filtered
 
     # Only load the first section of prompts
     if wandb.config.num_examples != 0:
@@ -141,12 +135,11 @@ def main() -> None:
 
     def tokenize_function(examples: dict[str, list[str]]) -> Any:
         return language_tokenizer(
-            examples["text"], padding="max_length", truncation=True
+            examples["text"], padding="max_length", truncation=True, max_length=2048
         )
 
     dataset = Dataset.from_dict({"text": examples})
     dataset = dataset.map(tokenize_function, batched=True)
-    # dataset = language_tokenizer(examples, padding="max_length", truncation=True)
 
     # Initializer trainer
     save_steps = wandb.config.push_interval / wandb.config.batch_size
@@ -159,9 +152,9 @@ def main() -> None:
         bf16=wandb.config.mixed_precision == "bf16",
         report_to=["wandb"],
         lr_scheduler_type="cosine",
+        warmup_steps=wandb.config.scheduler_warmup_steps,
         learning_rate=wandb.config.lr,
         weight_decay=0.01,
-        warmup_steps=wandb.config.scheduler_warmup_steps,
         save_steps=save_steps,
         logging_steps=save_steps,
     )
@@ -220,8 +213,8 @@ def main() -> None:
 
     # Finish run
     wandb.alert(
-        title="FINISHED SFT-on-preferences run!",
-        text="FINISHED SFT-on-preferences run! <@WGPFRK13K>",
+        title=f"FINISHED SFT-{wandb.config.data_type} run!",
+        text=f"FINISHED SFT-{wandb.config.data_type} run! <@WGPFRK13K>",
     )
     run.finish()
 
