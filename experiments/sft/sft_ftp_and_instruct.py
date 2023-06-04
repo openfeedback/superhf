@@ -208,7 +208,7 @@ def main() -> None:
 
     # Finish run
     wandb.alert(
-        title=f"FINISHED SFT-{wandb.config.data_type} run!",
+        title=f"FINISHED SFT-{wandb.config.data_type} run {hub_repo_id}!",
         text=f"FINISHED {hub_repo_id} run! <@WGPFRK13K>",
     )
     run.finish()
