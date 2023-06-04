@@ -40,6 +40,8 @@ function upgrade_requirements {
 function install {
     activate
     pip-sync requirements/prod.txt requirements/dev.txt
+    # For METEOR score
+    python -m nltk.downloader wordnet
     pip install -e .
     mypy --install-types
     pre-commit install
