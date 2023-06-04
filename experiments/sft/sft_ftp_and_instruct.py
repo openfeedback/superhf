@@ -64,7 +64,7 @@ def main() -> None:
     )
     parser.add_argument("--data_type", type=str, choices=["ftp", "instruct"])
     parser.add_argument("--num_examples", type=int, default=15000)
-    parser.add_argument("--max_example_char_length", type=int, default=8192)
+    parser.add_argument("--max_example_char_length", type=int, default=2048)
     parser.add_argument("--lr", type=float, default=1e-5)
     parser.add_argument("--batch_size", type=int, default=4)
     parser.add_argument("--scheduler_warmup_steps", type=int, default=32)
@@ -128,7 +128,7 @@ def main() -> None:
 
     def tokenize_function(examples: dict[str, list[str]]) -> Any:
         return language_tokenizer(
-            examples["text"], padding="max_length", truncation=True, max_length=2048
+            examples["text"], padding="max_length", truncation=True
         )
 
     dataset = Dataset.from_dict({"text": examples})
