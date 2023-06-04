@@ -207,7 +207,7 @@ def main() -> None:
     push_to_hub(
         hf_api,
         language_model,
-        wandb.config.num_examples,
+        len(examples),
         hub_repo_id,
     )
 
