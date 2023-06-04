@@ -33,7 +33,7 @@ from superhf.utils import print_memory_utilization, set_seed
 
 
 WANDB_ENTITY_NAME = "stanfordaialignment"
-WANDB_PROJECT_NAME = "sft-on-preferences"
+WANDB_PROJECT_NAME = "sft"
 
 
 def main() -> None:
@@ -69,6 +69,7 @@ def main() -> None:
             "anthropic-harmless-base",
         ],
     )
+    parser.add_argument("--data_type", type=str, choices=["ftp", "instruct"])
     parser.add_argument("--num_examples", type=int, default=8192)
     parser.add_argument("--max_example_char_length", type=int, default=2048)
     parser.add_argument("--lr", type=float, default=1e-5)
@@ -81,8 +82,7 @@ def main() -> None:
     parser.add_argument(
         "--lora_target_modules", type=str, nargs="+", default=["q_proj", "v_proj"]
     )
-    parser.add_argument("--hub_repo_id", type=str, default="sft-on-preferences-v4")
-    parser.add_argument("--push_interval", type=int, default=128, help="In examples.")
+    parser.add_argument("--push_interval", type=int, default=1024, help="In examples.")
 
     # Initialize wandb and hub api
     hf_api = HfApi()
@@ -95,10 +95,19 @@ def main() -> None:
     )
     assert run is not None
 
+    # Format repo name
+    hub_repo_id = "llama-ftp" if wandb.config.data_type == "ftp" else "llama-instruct"
+    hub_repo_id += f"-{wandb.config.num_examples}"
+
     # Load dataset
     examples: list[str] = []
-    for dataset_name in wandb.config.datasets:
-        examples.extend(get_superhf_prompts(dataset_name, load_whole_completion=True))
+    if wandb.config.data_type == "ftp":
+        for dataset_name in ["anthropic-helpful-base", "anthropic-harmless-base"]:
+            examples.extend(
+                get_superhf_prompts(dataset_name, load_whole_completion=True)
+            )
+    elif wandb.config.data_type == "instruct":
+        raise NotImplementedError
     random.shuffle(examples)
 
     # Filter out prompts that are too long
@@ -173,6 +182,7 @@ def main() -> None:
                 hf_api,
                 language_model,
                 state.global_step * args.train_batch_size,
+                hub_repo_id,
             )
 
     class CustomTrainer(Trainer):
@@ -192,13 +202,21 @@ def main() -> None:
 
     # Push the tokenizer first since it won't change
     language_tokenizer.push_to_hub(
-        repo_id=wandb.config.hub_repo_id,
+        repo_id=hub_repo_id,
         commit_message="Upload tokenizer",
     )
 
     # Train model
     print("Training model...")
     trainer.train()
+
+    # Also push at the end
+    push_to_hub(
+        hf_api,
+        language_model,
+        wandb.config.num_examples,
+        hub_repo_id,
+    )
 
     # Finish run
     wandb.alert(
@@ -212,12 +230,12 @@ def push_to_hub(
     hf_api: HfApi,
     model: PreTrainedModel,
     num_examples: int,
+    repo_name: str,
 ) -> None:
     """Push the model to the hub."""
     assert hf_api is not None
 
     tqdm.write("🚀 Pushing model and tokenizer to the Hub!")
-    repo_name = wandb.config.hub_repo_id
     if "debug" in repo_name:
         tqdm.write(repo_name + " (not actually pushed due to 'debug' in name)")
     else:
@@ -230,7 +248,7 @@ def push_to_hub(
             )
         )
         tqdm.write(str())
-        # Create a new branch with the superbatch index as the name
+        # Create a new branch with the step index as the name
         hf_username = hf_api.whoami()["name"]
         repo_id = hf_username + "/" + repo_name
         branch = f"step-{num_examples:04}"
