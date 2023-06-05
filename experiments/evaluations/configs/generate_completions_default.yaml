@@ -17,31 +17,13 @@ use_openai:
 language_model_names:
   desc: The name of the language model to use
   value: [
-    "gmukobi/shf-v4-llama-kl-0.2",
-    "gmukobi/shf-v4-llama-kl-0.25",
-    "gmukobi/shf-v4-llama-kl-0.3",
-    "gmukobi/shf-v4-llama-kl-0.35",
-    "gmukobi/shf-v4-llama-kl-0.4",
-    "gmukobi/shf-v4-llama-seed-0",
-    "gmukobi/shf-v4-llama-seed-1",
-    "gmukobi/shf-v4-llama-seed-2",
-    "gmukobi/shf-v4-llama-seed-3",
-    "gmukobi/shf-v4-llama-seed-4",
-    "gmukobi/shf-v4-llama-seed-5",
-    "gmukobi/shf-v4-llama-seed-6",
-    "gmukobi/shf-v4-llama-seed-7",
-    "gmukobi/shf-v4-llama-seed-8",
-    "gmukobi/shf-v4-llama-seed-9",
-    "gmukobi/shf-v4-llama-seed-10",
-    "gmukobi/shf-v4-llama-seed-11",
-    "gmukobi/shf-v4-llama-seed-12",
-    "gmukobi/shf-v4-llama-seed-13",
-    "gmukobi/shf-v4-llama-seed-14",
-    "gmukobi/shf-v4-llama-seed-15",
-    "gmukobi/shf-v4-llama-seed-16",
-    "gmukobi/shf-v4-llama-seed-17",
-    "gmukobi/shf-v4-llama-seed-18",
-    "gmukobi/shf-v4-llama-seed-19",
+    "gmukobi/shf-v4-llama-instruct-12379",
+    "gmukobi/shf-v4-llama-instruct-6190",
+    "gmukobi/shf-v4-llama-instruct-3095",
+    "gmukobi/shf-v4-llama-instruct-1585",
+    "gmukobi/shf-v4-llama-instruct-774",
+    "gmukobi/shf-v4-llama-instruct-387",
+    "gmukobi/shf-v4-llama-instruct-194",
   ]
 language_model_interval:
   desc: The interval to use for the language model
