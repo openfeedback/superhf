@@ -31,7 +31,6 @@ def main() -> None:
 
     # Initialize
     initialize_plot()
-    plt.rcParams["lines.markersize"] = 1
     color_reward = model_type_to_palette_color("SuperHF")
     color_similarity = model_type_to_palette_color("ftp")
 
