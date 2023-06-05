@@ -140,7 +140,7 @@ def main() -> None:
     # X-ticks for dollar costs (add $ sign)
     plt.xticks(
         dollar_costs,
-        [f"${cost:.0f}" for cost in dollar_costs],
+        [f"${cost:,.0f}" for cost in dollar_costs],
     )
 
     # Set labels and title
