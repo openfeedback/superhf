@@ -35,7 +35,16 @@ INPUT_FILE_MAP = {
         "./experiments/evaluations/test_scores/llama-instruct-387.json",
         "./experiments/evaluations/test_scores/llama-instruct-194.json",
     ],
-    "SuperHF": ["./experiments/evaluations/test_scores/shf-llama-7b.json"],
+    "SuperHF (Instruct)": [
+        "./experiments/evaluations/test_scores/shf-v4-llama-instruct-12379.json",
+        "./experiments/evaluations/test_scores/shf-v4-llama-instruct-6190.json",
+        "./experiments/evaluations/test_scores/shf-v4-llama-instruct-3095.json",
+        "./experiments/evaluations/test_scores/shf-v4-llama-instruct-1585.json",
+        "./experiments/evaluations/test_scores/shf-v4-llama-instruct-774.json",
+        "./experiments/evaluations/test_scores/shf-v4-llama-instruct-387.json",
+        "./experiments/evaluations/test_scores/shf-v4-llama-instruct-194.json",
+    ],
+    "SuperHF (LLaMA)": ["./experiments/evaluations/test_scores/shf-llama-7b.json"],
 }
 
 
