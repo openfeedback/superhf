@@ -1,7 +1,8 @@
 language_model_name:
   desc: HuggingFace language model to use, or "mock" for testing
   # value: "theblackcat102/pythia-1b-deduped-sft"
-  value: "EleutherAI/pythia-70m-deduped"  # Faster
+  # value: "EleutherAI/pythia-70m-deduped"  # Faster
+  value: gmukobi/test-ftp-500
   # value: "facebook/opt-125m" # Closer to LLaMA
 reward_model_train_name:
   desc: HuggingFace reward model to use, or "mock" for testing
