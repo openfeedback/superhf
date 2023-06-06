@@ -7,8 +7,8 @@ reward_model_train_name:
   value: "/nlp/scr/fongsu/rm_combined/gptneo_1.3B_first_half"
 reward_model_val_name:
   desc: HuggingFace reward model to use, or "mock" for testing, or blank for no validation.
-  value: "/nlp/scr/fongsu/rm_combined/gptneo_1.3B_second_half"
-  # value: ""  # Disabled for most runs to save time and memory
+  # value: "/nlp/scr/fongsu/rm_combined/gptneo_1.3B_second_half"
+  value: ""  # Disabled for most runs to save time and memory
 seed:
   desc: Random seed to use for reproducibility.
   value: 66
