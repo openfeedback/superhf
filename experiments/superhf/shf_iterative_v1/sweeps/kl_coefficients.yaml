@@ -11,14 +11,20 @@ parameters:
       - 0.05
       - 0.1
       - 0.15
-      - 0.2
-      - 0.25
-      - 0.3
-      - 0.35
-      - 0.4
-  reward_model_val_name:
-    values:
-      - "/nlp/scr/fongsu/rm_combined/gptneo_1.3B_second_half"
+      # - 0.2
+      - 0.225
+      # - 0.25
+      - 0.2625
+      - 0.275
+      - 0.2875
+      # - 0.3
+      - 0.375
+      # - 0.35
+      # - 0.4
+      - 0.45
+      - 0.5
+  # reward_model_val_name:
+  #   values:
+  #     - "/nlp/scr/fongsu/rm_combined/gptneo_1.3B_second_half"
   sweep_param_name:
-    values:
-      - "kl"
+    value: "kl"
