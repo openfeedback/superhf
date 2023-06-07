@@ -316,7 +316,9 @@ class SuperHFTrainer:
                 tqdm.write(f"📃 Superbatch {superbatch_index} - Filtered Completions:")
                 for filtered_completion in filtered_completions:
                     # Don't print \n as newlines, print it as a literal string
-                    tqdm.write(filtered_completion.replace("\n", "\\n"))
+                    tqdm.write(
+                        filtered_completion.replace("\n", "\\n"), file=sys.stdout
+                    )
 
                 # Fine-tune the language model on the filtered completions
                 average_loss, average_kl_div = find_executable_batch_size(

@@ -1,7 +1,8 @@
 language_model_name:
   desc: HuggingFace language model to use, or "mock" for testing
   # value: "theblackcat102/pythia-1b-deduped-sft"
-  value: "EleutherAI/pythia-70m-deduped"  # Faster
+  # value: "EleutherAI/pythia-70m-deduped"  # Faster
+  value: gmukobi/test-ftp-500
   # value: "facebook/opt-125m" # Closer to LLaMA
 reward_model_train_name:
   desc: HuggingFace reward model to use, or "mock" for testing
@@ -42,7 +43,7 @@ num_prompts:
   value: 11
 prompt_accumulation_steps:
   desc: Number of prompts to generate, score, and filter before finetuning, or 0 for num_prompts.
-  value: 1
+  value: 2
 superbatch_size:
   desc: Number of completions to generate with the current policy before filtering and fine-tuning.
   value: 2

@@ -47,6 +47,7 @@ function Install {
     Invoke-Expression "pip-sync requirements/prod.txt requirements/dev.txt"
     # Force upgrade to CUDA version of PyTorch
     Invoke-Expression "pip install --upgrade torch --extra-index-url https://download.pytorch.org/whl/cu118 --user"
+    Invoke-Expression "python -m nltk.downloader wordnet"  # For METEOR score
     Invoke-Expression "pip install -e ."
     Invoke-Expression "mypy --install-types"
     Invoke-Expression "pip install pywin32"

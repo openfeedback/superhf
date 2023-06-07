@@ -34,7 +34,8 @@ QUALITATIVE_MODEL_ORDER = [
     "GPT-4",
 ]
 
-ALPACA_TEST_REWARD = -0.01
+LLAMA_TEST_REWARD = -0.51  # TODO get accurate reward
+ALPACA_TEST_REWARD = -0.01  # TODO redo with new data
 
 
 def bootstrapped_stdev(data: list[Any], num_samples: int = 1000) -> Any:

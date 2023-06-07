@@ -63,7 +63,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--config",
         type=str,
-        default=None,
+        default="./experiments/evaluations/configs/generate_completions_default.yaml",
         help="Path to the config file containing the completions to score",
     )
     parser.add_argument(
@@ -322,13 +322,10 @@ def load_prompts_dictionary(args):
     # Get the prompt dataset
     completions_dict = {}
     for dataset_name in args.prompt_dataset_names:
-        prompts = get_superhf_prompts(dataset_name, split="test")
+        prompts = get_superhf_prompts(
+            dataset_name, split="test", max_length_chars=args.max_prompt_char_length
+        )
 
-        # Filter out prompts that are too long
-        old_prompt_count = len(prompts)
-        prompts = [
-            prompt for prompt in prompts if len(prompt) < args.max_prompt_char_length
-        ]
         try:
             max_prompts_per_dataset = args.max_prompts_per_dataset
         except AttributeError:
@@ -338,13 +335,11 @@ def load_prompts_dictionary(args):
                 prompts = random.sample(prompts, max_prompts_per_dataset)
             else:
                 prompts = prompts[:max_prompts_per_dataset]
-        print(
-            f"Filtered {old_prompt_count - len(prompts)} prompts over "
-            f"{args.max_prompt_char_length} chars from dataset {dataset_name}."
-            f"max_prompts_per_dataset={max_prompts_per_dataset}"
-        )
-        print(f"Loaded {len(prompts)} prompts for dataset {dataset_name}")
         completions_dict[dataset_name] = prompts
+    print(
+        f"Loaded {len(completions_dict)} datasets each of length"
+        f" {len(prompts)} ({len(completions_dict) * len(prompts)} total prompts)"
+    )
     return completions_dict
 
 

@@ -2,10 +2,14 @@
 Assorted utility functions.
 """
 
+import json
 import gc
+from itertools import permutations
 import random
+from typing import Any, Optional
 from tqdm import tqdm
 
+from nltk.translate.meteor_score import meteor_score
 import numpy as np
 import torch
 from pynvml import nvmlInit, nvmlDeviceGetHandleByIndex, nvmlDeviceGetMemoryInfo
@@ -71,3 +75,39 @@ def print_memory_utilization() -> None:
         vram_percent = info.used / info.total * 100
         output += f" {i}: {vram_gb:.2f} GB ({vram_percent:.2f}%)"
     tqdm.write(output)
+
+
+def _calculate_meteor_similarity(strings: list[str]) -> float:
+    """Calculates the average METEOR similarity between all pairs of strings."""
+    scores = []
+    for string1, string2 in permutations(strings, 2):
+        score = meteor_score([string1.split()], string2.split())
+        scores.append(score)
+    return float(np.mean(scores))
+
+
+def calculate_meteor_similarity_only_completions(
+    completions: list[str],
+) -> Optional[float]:
+    """Separate completions from a superbatch then calculate METEOR similarity."""
+    if len(completions) < 2:
+        return None
+    non_prompt_completions = [
+        separate_prompt_from_completion(completion)[1] for completion in completions
+    ]
+    return _calculate_meteor_similarity(non_prompt_completions)
+
+
+def bootstrap_meteor_similarity_from_completions(
+    completion_filepath: str, comparisons_per_dataset: int = 200
+) -> list[Any]:
+    """Given a completions filename, calculate many of pairwise meteor scores per dataset."""
+    all_scores = []
+    with open(completion_filepath, "r", encoding="utf-8") as file:
+        data = json.load(file)
+        for completions in tqdm(data.values(), desc="METEOR (Dataset)"):
+            for _ in range(comparisons_per_dataset):
+                samples = random.sample(completions, 2)
+                score = calculate_meteor_similarity_only_completions(samples)
+                all_scores.append(score)
+    return all_scores

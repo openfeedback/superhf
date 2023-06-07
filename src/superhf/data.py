@@ -170,6 +170,31 @@ def get_superhf_prompts(
     return output
 
 
+def get_instruct_dataset(max_length_chars: int = -1) -> list[str]:
+    """Get a dataset for supervised instruction tuning."""
+    dataset = load_dataset("databricks/databricks-dolly-15k", split="train")
+
+    # Format into text examples
+    examples = [
+        (
+            (f'\n\nContext: {row["context"]}' if row["context"] else "")
+            + f'\n\nHuman: {row["instruction"]}\n\nAssistant: {row["response"]}'
+        )
+        for row in dataset
+    ]
+
+    # Filter prompts longer than max_length_chars
+    if max_length_chars > 0:
+        old_length = len(examples)
+        examples = [prompt for prompt in examples if len(prompt) <= max_length_chars]
+        print(
+            f"Filtered {old_length - len(examples)} prompts longer than"
+            f" {max_length_chars} chars."
+        )
+
+    return examples
+
+
 class ListDataset(IterableDataset[T]):
     """A Torch dataset that wraps a list of data."""
 

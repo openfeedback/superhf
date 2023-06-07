@@ -21,7 +21,9 @@ from transformers import (
 )
 from peft import (
     LoraConfig,
+    PeftConfig,
     get_peft_model,
+    PeftModel,
 )
 import torch
 import yaml
@@ -85,7 +87,7 @@ def main(argparse_args: argparse.Namespace, extra_args: list[str]) -> None:
             value = True
         elif value == "False":
             value = False
-        elif "." in value:
+        elif "." in value and value.replace(".", "").isdigit():
             value = float(value)
         elif value.isdigit():
             value = int(value)
@@ -237,15 +239,33 @@ def main(argparse_args: argparse.Namespace, extra_args: list[str]) -> None:
 
 def load_language_model(language_model_name: str) -> PreTrainedModel:
     """Load the language model."""
+    try:
+        peft_config = PeftConfig.from_pretrained(language_model_name)
+        base_model_path = peft_config.base_model_name_or_path
+    except ValueError:
+        # Probably isn't a PEFT model, so just load it from scratch
+        peft_config = None
+        base_model_path = language_model_name
     language_model = (
         MockLanguageModel()
-        if language_model_name == "mock"
+        if base_model_path == "mock"
         else AutoModelForCausalLM.from_pretrained(
-            language_model_name,
+            base_model_path,
             low_cpu_mem_usage=True,
         )
     )
-    if wandb.config.lora_r != 0 and wandb.config.lora_alpha != 0:
+    if peft_config is not None:
+        # Already has pretrained adapter weights, load them
+        # pylint: disable=protected-access
+        assert (
+            peft_config.base_model_name_or_path == language_model.config._name_or_path
+        )
+        language_model = PeftModel.from_pretrained(
+            language_model,
+            language_model_name,
+        )
+
+    elif wandb.config.lora_r != 0 and wandb.config.lora_alpha != 0:
         # Set up low-rank adapters (LoRA)
         lora_config = LoraConfig(
             r=wandb.config.lora_r,
