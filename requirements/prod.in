@@ -17,3 +17,4 @@ openai
 tenacity
 # deepspeed # Breaks windows, install manually
 # install trl from openfeedback in pip install -e .
+# install alpaca_farm from openfeedback. cd alpaca_farm && pip install -e .

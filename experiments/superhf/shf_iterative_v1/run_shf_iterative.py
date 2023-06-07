@@ -87,7 +87,7 @@ def main(argparse_args: argparse.Namespace, extra_args: list[str]) -> None:
             value = True
         elif value == "False":
             value = False
-        elif "." in value:
+        elif "." in value and value.replace(".", "").isdigit():
             value = float(value)
         elif value.isdigit():
             value = int(value)
