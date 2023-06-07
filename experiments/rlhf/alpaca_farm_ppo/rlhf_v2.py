@@ -21,8 +21,10 @@ import os
 import transformers
 from accelerate import DistributedDataParallelKwargs
 
+# from superhf import mocking
+
 from alpaca_farm import accelerate_patch, data_utils, logging
-from alpaca_farm.rl.ppo_trainer import PPOTrainer, make_models, make_tokenizer
+from alpaca_farm.rl.ppo_trainer import PPOTrainer, make_tokenizer, make_models
 from alpaca_farm.rl.ppo_utils import DataArguments, TrainingArguments
 
 logger = logging.get_logger(__name__)

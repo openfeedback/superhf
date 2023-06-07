@@ -7,7 +7,7 @@ from typing import Any
 
 import numpy as np
 import torch
-from transformers import GenerationMixin
+from transformers import GenerationMixin, PretrainedConfig
 from transformers.modeling_outputs import CausalLMOutputWithCrossAttentions
 
 
@@ -19,6 +19,7 @@ class MockLanguageModel(torch.nn.Module, GenerationMixin):
         super().__init__()
         self.device = torch.device("cpu")
         self.start_time = time.time()
+        self.config = PretrainedConfig()
 
     def generate(
         self,
@@ -71,6 +72,7 @@ class MockRewardModel(torch.nn.Module):
         """Mocks initialization."""
         super().__init__()
         self.device = torch.device("cpu")
+        self.backbone_model = MockLanguageModel()
 
     def __call__(
         self,
@@ -89,3 +91,28 @@ class MockRewardModel(torch.nn.Module):
     ) -> Any:
         """Mocks the forward method for sequence classification."""
         return self(**kwargs)
+
+
+if __name__ == "__main__":
+    from transformers import LlamaConfig, LlamaForCausalLM
+
+    config = LlamaConfig(
+        vocab_size=32000,
+        hidden_size=2,
+        intermediate_size=2,
+        num_hidden_layers=1,
+        num_attention_heads=2,
+        hidden_act="silu",
+        max_position_embeddings=2048,
+        initializer_range=0.02,
+        rms_norm_eps=1e-06,
+        use_cache=True,
+        pad_token_id=0,
+        bos_token_id=1,
+        eos_token_id=2,
+        tie_word_embeddings=False,
+    )
+
+    model = LlamaForCausalLM(config)
+
+    print(model)
