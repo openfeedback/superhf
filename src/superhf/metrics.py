@@ -9,7 +9,7 @@ import time
 
 import numpy as np
 import wandb
-from superhf.utils import calculate_superbatch_similarity
+from superhf.utils import calculate_meteor_similarity_only_completions
 
 # from superhf.filtering import CompletionFilterTopK
 
@@ -55,7 +55,9 @@ def report_metrics_print(metrics: SuperHFMetrics) -> None:
     score_val_avg = np.mean(metrics.scores_val) if metrics.scores_val else np.nan
     score_val_std = np.std(metrics.scores_val) if metrics.scores_val else np.nan
     score_filtered_avg = np.mean(metrics.filtered_scores)
-    similarity = calculate_superbatch_similarity(metrics.filtered_completions)
+    similarity = calculate_meteor_similarity_only_completions(
+        metrics.filtered_completions
+    )
     similarity = similarity if similarity is not None else np.nan
     print(
         "\n📊 Metrics at time"
@@ -118,7 +120,9 @@ def report_metrics_wandb(metrics: SuperHFMetrics) -> None:
     score_val_hist = wandb.Histogram(metrics.scores_val) if metrics.scores_val else None
     score_filtered_avg = np.mean(metrics.filtered_scores)
     prompt_index = metrics.superbatches_complete * len(metrics.filtered_completions)
-    similarity = calculate_superbatch_similarity(metrics.filtered_completions)
+    similarity = calculate_meteor_similarity_only_completions(
+        metrics.filtered_completions
+    )
 
     # # Create plot data of average score if we filtered different top-K numbers
     # max_top_k_to_explore = 48
