@@ -24,10 +24,10 @@ def make_mock_llama_model() -> Any:
     """
     config = LlamaConfig(
         vocab_size=32000,
-        hidden_size=2,
-        intermediate_size=2,
+        hidden_size=1,
+        intermediate_size=1,
         num_hidden_layers=1,
-        num_attention_heads=2,
+        num_attention_heads=1,
         hidden_act="silu",
         max_position_embeddings=2048,
         initializer_range=0.02,
@@ -130,6 +130,8 @@ if __name__ == "__main__":
     print("Testing making a llama model")
     llama_model = make_mock_llama_model()
     print(llama_model)
+    # print the number of parameters this model has
+    print("Number of parameters:", llama_model.num_parameters())
     # save mock model to the hub
     # print("Saving to hub")
     # llama_model.push_to_hub("mock_llama")
