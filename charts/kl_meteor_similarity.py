@@ -35,33 +35,36 @@ def main() -> None:
     color_similarity = model_type_to_palette_color("ftp")
 
     # Define the model sizes and their corresponding file names
-    model_types_to_test_names = {"SuperHF": "shf-v4-llama-kl-"}
+    model_types_to_test_names = {"SuperHF": "shf-v4-llama-2500-kl-"}
 
     # Find all the files in the test scores directory
-    reward_data = []
-    meteor_data = []
-    for model_type, file_name_template in tqdm(
-        model_types_to_test_names.items(), desc="Models"
-    ):
+    file_names = []
+    last_model_type = None
+    last_filename_template = None
+    for model_type, file_name_template in model_types_to_test_names.items():
         for file_name in os.listdir(TEST_SCORES_DIRECTORY):
             if file_name.startswith(file_name_template):
-                kl_coefficient = file_name.split("-")[-1].split(".json")[0]
-                score_file_path = os.path.join(TEST_SCORES_DIRECTORY, file_name)
-                scores = get_test_scores(score_file_path)
-                labeled_scores = [
-                    [model_type, kl_coefficient, score] for score in scores
-                ]
-                reward_data.extend(labeled_scores)
-                completion_file_path = os.path.join(
-                    TEST_COMPLETIONS_DIRECTORY, file_name
-                )
-                meteor_scores = bootstrap_meteor_similarity_from_completions(
-                    completion_file_path, NUM_BOOTSTRAP_SAMPLES
-                )
-                labeled_meteor_scores = [
-                    [model_type, kl_coefficient, score] for score in meteor_scores
-                ]
-                meteor_data.extend(labeled_meteor_scores)
+                file_names.append(file_name)
+                last_model_type = model_type
+                last_filename_template = file_name_template
+    print(f"Found {len(file_names)} files with the template {last_filename_template}")
+    file_names.sort()
+    reward_data = []
+    meteor_data = []
+    for file_name in tqdm(file_names, desc="Models"):
+        kl_coefficient = float(file_name.split("-")[-1].split(".json")[0])
+        score_file_path = os.path.join(TEST_SCORES_DIRECTORY, file_name)
+        scores = get_test_scores(score_file_path)
+        labeled_scores = [[last_model_type, kl_coefficient, score] for score in scores]
+        reward_data.extend(labeled_scores)
+        completion_file_path = os.path.join(TEST_COMPLETIONS_DIRECTORY, file_name)
+        meteor_scores = bootstrap_meteor_similarity_from_completions(
+            completion_file_path, NUM_BOOTSTRAP_SAMPLES
+        )
+        labeled_meteor_scores = [
+            [last_model_type, kl_coefficient, score] for score in meteor_scores
+        ]
+        meteor_data.extend(labeled_meteor_scores)
 
     dataframe_scores = pd.DataFrame(
         reward_data, columns=["Model", "KL-Coefficient", "Test Reward →"]
