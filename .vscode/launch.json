@@ -266,9 +266,9 @@
                 "--output_dir",
                 "mocking_output",
                 "--reward_model_name_or_path",
-                "mock",
+                "peterchatain/mock_llama",
                 "--policy_model_name_or_path",
-                "mock",
+                "peterchatain/mock_llama",
                 "--init_value_with_reward",
                 "True",
                 "--rollout_batch_size",
@@ -289,8 +289,8 @@
                 // "./examples/prompts/v0_inputs_noinputs.json",
                 "--save_steps",
                 "20"
-            ]
-            "justMyCode": false
+            ],
+            "justMyCode": true
         }
     ]
 }
