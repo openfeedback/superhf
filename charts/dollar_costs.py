@@ -21,7 +21,7 @@ INPUT_FILE_MAP = {
         "./experiments/evaluations/test_scores/llama-ftp-49516.json",
         "./experiments/evaluations/test_scores/llama-ftp-24758.json",
         "./experiments/evaluations/test_scores/llama-ftp-12379.json",
-        "./experiments/evaluations/test_scores/llama-ftp-6338.json",
+        "./experiments/evaluations/test_scores/llama-ftp-6190.json",
         "./experiments/evaluations/test_scores/llama-ftp-3095.json",
         "./experiments/evaluations/test_scores/llama-ftp-1547.json",
         "./experiments/evaluations/test_scores/llama-ftp-774.json",
@@ -35,7 +35,7 @@ INPUT_FILE_MAP = {
         "./experiments/evaluations/test_scores/llama-instruct-387.json",
         "./experiments/evaluations/test_scores/llama-instruct-194.json",
     ],
-    "SuperHF (Instruct)": [
+    "SuperHF (Instruct, OG RM)": [
         "./experiments/evaluations/test_scores/shf-v4-llama-instruct-12379.json",
         "./experiments/evaluations/test_scores/shf-v4-llama-instruct-6190.json",
         "./experiments/evaluations/test_scores/shf-v4-llama-instruct-3095.json",
@@ -44,7 +44,16 @@ INPUT_FILE_MAP = {
         "./experiments/evaluations/test_scores/shf-v4-llama-instruct-387.json",
         "./experiments/evaluations/test_scores/shf-v4-llama-instruct-194.json",
     ],
-    "SuperHF (LLaMA)": ["./experiments/evaluations/test_scores/shf-llama-7b.json"],
+    "SuperHF (LLaMA, Ablated RMs)": [
+        # "./experiments/evaluations/test_scores/shf-v4-llama-base-rm-774.json",
+        # "./experiments/evaluations/test_scores/shf-v4-llama-base-rm-1547.json",
+        # "./experiments/evaluations/test_scores/shf-v4-llama-base-rm-3095.json",
+        "./experiments/evaluations/test_scores/shf-v4-llama-base-rm-6190.json",
+        # "./experiments/evaluations/test_scores/shf-v4-llama-base-rm-12379.json",
+        "./experiments/evaluations/test_scores/shf-v4-llama-base-rm-24758.json",
+        "./experiments/evaluations/test_scores/shf-v4-llama-base-rm-49516.json",
+        # "./experiments/evaluations/test_scores/shf-llama-7b.json",
+    ],
 }
 
 
@@ -62,7 +71,7 @@ def main() -> None:
         774: 0,
         1547: 1,
         3095: 2,
-        6338: 3,
+        6190: 3,
         12379: 4,
         24758: 5,
         49516: 6,
@@ -106,14 +115,14 @@ def main() -> None:
     dataframe = pd.DataFrame(all_data, columns=["Cost", "Test Reward", "Model Type"])
 
     # Create the plot
+    palette = [model_type_to_palette_color(m) for m in dataframe["Model Type"].unique()]
+    palette[-1] = model_type_to_palette_color("gpt-4")
     sns.lineplot(
         data=dataframe,
         x="Cost",
         y="Test Reward",
         hue="Model Type",
-        palette=[
-            model_type_to_palette_color(m) for m in dataframe["Model Type"].unique()
-        ],
+        palette=palette,
         errorbar="ci",
     )
 
