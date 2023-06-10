@@ -105,7 +105,7 @@ def bootstrap_meteor_similarity_from_completions(
     all_scores = []
     with open(completion_filepath, "r", encoding="utf-8") as file:
         data = json.load(file)
-        for completions in tqdm(data.values(), desc="METEOR (Dataset)"):
+        for completions in data.values():
             for _ in range(comparisons_per_dataset):
                 samples = random.sample(completions, 2)
                 score = calculate_meteor_similarity_only_completions(samples)
