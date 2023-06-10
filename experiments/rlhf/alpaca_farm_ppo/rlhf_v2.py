@@ -63,14 +63,16 @@ def main():
     model_module: dict = make_models(
         tokenizer=tokenizer, args=training_args, accelerator=accelerator
     )
-    # dict contains dict(policy=actor_critic, ref_policy=ref_policy, reward_model=reward_model)
-    # actor_critic is LM with value head
-    # ref_policy is base LM (with value head?)
-    # reward_model is the reward model
+
+    data_args.prompt_dict_path = os.path.join(
+        os.getcwd(), "alpaca_farm/examples/prompts/v0_inputs_noinputs.json"
+    )
     data_module: dict = data_utils.make_rl_data_module(
         tokenizer=tokenizer, data_args=data_args, training_args=training_args
-    )
-    # dict(
+    )  # used alpaca_farm/examples/prompts/v0_inputs_noinputs.json for data_args.prompt_dict_path
+    # This defines th format to be used for providing the instruction.
+
+    # dict(s
     #     train_dataset=train_dataset, eval_dataset=eval_dataset,
     # data_collator=DataCollatorForQueryResponseDataset()
     # )
@@ -78,6 +80,26 @@ def main():
     # eval_dataset is QueryResponseDataset
     # data_collator is DataCollatorForQueryResponseDataset
     # QueryResponseDataset takes in a pandas dataframe and a tokenizer
+
+    # """
+    # train_dataset = QueryResponseDataset(
+    #     df=train_df,
+    #     prompt_dict=prompt_dict,
+    #     tokenizer=tokenizer,
+    #     query_len=training_args.query_len,
+    # )
+    # eval_dataset = QueryResponseDataset(
+    #     df=eval_df,
+    #     prompt_dict=prompt_dict,
+    #     tokenizer=tokenizer,
+    #     query_len=training_args.query_len,
+    # )
+    # return dict(
+    #     train_dataset=train_dataset, eval_dataset=eval_dataset,
+    #       data_collator=DataCollatorForQueryResponseDataset()
+    # )
+    # """
+
     trainer = PPOTrainer(
         args=training_args,
         accelerator=accelerator,
