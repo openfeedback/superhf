@@ -25,12 +25,12 @@ parameters:
       - 0.45
       - 0.5
   language_model_name:
-    value:
+    value: "gmukobi/llama-instruct-12379"
   # reward_model_val_name:
   #   values:
   #     - "/nlp/scr/fongsu/rm_combined/gptneo_1.3B_second_half"
   hub_repo_id:
-    value: "shf-v4-llama-instruct-12379"
+    value: "shf-v4-llama-instruct-10k"
   push_to_hub_interval:
     value: 999999
   sweep_param_name:
