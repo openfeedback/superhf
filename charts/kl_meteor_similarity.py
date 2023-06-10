@@ -5,6 +5,7 @@ Plot test reward along with METEOR score similarity.
 import os
 
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 import seaborn as sns
 from tqdm import tqdm
@@ -24,10 +25,22 @@ TEST_SCORES_DIRECTORY = "./experiments/evaluations/test_scores/"
 NUM_BOOTSTRAP_SAMPLES = 100
 
 
+def get_rewards_and_similarity(file_name: str) -> tuple[list[float], list[float]]:
+    """Get the test scores and METEOR similarity scores for a given model."""
+    score_file_path = os.path.join(TEST_SCORES_DIRECTORY, file_name)
+    completion_file_path = os.path.join(TEST_COMPLETIONS_DIRECTORY, file_name)
+    rewards = get_test_scores(score_file_path)
+    meteor_scores = bootstrap_meteor_similarity_from_completions(
+        completion_file_path, NUM_BOOTSTRAP_SAMPLES
+    )
+    return rewards, meteor_scores
+
+
 def main() -> None:
     """Main function."""
 
     # pylint: disable=too-many-locals
+    # pylint: disable=too-many-statements
 
     # Initialize
     initialize_plot()
@@ -35,7 +48,20 @@ def main() -> None:
     color_similarity = model_type_to_palette_color("ftp")
 
     # Define the model sizes and their corresponding file names
-    model_types_to_test_names = {"SuperHF": "shf-v4-llama-2500-kl-"}
+    model_types_to_test_names = {"SuperHF": "shf-v4-llama-10000-kl-"}
+
+    # Compute LLaMA's and Alpaca's mean reward and similarity
+    llama_rewards, llama_meteor_scores = get_rewards_and_similarity("llama-7b.json")
+    llama_mean_reward = np.mean(llama_rewards)
+    llama_mean_meteor_score = np.mean(llama_meteor_scores)
+    print(f"LLaMA Mean Test Reward: {llama_mean_reward:.3f}")
+    print(f"LLaMA Mean Meteor Score: {llama_mean_meteor_score:.3f}")
+
+    alpaca_rewards, alpaca_meteor_scores = get_rewards_and_similarity("alpaca_7b.json")
+    alpaca_mean_reward = np.mean(alpaca_rewards)
+    alpaca_mean_meteor_score = np.mean(alpaca_meteor_scores)
+    print(f"Alpaca Mean Test Reward: {alpaca_mean_reward:.3f}")
+    print(f"Alpaca Mean Meteor Score: {alpaca_mean_meteor_score:.3f}")
 
     # Find all the files in the test scores directory
     file_names = []
@@ -53,17 +79,14 @@ def main() -> None:
     meteor_data = []
     for file_name in tqdm(file_names, desc="Models"):
         kl_coefficient = float(file_name.split("-")[-1].split(".json")[0])
-        score_file_path = os.path.join(TEST_SCORES_DIRECTORY, file_name)
-        scores = get_test_scores(score_file_path)
-        labeled_scores = [[last_model_type, kl_coefficient, score] for score in scores]
-        reward_data.extend(labeled_scores)
-        completion_file_path = os.path.join(TEST_COMPLETIONS_DIRECTORY, file_name)
-        meteor_scores = bootstrap_meteor_similarity_from_completions(
-            completion_file_path, NUM_BOOTSTRAP_SAMPLES
-        )
+        rewards, meteor_scores = get_rewards_and_similarity(file_name)
+        labeled_rewards = [
+            [last_model_type, kl_coefficient, score] for score in rewards
+        ]
         labeled_meteor_scores = [
             [last_model_type, kl_coefficient, score] for score in meteor_scores
         ]
+        reward_data.extend(labeled_rewards)
         meteor_data.extend(labeled_meteor_scores)
 
     dataframe_scores = pd.DataFrame(
@@ -88,12 +111,12 @@ def main() -> None:
     # Twin
     ax2 = plt.twinx()
     dataframe_meteor = pd.DataFrame(
-        meteor_data, columns=["Model", "KL-Coefficient", "Meteor Similarity ←"]
+        meteor_data, columns=["Model", "KL-Coefficient", "METEOR Similarity ←"]
     )
     sns.lineplot(
         data=dataframe_meteor,
         x="KL-Coefficient",
-        y="Meteor Similarity ←",
+        y="METEOR Similarity ←",
         errorbar="ci",
         # capsize=0.1,
         # marker="",
@@ -111,18 +134,59 @@ def main() -> None:
     ax1.set_ylabel("Test Reward →", color=color_reward)
     # ax2.spines["right"].set_color(color_similarity)
     ax2.tick_params(axis="y", colors=color_similarity)
-    ax2.set_ylabel("Meteor Similarity ←", color=color_similarity)
+    ax2.set_ylabel("METEOR Similarity ←", color=color_similarity)
 
     # Turn off the grid for the second y axis
     ax2.grid(False)
 
+    # Plot dashed horizontal lines for llama and alpaca
+    plt.rcParams["lines.marker"] = ""
+    ax1.axhline(
+        llama_mean_reward, color=color_reward, linestyle="--", label="LLaMA Mean Reward"
+    )
+    ax2.axhline(
+        llama_mean_meteor_score,
+        color=color_similarity,
+        linestyle="--",
+        label="LLaMA Mean Similarity",
+    )
+    ax1.axhline(
+        alpaca_mean_reward,
+        color=color_reward,
+        linestyle=":",
+        label="Alpaca Mean Reward",
+    )
+    # ax2.axhline(
+    #     alpaca_mean_meteor_score,
+    #     color=color_similarity,
+    #     linestyle=":",
+    #     label="Alpaca Mean Similarity",
+    # )  # About the same as llama
+    # Add empty lines to ax1 so they show up on the legend
+    ax1.plot(
+        [],
+        [],
+        color=color_similarity,
+        linestyle="--",
+        label="LLaMA/Alpaca Mean Similarity",
+    )
+
     # Set labels and title
     plt.xlabel("KL Coefficient")
     # plt.ylabel("Test Score →")
-    plt.title("KL Regularization of Model Diversity")
+    plt.title("SuperHF KL Regularization of Reward and Completion Similarity")
+
+    # Set legend
+    ax1.legend(loc="upper right")
 
     # Save the plot
     save_plot(OUTPUT_FILE)
+
+    # Zoom in
+    plt.xlim(0.2, 0.4)
+    ax1.set_ylim(-0.5, 0.4)
+    ax2.set_ylim(0.0, 0.23)
+    save_plot(OUTPUT_FILE.replace(".png", "-zoom.png"))
 
 
 if __name__ == "__main__":
