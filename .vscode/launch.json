@@ -258,11 +258,11 @@
                 "--run_name",
                 "mock_1.0",
                 "--step_per_device_batch_size",
-                "2",
+                "1",
                 "--rollout_per_device_batch_size",
-                "2", // 32
+                "1", // 32
                 "--per_device_eval_batch_size",
-                "2", // 32
+                "1", // 32
                 "--output_dir",
                 "mocking_output",
                 "--reward_model_name_or_path",
@@ -270,11 +270,11 @@
                 "--policy_model_name_or_path",
                 "peterchatain/mock_llama",
                 "--init_value_with_reward",
-                "True",
+                "False",
                 "--rollout_batch_size",
-                "2", // 512
+                "1", // 512
                 "--step_batch_size",
-                "2", //256
+                "1", //256
                 "--learning_rate",
                 "1e-5",
                 "--warmup_steps",

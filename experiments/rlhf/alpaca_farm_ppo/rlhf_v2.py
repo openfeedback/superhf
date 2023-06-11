@@ -19,6 +19,7 @@ A module for training a language model with PPO using the Alpaca Farm environmen
 import os
 
 import transformers
+from torch.cuda import is_available
 from accelerate import DistributedDataParallelKwargs
 
 # from superhf import mocking
@@ -40,6 +41,12 @@ def main():
     # pylint: disable=unbalanced-tuple-unpacking
     data_args, training_args = parser.parse_args_into_dataclasses()
 
+    force_cpu = False
+    if not is_available():
+        # patch because accelerate seems to choose 'mps' backend even if using
+        # intel based macbook.
+        force_cpu = True
+
     accelerator = accelerate_patch.MyAccelerator(
         gradient_accumulation_steps=training_args.gradient_accumulation_steps,
         log_with=["wandb"],
@@ -48,6 +55,7 @@ def main():
         step_scheduler_with_optimizer=False,  # Untie optimizer and scheduler step.
         # Value model might not use all parameters (e.g., lm-head) in the forward pass.
         kwargs_handlers=[DistributedDataParallelKwargs(find_unused_parameters=True)],
+        cpu=force_cpu,
     )
 
     accelerator.init_trackers(
@@ -64,13 +72,15 @@ def main():
         tokenizer=tokenizer, args=training_args, accelerator=accelerator
     )
 
-    data_args.prompt_dict_path = os.path.join(
-        os.getcwd(), "alpaca_farm/examples/prompts/v0_inputs_noinputs.json"
-    )
+    if "mock" in training_args.policy_model_name_or_path:
+        data_args.prompt_dict_path = os.path.join(
+            os.getcwd(), "alpaca_farm/examples/prompts/v0_inputs_noinputs.json"
+        )
+        # used alpaca_farm/examples/prompts/v0_inputs_noinputs.json for data_args.prompt_dict_path
+        # This defines th format to be used for providing the instruction.
     data_module: dict = data_utils.make_rl_data_module(
         tokenizer=tokenizer, data_args=data_args, training_args=training_args
-    )  # used alpaca_farm/examples/prompts/v0_inputs_noinputs.json for data_args.prompt_dict_path
-    # This defines th format to be used for providing the instruction.
+    )
 
     # dict(s
     #     train_dataset=train_dataset, eval_dataset=eval_dataset,
