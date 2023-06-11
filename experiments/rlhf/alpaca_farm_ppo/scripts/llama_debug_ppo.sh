@@ -1,9 +1,7 @@
 file=$1
 run_name=$2
-prompt_dict_path=$3
-
-root_path="experiments/rlhf/alpaca_farm_ppo"
-config_file="${root_path}/accelerate_configs/rlhf_ppo_fsdp_llama_1gpu.yaml"
+config_file=$3
+prompt_dict_path=$4
 
 accelerate launch --config_file "${config_file}" "${root_path}/rlhf_v2.py"\
   --run_name "${run_name}" \
