@@ -17,8 +17,18 @@ use_openai:
 language_model_names:
   desc: The name of the language model to use
   value: [
-    "gmukobi/shf-v4-llama-10000-kl-0.45",
-    "gmukobi/shf-v4-llama-10000-kl-0.5",
+    "gmukobi/shf-v4-llama-instruct-10k-kl-0.375",
+    "gmukobi/shf-v4-llama-instruct-10k-kl-0.15",
+    "gmukobi/shf-v4-llama-instruct-10k-kl-0.275",
+    "gmukobi/shf-v4-llama-instruct-10k-kl-0.3",
+    "gmukobi/shf-v4-llama-instruct-10k-kl-0.2",
+    "gmukobi/shf-v4-llama-instruct-10k-kl-0.225",
+    "gmukobi/shf-v4-llama-instruct-10k-kl-0.05",
+    "gmukobi/shf-v4-llama-instruct-10k-kl-0.1",
+    "gmukobi/shf-v4-llama-instruct-10k-kl-0.01",
+    "gmukobi/shf-v4-llama-instruct-10k-kl-0.25",
+    "gmukobi/shf-v4-llama-instruct-10k-kl-0.025",
+    "gmukobi/shf-v4-llama-instruct-10k-kl-0",
   ]
 language_model_interval:
   desc: The interval to use for the language model
