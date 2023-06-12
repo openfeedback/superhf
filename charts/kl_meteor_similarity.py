@@ -48,7 +48,7 @@ def main() -> None:
     color_similarity = model_type_to_palette_color("ftp")
 
     # Define the model sizes and their corresponding file names
-    model_types_to_test_names = {"SuperHF": "shf-v4-llama-10000-kl-"}
+    model_types_to_test_names = {"SuperHF": "shf-v4-llama-instruct-10k-kl-"}
 
     # Compute LLaMA's and Alpaca's mean reward and similarity
     llama_rewards, llama_meteor_scores = get_rewards_and_similarity("llama-7b.json")
