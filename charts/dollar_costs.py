@@ -35,7 +35,7 @@ INPUT_FILE_MAP = {
         "./experiments/evaluations/test_scores/llama-instruct-387.json",
         "./experiments/evaluations/test_scores/llama-instruct-194.json",
     ],
-    "SuperHF (Instruct, OG RM)": [
+    "SHF (Instr OG RM)": [
         "./experiments/evaluations/test_scores/shf-v4-llama-instruct-12379.json",
         "./experiments/evaluations/test_scores/shf-v4-llama-instruct-6190.json",
         "./experiments/evaluations/test_scores/shf-v4-llama-instruct-3095.json",
@@ -44,14 +44,25 @@ INPUT_FILE_MAP = {
         "./experiments/evaluations/test_scores/shf-v4-llama-instruct-387.json",
         "./experiments/evaluations/test_scores/shf-v4-llama-instruct-194.json",
     ],
-    "SuperHF (LLaMA, Ablated RMs)": [
+    "SHF (LLaMA OG RM)": [
+        "./experiments/evaluations/test_scores/shf-v4-llama-10000-kl-0.35.json",
+    ],
+    "SHF (LLaMA New RMs)": [
+        "./experiments/evaluations/test_scores/shf-v5-llama-base-rm-2.0.json",
+        "./experiments/evaluations/test_scores/shf-v5-llama-base-rm-1.0.json",
+        "./experiments/evaluations/test_scores/shf-v5-llama-base-rm-0.5.json",
+        "./experiments/evaluations/test_scores/shf-v5-llama-base-rm-0.25.json",
+        "./experiments/evaluations/test_scores/shf-v5-llama-base-rm-0.125.json",
+        "./experiments/evaluations/test_scores/shf-v5-llama-base-rm-0.0625.json",
+        "./experiments/evaluations/test_scores/shf-v5-llama-base-rm-0.03125.json",
+        "./experiments/evaluations/test_scores/shf-v5-llama-base-rm-0.015625.json",
         # "./experiments/evaluations/test_scores/shf-v4-llama-base-rm-774.json",
         # "./experiments/evaluations/test_scores/shf-v4-llama-base-rm-1547.json",
         # "./experiments/evaluations/test_scores/shf-v4-llama-base-rm-3095.json",
-        "./experiments/evaluations/test_scores/shf-v4-llama-base-rm-6190.json",
+        # "./experiments/evaluations/test_scores/shf-v4-llama-base-rm-6190.json",
         # "./experiments/evaluations/test_scores/shf-v4-llama-base-rm-12379.json",
-        "./experiments/evaluations/test_scores/shf-v4-llama-base-rm-24758.json",
-        "./experiments/evaluations/test_scores/shf-v4-llama-base-rm-49516.json",
+        # "./experiments/evaluations/test_scores/shf-v4-llama-base-rm-24758.json",
+        # "./experiments/evaluations/test_scores/shf-v4-llama-base-rm-49516.json",
         # "./experiments/evaluations/test_scores/shf-llama-7b.json",
     ],
 }
@@ -66,7 +77,16 @@ def main() -> None:
     initialize_plot()
 
     # Define the x-axis
-    dollar_costs = [322.5, 644.58, 1289.58, 2640.83, 5157.92, 10315.83, 20631.67]
+    dollar_costs = [
+        322.5,
+        644.58,
+        1289.58,
+        2640.83,
+        5157.92,
+        10315.83,
+        20631.67,
+        41263.33,
+    ]
     pref_number_to_dollar_cost_index = {
         774: 0,
         1547: 1,
@@ -75,6 +95,7 @@ def main() -> None:
         12379: 4,
         24758: 5,
         49516: 6,
+        99032: 7,
     }
     instruct_number_to_dollar_cost_index = {
         194: 0,
@@ -84,6 +105,17 @@ def main() -> None:
         3095: 4,
         6190: 5,
         12379: 6,
+        24758: 7,
+    }
+    rm_fraction_to_dollar_cost_index = {
+        2.0: 7,
+        1.0: 6,
+        0.5: 5,
+        0.25: 4,
+        0.125: 3,
+        0.0625: 2,
+        0.03125: 1,
+        0.015625: 0,
     }
 
     # Calculate plot values for data
@@ -92,17 +124,26 @@ def main() -> None:
         for score_file in score_files:
             scores = get_test_scores(score_file)
             try:
-                train_index = int(score_file.rsplit("-", maxsplit=1)[-1].split(".")[0])
+                train_index_str = score_file.rsplit("-", maxsplit=1)[-1].split(".json")[
+                    0
+                ]
                 if "instruct" in score_file:
+                    train_index = int(train_index_str)
                     dollar_cost = dollar_costs[
                         instruct_number_to_dollar_cost_index[train_index]
                     ]
+                elif "rm" in score_file and "0." in score_file:
+                    train_frac = float(train_index_str)
+                    dollar_cost = dollar_costs[
+                        rm_fraction_to_dollar_cost_index[train_frac]
+                    ]
                 else:
+                    train_index = int(train_index_str)
                     dollar_cost = dollar_costs[
                         pref_number_to_dollar_cost_index[train_index]
                     ]
             except ValueError:
-                dollar_cost = dollar_costs[-1]  # SuperHF
+                dollar_cost = dollar_costs[-2]  # SuperHF
 
             all_data.extend([(dollar_cost, score, model_type) for score in scores])
 
@@ -117,6 +158,7 @@ def main() -> None:
     # Create the plot
     palette = [model_type_to_palette_color(m) for m in dataframe["Model Type"].unique()]
     palette[-1] = model_type_to_palette_color("gpt-4")
+    palette[3] = "#0066bb"
     sns.lineplot(
         data=dataframe,
         x="Cost",
@@ -141,19 +183,28 @@ def main() -> None:
         label="Alpaca",
         marker="",
     )
-    plt.legend()
+    # Smaller more transparent legend
+    plt.legend(ncol=2, fontsize=12, loc="upper left", framealpha=0.5)
 
     # Logx
     plt.xscale("log")
 
-    # X-ticks for dollar costs (add $ sign)
+    # X-ticks for dollar costs, preference counts, and instruction counts
+    all_num_prefs = sorted(pref_number_to_dollar_cost_index.keys())
+    all_num_instructs = sorted(instruct_number_to_dollar_cost_index.keys())
     plt.xticks(
-        dollar_costs,
-        [f"${cost:,.0f}" for cost in dollar_costs],
+        [200] + dollar_costs,
+        ["Price\nPrefs\nInstrs"]
+        + [
+            f"${cost:,.0f}\n{pref:,d}\n{instruct:,d}"
+            for cost, pref, instruct in zip(
+                dollar_costs, all_num_prefs, all_num_instructs
+            )
+        ],
     )
 
     # Set labels and title
-    plt.xlabel("Data Price (At $25/hour)")
+    plt.xlabel("Data Cost (At $25/hour, 1 min/preference, 4 min/instruction)")
     plt.ylabel("Test Reward")
     plt.title("Price Efficiency of Training Methods")
 
