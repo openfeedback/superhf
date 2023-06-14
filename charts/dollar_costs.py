@@ -44,11 +44,11 @@ INPUT_FILE_MAP = {
         "./experiments/evaluations/test_scores/shf-v4-llama-instruct-387.json",
         "./experiments/evaluations/test_scores/shf-v4-llama-instruct-194.json",
     ],
-    "SHF (LLaMA OG RM)": [
-        "./experiments/evaluations/test_scores/shf-v4-llama-10000-kl-0.35.json",
-    ],
+    # "SHF (LLaMA OG RM)": [
+    #     "./experiments/evaluations/test_scores/shf-v4-llama-10000-kl-0.35.json",
+    # ],
     "SHF (LLaMA New RMs)": [
-        "./experiments/evaluations/test_scores/shf-v5-llama-base-rm-2.0.json",
+        # "./experiments/evaluations/test_scores/shf-v5-llama-base-rm-2.0.json",
         "./experiments/evaluations/test_scores/shf-v5-llama-base-rm-1.0.json",
         "./experiments/evaluations/test_scores/shf-v5-llama-base-rm-0.5.json",
         "./experiments/evaluations/test_scores/shf-v5-llama-base-rm-0.25.json",
@@ -85,7 +85,7 @@ def main() -> None:
         5157.92,
         10315.83,
         20631.67,
-        41263.33,
+        # 41263.33,
     ]
     pref_number_to_dollar_cost_index = {
         774: 0,
@@ -95,17 +95,17 @@ def main() -> None:
         12379: 4,
         24758: 5,
         49516: 6,
-        99032: 7,
+        # 99032: 7,
     }
     instruct_number_to_dollar_cost_index = {
         194: 0,
         387: 1,
         774: 2,
-        1585: 3,
+        1547: 3,
         3095: 4,
         6190: 5,
         12379: 6,
-        24758: 7,
+        # 24758: 7,
     }
     rm_fraction_to_dollar_cost_index = {
         2.0: 7,
@@ -158,7 +158,7 @@ def main() -> None:
     # Create the plot
     palette = [model_type_to_palette_color(m) for m in dataframe["Model Type"].unique()]
     palette[-1] = model_type_to_palette_color("gpt-4")
-    palette[3] = "#0066bb"
+    palette[3] = "#76f"
     sns.lineplot(
         data=dataframe,
         x="Cost",
@@ -184,7 +184,7 @@ def main() -> None:
         marker="",
     )
     # Smaller more transparent legend
-    plt.legend(ncol=2, fontsize=12, loc="upper left", framealpha=0.5)
+    plt.legend(ncol=3, fontsize=12, loc="upper left", framealpha=0.5)
 
     # Logx
     plt.xscale("log")
