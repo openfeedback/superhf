@@ -2,7 +2,7 @@ run_name=$2
 file=$1
 prompt_dict_path=$3
 
-
+# TODO: Change init_value_with_reward to False
 python "${file}" \
   --run_name "${run_name}" \
   --step_per_device_batch_size 1 \
@@ -11,7 +11,7 @@ python "${file}" \
   --output_dir "mocking_output_alpaca_farm" \
   --reward_model_name_or_path "peterchatain/mock_llama" \
   --policy_model_name_or_path "peterchatain/mock_llama" \
-  --init_value_with_reward True \ # TODO: change to False
+  --init_value_with_reward True \
   --rollout_batch_size 8 \
   --step_batch_size 1 \
   --learning_rate 1e-5 \

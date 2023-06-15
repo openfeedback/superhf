@@ -16,6 +16,7 @@ else
 fi
 
 #run command
+# TODO: Change init_value_with_reward to False
 ${command} \
   --run_name "${run_name}" \
   --step_per_device_batch_size 1 \
