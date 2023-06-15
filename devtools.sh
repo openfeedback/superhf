@@ -9,6 +9,7 @@ function usage {
     echo "  upgrade: Upgrade the dependencies, freeze them, and install them"
     echo "  install: Just install the frozen dependencies"
     echo "  merge: Pull main and merge into this branch (no fast-forward)"
+    echo "  pull: git pull here, in trl, and alpaca_farm"
 }
 
 # Activate the conda environment or create it if it doesn't exist
@@ -56,6 +57,15 @@ function pull_main {
     git merge main --no-ff
 }
 
+function pull_all {
+    git pull
+    cd alpaca_farm/
+    git pull
+    cd ../trl
+    git pull
+    cd ..
+}
+
 # Workflows
 case "$1" in
     activate)
@@ -70,6 +80,9 @@ case "$1" in
         ;;
     merge)
         pull_main
+        ;;
+    pull)
+        pull_all
         ;;
     *)
         usage
