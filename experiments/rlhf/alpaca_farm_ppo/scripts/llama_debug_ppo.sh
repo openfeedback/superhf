@@ -24,8 +24,8 @@ ${command} \
   --output_dir "llama_output_alpaca_farm" \
   --reward_model_name_or_path "/juice5/scr5/nlp/llama_model/llama_hf_latest/llama-7b" \
   --policy_model_name_or_path "/juice5/scr5/nlp/llama_model/llama_hf_latest/llama-7b" \
-  --init_value_with_reward False \
-  --rollout_batch_size 1 \
+  --init_value_with_reward True \ # TODO: Change to false
+  --rollout_batch_size 8 \
   --step_batch_size 1 \
   --learning_rate 1e-5 \
   --warmup_steps 5 \
@@ -33,4 +33,5 @@ ${command} \
   --total_epochs 1 \
   --flash_attn False \
   --prompt_dict_path "${prompt_dict_path}" \
-  --save_steps 20
+  --save_steps 99999 \
+  --lora_r 4 \
