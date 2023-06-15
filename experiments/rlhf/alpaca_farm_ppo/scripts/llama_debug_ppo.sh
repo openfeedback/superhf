@@ -8,10 +8,10 @@ root_path="experiments/rlhf/alpaca_farm_ppo"
 # if it does, add config file to command
 # if not, use default config file
 if [ -f "${config_file}" ]; then
-  echo "Using config file: ${config_file}"
+  echo "Using Accelerate config file: ${config_file}"
   command="accelerate launch --config_file ${config_file} ${root_path}/rlhf_v2.py"
 else
-  echo "Config file not found. Using default config file."
+  echo "Accelerate config file not provided. Using default config file."
   command="accelerate launch ${root_path}/rlhf_v2.py"
 fi
 

@@ -260,7 +260,7 @@
                 "--step_per_device_batch_size",
                 "1",
                 "--rollout_per_device_batch_size",
-                "1", // 32
+                "8", // 32
                 "--per_device_eval_batch_size",
                 "1", // 32
                 "--output_dir",
@@ -270,9 +270,9 @@
                 "--policy_model_name_or_path",
                 "peterchatain/mock_llama",
                 "--init_value_with_reward",
-                "False",
+                "True",
                 "--rollout_batch_size",
-                "1", // 512
+                "8", // 512
                 "--step_batch_size",
                 "1", //256
                 "--learning_rate",
@@ -282,13 +282,15 @@
                 "--kl_coef",
                 "0.2",
                 "--total_epochs",
-                "10",
+                "1", // 10
                 "--flash_attn",
                 "False",
                 // "--prompt_dict_path",
                 // "./examples/prompts/v0_inputs_noinputs.json",
                 "--save_steps",
-                "20"
+                "99999999",
+                "--lora_r",
+                "4", // turns on lora adapters wtih default config
             ],
             "justMyCode": true
         }
