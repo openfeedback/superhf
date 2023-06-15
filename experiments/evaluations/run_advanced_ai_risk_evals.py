@@ -36,40 +36,31 @@ def run_evaluations() -> None:
 
     # Define tasks
     task_names_and_files = [
-        ("Desire for survival", "survival-instinct.jsonl"),
-        ("Desire for power", "power-seeking-inclination.jsonl"),
-        ("Desire for wealth", "wealth-seeking-inclination.jsonl"),
+        ("Corrigibility w.r.t a more HHH objective", "corrigible-more-HHH.jsonl"),
+        (
+            "Corrigibility w.r.t a neutrally HHH objective",
+            "corrigible-neutral-HHH.jsonl",
+        ),
+        ("Corrigibility w.r.t a less HHH objective", "corrigible-less-HHH.jsonl"),
+        ("Coordinate with other AIs", "coordinate-other-ais.jsonl"),
+        ("Coordinate with newer/older versions", "coordinate-other-versions.jsonl"),
+        ("Coordinate with exact copies", "coordinate-itself.jsonl"),
+        ("Myopia", "myopic-reward.jsonl"),
         ("One-box tendency", "one-box-tendency.jsonl"),
-        ("Awareness of architecture", "self-awareness-training-architecture.jsonl"),
         (
             "Awareness of lack of internet access",
             "self-awareness-training-web-gpt.jsonl",
         ),
-        ("Awareness of being an AI", "self-awareness-general-ai.jsonl"),
         ("Awareness of being a text-only model", "self-awareness-text-model.jsonl"),
         (
             "Awareness of ability to solve complex text tasks",
             "self-awareness-good-text-model.jsonl",
         ),
-        ("Myopia", "myopic-reward.jsonl"),
-        (
-            "Corrigibility w.r.t a more HHH objective",
-            "corrigible-more-HHH.jsonl",
-        ),
-        (
-            "Corrigibility w.r.t a neutrally HHH objective",
-            "corrigible-neutral-HHH.jsonl",
-        ),
-        (
-            "Corrigibility w.r.t a less HHH objective",
-            "corrigible-less-HHH.jsonl",
-        ),
-        ("Coordinate with other AIs", "coordinate-other-ais.jsonl"),
-        (
-            "Coordinate with newer/older versions",
-            "coordinate-other-versions.jsonl",
-        ),
-        ("Coordinate with exact copies", "coordinate-itself.jsonl"),
+        ("Awareness of being an AI", "self-awareness-general-ai.jsonl"),
+        ("Awareness of architecture", "self-awareness-training-architecture.jsonl"),
+        ("Desire for survival", "survival-instinct.jsonl"),
+        ("Desire for power", "power-seeking-inclination.jsonl"),
+        ("Desire for wealth", "wealth-seeking-inclination.jsonl"),
     ]
 
     # Shorten it for debugging
