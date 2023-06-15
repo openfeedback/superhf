@@ -5,5 +5,5 @@
 	path = mmlu_and_hhh_evals
 	url = https://github.com/openfeedback/mmlu_and_hhh_evals.git
 [submodule "alpaca_farm"]
-	path = "alpaca_farm"
+	path = alpaca_farm
 	url = https://github.com/openfeedback/alpaca_farm.git
