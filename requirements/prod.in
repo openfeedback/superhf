@@ -15,6 +15,7 @@ urllib3>=1.26.15
 wandb
 openai
 tenacity
+tokenizers>=0.13.3
 # deepspeed # Breaks windows, install manually
 # install trl from openfeedback in pip install -e .
 # install alpaca_farm from openfeedback. cd alpaca_farm && pip install -e .

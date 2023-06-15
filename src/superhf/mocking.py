@@ -12,6 +12,7 @@ from transformers import (
     PretrainedConfig,
     LlamaConfig,
     LlamaForCausalLM,
+    LlamaTokenizer,
 )
 from transformers.modeling_outputs import CausalLMOutputWithCrossAttentions
 
@@ -21,9 +22,10 @@ def make_mock_llama_model() -> Any:
     Creates a mock LlamaForCausalLM model.
 
     The llama model has one hidden layer, hidden size 2, and 2 attention heads.
+    We increase vocab size to accomodate a special pad token.
     """
     config = LlamaConfig(
-        vocab_size=32000,
+        vocab_size=32001,
         hidden_size=1,
         intermediate_size=1,
         num_hidden_layers=1,
@@ -33,7 +35,7 @@ def make_mock_llama_model() -> Any:
         initializer_range=0.02,
         rms_norm_eps=1e-06,
         use_cache=True,
-        pad_token_id=0,
+        pad_token_id=32000,  # '[PAD]'
         bos_token_id=1,
         eos_token_id=2,
         tie_word_embeddings=False,
@@ -41,6 +43,13 @@ def make_mock_llama_model() -> Any:
 
     model = LlamaForCausalLM(config)
     return model
+
+
+def make_mock_llama_tokenizer() -> Any:
+    """
+    Creates a mock LlamaTokenizer.
+    """
+    return LlamaTokenizer.from_pretrained("hf-internal-testing/llama-tokenizer")
 
 
 class MockLanguageModel(torch.nn.Module, GenerationMixin):
@@ -133,5 +142,10 @@ if __name__ == "__main__":
     # print the number of parameters this model has
     print("Number of parameters:", llama_model.num_parameters())
     # save mock model to the hub
-    # print("Saving to hub")
+    print("Saving to hub")
     # llama_model.push_to_hub("mock_llama")
+    tokenizer = make_mock_llama_tokenizer()
+    tokenizer.add_special_tokens({"pad_token": "[PAD]"})
+    print(tokenizer)
+    # pylint: disable=not-callable
+    tokenizer.push_to_hub("mock_llama")
