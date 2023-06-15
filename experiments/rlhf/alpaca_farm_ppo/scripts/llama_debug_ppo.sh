@@ -25,7 +25,7 @@ ${command} \
   --output_dir "llama_output_alpaca_farm" \
   --reward_model_name_or_path "peterchatain/mock_llama" \
   --policy_model_name_or_path "/juice5/scr5/nlp/llama_model/llama_hf_latest/llama-7b" \
-  --init_value_with_reward True \ # TODO: Change to false
+  --init_value_with_reward True \
   --rollout_batch_size 8 \
   --step_batch_size 1 \
   --learning_rate 1e-5 \
