@@ -35,15 +35,15 @@ INPUT_FILE_MAP = {
         "./experiments/evaluations/test_scores/llama-instruct-387.json",
         "./experiments/evaluations/test_scores/llama-instruct-194.json",
     ],
-    "SHF (Instr OG RM)": [
-        "./experiments/evaluations/test_scores/shf-v4-llama-instruct-12379.json",
-        "./experiments/evaluations/test_scores/shf-v4-llama-instruct-6190.json",
-        "./experiments/evaluations/test_scores/shf-v4-llama-instruct-3095.json",
-        "./experiments/evaluations/test_scores/shf-v4-llama-instruct-1547.json",
-        "./experiments/evaluations/test_scores/shf-v4-llama-instruct-774.json",
-        "./experiments/evaluations/test_scores/shf-v4-llama-instruct-387.json",
-        "./experiments/evaluations/test_scores/shf-v4-llama-instruct-194.json",
-    ],
+    # "SHF (Instr OG RM)": [
+    #     "./experiments/evaluations/test_scores/shf-v4-llama-instruct-12379.json",
+    #     "./experiments/evaluations/test_scores/shf-v4-llama-instruct-6190.json",
+    #     "./experiments/evaluations/test_scores/shf-v4-llama-instruct-3095.json",
+    #     "./experiments/evaluations/test_scores/shf-v4-llama-instruct-1547.json",
+    #     "./experiments/evaluations/test_scores/shf-v4-llama-instruct-774.json",
+    #     "./experiments/evaluations/test_scores/shf-v4-llama-instruct-387.json",
+    #     "./experiments/evaluations/test_scores/shf-v4-llama-instruct-194.json",
+    # ],
     # "SHF (LLaMA OG RM)": [
     #     "./experiments/evaluations/test_scores/shf-v4-llama-10000-kl-0.35.json",
     # ],
@@ -64,6 +64,23 @@ INPUT_FILE_MAP = {
         # "./experiments/evaluations/test_scores/shf-v4-llama-base-rm-24758.json",
         # "./experiments/evaluations/test_scores/shf-v4-llama-base-rm-49516.json",
         # "./experiments/evaluations/test_scores/shf-llama-7b.json",
+    ],
+    "SHF (Instruct New RMs)": [
+        "./experiments/evaluations/test_scores/shf-v5-llama-instruct-194-rm-0.015625.json",
+        "./experiments/evaluations/test_scores/shf-v5-llama-instruct-774-rm-0.0625.json",
+        "./experiments/evaluations/test_scores/shf-v5-llama-instruct-387-rm-0.03125.json",
+        "./experiments/evaluations/test_scores/shf-v5-llama-instruct-12379-rm-1.0.json",
+        # "./experiments/evaluations/test_scores/shf-v5-llama-instruct-3095-rm-0.25.json",
+        # "./experiments/evaluations/test_scores/shf-v5-llama-instruct-1547-rm-0.125.json",
+        # "./experiments/evaluations/test_scores/shf-v5-llama-instruct-6190-rm-0.5.json",
+    ],
+    "SHF (FTP New RMs)": [
+        "./experiments/evaluations/test_scores/shf-v5-llama-ftp-12379-rm-0.25.json",
+        "./experiments/evaluations/test_scores/shf-v5-llama-ftp-774-rm-0.015625.json",
+        "./experiments/evaluations/test_scores/shf-v5-llama-ftp-3095-rm-0.0625.json",
+        "./experiments/evaluations/test_scores/shf-v5-llama-ftp-6190-rm-0.125.json",
+        "./experiments/evaluations/test_scores/shf-v5-llama-ftp-24758-rm-0.5.json",
+        # "/experiments/evaluations/test_scores/shf-v5-llama-ftp-49516-rm-1.0.json",
     ],
 }
 
@@ -127,7 +144,7 @@ def main() -> None:
                 train_index_str = score_file.rsplit("-", maxsplit=1)[-1].split(".json")[
                     0
                 ]
-                if "instruct" in score_file:
+                if "instruct" in score_file and not "-rm-" in score_file:
                     train_index = int(train_index_str)
                     dollar_cost = dollar_costs[
                         instruct_number_to_dollar_cost_index[train_index]
