@@ -7,7 +7,7 @@ parameters:
   kl_coefficient:
     values:
       - 0.0
-      - 0.01
+      # - 0.01
       - 0.025
       - 0.05
       - 0.1
@@ -15,9 +15,9 @@ parameters:
       - 0.2
       - 0.225
       - 0.25
-      - 0.2625
+      # - 0.2625
       - 0.275
-      - 0.2875
+      # - 0.2875
       - 0.3
       - 0.375
       - 0.35
@@ -28,10 +28,12 @@ parameters:
   #   values:
   #     - "/nlp/scr/fongsu/rm_combined/gptneo_1.3B_second_half"
   hub_repo_id:
-    value: "shf-v4-llama-10000"
+    value: "shf-v4-llama-s2-10k"
   push_to_hub_interval:
     value: 999999
   sweep_param_name:
     value: "kl"
   num_prompts:
     value: 10000
+  seed:
+    value: 2
