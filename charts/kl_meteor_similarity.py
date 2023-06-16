@@ -68,6 +68,8 @@ def main() -> None:
     print(f"LLaMA Mean Test Reward: {llama_mean_reward:.3f}")
     print(f"LLaMA Mean Meteor Score: {llama_mean_meteor_score:.3f}")
 
+    instruct_mean_reward = None
+    instruct_mean_meteor_score = None
     if INSTRUCT_NOT_LLAMA:
         instruct_rewards, instruct_meteor_scores = get_rewards_and_similarity(
             "llama-instruct-12379.json"
