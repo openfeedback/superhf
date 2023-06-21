@@ -2,7 +2,7 @@ run_name=$2
 file=$1
 prompt_dict_path=$3
 
-# TODO: Change init_value_with_reward to False
+# TODO: Change init_value_with_reward to False? They say to make it true
 python "${file}" \
   --run_name "${run_name}" \
   --step_per_device_batch_size 1 \
