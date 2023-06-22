@@ -1,6 +1,6 @@
 model_name:
   desc: HuggingFace language model to use, or "mock" for testing
-  value: "gmukobi/llama-instruct-12739"
+  value: "gmukobi/llama-instruct-12379"
 reward_model_name:
   desc: HuggingFace reward model to use, or "mock" for testing. gptneo_1.3B_first_half is for training and gptneo_1.3B_second_half is for testing.
   value: "/nlp/scr/fongsu/rm_combined/gptneo_1.3B_first_half" # "OpenAssistant/reward-model-deberta-v3-large-v2" #
