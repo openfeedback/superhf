@@ -416,7 +416,7 @@ def consider_pushing_to_hub(
         return
     if (
         epoch != len(ppo_trainer.dataloader) - 1
-        and (epoch % save_every != 0)
+        and (epoch % save_every > 0)
         and epoch not in extra_push_to_hub
     ):
         return
