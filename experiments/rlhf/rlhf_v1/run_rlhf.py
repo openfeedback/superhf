@@ -441,6 +441,7 @@ def consider_pushing_to_hub(
             "kl": ppo_config.init_kl_coef,
             "lr": ppo_config.learning_rate,
             "batch": ppo_config.batch_size * ppo_config.gradient_accumulation_steps,
+            "seed": ppo_config.seed,
         }
         if "pythia" == script_args.sweep_param_name:
             param_name_to_value["pythia"] = (ppo_config.model_name.split("-")[1],)
