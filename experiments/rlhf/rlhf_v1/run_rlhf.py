@@ -102,6 +102,8 @@ class ScriptArguments:
     sweep_param_name: Optional[str] = field(
         default="", metadata={"help": "sweep parameter name"}
     )
+    # Extra arguments
+    extra_args: dict = field(default_factory=dict)
 
 
 def parse_args():
@@ -110,7 +112,11 @@ def parse_args():
     HfArgumentParser class from the transformers library.
     """
     parser = HfArgumentParser(ScriptArguments)
-    script_args = parser.parse_args_into_dataclasses()[0]
+    # pylint: disable=unbalanced-tuple-unpacking
+    script_args, unknown_args = parser.parse_args_into_dataclasses(
+        return_remaining_strings=True
+    )
+    script_args.extra_args = unknown_args
     return script_args
 
 
@@ -412,13 +418,16 @@ def consider_pushing_to_hub(
         extra_push_to_hub: Extra epochs to push to the Hub.
     """
     # pylint: disable=too-many-locals
+    should_push_to_hub = False
     if len(hub_repo_id) == 0:
         return
     if (
-        epoch != len(ppo_trainer.dataloader) - 1
-        and (epoch % save_every > 0)
-        and epoch not in extra_push_to_hub
+        epoch == len(ppo_trainer.dataloader) - 1
+        or (epoch % save_every == 0 and epoch != 0)
+        or epoch in extra_push_to_hub
     ):
+        should_push_to_hub = True
+    if not should_push_to_hub:
         return
     tqdm.write(f"Pushing model and tokenizer to the Hub! Location: {hub_repo_id}")
     repo_name = hub_repo_id
@@ -485,6 +494,22 @@ def main(script_args: ScriptArguments):
         save_code=True,
         config=script_args.config,
     )
+
+    # Process any extra arguments, converting values to appropriate types
+    extra_args_dict = {}
+    for arg in script_args.extra_args:
+        value: Any
+        key, value = arg.split("=")
+        if value == "True":
+            value = True
+        elif value == "False":
+            value = False
+        elif "." in value and value.replace(".", "").isdigit():
+            value = float(value)
+        elif value.isdigit():
+            value = int(value)
+        extra_args_dict[key] = value
+    wandb.config.update(extra_args_dict, allow_val_change=True)
 
     # Enable tf32 training if supported
     if (
@@ -771,6 +796,9 @@ def trim_generations(raw_completions: list[str]) -> list[str]:
 if __name__ == "__main__":
     args = parse_args()
     if args.sweep_id != "":
+        COUNT = 1
+        if hasattr(args, "count"):
+            COUNT = args.count
         # Run sweeps
         # try:
         #     print(f"{args.sweep_id}")
@@ -784,7 +812,7 @@ if __name__ == "__main__":
             function=lambda: main(args),
             entity=WANDB_ENTITY_NAME,
             project=WANDB_PROJECT_NAME,
-            count=1,
+            count=COUNT,
         )
     else:
         main(args)

@@ -88,7 +88,7 @@ reward_mean:
   value: 0.0
 offset_reward:
   desc: The offset of the reward distribution, to be added to all rewards.
-  value: 2.0
+  value: 2.8
 whiten_rewards:
   desc: Whether to whiten the rewards on a per-batch basis by setting std to 1. Does not modify mean.
   value: true # Default is false
