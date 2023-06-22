@@ -41,6 +41,8 @@ from transformers import (
     PreTrainedModel,
 )
 from peft import LoraConfig, get_peft_model
+from huggingface_hub import HfApi
+from huggingface_hub.utils import HfHubHTTPError
 
 from datasets import Dataset
 
@@ -121,8 +123,12 @@ def build_dataset(
     """
     Currentlty we don't use the tokenizer becauses the internal trainer
     for some reason throws away the tokenized exmples.
-    Args:
 
+    Args:
+        prompt_dataset_names: list of dataset names to use for prompts
+        num_prompts: number of prompts to use
+        max_prompt_char_length: max length of prompt in characters
+        seed: random seed
 
     Returns:
         a pytorch dataset that implements the __getitem__ and __len__ methods.
@@ -358,6 +364,88 @@ def score_completions(
     return scores
 
 
+def consider_pushing_to_hub(
+    script_args,
+    ppo_config,
+    hub_repo_id,
+    ppo_trainer,
+    hf_api,
+    epoch,
+    run_name,
+    save_every,
+    extra_push_to_hub,
+):
+    """
+    Considers pushing the model and tokenizer to the Hub.
+    Args:
+        script_args: The arguments to the script.
+        ppo_config: The PPO config.
+        hub_repo_id: The repo ID to push to.
+        ppo_trainer: The PPO trainer.
+        hf_api: The HuggingFace API.
+        epoch: The current epoch.
+        run_name: The name of the run.
+        save_every: How often to save.
+        extra_push_to_hub: Extra epochs to push to the Hub.
+    """
+    # pylint: disable=too-many-locals
+    if len(hub_repo_id) == 0:
+        return
+    if (
+        epoch != len(ppo_trainer.dataloader) - 1
+        and (epoch % save_every != 0)
+        and epoch not in extra_push_to_hub
+    ):
+        return
+    tqdm.write(f"Pushing model and tokenizer to the Hub! Location: {hub_repo_id}")
+    repo_name = hub_repo_id
+    if script_args.sweep_param_name is not None and script_args.sweep_param_name != "":
+        assert (
+            script_args.sweep_param_name != "pythia"
+            or "pythia" in ppo_config.model_name
+        ), "Must use a pythia model to add a pythia model size to the repo name."
+        param_name_to_value = {
+            # get the actual params
+            "kl": ppo_config.init_kl_coef,
+            "lr": ppo_config.learning_rate,
+            "batch": ppo_config.batch_size * ppo_config.gradient_accumulation_steps,
+        }
+        if "pythia" == script_args.sweep_param_name:
+            param_name_to_value["pythia"] = (ppo_config.model_name.split("-")[1],)
+        # get the param value specified by the sweep
+        param_value = param_name_to_value[script_args.sweep_param_name]
+        repo_name += f"-{script_args.sweep_param_name}-{param_value}"
+
+    tqdm.write(
+        str(
+            ppo_trainer.model.push_to_hub(
+                repo_id=repo_name,
+                commit_message=f"Upload model from batch {epoch}, run {run_name}",
+            )
+        )
+    )
+    tqdm.write(
+        str(
+            ppo_trainer.tokenizer.push_to_hub(
+                repo_id=repo_name,
+                commit_message=f"Upload tokenizer from batch {epoch}, run {run_name}",
+            )
+        )
+    )
+
+    # Create a new branch with the superbatch index as the name
+    hf_username = hf_api.whoami()["name"]
+    repo_id = hf_username + "/" + repo_name
+    branch = f"step-{epoch:05}"
+    try:
+        result = hf_api.create_branch(repo_id=repo_id, branch=branch)
+    except HfHubHTTPError:
+        # Delete the branch first
+        hf_api.delete_branch(repo_id=repo_id, branch=branch)
+        result = hf_api.create_branch(repo_id=repo_id, branch=branch)
+    tqdm.write(str(result))
+
+
 def main(script_args: ScriptArguments):
     """
     Main function. Downloads the prompt dataset, reads the config file, and then
@@ -403,6 +491,14 @@ def main(script_args: ScriptArguments):
         language_tokenizer,
         generation_kwargs,
     ) = get_configs()
+
+    hf_api = None
+    if wandb.config.hub_repo_id != "":
+        hf_api = HfApi()
+        assert hf_api.whoami(), (
+            "Must be logged in to the Hugging Face Hub to push models to the hub. "
+            "Run `huggingface-cli login` to log in."
+        )
 
     language_model = AutoModelForCausalLM.from_pretrained(ppo_config.model_name)
     model_ref = None
@@ -590,63 +686,17 @@ def main(script_args: ScriptArguments):
             )
             if oom_count > MAX_OOM_ALLOWED:
                 raise exc
-
-        if len(hub_repo_id) > 0 and (
-            epoch == len(ppo_trainer.dataloader) - 1
-            or (epoch % save_every == 0)
-            or epoch in extra_push_to_hub
-        ):
-            tqdm.write(
-                f"Pushing model and tokenizer to the Hub! Location: {hub_repo_id}"
-            )
-            repo_name = hub_repo_id
-            if (
-                script_args.sweep_param_name is not None
-                and script_args.sweep_param_name != ""
-            ):
-                assert (
-                    script_args.sweep_param_name != "pythia"
-                    or "pythia" in ppo_config.model_name
-                ), (
-                    "Must use a pythia model to add a pythia model size to the repo"
-                    " name."
-                )
-                param_name_to_value = {
-                    # get the actual params
-                    "kl": ppo_config.init_kl_coef,
-                    "lr": ppo_config.learning_rate,
-                    "batch": (
-                        ppo_config.batch_size * ppo_config.gradient_accumulation_steps
-                    ),
-                }
-                if "pythia" == script_args.sweep_param_name:
-                    param_name_to_value["pythia"] = (
-                        ppo_config.model_name.split("-")[1],
-                    )
-                # get the param value specified by the sweep
-                param_value = param_name_to_value[script_args.sweep_param_name]
-                repo_name += f"-{script_args.sweep_param_name}-{param_value}"
-
-            tqdm.write(
-                str(
-                    ppo_trainer.model.push_to_hub(
-                        repo_id=repo_name,
-                        commit_message=(
-                            f"Upload model from batch {epoch}, run {run_name}"
-                        ),
-                    )
-                )
-            )
-            tqdm.write(
-                str(
-                    ppo_trainer.tokenizer.push_to_hub(
-                        repo_id=repo_name,
-                        commit_message=(
-                            f"Upload tokenizer from batch {epoch}, run {run_name}"
-                        ),
-                    )
-                )
-            )
+        consider_pushing_to_hub(
+            script_args=script_args,
+            ppo_config=ppo_config,
+            hub_repo_id=hub_repo_id,
+            ppo_trainer=ppo_trainer,
+            hf_api=hf_api,
+            epoch=epoch,
+            run_name=run_name,
+            save_every=save_every,
+            extra_push_to_hub=extra_push_to_hub,
+        )
 
     # Explicit finish to avoid wandb hanging
     wandb.alert(

@@ -1,6 +1,6 @@
 model_name:
   desc: HuggingFace language model to use, or "mock" for testing
-  value: "/juice5/scr5/nlp/llama_model/llama_hf_latest/llama-7b"
+  value: "gmukobi/llama-instruct-12739"
 reward_model_name:
   desc: HuggingFace reward model to use, or "mock" for testing. gptneo_1.3B_first_half is for training and gptneo_1.3B_second_half is for testing.
   value: "/nlp/scr/fongsu/rm_combined/gptneo_1.3B_first_half" # "OpenAssistant/reward-model-deberta-v3-large-v2" #
@@ -66,7 +66,7 @@ extra_push_to_hub:
   value: [1, 4, 16, 32]
 hub_repo_id:
   desc: "The ID of the HuggingFace Hub repo to save to. If empty, doesn't write to the Hub."
-  value: "rlhf-v5-llama"
+  value: "rlhf-v5-llama-instruct"
 
 scheduler_name:
   desc: Name of the scheduler to use for fine-tuning the language model.
