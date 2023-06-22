@@ -40,7 +40,7 @@ from transformers import (
     PreTrainedTokenizerBase,
     PreTrainedModel,
 )
-from peft import LoraConfig, get_peft_model
+from peft import LoraConfig, get_peft_model, PeftConfig, PeftModel
 from huggingface_hub import HfApi
 from huggingface_hub.utils import HfHubHTTPError
 
@@ -216,6 +216,47 @@ def load_reward_model(
     return reward_model_train, reward_model_pipe
 
 
+def load_language_model(language_model_name: str) -> PreTrainedModel:
+    """Load the language model."""
+    try:
+        peft_config = PeftConfig.from_pretrained(language_model_name)
+        base_model_path = peft_config.base_model_name_or_path
+    except ValueError:
+        # Probably isn't a PEFT model, so just load it from scratch
+        peft_config = None
+        base_model_path = language_model_name
+    language_model = AutoModelForCausalLM.from_pretrained(
+        base_model_path,
+        low_cpu_mem_usage=True,
+    )
+    if peft_config is not None:
+        # Already has pretrained adapter weights, load them
+        # pylint: disable=protected-access
+        assert (
+            peft_config.base_model_name_or_path == language_model.config._name_or_path
+        )
+        language_model = PeftModel.from_pretrained(
+            language_model,
+            language_model_name,
+        )
+
+    elif wandb.config.lora_r != 0 and wandb.config.lora_alpha != 0:
+        # Set up low-rank adapters (LoRA)
+        lora_config = LoraConfig(
+            r=wandb.config.lora_r,
+            lora_alpha=wandb.config.lora_alpha,
+            lora_dropout=wandb.config.lora_dropout,
+            target_modules=wandb.config.lora_target_modules,
+            task_type="CAUSAL_LM",
+            fan_in_fan_out=False,
+        )
+        language_model = get_peft_model(language_model, lora_config)
+        language_model.print_trainable_parameters()
+
+    print(f"Instantiated language model: {language_model_name}")
+    return language_model
+
+
 def get_configs():
     """
     Organizes all the configs into one place, and returns all of them.
@@ -260,23 +301,6 @@ def get_configs():
 
     assert ppo_config.mini_batch_size <= ppo_config.batch_size
 
-    lora_config = None
-    if wandb.config.lora_r != 0 and wandb.config.lora_alpha != 0:
-        # Set up low-rank adapters (LoRA)
-        target_modules = (
-            wandb.config.lora_target_modules
-            if len(wandb.config.lora_target_modules) > 0
-            else None
-        )
-        lora_config = LoraConfig(
-            r=wandb.config.lora_r,
-            lora_alpha=wandb.config.lora_alpha,
-            target_modules=target_modules,  # handled automatically by peft
-            lora_dropout=wandb.config.lora_dropout,
-            task_type="CAUSAL_LM",
-            fan_in_fan_out=False,
-        )
-
     reward_model_kwargs = {
         "function_to_apply": "none",
         "batch_size": wandb.config.batch_size,
@@ -320,7 +344,6 @@ def get_configs():
 
     return (
         ppo_config,
-        lora_config,
         reward_model_kwargs,
         language_tokenizer,
         generation_kwargs,
@@ -486,7 +509,6 @@ def main(script_args: ScriptArguments):
     conversation_prompt = wandb.config.conversation_prompt
     (
         ppo_config,
-        lora_config,
         reward_model_kwargs,
         language_tokenizer,
         generation_kwargs,
@@ -500,17 +522,16 @@ def main(script_args: ScriptArguments):
             "Run `huggingface-cli login` to log in."
         )
 
-    language_model = AutoModelForCausalLM.from_pretrained(ppo_config.model_name)
+    language_model = load_language_model(ppo_config.model_name)
+    # language_model = AutoModelForCausalLM.from_pretrained(ppo_config.model_name)
     model_ref = None
-    if wandb.config.lora_r != 0 and wandb.config.lora_alpha != 0:
-        # Set up low-rank adapters (LoRA)
-        language_model = get_peft_model(language_model, lora_config)
-        language_model.print_trainable_parameters()
-    else:
+    if not hasattr(language_model, "disable_adapter"):
         # Copy the entire model in order to calculate the KL divergence
-        model_ref = AutoModelForCausalLMWithValueHead.from_pretrained(
-            ppo_config.model_name
-        )
+        # model_ref = AutoModelForCausalLMWithValueHead.from_pretrained(
+        #     ppo_config.model_name
+        # )
+        model_ref = load_language_model(ppo_config.model_name)
+        model_ref = AutoModelForCausalLMWithValueHead(model_ref)
     language_model = AutoModelForCausalLMWithValueHead.from_pretrained(language_model)
 
     # set seed before initializing value head for deterministic eval
