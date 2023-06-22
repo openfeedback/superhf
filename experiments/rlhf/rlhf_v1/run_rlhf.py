@@ -66,7 +66,7 @@ T = TypeVar("T")
 
 WANDB_ENTITY_NAME = "stanfordaialignment"
 WANDB_PROJECT_NAME = "rlhf-trl-v1"
-MAX_OOM_ALLOWED = 5
+MAX_OOM_ALLOWED = 16
 
 DEFAULT_PAD_TOKEN = "[PAD]"
 DEFAULT_EOS_TOKEN = "</s>"
