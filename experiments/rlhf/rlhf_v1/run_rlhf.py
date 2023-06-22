@@ -249,6 +249,7 @@ def get_configs():
         max_grad_norm=None,
         seed=wandb.config.seed,
         optimize_cuda_cache=False,
+        whiten_rewards=wandb.config.whiten_rewards,
     )
 
     assert ppo_config.mini_batch_size <= ppo_config.batch_size
@@ -273,6 +274,7 @@ def get_configs():
     reward_model_kwargs = {
         "function_to_apply": "none",
         "batch_size": wandb.config.batch_size,
+        "penalize_bad_endings": wandb.config.penalize_bad_endings,
     }  # arguments for the reward pipeline.
 
     language_tokenizer = None

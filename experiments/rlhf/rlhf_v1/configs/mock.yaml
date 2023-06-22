@@ -1,9 +1,11 @@
+# This file is used for debugging as well as demonstrating the required interface.
+# Required args have the tag @required in their description. Currently all are required until this is fixed.
 model_name:
-  desc: HuggingFace language model to use, or "mock" for testing
+  desc: HuggingFace language model to use, or "mock" for testing. @required.
   value: "peterchatain/mock_llama"
 reward_model_name:
-  desc: HuggingFace reward model to use, or "mock" for testing
-  value: "mock" #  "OpenAssistant/reward-model-deberta-v3-base"
+  desc: HuggingFace reward model to use, or "mock" for testing. @required.
+  value: "mock" #  "OpenAssistant/reward-model-deberta-v3-b ase"
 test_reward_model_name:
   desc: HuggingFace reward model to use for testing.
   value: "mock"
@@ -49,7 +51,7 @@ lora_target_modules:
   value: ["q_proj", "v_proj"]  # For LLaMa
 
 prompt_dataset_names:
-  desc: The list of datasets to use for prompts. See src/superhf/data.py for available datasets.
+  desc: The list of datasets to use for prompts. See src/superhf/data.py for available datasets. @required.
   value: ["anthropic-red-team", "anthropic-helpful-base", "anthropic-harmless-base", "openai/webgpt_comparisons"]
 num_prompts:
   desc: "The maximum number of prompts to use for debugging. 0 to use all prompts."
@@ -83,15 +85,21 @@ clip_kl:
 normalize_reward:
   desc: Whether to normalize the reward to have mean zero
   value: false
-whiten_reward:
-  desc: Whether to whitten the reward on a per-batch basis
-  value: true
 reward_mean:
   desc: The mean of the reward distribution, if we are normalizing it.
   value: 0.0
 offset_reward:
   desc: The offset of the reward distribution, to be added to all rewards.
   value: 2.0
+whiten_rewards:
+  desc: Whether to whiten the rewards on a per-batch basis by setting std to 1. Does not modify mean.
+  value: true # Default is false
+penalize_bad_endings:
+  desc: Whether to set the reward for generations that don't end in the proper ending token to
+  value: False
+penalty_reward_value:
+  desc: The reward value to use for penalizing bad endings.
+  value: -1.0
 
 top_p:
   desc: The top-p value for nucleus sampling
