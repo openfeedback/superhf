@@ -113,58 +113,42 @@ def parse_args():
 
 
 def build_dataset(
-    dataset_names,
-    # tokenizer,
-    max_prompt_char_length=1024,
-    debug_max_prompts=0,
-    conversation_prompt="",
-    seed=66,
+    prompt_dataset_names,
+    num_prompts,
+    max_prompt_char_length,
+    seed,
 ):
     """
     Currentlty we don't use the tokenizer becauses the internal trainer
     for some reason throws away the tokenized exmples.
+    Args:
+
 
     Returns:
         a pytorch dataset that implements the __getitem__ and __len__ methods.
         PPO trainer converts this to a pytorch dataloader.
         torch.utils.data.Dataset
     """
+    # Configure seed
     set_seed(seed)
-    prompts: list[str] = []
-    for dataset in dataset_names:
-        prompts.extend(get_superhf_prompts(dataset))
 
+    # Get the prompt dataset
+    prompts: list[str] = []
+    num_datasets = len(prompt_dataset_names)
+    num_prompts_per_dataset = num_prompts // num_datasets if num_prompts > 0 else 0
+    for dataset_name in prompt_dataset_names:
+        new_prompts = get_superhf_prompts(
+            dataset_name, max_length_chars=max_prompt_char_length
+        )
+        total_loaded = len(new_prompts)
+        if num_prompts_per_dataset != 0:
+            new_prompts = new_prompts[:num_prompts_per_dataset]
+        total_filtered = len(new_prompts)
+        print(f"Loaded {total_filtered}/{total_loaded} prompts from {dataset_name}.")
+        prompts.extend(new_prompts)
     random.shuffle(prompts)
 
-    # Filter out prompts that are too long
-    old_prompt_count = len(prompts)
-    prompts = [
-        conversation_prompt + prompt
-        for prompt in prompts
-        if len(conversation_prompt + prompt) < max_prompt_char_length
-    ]
-    print(
-        f"Filtered {old_prompt_count - len(prompts)} prompts over "
-        f"{max_prompt_char_length} chars."
-    )
-
-    # Only load the first section of prompts
-    if debug_max_prompts != 0:
-        prompts = prompts[:debug_max_prompts]
-
-    print(f"Loaded {len(prompts)} prompts.")
-
-    def tokenize(sample):
-        dictionized_example = {}
-        # dictionized_example["input_ids"] = tokenizer.encode(sample)
-        dictionized_example["query"] = (
-            sample  # tokenizer.decode(dictionized_example["input_ids"])
-        )
-        return dictionized_example
-
-    prompts_2 = [tokenize(prompt) for prompt in prompts]
-    prompts_3 = {"query": [d["query"] for d in prompts_2]}
-    dataset = Dataset.from_dict(prompts_3)
+    dataset = Dataset.from_dict({"query": prompts})
     dataset.set_format(type="torch")
     return dataset
 
@@ -230,6 +214,14 @@ def get_configs():
     """
     Organizes all the configs into one place, and returns all of them.
     """
+    accelerator_kwargs = {}
+    if torch.backends.mps.is_available():
+        print(
+            "Detected mps. Forcing CPU instead because older macbook pros don't have"
+            " enough memmory for trainiing LLMs."
+        )
+        os.environ["ACCELERATE_USE_CPU"] = "1"
+        print("Set ACCELERATE_USE_CPU=1")
     ppo_config = PPOConfig(
         model_name=wandb.config.model_name,
         steps=20000,
@@ -252,10 +244,10 @@ def get_configs():
         remove_unused_columns=True,
         log_with=wandb.config.log_with,
         tracker_kwargs={},
-        accelerator_kwargs={},
+        accelerator_kwargs=accelerator_kwargs,
         tracker_project_name="trl",
         max_grad_norm=None,
-        seed=66,
+        seed=wandb.config.seed,
         optimize_cuda_cache=False,
     )
 
@@ -401,7 +393,7 @@ def main(script_args: ScriptArguments):
     offset_reward = wandb.config.offset_reward
     reward_model_name = wandb.config.reward_model_name
     test_reward_model_name = wandb.config.test_reward_model_name
-
+    conversation_prompt = wandb.config.conversation_prompt
     (
         ppo_config,
         lora_config,
@@ -425,11 +417,10 @@ def main(script_args: ScriptArguments):
 
     # set seed before initializing value head for deterministic eval
     dataset = build_dataset(
-        wandb.config.dataset_names,
+        prompt_dataset_names=wandb.config.prompt_dataset_names,
+        num_prompts=wandb.config.num_prompts,
         max_prompt_char_length=wandb.config.max_prompt_char_length,
-        debug_max_prompts=wandb.config.debug_max_prompts,
-        conversation_prompt=wandb.config.conversation_prompt,
-        seed=ppo_config.seed,
+        seed=wandb.config.seed,
     )
 
     def collator(data):
@@ -475,6 +466,7 @@ def main(script_args: ScriptArguments):
     device = ppo_trainer.accelerator.device
     if ppo_trainer.accelerator.num_processes == 1:
         device = 0 if torch.cuda.is_available() else "cpu"  # to avoid a `pipeline` bug
+    print(f"Using device {device}.")
     # This pipeline is for the reward model
     reward_model_tokenizer = load_reward_tokenizer(reward_model_name)
     reward_model, reward_model_pipe = load_reward_model(
@@ -519,8 +511,11 @@ def main(script_args: ScriptArguments):
             tqdm.write(f"Epoch {epoch}")
             print_memory_utilization()
 
+            # prepends the conversatioin prompt before tokenizing
             query_tensors = [
-                language_tokenizer(q, return_tensors="pt")["input_ids"]
+                language_tokenizer(conversation_prompt + q, return_tensors="pt")[
+                    "input_ids"
+                ]
                 .squeeze()
                 .to(device)
                 for q in batch["query"]
