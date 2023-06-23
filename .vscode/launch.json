@@ -110,7 +110,6 @@
             "args": [
                 "--config",
                 "${workspaceFolder}/experiments//rlhf/rlhf_v1/configs/mock.yaml",
-                "num_prompts=32",
             ],
             "justMyCode": false
         },

@@ -17,8 +17,9 @@ parameters:
     values:
       - "kl"
   hub_repo_id:
-    value:
-      - rlhf-v2-llama-kl
+    values:
+      - "rlhf-v2-llama-kl"
   num_prompts:
-    value: 2500
+    values:
+      - 2500
 program: experiments/superhf/rlhf/rlhf_v1/run_rlhf.py

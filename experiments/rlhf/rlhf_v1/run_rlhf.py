@@ -70,8 +70,8 @@ MAX_OOM_ALLOWED = 16
 
 DEFAULT_PAD_TOKEN = "[PAD]"
 DEFAULT_EOS_TOKEN = "</s>"
-DEFAULT_BOS_TOKEN = "</s>"
-DEFAULT_UNK_TOKEN = "</s>"
+DEFAULT_BOS_TOKEN = "<s>"  # all these set acording to alpaca_farm
+DEFAULT_UNK_TOKEN = "<unk>"
 
 
 # We first define the configuration of the experiment, defining the model, the dataset,
@@ -510,6 +510,8 @@ def main(script_args: ScriptArguments):
         elif value.isdigit():
             value = int(value)
         extra_args_dict[key] = value
+        if isinstance(value, List):
+            print(f"Value is a list for key {key}")
     wandb.config.update(extra_args_dict, allow_val_change=True)
 
     # Enable tf32 training if supported

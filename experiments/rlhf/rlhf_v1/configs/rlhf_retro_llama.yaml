@@ -16,19 +16,19 @@ log_with:
   value: "wandb"
 learning_rate:
   desc: "The learning rate"
-  value: 1.0e-6
+  value: 1.0e-4
 mini_batch_size:
   desc: "The mini-batch size"
   value: 1
 batch_size:
   desc: "The batch size" # default 256 in og code
-  value: 8
+  value: 4
 gradient_accumulation_steps:
   desc: "The number of gradient accumulation steps"
   value: 2
 max_new_tokens:
   desc: "The maximum number of new tokens to generate per prompt"
-  value: 64
+  value: 128 # 64 for other models
 generation_kwargs:
   desc: Extra args to pass to generation. Format is arg_name followed by value
   value: []
@@ -66,7 +66,7 @@ extra_push_to_hub:
   value: [1, 4, 16, 32]
 hub_repo_id:
   desc: "The ID of the HuggingFace Hub repo to save to. If empty, doesn't write to the Hub."
-  value: "rlhf-v5-llama"
+  value: "rlhf-retro-llama"
 
 scheduler_name:
   desc: Name of the scheduler to use for fine-tuning the language model.
@@ -79,7 +79,7 @@ init_kl_coef:
   value: 0.2
 clip_kl:
   desc: Whether to clip the KL-divergence to always be greater than zero.
-  value: true
+  value: false
 normalize_reward:
   desc: Whether to normalize the reward to have mean zero
   value: false
@@ -88,10 +88,10 @@ reward_mean:
   value: 0.0
 offset_reward:
   desc: The offset of the reward distribution, to be added to all rewards.
-  value: 2.8
+  value: 0.0
 whiten_rewards:
   desc: Whether to whiten the rewards on a per-batch basis by setting std to 1. Does not modify mean.
-  value: true # Default is false
+  value: false # Default is false
 penalize_bad_endings:
   desc: Whether to set the reward for generations that don't end in the proper ending token to
   value: False
