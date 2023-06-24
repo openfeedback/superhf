@@ -17,8 +17,13 @@ use_openai:
 language_model_names:
   desc: The name of the language model to use
   value: [
-    "peterchatain/rlhf-v5-llama@step-00384",
-    "peterchatain/rlhf-retro-llama@step-00512",
+    "peterchatain/rlhf-retro-llama-seed-0",
+    "peterchatain/rlhf-retro-llama-seed-3",
+    "peterchatain/rlhf-retro-llama-seed-8",
+    "peterchatain/rlhf-retro-llama-seed-10",
+    "peterchatain/rlhf-retro-llama-seed-11",
+    "peterchatain/rlhf-retro-llama-seed-6",
+    "peterchatain/rlhf-retro-llama-seed-7",
   ]
 language_model_interval:
   desc: The interval to use for the language model
