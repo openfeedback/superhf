@@ -17,16 +17,13 @@ use_openai:
 language_model_names:
   desc: The name of the language model to use
   value: [
-    "gmukobi/shf-v4-instruct-seed-10",
-    "gmukobi/shf-v4-instruct-seed-11",
-    "gmukobi/shf-v4-instruct-seed-12",
-    "gmukobi/shf-v4-instruct-seed-13",
-    "gmukobi/shf-v4-instruct-seed-14",
-    "gmukobi/shf-v4-instruct-seed-15",
-    "gmukobi/shf-v4-instruct-seed-16",
-    "gmukobi/shf-v4-instruct-seed-17",
-    "gmukobi/shf-v4-instruct-seed-18",
-    "gmukobi/shf-v4-instruct-seed-19",
+    "peterchatain/rlhf-retro-llama-seed-4",
+    "peterchatain/rlhf-retro-llama-seed-9",
+    "peterchatain/rlhf-retro-llama-seed-13",
+    "peterchatain/rlhf-retro-llama-seed-1",
+    "peterchatain/rlhf-retro-llama-seed-2",
+    "peterchatain/rlhf-retro-llama-seed-5",
+    "peterchatain/rlhf-retro-llama-seed-12",
   ]
 language_model_interval:
   desc: The interval to use for the language model

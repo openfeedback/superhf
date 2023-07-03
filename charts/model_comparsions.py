@@ -28,27 +28,36 @@ def main() -> None:
     # Define the model names
     model_names = [
         "llama-7b.json",
-        "rlhf-v4-llama.json",
-        "shf-llama-7b.json",
+        "llama-ftp-49516.json",
+        "llama-instruct-12379.json",
+        # "rlhf-v4-llama.json",
+        "rlhf-v5-llama@step-00384.json",
+        "rlhf-retro-llama@step-00512.json",
+        "shf-v4-llama-10000-kl-0.35.json",
+        "shf-v5-llama-ftp-24758-rm-0.5.json",
+        "shf-v4-llama-instruct-10k-kl-0.35.json",
         "alpaca_7b.json",
-        "sft-on-preferences-v1.json",
+        # "sft-on-preferences-v1.json",
         # "test-save-alpaca@model-2048-prompts-batch-size-8.json",
-        "rlhf-v3-lr-5.0e-6-batch-16@gold-run.json",
-        "shf-7b-default.json",
+        # "rlhf-v3-lr-5.0e-6-batch-16@gold-run.json",
+        # "shf-7b-default.json",
         # "shf-7b-gold-v1.json",
-        "gpt-4_2023-05-13_completions_output.json",
+        # "gpt-4_2023-05-13_completions_output.json",
     ]
 
     # Create an empty list for x-axis labels
     x_labels = [
         "LLaMA",
-        "RLHF\n(LLaMA)",
+        "FTP\n(LLaMA)",
+        "Instruct\n(LLaMA)",
+        "RLHF\n(LLaMA)\nv5",
+        "RLHF\n(LLaMA)\nRetro",
         "SuperHF\n(LLaMA)",
+        "SuperHF\n(FTP)",
+        "SuperHF\n(Instruct)",
         "Alpaca",
-        "FTP\n(Alpaca)",
-        "RLHF\n(Alpaca)",
-        "SuperHF\n(Alpaca)",
-        "GPT-4",
+        # "SuperHF\n(Alpaca)",
+        # "GPT-4",
     ]
 
     # Calculate plot values for data
@@ -98,7 +107,7 @@ def main() -> None:
 
     # Horizontal line at Alpaca
     plt.axhline(
-        y=all_mean_scores[3], color="black", linestyle="--", label="Alpaca Mean"
+        y=all_mean_scores[8], color="black", linestyle="--", label="Alpaca Mean"
     )
     plt.legend()
 

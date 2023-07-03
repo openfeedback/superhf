@@ -19,7 +19,7 @@ from chart_utils import (
 )
 from superhf.utils import bootstrap_meteor_similarity_from_completions
 
-INSTRUCT_NOT_LLAMA = True  # Swap between generating 2 types of charts
+INSTRUCT_NOT_LLAMA = False  # Swap between generating 2 types of charts
 OUTPUT_FILE = (
     "./charts/ablations/kl_meteor_similarity_instruct.png"
     if INSTRUCT_NOT_LLAMA
@@ -27,7 +27,41 @@ OUTPUT_FILE = (
 )
 TEST_COMPLETIONS_DIRECTORY = "./experiments/evaluations/test_completions/"
 TEST_SCORES_DIRECTORY = "./experiments/evaluations/test_scores/"
-NUM_BOOTSTRAP_SAMPLES = 100
+NUM_BOOTSTRAP_SAMPLES = 16
+model_types_to_file_name_templates = {
+    "SuperHF": (
+        [
+            "shf-v4-llama-instruct-10k-kl-",
+            "shf-v4-instruct-s1-10k-kl",
+            "shf-v4-instruct-s2-10k-kl",
+            "shf-v4-instruct-s3-10k-kl",
+        ]
+        if INSTRUCT_NOT_LLAMA
+        else [
+            "shf-v4-llama-10000-kl-",
+            "shf-v4-llama-s1-10k-kl",
+            "shf-v4-llama-s2-10k-kl",
+            "shf-v4-llama-s3-10k-kl",
+        ]
+    )
+}
+kl_values = [
+    0.0,
+    0.025,
+    0.05,
+    0.1,
+    0.15,
+    0.2,
+    0.225,
+    0.25,
+    0.275,
+    0.3,
+    0.35,
+    0.375,
+    0.4,
+    0.45,
+    0.5,
+]
 
 
 def get_rewards_and_similarity(file_name: str) -> tuple[list[float], list[float]]:
@@ -53,13 +87,6 @@ def main() -> None:
     color_similarity = model_type_to_palette_color("ftp")
 
     # Define the model sizes and their corresponding file names
-    model_types_to_test_names = {
-        "SuperHF": (
-            "shf-v4-llama-instruct-10k-kl-"
-            if INSTRUCT_NOT_LLAMA
-            else "shf-v4-llama-10000-kl-"
-        )
-    }
 
     # Compute LLaMA's, Instruct's, and Alpaca's mean reward and similarity
     llama_rewards, llama_meteor_scores = get_rewards_and_similarity("llama-7b.json")
@@ -88,19 +115,26 @@ def main() -> None:
     # Find all the files in the test scores directory
     file_names = []
     last_model_type = None
-    last_filename_template = None
-    for model_type, file_name_template in model_types_to_test_names.items():
-        for file_name in os.listdir(TEST_SCORES_DIRECTORY):
-            if file_name.startswith(file_name_template):
-                file_names.append(file_name)
-                last_model_type = model_type
-                last_filename_template = file_name_template
-    print(f"Found {len(file_names)} files with the template {last_filename_template}")
+    for model_type, file_name_templates in model_types_to_file_name_templates.items():
+        for template in file_name_templates:
+            intermediate_file_names = []
+            for file_name in os.listdir(TEST_SCORES_DIRECTORY):
+                if file_name.startswith(template):
+                    intermediate_file_names.append(file_name)
+                    last_model_type = model_type
+            print(
+                f"Found {len(intermediate_file_names)} files with the template"
+                f" {template}"
+            )
+            file_names.extend(intermediate_file_names)
     file_names.sort()
     reward_data = []
     meteor_data = []
     for file_name in tqdm(file_names, desc="Models"):
         kl_coefficient = float(file_name.split("-")[-1].split(".json")[0])
+        if kl_coefficient not in kl_values:
+            print(f"Skipping {file_name} with KL coefficient {kl_coefficient}")
+            continue
         rewards, meteor_scores = get_rewards_and_similarity(file_name)
         labeled_rewards = [
             [last_model_type, kl_coefficient, score] for score in rewards
@@ -251,6 +285,7 @@ def main() -> None:
     ax1.legend()
 
     # Nudge the similarity axis bounds so the llama reward and similarity lines don't overlap
+    ax1.set_ylim(-0.56, 2.4)
     ax2.set_ylim(-0.02, 0.85)
 
     # Save the plot
