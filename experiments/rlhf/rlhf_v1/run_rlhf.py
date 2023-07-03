@@ -346,6 +346,24 @@ def get_configs():
     }
     # loop over extra_generation_args two at a time
     for i in range(len(extra_generation_args) // 2):
+        if extra_generation_args[i] == "pad_token_id":
+            if extra_generation_args[i + 1] == "eos_token_id":
+                generation_kwargs[extra_generation_args[i]] = (
+                    language_tokenizer.eos_token_id
+                )
+            elif extra_generation_args[i + 1] == "bos_token_id":
+                generation_kwargs[extra_generation_args[i]] = (
+                    language_tokenizer.bos_token_id
+                )
+            elif extra_generation_args[i + 1] == "unk_token_id":
+                generation_kwargs[extra_generation_args[i]] = (
+                    language_tokenizer.unk_token_id
+                )
+            elif extra_generation_args[i + 1] == "pad_token_id":
+                generation_kwargs[extra_generation_args[i]] = (
+                    language_tokenizer.pad_token_id
+                )
+            continue
         generation_kwargs[extra_generation_args[i]] = extra_generation_args[i + 1]
 
     return (
@@ -479,6 +497,21 @@ def consider_pushing_to_hub(
     tqdm.write(str(result))
 
 
+def parse_type(value):
+    """
+    Parses a value to the appropriate type.
+    """
+    if value == "True":
+        value = True
+    elif value == "False":
+        value = False
+    elif "." in value and value.replace(".", "").isdigit():
+        value = float(value)
+    elif value.isdigit():
+        value = int(value)
+    return value
+
+
 def main(script_args: ScriptArguments):
     """
     Main function. Downloads the prompt dataset, reads the config file, and then
@@ -501,14 +534,12 @@ def main(script_args: ScriptArguments):
     for arg in script_args.extra_args:
         value: Any
         key, value = arg.split("=")
-        if value == "True":
-            value = True
-        elif value == "False":
-            value = False
-        elif "." in value and value.replace(".", "").isdigit():
-            value = float(value)
-        elif value.isdigit():
-            value = int(value)
+
+        if value.startswith("[") and value.endswith("]"):
+            value = value[1:-1].split(",")
+            value = [parse_type(v) for v in value]
+        else:
+            value = parse_type(value)
         extra_args_dict[key] = value
         if isinstance(value, List):
             print(f"Value is a list for key {key}")

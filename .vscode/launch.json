@@ -110,6 +110,7 @@
             "args": [
                 "--config",
                 "${workspaceFolder}/experiments//rlhf/rlhf_v1/configs/mock.yaml",
+                "--generation_kwargs=[pad_token_id,eos_token_id]"
             ],
             "justMyCode": false
         },
