@@ -566,9 +566,13 @@ def main(script_args: ScriptArguments):
     reward_model_name = wandb.config.reward_model_name
     test_reward_model_name = wandb.config.test_reward_model_name
     conversation_prompt = wandb.config.conversation_prompt
-    trim_generations_or_not = (
-        wandb.config.trim_generations_or_not
-    )  # decides whether to filter generations or not
+    try:
+        trim_generations_or_not = (
+            wandb.config.trim_generations_or_not
+        )  # decides whether to filter generations or not
+    except AttributeError:
+        print("Warning: trim_generations_or_not not set. Defaulting to True.")
+        trim_generations_or_not = True
     (
         ppo_config,
         reward_model_kwargs,
