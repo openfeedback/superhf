@@ -710,10 +710,11 @@ def main(script_args: ScriptArguments):
                 # generation_kwargs["max_new_tokens"] = gen_len
                 response = ppo_trainer.generate(query, **generation_kwargs)
                 response_tensors.append(response.squeeze())
+            batch["response"] = [
+                language_tokenizer.decode(r.squeeze()) for r in response_tensors
+            ]
             if trim_generations_or_not:
-                batch["response"] = trim_generations(
-                    [language_tokenizer.decode(r.squeeze()) for r in response_tensors]
-                )
+                batch["response"] = trim_generations(batch["response"])
             tqdm.write(
                 f"Finished generating responses. took {time.time() - start_time}"
             )
