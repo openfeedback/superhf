@@ -566,6 +566,9 @@ def main(script_args: ScriptArguments):
     reward_model_name = wandb.config.reward_model_name
     test_reward_model_name = wandb.config.test_reward_model_name
     conversation_prompt = wandb.config.conversation_prompt
+    trim_generations_or_not = (
+        wandb.config.trim_generations_or_not
+    )  # decides whether to filter generations or not
     (
         ppo_config,
         reward_model_kwargs,
@@ -707,9 +710,10 @@ def main(script_args: ScriptArguments):
                 # generation_kwargs["max_new_tokens"] = gen_len
                 response = ppo_trainer.generate(query, **generation_kwargs)
                 response_tensors.append(response.squeeze())
-            batch["response"] = trim_generations(
-                [language_tokenizer.decode(r.squeeze()) for r in response_tensors]
-            )
+            if trim_generations_or_not:
+                batch["response"] = trim_generations(
+                    [language_tokenizer.decode(r.squeeze()) for r in response_tensors]
+                )
             tqdm.write(
                 f"Finished generating responses. took {time.time() - start_time}"
             )

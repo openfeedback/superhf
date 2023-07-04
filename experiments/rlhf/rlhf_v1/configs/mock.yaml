@@ -33,7 +33,10 @@ max_new_tokens:
   value: 64
 generation_kwargs:
   desc: Extra args to pass to generation. Format is arg_name followed by value
-  value: []
+  value: ['pad_token_id', 'eos_token_id']
+trim_generations_or_not:
+  desc: Decides whether to trim the generated responses to exclude simulated turns of conversation
+  value: false
 max_prompt_char_length:
   desc: "The maximum number of characters in a prompt"
   value: 1024
