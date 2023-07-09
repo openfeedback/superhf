@@ -715,7 +715,10 @@ def main(script_args: ScriptArguments):
                 response = ppo_trainer.generate(query, **generation_kwargs)
                 response_tensors.append(response.squeeze())
             batch["response"] = [
-                language_tokenizer.decode(r.squeeze()) for r in response_tensors
+                separate_prompt_from_completion(language_tokenizer.decode(r.squeeze()))[
+                    1
+                ]
+                for r in response_tensors
             ]
             if trim_generations_or_not:
                 batch["response"] = trim_generations(batch["response"])
