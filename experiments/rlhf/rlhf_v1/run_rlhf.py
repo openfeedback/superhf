@@ -14,6 +14,7 @@ Example usage:
         --notes "Testing RLHF with TRL" \
         --sweep_id xxxxx \
         --sweep_param_name kl \
+        --<overide any config params>=<value>
 """
 
 import os

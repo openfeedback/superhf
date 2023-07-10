@@ -3,21 +3,37 @@ metric:
   goal: maximize
   name: env/reward_mean
 parameters:
-  normalize_reward:
+  hub_repo_id:
     values:
-      - false
-  offset_reward:
-    values:
-      - 1.0
-      - 2.0
-      - 0.0
-  learning_rate:
-    values:
-      - 0.001
-      - 1.0e-4
+      - ""
   batch_size:
     values:
       - 4
       - 8
-
+      - 16
+      - 32
+  offset_reward:
+    values:
+      - 2.8
+      - 0.0
+  clip_kl:
+    values:
+      - true
+      - false
+  learning_rate:
+    values:
+      - 1.0e-4
+      - 1.0e-5
+      - 1.0e-7
+  num_prompts:
+    values:
+      - 2048
+  whiten_rewards:
+    values:
+      - true
+      - false
+  trim_generations_or_not:
+    values:
+      - true
+      - false
 program: experiments/superhf/rlhf/rlhf_v1/run_rlhf.py
