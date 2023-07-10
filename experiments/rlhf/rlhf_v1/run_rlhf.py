@@ -716,13 +716,13 @@ def main(script_args: ScriptArguments):
                 response = ppo_trainer.generate(query, **generation_kwargs)
                 response_tensors.append(response.squeeze())
             batch["response"] = [
-                separate_prompt_from_completion(language_tokenizer.decode(r.squeeze()))[
-                    1
-                ]
-                for r in response_tensors
+                language_tokenizer.decode(r.squeeze()) for r in response_tensors
             ]
             if trim_generations_or_not:
                 batch["response"] = trim_generations(batch["response"])
+            batch["response"] = [
+                separate_prompt_from_completion(r)[1] for r in batch["response"]
+            ]
             tqdm.write(
                 f"Finished generating responses. took {time.time() - start_time}"
             )
