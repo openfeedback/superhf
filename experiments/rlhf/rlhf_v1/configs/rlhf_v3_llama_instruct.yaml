@@ -21,8 +21,8 @@ mini_batch_size:
   desc: "The mini-batch size"
   value: 1
 batch_size:
-  desc: "The batch size" # default 256 in og code
-  value: 8
+  desc: "The batch size" # default 256 in og code. 16 performed the best.
+  value: 16
 gradient_accumulation_steps:
   desc: "The number of gradient accumulation steps"
   value: 2
