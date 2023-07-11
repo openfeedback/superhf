@@ -30,7 +30,7 @@ parameters:
   #   values:
   #     - "/nlp/scr/fongsu/rm_combined/gptneo_1.3B_second_half"
   hub_repo_id:
-    value: "shf-v4-instruct-s3-10k"
+    value: "shf-v4-instruct-s4-10k"
   push_to_hub_interval:
     value: 999999
   sweep_param_name:
@@ -38,4 +38,4 @@ parameters:
   num_prompts:
     value: 10000
   seed:
-    value: 3
+    value: 4
