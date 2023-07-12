@@ -16,7 +16,7 @@ use_openai:
   value: false
 language_model_names:
   desc: The name of the language model to use
-  value: ["peterchatain/rlhf-fixed-llama-instruct-bs-16"
+  value: ["peterchatain/rlhf-fixed-llama-v3-bs-16"
   ]
 language_model_interval:
   desc: The interval to use for the language model
