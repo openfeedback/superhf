@@ -2,6 +2,8 @@
 
 This project is a research prototype for the paper `Supervised Iterative Fine-Tuning From Human Preferences`
 
+The goal of this project is to demonstrate an alternative method to RLHF based on training without using PPO that demonstrates better alignment with human preferences. 
+
 ## Directory structure
 
 - `src/superhf/` contains the code for the SuperHFTrainer class and superhf code.
