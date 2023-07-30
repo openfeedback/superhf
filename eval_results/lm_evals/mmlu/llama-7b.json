@@ -91,8 +91,8 @@
       "acc_norm_stderr": 0.04013124195424386
     },
     "hendrycksTest-elementary_mathematics": {
-      "acc": 0.2724867724867725,
-      "acc_stderr": 0.022930973071633345,
+      "acc": 0.2751322751322751,
+      "acc_stderr": 0.02300008685906865,
       "acc_norm": 0.25925925925925924,
       "acc_norm_stderr": 0.022569897074918407
     },
@@ -406,7 +406,7 @@
     "model": "/juice5/scr5/nlp/llama_model/llama_hf_latest/llama-7b",
     "model_args": null,
     "num_fewshot": 0,
-    "batch_size": 16,
+    "batch_size": 8,
     "device": null,
     "no_cache": true,
     "limit": null,
