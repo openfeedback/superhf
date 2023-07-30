@@ -19,7 +19,7 @@ from chart_utils import (
 )
 from superhf.utils import bootstrap_meteor_similarity_from_completions
 
-INSTRUCT_NOT_LLAMA = False  # Swap between generating 2 types of charts
+INSTRUCT_NOT_LLAMA = True  # Swap between generating 2 types of charts
 OUTPUT_FILE = (
     "./charts/ablations/kl_meteor_similarity_instruct.png"
     if INSTRUCT_NOT_LLAMA
@@ -35,6 +35,7 @@ model_types_to_file_name_templates = {
             "shf-v4-instruct-s1-10k-kl",
             "shf-v4-instruct-s2-10k-kl",
             "shf-v4-instruct-s3-10k-kl",
+            "shf-v4-instruct-s4-10k-kl",
         ]
         if INSTRUCT_NOT_LLAMA
         else [
@@ -42,6 +43,7 @@ model_types_to_file_name_templates = {
             "shf-v4-llama-s1-10k-kl",
             "shf-v4-llama-s2-10k-kl",
             "shf-v4-llama-s3-10k-kl",
+            "shf-v4-llama-s4-10k-kl",
         ]
     )
 }
