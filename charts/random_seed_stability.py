@@ -28,11 +28,16 @@ def main() -> None:
     plt.rcParams["lines.markersize"] = 1
 
     # Define the model sizes and their corresponding file names
-    model_types_to_test_names = {"SuperHF": "shf-v4-llama-seed-"}
+    model_types_to_test_names = {
+        "RLHF (Instruct)": "rlhf-fixed-llama-instruct-seed-",
+        "SuperHF (LLaMA)": "shf-v4-llama-seed-",
+        "SuperHF (Instruct)": "shf-v4-instruct-seed-",
+    }
 
     # Find all the files in the test scores directory
     shf_data = []
     for model_type, file_name_template in model_types_to_test_names.items():
+        count_files = 0
         for file_name in os.listdir(TEST_SCORES_DIRECTORY):
             if file_name.startswith(file_name_template):
                 file_path = os.path.join(TEST_SCORES_DIRECTORY, file_name)
@@ -41,6 +46,8 @@ def main() -> None:
                     [model_type, score - LLAMA_TEST_REWARD] for score in scores
                 ]
                 shf_data.extend(labeled_scores)
+                count_files += 1
+        print(f"Found {count_files} files for {model_type}.")
 
     dataframe = pd.DataFrame(shf_data, columns=["Model", "Score"])
 
