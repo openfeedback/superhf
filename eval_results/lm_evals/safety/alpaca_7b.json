@@ -30,8 +30,8 @@
     "truthfulqa_mc": {
       "mc1": 0.2484700122399021,
       "mc1_stderr": 0.015127427096520672,
-      "mc2": 0.3993242300353613,
-      "mc2_stderr": 0.015687704427088462
+      "mc2": 0.39932425631985485,
+      "mc2_stderr": 0.01568769941970748
     }
   },
   "versions": {
@@ -47,7 +47,7 @@
     "model": "/juice5/scr5/nlp/llama_model/alpaca_7b",
     "model_args": null,
     "num_fewshot": 0,
-    "batch_size": 16,
+    "batch_size": 8,
     "device": null,
     "no_cache": true,
     "limit": null,
