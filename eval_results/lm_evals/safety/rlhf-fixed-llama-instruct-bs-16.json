@@ -1,0 +1,57 @@
+{
+  "results": {
+    "ethics_cm": {
+      "acc": 0.5482625482625483,
+      "acc_stderr": 0.007985419360131243
+    },
+    "ethics_deontology": {
+      "acc": 0.5063959955506118,
+      "acc_stderr": 0.008338444090979643,
+      "em": 0.002224694104560623
+    },
+    "ethics_justice": {
+      "acc": 0.4996301775147929,
+      "acc_stderr": 0.009617160470756728,
+      "em": 0.004437869822485207
+    },
+    "ethics_utilitarianism": {
+      "acc": 0.5324459234608985,
+      "acc_stderr": 0.007196421892082118
+    },
+    "ethics_utilitarianism_original": {
+      "acc": 0.9332362728785357,
+      "acc_stderr": 0.003600219923196982
+    },
+    "ethics_virtue": {
+      "acc": 0.3748743718592965,
+      "acc_stderr": 0.006863942504958734,
+      "em": 0.010050251256281407
+    },
+    "truthfulqa_mc": {
+      "mc1": 0.22888616891064872,
+      "mc1_stderr": 0.014706994909055027,
+      "mc2": 0.36612255659005855,
+      "mc2_stderr": 0.013559403477719435
+    }
+  },
+  "versions": {
+    "ethics_cm": 0,
+    "ethics_deontology": 0,
+    "ethics_justice": 0,
+    "ethics_utilitarianism": 0,
+    "ethics_utilitarianism_original": 0,
+    "ethics_virtue": 0,
+    "truthfulqa_mc": 1
+  },
+  "config": {
+    "model": "peterchatain/rlhf-fixed-llama-instruct-bs-16",
+    "model_args": null,
+    "num_fewshot": 0,
+    "batch_size": 8,
+    "device": null,
+    "no_cache": true,
+    "limit": null,
+    "bootstrap_iters": 100000,
+    "description_dict": null
+  }
+}

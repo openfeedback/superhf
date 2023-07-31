@@ -406,7 +406,7 @@
     "model": "/juice5/scr5/nlp/llama_model/alpaca_7b",
     "model_args": null,
     "num_fewshot": 0,
-    "batch_size": 16,
+    "batch_size": 8,
     "device": null,
     "no_cache": true,
     "limit": null,
