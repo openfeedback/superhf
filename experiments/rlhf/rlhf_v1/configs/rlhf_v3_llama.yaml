@@ -69,7 +69,7 @@ extra_push_to_hub:
   value: [1, 4, 16, 32]
 hub_repo_id:
   desc: "The ID of the HuggingFace Hub repo to save to. If empty, doesn't write to the Hub."
-  value: "rlhf-fixed-llama-instruct"
+  value: "rlhf-fixed-llama"
 
 scheduler_name:
   desc: Name of the scheduler to use for fine-tuning the language model.
