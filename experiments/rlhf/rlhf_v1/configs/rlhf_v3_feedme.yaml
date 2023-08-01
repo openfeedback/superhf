@@ -1,6 +1,6 @@
 model_name:
   desc: HuggingFace language model to use, or "mock" for testing
-  value: "language_model_name=gmukobi/llama-ftp-24758"
+  value: "gmukobi/llama-ftp-24758"
 reward_model_name:
   desc: HuggingFace reward model to use, or "mock" for testing. gptneo_1.3B_first_half is for training and gptneo_1.3B_second_half is for testing.
   value: "/nlp/scr/fongsu/rm_combined/gptneo_1.3B_first_half" # "OpenAssistant/reward-model-deberta-v3-large-v2" #
@@ -79,7 +79,7 @@ scheduler_warmup_steps:
   value: 20
 init_kl_coef:
   desc: The initial KL coefficient for the KL-divergence loss. Adaptive kl is performed. Originial code sets this to 0.2
-  value: 0.2
+  value: 0.35
 clip_kl:
   desc: Whether to clip the KL-divergence to always be greater than zero.
   value: false
