@@ -17,15 +17,9 @@ use_openai:
 language_model_names:
   desc: The name of the language model to use
   value: [
-          "peterchatain/rlhf-fixed-llama-instruct-seed-2",
-          "peterchatain/rlhf-fixed-llama-instruct-seed-3",
-          "peterchatain/rlhf-fixed-llama-instruct-seed-4",
-          "peterchatain/rlhf-fixed-llama-instruct-seed-5",
-          "peterchatain/rlhf-fixed-llama-instruct-seed-6",
-          "peterchatain/rlhf-fixed-llama-instruct-seed-7",
-          "peterchatain/rlhf-fixed-llama-instruct-seed-8",
-          "peterchatain/rlhf-fixed-llama-instruct-seed-9",
-        ]
+          "peterchatain/rlhf-fixed-llama-instruct-bs-64"
+]
+
 language_model_interval:
   desc: The interval to use for the language model
   value: [0,0]
