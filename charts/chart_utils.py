@@ -16,22 +16,24 @@ DEFAULT_COLOR_PALETTE = "colorblind"
 
 MODEL_NAME_MAPPING = {
     "llama-7b.json": "LLaMA",
+    "llama-ftp-49516.json": "FeedME",
+    "llama-instruct-12379.json": "Instruct",
+    "rlhf-fixed-llama-v3-bs-16.json": "RLHF (LLaMA)",
+    "rlhf-fixed-llama-instruct-bs-16.json": "RLHF (Instruct)",
+    "shf-v4-llama-10000-kl-0.35.json": "SuperHF (LLaMA)",
+    "shf-v4-llama-instruct-10k-kl-0.35.json": "SuperHF (Instruct)",
     "alpaca_7b.json": "Alpaca",
-    "sft-on-preferences-v1.json": "FTP\n(Alpaca)",
-    "rlhf-v3-lr-5.0e-6-batch-16@gold-run.json": "RLHF\n(Alpaca)",
-    "shf-7b-default.json": "SuperHF\n(Alpaca)",
-    "gpt-3.5-turbo_2023-05-13_completions_output.json": "GPT-3.5",
-    "gpt-4_2023-05-13_completions_output.json": "GPT-4",
 }
 
 QUALITATIVE_MODEL_ORDER = [
     "LLaMA",
+    "FeedME",
+    "Instruct",
+    "RLHF (LLaMA)",
+    "RLHF (Instruct)",
+    "SuperHF (LLaMA)",
+    "SuperHF (Instruct)",
     "Alpaca",
-    "FTP\n(Alpaca)",
-    "RLHF\n(Alpaca)",
-    "SuperHF\n(Alpaca)",
-    "GPT-3.5",
-    "GPT-4",
 ]
 
 LLAMA_TEST_REWARD = -0.51  # TODO get accurate reward
