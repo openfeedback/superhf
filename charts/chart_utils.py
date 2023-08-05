@@ -36,6 +36,14 @@ QUALITATIVE_MODEL_ORDER = [
     "Alpaca",
 ]
 
+
+def spaces_to_newlines(model_name_list: list[str]) -> list[str]:
+    """Replace spaces with newlines in a list of model names."""
+    return [model_name.replace(" ", "\n") for model_name in model_name_list]
+
+
+QUALITATIVE_MODEL_ORDER_MULTILINE = spaces_to_newlines(QUALITATIVE_MODEL_ORDER)
+
 LLAMA_TEST_REWARD = -0.51  # TODO get accurate reward
 ALPACA_TEST_REWARD = -0.01  # TODO redo with new data
 
@@ -175,10 +183,10 @@ def model_type_to_palette_color(model_type: str) -> Any:
     return _get_color_from_palette(all_model_types.index(model_type))
 
 
-def model_type_to_hatch(model_type: str) -> Any:
+def model_type_to_hatch(model_type: str, num_hatches: int = 3) -> Any:
     """Standardize our hatching"""
     if "Instruct" in model_type or "Alpaca" in model_type:
-        return "///"
+        return "/" * num_hatches
     return ""
 
 

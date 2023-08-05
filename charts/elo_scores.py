@@ -14,6 +14,7 @@ from chart_utils import (
     model_type_to_hatch,
     MODEL_NAME_MAPPING,
     QUALITATIVE_MODEL_ORDER,
+    QUALITATIVE_MODEL_ORDER_MULTILINE,
 )
 
 # QUALITATIVE_MODEL_ORDER = QUALITATIVE_MODEL_ORDER[:-2]
@@ -64,8 +65,9 @@ def main() -> None:
     )
 
     # Add new line to bar x-axis labels
-    x_labels = [model_name.replace(" ", "\n") for model_name in QUALITATIVE_MODEL_ORDER]
-    plt.xticks(range(len(x_labels)), x_labels)
+    plt.xticks(
+        range(len(QUALITATIVE_MODEL_ORDER_MULTILINE)), QUALITATIVE_MODEL_ORDER_MULTILINE
+    )
 
     # Horizontal line at 1500 for starting Elo
     plt.axhline(y=1500, color="black", linestyle="--", label="Initial Elo")

@@ -5,6 +5,7 @@ from typing import Any
 
 from chart_utils import create_file_dir_if_not_exists, MODEL_NAME_MAPPING
 
+INPUT_FILE = "./eval_results/gpt4_qualitative/new_models/win_rates.csv"
 OUTPUT_PATH = "./charts/qualitative/win_rates_table.tex"
 
 
@@ -13,9 +14,7 @@ def main() -> None:
 
     # Read the CSV file
     win_rates = {}
-    with open(
-        "eval_results/gpt4_qualitative/win_rates.csv", "r", encoding="utf-8"
-    ) as csvfile:
+    with open(INPUT_FILE, "r", encoding="utf-8") as csvfile:
         reader = csv.reader(csvfile)
         next(reader)  # Skip the header
         for row in reader:
@@ -24,9 +23,12 @@ def main() -> None:
                 win_rate
             )
 
-    # Create a 7x7 matrix
+    # Create an NxN matrix
     model_names = list(MODEL_NAME_MAPPING.values())
-    matrix: list[list[Any]] = [[0 for _ in range(7)] for _ in range(7)]
+    num_models = len(model_names)
+    matrix: list[list[Any]] = [
+        [0 for _ in range(num_models)] for _ in range(num_models)
+    ]
     for i, model_a in enumerate(model_names):
         for j, model_b in enumerate(model_names):
             if model_a == model_b:
@@ -36,6 +38,7 @@ def main() -> None:
                     (model_a, model_b), win_rates.get((model_b, model_a), "0")
                 )
                 matrix[i][j] = rf"{round(float(win_rate) * 100, 2)}\%"
+                print(f"'{model_a}' vs '{model_b}': {win_rate},")
 
     # Write the matrix into a LaTeX file
     create_file_dir_if_not_exists(OUTPUT_PATH)
