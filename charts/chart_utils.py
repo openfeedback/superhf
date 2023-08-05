@@ -151,6 +151,7 @@ def model_type_to_palette_color(model_type: str) -> Any:
     model_type = model_type.lower()
     model_name_to_type = {
         "ftp": "ftp_preferences",
+        "feedme": "ftp_preferences",
         "rlhf": "rlhf",
         "superhf": "superhf",
         "shf": "superhf",
@@ -172,6 +173,13 @@ def model_type_to_palette_color(model_type: str) -> Any:
     ]
     assert model_type in all_model_types
     return _get_color_from_palette(all_model_types.index(model_type))
+
+
+def model_type_to_hatch(model_type: str) -> Any:
+    """Standardize our hatching"""
+    if "Instruct" in model_type or "Alpaca" in model_type:
+        return "///"
+    return ""
 
 
 def save_plot(file_path: str) -> None:
