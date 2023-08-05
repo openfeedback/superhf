@@ -40,10 +40,21 @@ def main() -> None:
                 matrix[i][j] = rf"{round(float(win_rate) * 100, 2)}\%"
                 print(f"'{model_a}' vs '{model_b}': {win_rate},")
 
+    # Add new lines
+    new_model_names = []
+    for model_name in list(MODEL_NAME_MAPPING.values()):
+        if " " in model_name:
+            model_name = "\\makecell{" + model_name.replace(" ", "\\\\") + "}"
+        else:
+            model_name = "\\makecell{" + model_name + "\\\\\\phantom{space}}"
+        new_model_names.append(model_name)
+    model_names = new_model_names
+
     # Write the matrix into a LaTeX file
     create_file_dir_if_not_exists(OUTPUT_PATH)
     with open(OUTPUT_PATH, "w", encoding="utf-8") as latexfile:
-        latexfile.write("\\begin{tabular}{|c|c|c|c|c|c|c|c|}\n")
+        # Make sure this is the right number of columns
+        latexfile.write("\\begin{tabular}{|c|c|c|c|c|c|c|c|c|}\n")
         latexfile.write("\\hline\n")
         latexfile.write(" & " + " & ".join(model_names) + " \\\\\n")
         latexfile.write("\\hline\n")
