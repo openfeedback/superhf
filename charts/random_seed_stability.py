@@ -69,7 +69,7 @@ def main() -> None:
 
     # Set labels and title
     plt.xlabel("Model")
-    plt.ylabel("Test Score (Improvement over LLaMA)")
+    plt.ylabel("Test Score (Improvement over LLaMA) →")
     plt.title("Stability Across 20 Random Seeds (2500 Train Prompts)")
 
     # Save the plot
