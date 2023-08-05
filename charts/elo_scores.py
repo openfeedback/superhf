@@ -44,7 +44,7 @@ def main() -> None:
     # Print out the average elo for each model
     for model_name in QUALITATIVE_MODEL_ORDER:
         model_scores = dataframe[dataframe["Model"] == model_name]["Elo"]
-        print(f"{model_name}: {model_scores.mean():.2f}")
+        print(f"{model_scores.mean():.2f}, # {model_name}")
 
     # Create the plot
     plt.rcParams["lines.markersize"] = 1

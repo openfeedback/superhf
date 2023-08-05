@@ -165,7 +165,7 @@ def model_type_to_palette_color(model_type: str) -> Any:
         "shf": "superhf",
         "gpt-4": "gpt-3.5",
         "llama": "pretrained",
-        "alpaca": "instruct",
+        "alpaca": "alpaca",
     }
     for model_name, model_value in model_name_to_type.items():
         if model_name in model_type:
@@ -178,6 +178,7 @@ def model_type_to_palette_color(model_type: str) -> Any:
         "superhf",
         "gpt-3.5",
         "gpt-4",
+        "alpaca",
     ]
     assert model_type in all_model_types
     return _get_color_from_palette(all_model_types.index(model_type))
@@ -188,6 +189,13 @@ def model_type_to_hatch(model_type: str, num_hatches: int = 3) -> Any:
     if "Instruct" in model_type or "Alpaca" in model_type:
         return "/" * num_hatches
     return ""
+
+
+def model_type_to_line_style(model_type: str) -> Any:
+    """Standardize our hatching"""
+    if "Instruct" in model_type or "Alpaca" in model_type:
+        return "--"
+    return "-"
 
 
 def save_plot(file_path: str) -> None:
