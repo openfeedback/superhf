@@ -35,8 +35,8 @@ class EvaluationMode(Enum):
 
 
 # Config
-EVALUATION_MODE = EvaluationMode.AVOIDANCE
-MOCK_API = True
+EVALUATION_MODE = EvaluationMode.PREFERENCES
+MOCK_API = False
 COMPLETION_PATHS = [
     "./experiments/evaluations/test_completions/llama-7b.json",
     "./experiments/evaluations/test_completions/llama-ftp-49516.json",
@@ -47,10 +47,10 @@ COMPLETION_PATHS = [
     "./experiments/evaluations/test_completions/shf-v4-llama-instruct-10k-kl-0.35.json",
     "./experiments/evaluations/test_completions/alpaca_7b.json",
 ]
-OPENAI_MODEL = "gpt-4-0614"
+OPENAI_MODEL = "gpt-4-0613"
 OUTPUT_DIR = "./eval_results/gpt4_qualitative/new_models/"
 PREFERENCE_COMPARISONS_PER_DATASET = 128
-SINGLE_EXAMPLE_RATINGS_PER_DATASET = 32
+SINGLE_EXAMPLE_RATINGS_PER_DATASET = 20
 REQUEST_SLEEP_INTERVAL = 0.1  # seconds
 MOCK_SLEEP_INTERVAL = 0.01  # seconds
 
@@ -156,7 +156,9 @@ def run_preferences(names_to_completions: dict[str, Any]) -> None:
                     futures.append(future)
 
                 # Wait for all the queries to complete and write the results to the file
-                for index, future in enumerate(futures):
+                for index, future in tqdm(
+                    enumerate(futures), total=len(futures), desc="Preference Queries"
+                ):
                     rating = future.result()
                     model_names_np = np.random.choice(
                         list(names_to_completions.keys()), size=2, replace=False
