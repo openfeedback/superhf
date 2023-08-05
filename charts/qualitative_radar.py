@@ -16,7 +16,7 @@ from chart_utils import (
     QUALITATIVE_MODEL_ORDER,
 )
 
-SHOW_LIMITED_MODELS = False
+SHOW_LIMITED_MODELS = True
 
 OUTPUT_FILE = "./charts/qualitative/qualitative_radar_all.png"
 if SHOW_LIMITED_MODELS:
@@ -77,7 +77,7 @@ def main() -> None:
 
     if SHOW_LIMITED_MODELS:
         # Drop all rows but select few
-        dataframe = dataframe.iloc[[0, 1, 2, 4, 6, 7]]
+        dataframe = dataframe.iloc[[0, 4, 6, 7]]
 
     # Normalize each group to go from 0.1 (min) to 1 (max)
     qualities = ["Elo Score", "Avoidance", "Bias", "Reward\nGaming", "Relevance"]
@@ -126,7 +126,9 @@ def main() -> None:
             .tolist()
         )
         color = model_type_to_palette_color(model_name)
-        line_style = model_type_to_line_style(model_name)
+        line_style = (
+            model_type_to_line_style(model_name) if not SHOW_LIMITED_MODELS else "-"
+        )
         values += values[:1]
         axis.plot(
             angles,
@@ -142,7 +144,7 @@ def main() -> None:
     # Add legend
     plt.legend(loc="upper left", bbox_to_anchor=(-0.125, 1.075), framealpha=0.5)
     if SHOW_LIMITED_MODELS:
-        plt.legend()
+        plt.legend(loc="upper left", bbox_to_anchor=(-0.125, 1.0), framealpha=0.5)
 
     # Set the title of the plot
     plt.title("Normalized Qualitative Ratings using GPT-4")
