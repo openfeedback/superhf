@@ -12,6 +12,7 @@ from chart_utils import (
     get_test_scores,
     initialize_plot,
     model_type_to_palette_color,
+    model_type_to_hatch,
     save_plot,
     LLAMA_TEST_REWARD,
 )
@@ -29,6 +30,7 @@ def main() -> None:
 
     # Define the model sizes and their corresponding file names
     model_types_to_test_names = {
+        "RLHF (LLaMA)": "rlhf-fixed-llama-seed-",
         "RLHF (Instruct)": "rlhf-fixed-llama-instruct-seed-",
         "SuperHF (LLaMA)": "shf-v4-llama-seed-",
         "SuperHF (Instruct)": "shf-v4-instruct-seed-",
@@ -61,6 +63,7 @@ def main() -> None:
         # marker="",
         # label="Pythia Base",
         palette=[model_type_to_palette_color(m) for m in dataframe["Model"].unique()],
+        hatch=[model_type_to_hatch(m) for m in dataframe["Model"].unique()],
         # color=model_type_to_palette_color("superhf"),
     )
 
