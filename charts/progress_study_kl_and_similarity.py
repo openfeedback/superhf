@@ -15,19 +15,15 @@ from chart_utils import (
     initialize_plot,
     model_type_to_palette_color,
     save_plot,
-    # LLAMA_TEST_REWARD,
 )
 from superhf.utils import bootstrap_meteor_similarity_from_completions
 
-INSTRUCT_NOT_LLAMA = True  # Swap between generating 2 types of charts
-OUTPUT_FILE = (
-    "./charts/ablations/kl_meteor_similarity_instruct.png"
-    if INSTRUCT_NOT_LLAMA
-    else "./charts/ablations/kl_meteor_similarity_llama.png"
-)
-TEST_COMPLETIONS_DIRECTORY = "./experiments/evaluations/test_completions/"
+OUTPUT_FILE = "./charts/ablations/progress_study_with_kl_meteor.png"
 TEST_SCORES_DIRECTORY = "./experiments/evaluations/test_scores/"
-NUM_BOOTSTRAP_SAMPLES = 100
+TEST_COMPLETIONS_DIRECTORY = "./experiments/evaluations/test_completions/"
+START_STEP = 32
+END_STEP = 10000
+NUM_BOOTSTRAP_SAMPLES = 32
 
 
 def get_rewards_and_similarity(file_name: str) -> tuple[list[float], list[float]]:
@@ -45,21 +41,11 @@ def main() -> None:
     """Main function."""
 
     # pylint: disable=too-many-locals
-    # pylint: disable=too-many-statements
 
     # Initialize
     initialize_plot()
     color_reward = model_type_to_palette_color("SuperHF")
     color_similarity = model_type_to_palette_color("ftp")
-
-    # Define the model sizes and their corresponding file names
-    model_types_to_test_names = {
-        "SuperHF": (
-            "shf-v4-llama-instruct-10k-kl-"
-            if INSTRUCT_NOT_LLAMA
-            else "shf-v4-llama-10000-kl-"
-        )
-    }
 
     # Compute LLaMA's, Instruct's, and Alpaca's mean reward and similarity
     llama_rewards, llama_meteor_scores = get_rewards_and_similarity("llama-7b.json")
@@ -68,199 +54,130 @@ def main() -> None:
     print(f"LLaMA Mean Test Reward: {llama_mean_reward:.3f}")
     print(f"LLaMA Mean Meteor Score: {llama_mean_meteor_score:.3f}")
 
-    instruct_mean_reward = None
-    instruct_mean_meteor_score = None
-    if INSTRUCT_NOT_LLAMA:
-        instruct_rewards, instruct_meteor_scores = get_rewards_and_similarity(
-            "llama-instruct-12379.json"
-        )
-        instruct_mean_reward = np.mean(instruct_rewards)
-        instruct_mean_meteor_score = np.mean(instruct_meteor_scores)
-        print(f"Instruct Mean Test Reward: {instruct_mean_reward:.3f}")
-        print(f"Instruct Mean Meteor Score: {instruct_mean_meteor_score:.3f}")
+    # Wider figure
+    plt.rcParams["figure.figsize"] = (10, 5)
+    plt.tight_layout()
 
-    alpaca_rewards, alpaca_meteor_scores = get_rewards_and_similarity("alpaca_7b.json")
-    alpaca_mean_reward = np.mean(alpaca_rewards)
-    alpaca_mean_meteor_score = np.mean(alpaca_meteor_scores)
-    print(f"Alpaca Mean Test Reward: {alpaca_mean_reward:.3f}")
-    print(f"Alpaca Mean Meteor Score: {alpaca_mean_meteor_score:.3f}")
-
-    # Find all the files in the test scores directory
-    file_names = []
-    last_model_type = None
-    last_filename_template = None
-    for model_type, file_name_template in model_types_to_test_names.items():
-        for file_name in os.listdir(TEST_SCORES_DIRECTORY):
-            if file_name.startswith(file_name_template):
-                file_names.append(file_name)
-                last_model_type = model_type
-                last_filename_template = file_name_template
-    print(f"Found {len(file_names)} files with the template {last_filename_template}")
-    file_names.sort()
-    reward_data = []
-    meteor_data = []
-    for file_name in tqdm(file_names, desc="Models"):
-        kl_coefficient = float(file_name.split("-")[-1].split(".json")[0])
-        rewards, meteor_scores = get_rewards_and_similarity(file_name)
-        labeled_rewards = [
-            [last_model_type, kl_coefficient, score] for score in rewards
-        ]
-        labeled_meteor_scores = [
-            [last_model_type, kl_coefficient, score] for score in meteor_scores
-        ]
-        reward_data.extend(labeled_rewards)
-        meteor_data.extend(labeled_meteor_scores)
-
-    dataframe_scores = pd.DataFrame(
-        reward_data, columns=["Model", "KL-Coefficient", "Test Reward →"]
-    )
-
-    # Create the plot
-    ax1 = sns.lineplot(
-        data=dataframe_scores,
-        x="KL-Coefficient",
-        y="Test Reward →",
-        errorbar="ci",
-        # capsize=0.1,
-        # marker="",
-        # label="Pythia Base",
-        # palette=[
-        #     model_type_to_palette_color(m) for m in dataframe_scores["Model"].unique()
-        # ],
-        color=color_reward,
-    )
-
-    # Twin
+    # Initialize axes
+    ax1 = plt.gca()
     ax2 = plt.twinx()
-    dataframe_meteor = pd.DataFrame(
-        meteor_data, columns=["Model", "KL-Coefficient", "METEOR Similarity ←"]
-    )
-    sns.lineplot(
-        data=dataframe_meteor,
-        x="KL-Coefficient",
-        y="METEOR Similarity ←",
-        errorbar="ci",
-        # capsize=0.1,
-        # marker="",
-        # label="Pythia Base",
-        # palette=[
-        #     model_type_to_palette_color(m) for m in dataframe_meteor["Model"].unique()
-        # ],
-        color=model_type_to_palette_color("ftp"),
-        ax=ax2,
-    )
-
     # Color each y axis with the color of the corresponding line
-    # ax1.spines["left"].set_color(color_reward)
     ax1.tick_params(axis="y", colors=color_reward)
     ax1.set_ylabel("Test Reward →", color=color_reward)
-    # ax2.spines["right"].set_color(color_similarity)
     ax2.tick_params(axis="y", colors=color_similarity)
     ax2.set_ylabel("METEOR Similarity ←", color=color_similarity)
+
+    # Define the models and their corresponding file names
+    for model_name, file_name_template, linestyle in [
+        ("Test Reward (KL-Coefficient = 0.0)", "shf-v5-llama-gold-kl-0.0@", "--"),
+        ("Test Reward (KL-Coefficient = 0.35)", "shf-v5-llama-gold-kl-0.35@", "-"),
+    ]:
+        # Find all the files in the test scores directory
+        steps_and_file_names = []
+        for file_name in os.listdir(TEST_SCORES_DIRECTORY):
+            if file_name.startswith(file_name_template):
+                step = int(file_name.split("@step-")[1].split(".")[0])
+                if step < START_STEP:
+                    continue
+                steps_and_file_names.append((step, file_name))
+
+        # Calculate plot values for data
+        reward_data = []
+        similarity_data = []
+        for step, file_name in tqdm(steps_and_file_names, desc=model_name):
+            scores, similarities = get_rewards_and_similarity(file_name)
+            labeled_scores = [[step, score] for score in scores]
+            labeled_meteor_scores = [[step, score] for score in similarities]
+            reward_data.extend(labeled_scores)
+            similarity_data.extend(labeled_meteor_scores)
+
+        reward_df = pd.DataFrame(reward_data, columns=["Step", "Score"])
+        similarity_df = pd.DataFrame(similarity_data, columns=["Step", "Similarity"])
+
+        # Create the plots
+        sns.lineplot(
+            data=reward_df,
+            x="Step",
+            y="Score",
+            ax=ax1,
+            errorbar="ci",
+            marker="",
+            label=model_name,
+            color=color_reward,
+            linestyle=linestyle,
+        )
+        sns.lineplot(
+            data=similarity_df,
+            x="Step",
+            y="Similarity",
+            ax=ax2,
+            errorbar="ci",
+            marker="",
+            # label=model_name,
+            color=color_similarity,
+            linestyle=linestyle,
+        )
+
+    # Set x-axis to log
+    plt.xscale("log")
+
+    # More x-ticks
+    ticks = [
+        2**i for i in range(int(np.log2(START_STEP)), int(np.log2(END_STEP)) + 1)
+    ]
+    plt.xticks(ticks, ticks)
+
+    # Bounds
+    plt.xlim(START_STEP, END_STEP)
+
+    # Set labels and title
+    plt.xlabel("Training Step")
+    plt.title("SuperHF (LLaMA) Training Progress Study")
 
     # Turn off the grid for the second y axis
     ax2.grid(False)
 
-    if not INSTRUCT_NOT_LLAMA:
-        # Room in legend, add labels for main lines
-        ax1.plot(
-            [],
-            [],
-            color=color_reward,
-            linestyle="-",
-            label="SuperHF (LLaMA) Test Reward",
-        )
-        ax1.plot(
-            [],
-            [],
-            color=color_similarity,
-            linestyle="-",
-            label="SuperHF (LLaMA) Test Similarity",
-        )
-
-    # Plot dashed horizontal lines for llama and alpaca
+    # Plot dashed horizontal lines for llama
     plt.rcParams["lines.marker"] = ""
     ax1.axhline(
-        llama_mean_reward, color=color_reward, linestyle="--", label="LLaMA Mean Reward"
+        llama_mean_reward, color=color_reward, linestyle=":", label="LLaMA Mean Reward"
     )
     ax2.axhline(
         llama_mean_meteor_score,
         color=color_similarity,
-        linestyle="--",
+        linestyle=":",
         label="LLaMA Mean Similarity",
     )
-    if INSTRUCT_NOT_LLAMA:
-        ax1.axhline(
-            instruct_mean_reward,
-            color=color_reward,
-            linestyle="-.",
-            label="Instruct Mean Reward",
-        )
-        ax2.axhline(
-            instruct_mean_meteor_score,
-            color=color_similarity,
-            linestyle="-.",
-            label="Instruct Mean Similarity",
-        )
-    ax1.axhline(
-        alpaca_mean_reward,
-        color=color_reward,
-        linestyle=":",
-        label="Alpaca Mean Reward",
-    )
-    # ax2.axhline(
-    #     alpaca_mean_meteor_score,
-    #     color=color_similarity,
-    #     linestyle=":",
-    #     label="Alpaca Mean Similarity",
-    # )  # About the same as llama
 
     # Add empty lines to ax1 so they show up on the legend
-    label = (
-        "LLaMA/Alpaca Similarity"
-        if INSTRUCT_NOT_LLAMA
-        else "LLaMA/Alpaca Mean Similarity"
+    ax1.plot(
+        [],
+        [],
+        color=color_similarity,
+        linestyle="--",
+        marker="",
+        label="Similarity (KL-Coeffcient = 0.0)",
+    )
+    ax1.plot(
+        [],
+        [],
+        color=color_similarity,
+        linestyle="-",
+        marker="",
+        label="Similarity (KL-Coeffcient = 0.35)",
     )
     ax1.plot(
         [],
         [],
         color=color_similarity,
         linestyle="--",
-        label=label,
+        marker="",
+        label="LLaMA Mean Similarity",
     )
-    if INSTRUCT_NOT_LLAMA:
-        ax1.plot(
-            [],
-            [],
-            color=color_similarity,
-            linestyle="-.",
-            label="Instruct Mean Similarity",
-        )
-
-    # Set labels and title
-    plt.xlabel("KL Coefficient")
-    # plt.ylabel("Test Score →")
-    title = (
-        "SuperHF (Instruct) KL-Coefficient on Reward and Completion Similarity"
-        if INSTRUCT_NOT_LLAMA
-        else "SuperHF (LLaMA) KL-Coefficient on Reward and Completion Similarity"
-    )
-    plt.title(title)
-
-    # Set legend
     ax1.legend()
-
-    # Nudge the similarity axis bounds so the llama reward and similarity lines don't overlap
-    ax2.set_ylim(-0.02, 0.85)
 
     # Save the plot
     save_plot(OUTPUT_FILE)
-
-    # Zoom in
-    # plt.xlim(0.2, 0.4)
-    # ax1.set_ylim(-0.5, 0.4)
-    # ax2.set_ylim(0.0, 0.23)
-    # save_plot(OUTPUT_FILE.replace(".png", "-zoom.png"))
 
 
 if __name__ == "__main__":
