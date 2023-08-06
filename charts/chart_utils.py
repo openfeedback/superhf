@@ -142,6 +142,12 @@ def initialize_plot() -> None:
     sns.set_palette(DEFAULT_COLOR_PALETTE)
 
 
+def initialize_plot_bar() -> None:
+    """Set default plot styling for bar charts."""
+    initialize_plot()
+    plt.rcParams["lines.markersize"] = 1
+
+
 def set_plot_style() -> None:
     """Deprecated. Use initialize_plot() instead."""
     raise DeprecationWarning("Use initialize_plot() instead.")
