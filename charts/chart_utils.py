@@ -164,8 +164,7 @@ def model_type_to_palette_color(model_type: str) -> Any:
     """Standardize our use of models types to palette colors."""
     model_type = model_type.lower()
     model_name_to_type = {
-        "ftp": "ftp_preferences",
-        "feedme": "ftp_preferences",
+        "ftp": "feedme",
         "rlhf": "rlhf",
         "superhf": "superhf",
         "shf": "superhf",
@@ -179,7 +178,7 @@ def model_type_to_palette_color(model_type: str) -> Any:
     all_model_types = [
         "pretrained",
         "instruct",
-        "ftp_preferences",
+        "feedme",
         "rlhf",
         "superhf",
         "gpt-3.5",
@@ -190,10 +189,14 @@ def model_type_to_palette_color(model_type: str) -> Any:
     return _get_color_from_palette(all_model_types.index(model_type))
 
 
-def model_type_to_hatch(model_type: str, num_hatches: int = 3) -> Any:
+def model_type_to_hatch(
+    model_type: str, num_hatches: int = 3, num_dots: int = 2
+) -> Any:
     """Standardize our hatching"""
     if "Instruct" in model_type or "Alpaca" in model_type:
         return "/" * num_hatches
+    if "FeedME" in model_type:
+        return "." * num_dots
     return ""
 
 
