@@ -55,7 +55,7 @@ def main() -> None:
     print(f"LLaMA Mean Meteor Score: {llama_mean_meteor_score:.3f}")
 
     # Wider figure
-    plt.rcParams["figure.figsize"] = (10, 5)
+    plt.rcParams["figure.figsize"] = (14, 5)
     plt.tight_layout()
 
     # Initialize axes
