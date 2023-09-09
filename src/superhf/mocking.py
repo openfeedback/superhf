@@ -13,8 +13,10 @@ from transformers import (
     LlamaConfig,
     LlamaForCausalLM,
     LlamaTokenizer,
+    AutoTokenizer,
 )
 from transformers.modeling_outputs import CausalLMOutputWithCrossAttentions
+from superhf.utils import BestOfNWrapper
 
 
 def make_mock_llama_model() -> Any:
@@ -134,7 +136,10 @@ class MockRewardModel(torch.nn.Module):
         return self(**kwargs)
 
 
-if __name__ == "__main__":
+def test_llama_mocking():
+    """
+    Tests and pushes to hugging face hub a mock llama model and tokenizer.
+    """
     print("Testing mocking.py")
     print("Testing making a llama model")
     llama_model = make_mock_llama_model()
@@ -148,4 +153,31 @@ if __name__ == "__main__":
     tokenizer.add_special_tokens({"pad_token": "[PAD]"})
     print(tokenizer)
     # pylint: disable=not-callable
-    tokenizer.push_to_hub("mock_llama")
+    # tokenizer.push_to_hub("mock_llama")
+
+
+def test_best_of_n():
+    """
+    Tests best of n wrapper on mock models.
+    """
+    # load a mock rm
+    reward_model = MockRewardModel()
+    # load a mock llama model
+    model = make_mock_llama_model()
+    # load a mock tokenizer
+    tokenizer_lm = make_mock_llama_tokenizer()
+    # get gpt2 tokenizer
+    tokenizer_rw = AutoTokenizer.from_pretrained("gpt2")
+
+    # wrap the model in the best of n wrapper
+    model = BestOfNWrapper(model, reward_model, tokenizer_lm, tokenizer_rw)
+
+    # generate some text
+    input_ids = tokenizer_lm("Hello, my name is", return_tensors="pt").input_ids
+    output = model.generate(input_ids=input_ids, best_of_n=5)
+    print(output)
+    print(tokenizer_lm.decode(output[0].tolist()))
+
+
+if __name__ == "__main__":
+    test_best_of_n()

@@ -18,6 +18,52 @@ import psutil
 from superhf import constants
 
 
+class BestOfNWrapper(torch.nn.Module):
+    """
+    Accepts a language model and a reward model.
+    Modifies the language model forward method to do best of n.
+    """
+
+    def __init__(
+        self,
+        language_model: Any,
+        reward_model: Any,
+        language_tokenizer: Any,
+        reward_tokenizer: Any,
+    ) -> None:
+        super().__init__()
+        self.language_model = language_model
+        self.reward_model = reward_model
+        self.language_tokenizer = language_tokenizer
+        self.reward_tokenizer = reward_tokenizer
+
+    def generate(self, best_of_n=2, **kwargs: Any) -> Any:
+        """
+        Runs the language model best_of_n times and returns the best output.
+        """
+        # run the language model n times
+        lm_outputs = []
+        for _ in range(best_of_n):
+            out = self.language_model.generate(**kwargs)
+            lm_outputs.append(out)
+
+        lm_outputs_stacked = torch.stack(lm_outputs).squeeze()
+        out_str = self.language_tokenizer.batch_decode(
+            lm_outputs_stacked, skip_special_tokens=True
+        )
+        out_tokens = self.reward_tokenizer(out_str, return_tensors="pt")
+
+        # get the rewards for each output
+        rewards = self.reward_model(**out_tokens)
+        reward_tensor = rewards.logits
+        # return the best output
+        return lm_outputs[np.argmax(reward_tensor)]
+
+    def forward(self, **kwargs: Any) -> Any:
+        """Uses the language model for forward pass."""
+        return self.language_model.forward(**kwargs)
+
+
 def set_seed(seed: int) -> None:
     """Set the seed for all random number generators."""
     random.seed(seed)
