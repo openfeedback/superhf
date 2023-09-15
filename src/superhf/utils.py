@@ -39,25 +39,34 @@ class BestOfNWrapper(torch.nn.Module):
 
     def generate(self, best_of_n=2, **kwargs: Any) -> Any:
         """
-        Runs the language model best_of_n times and returns the best output.
+        Runs the language model best_of_n times and returns the best outputs.
         """
         # run the language model n times
-        lm_outputs = []
+        lm_outputs = []  # size best_of_n
         for _ in range(best_of_n):
             out = self.language_model.generate(**kwargs)
             lm_outputs.append(out)
+            # out has shape [batch_size, seq_len]
+        batch_size, seq_len = lm_outputs[0].shape[0], lm_outputs[0].shape[1]
+        lm_outputs_stacked = torch.stack(lm_outputs)
+        # ^ size [best_of_n, batch_size, seq_len]
+        result = []
+        for batch_id in range(batch_size):
+            out_str = self.language_tokenizer.batch_decode(
+                lm_outputs_stacked[:, batch_id, :], skip_special_tokens=True
+            )
+            out_tokens = self.reward_tokenizer(out_str, return_tensors="pt")
 
-        lm_outputs_stacked = torch.stack(lm_outputs).squeeze()
-        out_str = self.language_tokenizer.batch_decode(
-            lm_outputs_stacked, skip_special_tokens=True
+            # get the rewards for each output
+            reward_tensor = self.reward_model(**out_tokens).logits
+            # ^ shape [best_of_n, 1]
+            result.append(lm_outputs[np.argmax(reward_tensor, axis=0)][batch_id, :])
+        result_stacked = torch.stack(result, dim=0)
+        assert (result_stacked.shape[0], result_stacked.shape[1]) == (
+            batch_size,
+            seq_len,
         )
-        out_tokens = self.reward_tokenizer(out_str, return_tensors="pt")
-
-        # get the rewards for each output
-        rewards = self.reward_model(**out_tokens)
-        reward_tensor = rewards.logits
-        # return the best output
-        return lm_outputs[np.argmax(reward_tensor)]
+        return result_stacked
 
     def forward(self, **kwargs: Any) -> Any:
         """Uses the language model for forward pass."""

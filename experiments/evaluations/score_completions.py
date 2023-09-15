@@ -33,7 +33,7 @@ from tqdm import tqdm
 import wandb
 
 from superhf.data import get_superhf_prompts
-from superhf.utils import print_memory_utilization
+from superhf.utils import print_memory_utilization, BestOfNWrapper
 from superhf.training import SuperHFTrainingArguments, SuperHFTrainer
 from superhf.filtering import CompletionFilterTopK
 from superhf.mocking import MockRewardModel
@@ -249,6 +249,12 @@ def generate_completions_from_lm(
         revision = language_model.split("@")[1]
     except IndexError:
         revision = None
+    reward_model_path = None
+    if "best_of_n" in language_model_path:
+        parts = language_model_path.split("_best_of_n_")
+        error_msg = "_best_of_n_ should be proceeded by LM path and followed by RM path"
+        assert len(parts) == 2, error_msg
+        language_model_path, reward_model_path = parts[0], parts[1]
     language_model, language_tokenizer = load_eval_model_and_tokenizer(
         model_path=language_model_path,
         prev_model=prev_language_model,
@@ -258,6 +264,18 @@ def generate_completions_from_lm(
         tokenizer_padding_side="left",
         torch_dtype=torch.bfloat16,  # kwargs
     )
+    if reward_model_path is not None:
+        reward_model, reward_tokenizer = load_eval_model_and_tokenizer(
+            model_path=reward_model_path,
+            model_type="reward",
+            torch_dtype=torch.bfloat16,
+        )
+        language_model = BestOfNWrapper(
+            language_model=language_model,
+            reward_model=reward_model,
+            language_tokenizer=language_tokenizer,
+            reward_tokenizer=reward_tokenizer,
+        )
     print_memory_utilization()
 
     training_args = SuperHFTrainingArguments(
