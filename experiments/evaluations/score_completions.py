@@ -490,7 +490,14 @@ def generate_all_completions(
     prev_tokenizer = None
     for language_model_name in tqdm(language_model_names, desc="Language models"):
         #  it does, don't generate here
-        language_model_base_name = language_model_name.split("/")[-1]
+        if "best_of_n" in language_model_name:
+            parts = language_model_name.split("_best_of_n_")
+            assert len(parts) == 2, "Should be two parts LM_best_of_n_RM"
+            language_model_base_name = (
+                parts[0].split("/")[-1] + "_best_of_n_" + parts[1].split("/")[-1]
+            )
+        else:
+            language_model_base_name = language_model_name.split("/")[-1]
         if language_model_base_name in already_generated_completions:
             tqdm.write(
                 "Already generated completions for language model"
