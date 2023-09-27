@@ -44,7 +44,7 @@ class BestOfNWrapper(torch.nn.Module):
         # run the language model n times
         lm_outputs = []  # size best_of_n
         for _ in range(best_of_n):
-            out = self.language_model.generate(truncation=True, **kwargs)
+            out = self.language_model.generate(**kwargs)
             lm_outputs.append(out)
             # out has shape [batch_size, seq_len]
         batch_size, seq_len = lm_outputs[0].shape[0], lm_outputs[0].shape[1]
@@ -55,7 +55,9 @@ class BestOfNWrapper(torch.nn.Module):
             out_str = self.language_tokenizer.batch_decode(
                 lm_outputs_stacked[:, batch_id, :], skip_special_tokens=True
             )
-            out_tokens = self.reward_tokenizer(out_str, return_tensors="pt")
+            out_tokens = self.reward_tokenizer(
+                out_str, return_tensors="pt", padding=True
+            )
 
             # get the rewards for each output
             reward_tensor = self.reward_model(**out_tokens).logits
