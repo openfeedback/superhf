@@ -57,7 +57,7 @@ class BestOfNWrapper(torch.nn.Module):
             )
             out_tokens = self.reward_tokenizer(
                 out_str, return_tensors="pt", padding=True
-            )
+            ).to(self.reward_model.device)
 
             # get the rewards for each output
             reward_tensor = self.reward_model(**out_tokens).logits
