@@ -17,7 +17,7 @@ use_openai:
 language_model_names:
   desc: The name of the language model to use
   value: [
-          "mock_best_of_n_mock" # "/juice5/scr5/nlp/llama_model/llama_hf_latest/llama-7b_best_of_n_/nlp/scr/fongsu/rm_combined/gptneo_1.3B_first_half"
+          "/juice5/scr5/nlp/llama_model/llama_hf_latest/llama-7b_best_of_n_/nlp/scr/fongsu/rm_combined/gptneo_1.3B_first_half"
 ]
 
 language_model_interval:
