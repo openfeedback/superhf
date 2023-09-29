@@ -79,6 +79,13 @@ def load_eval_model_and_tokenizer(
         prev_model is not None and prev_tokenizer is not None
     ), "Either both prev_model and prev_tokenizer should be None, or neither should."
 
+    if "torch_dtype" in model_kwargs:
+        if (
+            model_kwargs["torch_dtype"] == torch.bfloat16
+            and torch.backends.mps.is_built()
+        ):
+            # if we are in mps, we need to use fp32 since bfloat16 is not supported
+            model_kwargs["torch_dtype"] = torch.float32
     try:
         peft_config = PeftConfig.from_pretrained(model_path)
         base_model_path = peft_config.base_model_name_or_path
