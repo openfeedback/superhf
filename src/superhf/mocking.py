@@ -57,10 +57,10 @@ def make_mock_llama_tokenizer() -> Any:
 class MockLanguageModel(torch.nn.Module, GenerationMixin):
     """Mocks a HuggingFace AutoModelForCausalLM class."""
 
-    def __init__(self) -> None:
+    def __init__(self, device="cpu") -> None:
         """Mocks initialization."""
         super().__init__()
-        self.device = torch.device("cpu")
+        self.device = torch.device(device)
         self.start_time = time.time()
         self.config = PretrainedConfig()
 
@@ -111,10 +111,10 @@ class MockLanguageModel(torch.nn.Module, GenerationMixin):
 class MockRewardModel(torch.nn.Module):
     """Mocks a HuggingFace AutoModelForSequenceClassification class."""
 
-    def __init__(self) -> None:
+    def __init__(self, device="cpu") -> None:
         """Mocks initialization."""
         super().__init__()
-        self.device = torch.device("cpu")
+        self.device = torch.device(device)
         self.backbone_model = MockLanguageModel()
 
     def __call__(
@@ -125,7 +125,7 @@ class MockRewardModel(torch.nn.Module):
         """Mocks the __call__ method for sequence classification."""
         output = type("", (), {})()  # TODO use an actual mocking library
         # Return a random float for each input in the batch
-        output.logits = torch.randn(input_ids.shape[0])
+        output.logits = torch.randn(input_ids.shape[0]).to(self.device)
         return output
 
     def forward(

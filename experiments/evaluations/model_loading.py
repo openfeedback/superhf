@@ -96,7 +96,7 @@ def load_eval_model_and_tokenizer(
         base_model_path = model_path
         tokenizer_path = model_path
 
-    if tokenizer_path == "mock":
+    if "mock" in tokenizer_path:
         tokenizer_path = "gpt2"
 
     if (
@@ -129,6 +129,10 @@ def load_eval_model_and_tokenizer(
             tqdm.write("Loading a reward model")
             if base_model_path == "mock":
                 model = MockRewardModel()
+            elif base_model_path == "mock_mps":
+                model = MockRewardModel("mps")
+            elif base_model_path == "mock_cuda":
+                model = MockRewardModel("cuda")
             elif "rm_combined" in base_model_path or "oliversssf2" in base_model_path:
                 model = RewardModel.from_pretrained(
                     base_model_path,
