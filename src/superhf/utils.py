@@ -60,12 +60,13 @@ class BestOfNWrapper(torch.nn.Module):
             ).to(self.reward_model.device)
 
             # get the rewards for each output
-            reward_out = self.reward_model(**out_tokens)
+            reward_output = self.reward_model(**out_tokens)
             try:
-                reward_tensor = reward_out.logits
+                reward_tensor = reward_output.logits
             except AttributeError:
-                reward_tensor = reward_out
+                reward_tensor = reward_output
             # ^ shape [best_of_n, 1]
+            reward_tensor = reward_tensor.to("cpu")
             result.append(lm_outputs[np.argmax(reward_tensor, axis=0)][batch_id, :])
         result_stacked = torch.stack(result, dim=0)
         assert (result_stacked.shape[0], result_stacked.shape[1]) == (
