@@ -539,8 +539,11 @@ def score_all_completions(args, script_path_dir: str, test_completions_dir: str)
         trim_completions = args.trim_completions
     except AttributeError:
         trim_completions = False
+    reward_model_name = args.reward_model
+    if "_best_of_n_" in reward_model_name:
+        reward_model_name = reward_model_name.split("_best_of_n_")[-1]
     reward_model, reward_tokenizer = load_eval_model_and_tokenizer(
-        args.reward_model, model_type="reward", torch_dtype=torch_dtype_lm
+        reward_model_name, model_type="reward", torch_dtype=torch_dtype_lm
     )
     if not isinstance(reward_model, str):
         reward_model = accelerator.prepare(reward_model)
