@@ -164,6 +164,7 @@ def model_type_to_palette_color(model_type: str) -> Any:
     """Standardize our use of models types to palette colors."""
     model_type = model_type.lower()
     model_name_to_type = {
+        "b-o-16": "best-of-n",
         "ftp": "feedme",
         "rlhf": "rlhf",
         "superhf": "superhf",
@@ -184,6 +185,8 @@ def model_type_to_palette_color(model_type: str) -> Any:
         "gpt-3.5",
         "gpt-4",
         "alpaca",
+        "COLOR_PLACEHOLDER",
+        "best-of-n",
     ]
     assert model_type in all_model_types
     return _get_color_from_palette(all_model_types.index(model_type))

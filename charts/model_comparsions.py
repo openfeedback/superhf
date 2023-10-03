@@ -33,6 +33,11 @@ def main() -> None:
         "llama-7b.json": "LLaMA",
         "llama-ftp-49516.json": "FeedME",
         "llama-instruct-12379.json": "Instruct",
+        "llama-7b_best_of_n_gptneo_1.3B_first_half.json": "B-o-16\n(LLaMA)",
+        "llama-ftp-49516_best_of_n_gptneo_1.3B_first_half.json": "B-o-16\n(FeedME)",
+        "llama-instruct-12379_best_of_n_gptneo_1.3B_first_half.json": (
+            "B-o-16\n(Instruct)"
+        ),
         # "rlhf-v4-llama.json",
         "rlhf-v5-llama@step-00384.json": "RLHF\n(LLaMA)",
         "rlhf-fixed-feedme-kl-0.2.json": "RLHF\n(FeedME)",
@@ -108,12 +113,12 @@ def main() -> None:
     plt.legend()
 
     # Set labels and title
-    plt.xlabel("Model Type")
+    plt.xlabel("Model")
     plt.ylabel("Test Score")
     plt.title("Held-Out Test Scores")
 
     # Set x-ticks
-    plt.xticks(range(len(x_labels)), x_labels)
+    plt.xticks(range(len(x_labels)), x_labels, fontsize=10)
 
     # Print the plot
     # plt.show()
