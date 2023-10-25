@@ -39,37 +39,28 @@ EVALUATION_MODE = EvaluationMode.BIAS
 MOCK_API = False
 COMPLETION_PATHS = [
     "./experiments/evaluations/test_completions/llama-7b.json",
+    "./experiments/evaluations/test_completions/llama-ftp-49516.json",
+    "./experiments/evaluations/test_completions/llama-instruct-12379.json",
+    "./experiments/evaluations/test_completions/rlhf-fixed-llama-v3-bs-16.json",
+    "./experiments/evaluations/test_completions/rlhf-fixed-llama-instruct-bs-16.json",
+    "./experiments/evaluations/test_completions/shf-v4-llama-10000-kl-0.35.json",
+    "./experiments/evaluations/test_completions/shf-v4-llama-instruct-10k-kl-0.35.json",
     "./experiments/evaluations/test_completions/alpaca_7b.json",
-    "./experiments/evaluations/test_completions/sft-on-preferences-v1.json",
-    "./experiments/evaluations/test_completions/rlhf-v3-lr-5.0e-6-batch-16@gold-run.json",
-    "./experiments/evaluations/test_completions/shf-7b-default.json",
-    "./experiments/openai_generations/gpt-3.5-turbo_2023-05-13_completions_output.json",
-    "./experiments/openai_generations/gpt-4_2023-05-13_completions_output.json",
 ]
-COMPLETION_PATHS = [  # KL sweep
-    "./experiments/evaluations/test_completions/shf-7b-kl-0.json",
-    "./experiments/evaluations/test_completions/shf-7b-kl-0.01.json",
-    "./experiments/evaluations/test_completions/shf-7b-kl-0.05.json",
-    "./experiments/evaluations/test_completions/shf-7b-kl-0.1.json",
-    "./experiments/evaluations/test_completions/shf-7b-kl-0.15.json",
-    "./experiments/evaluations/test_completions/shf-7b-kl-0.2.json",
-    "./experiments/evaluations/test_completions/shf-7b-kl-0.25.json",
-    "./experiments/evaluations/test_completions/shf-7b-kl-0.3.json",
-    "./experiments/evaluations/test_completions/shf-7b-kl-0.35.json",
-    "./experiments/evaluations/test_completions/shf-7b-kl-0.4.json",
-]
-OPENAI_MODEL = "gpt-4"
-OUTPUT_DIR = "./eval_results/gpt4_qualitative/kl_sweep"
-PREFERENCE_COMPARISONS_PER_DATASET = 256
-SINGLE_EXAMPLE_RATINGS_PER_DATASET = 32
-REQUEST_SLEEP_INTERVAL = 0.25  # seconds
+OPENAI_MODEL = "gpt-4-0613"
+OUTPUT_DIR = "./eval_results/gpt4_qualitative/new_models/"
+PREFERENCE_COMPARISONS_PER_DATASET = 128
+SINGLE_EXAMPLE_RATINGS_PER_DATASET = 20
+REQUEST_SLEEP_INTERVAL = 0.1  # seconds
 MOCK_SLEEP_INTERVAL = 0.01  # seconds
 
 
-@retry(wait=wait_random_exponential(min=0.25, max=60), stop=stop_after_attempt(64))
+@retry(
+    wait=wait_random_exponential(min=REQUEST_SLEEP_INTERVAL, max=60),
+    stop=stop_after_attempt(64),
+)
 def query_api(system_prompt: str, user_prompt: str) -> Any:
     """Query the API for a completion."""
-    # TODO try a batched version
     if MOCK_API:
         time.sleep(MOCK_SLEEP_INTERVAL)
         return "6" if "1-10" in system_prompt else "A"
@@ -121,51 +112,89 @@ def run_preferences(names_to_completions: dict[str, Any]) -> None:
         for test_set in tqdm(
             names_to_completions["llama-7b.json"].keys(), desc="Test set"
         ):
-            for index in tqdm(
-                range(PREFERENCE_COMPARISONS_PER_DATASET), desc="Comparison"
-            ):
-                # Randomly choose 2 of the models to compare
-                model_names_np = np.random.choice(
-                    list(names_to_completions.keys()), size=2, replace=False
-                )
-                np.random.shuffle(model_names_np)
-                model_names = [str(name) for name in model_names_np]
+            tqdm.write(f"Evaluating preferences test set: {test_set} > {output_path}")
+            with ThreadPoolExecutor() as executor:
+                futures = []
+                for index in range(PREFERENCE_COMPARISONS_PER_DATASET):
+                    # Randomly choose 2 of the models to compare
+                    model_names_np = np.random.choice(
+                        list(names_to_completions.keys()), size=2, replace=False
+                    )
+                    np.random.shuffle(model_names_np)
+                    model_names = [str(name) for name in model_names_np]
 
-                # Get the completions for each model at this index
-                model_a_example = names_to_completions[model_names[0]][test_set][index]
-                model_b_example = names_to_completions[model_names[1]][test_set][index]
-                _, model_a_completion = extract_prompt_and_completion(model_a_example)
-                _, model_b_completion = extract_prompt_and_completion(model_b_example)
-                model_a_completion = strip_and_remove_newlines(model_a_completion)
-                model_b_completion = strip_and_remove_newlines(model_b_completion)
+                    # Get the completions for each model at this index
+                    model_a_example = names_to_completions[model_names[0]][test_set][
+                        index
+                    ]
+                    model_b_example = names_to_completions[model_names[1]][test_set][
+                        index
+                    ]
+                    _, model_a_completion = extract_prompt_and_completion(
+                        model_a_example
+                    )
+                    _, model_b_completion = extract_prompt_and_completion(
+                        model_b_example
+                    )
+                    model_a_completion = strip_and_remove_newlines(model_a_completion)
+                    model_b_completion = strip_and_remove_newlines(model_b_completion)
 
-                # Also get the llama completion because we know its prompt is good
-                llama_example = names_to_completions["llama-7b.json"][test_set][index]
-                prompt, _ = extract_prompt_and_completion(llama_example)
+                    # Also get the llama completion because we know its prompt is good
+                    llama_example = names_to_completions["llama-7b.json"][test_set][
+                        index
+                    ]
+                    prompt, _ = extract_prompt_and_completion(llama_example)
 
-                # Format the final user prompt
-                user_prompt = (
-                    f"Prompt: {prompt}\nA: {model_a_completion}\nB:"
-                    f" {model_b_completion}"
-                )
+                    # Format the final user prompt
+                    user_prompt = (
+                        f"Prompt: {prompt}\nA: {model_a_completion}\nB:"
+                        f" {model_b_completion}"
+                    )
 
-                # Query the API
-                rating = query_api(system_prompt, user_prompt)
-                assert rating is not None
+                    # Submit the query to the API
+                    future = executor.submit(query_api, system_prompt, user_prompt)
+                    futures.append(future)
 
-                # Write everything to the file
-                writer.write(
-                    {
-                        "test_set": test_set,
-                        "index": index,
-                        "model_a": model_names[0],
-                        "model_b": model_names[1],
-                        "rating": rating,
-                        "model_a_completion": model_a_completion,
-                        "model_b_completion": model_b_completion,
-                        "prompt": prompt,
-                    }
-                )
+                # Wait for all the queries to complete and write the results to the file
+                for index, future in tqdm(
+                    enumerate(futures), total=len(futures), desc="Preference Queries"
+                ):
+                    rating = future.result()
+                    model_names_np = np.random.choice(
+                        list(names_to_completions.keys()), size=2, replace=False
+                    )
+                    np.random.shuffle(model_names_np)
+                    model_names = [str(name) for name in model_names_np]
+                    model_a_example = names_to_completions[model_names[0]][test_set][
+                        index
+                    ]
+                    model_b_example = names_to_completions[model_names[1]][test_set][
+                        index
+                    ]
+                    _, model_a_completion = extract_prompt_and_completion(
+                        model_a_example
+                    )
+                    _, model_b_completion = extract_prompt_and_completion(
+                        model_b_example
+                    )
+                    model_a_completion = strip_and_remove_newlines(model_a_completion)
+                    model_b_completion = strip_and_remove_newlines(model_b_completion)
+                    llama_example = names_to_completions["llama-7b.json"][test_set][
+                        index
+                    ]
+                    prompt, _ = extract_prompt_and_completion(llama_example)
+                    writer.write(
+                        {
+                            "test_set": test_set,
+                            "index": index,
+                            "model_a": model_names[0],
+                            "model_b": model_names[1],
+                            "rating": rating,
+                            "model_a_completion": model_a_completion,
+                            "model_b_completion": model_b_completion,
+                            "prompt": prompt,
+                        }
+                    )
 
 
 def run_single_example_rating(
@@ -210,6 +239,7 @@ def run_single_example_rating(
     create_file_dir_if_not_exists(output_path)
     outputs = []
     for model_name in tqdm(names_to_completions.keys(), desc="Model"):
+        tqdm.write(f"Evaluating {model_name} > {output_filename}")
         for test_set in tqdm(
             list(names_to_completions.values())[0].keys(), desc="Test set"
         ):
@@ -291,7 +321,7 @@ def main() -> None:
             names_to_completions[path.rsplit("/", maxsplit=1)[-1]] = json.load(file)
 
     # Switch on evaluation type
-    print(f"Running evaluations for {EVALUATION_MODE.name}...")
+    tqdm.write(f"Running evaluations for {EVALUATION_MODE.name}...")
     if EVALUATION_MODE == EvaluationMode.PREFERENCES:
         run_preferences(names_to_completions)
     elif EVALUATION_MODE == EvaluationMode.RELEVANCE:

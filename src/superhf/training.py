@@ -40,6 +40,7 @@ class SuperHFTrainingArguments:
     # pylint: disable=too-many-instance-attributes
 
     # Generation
+    seed: int = 0
     temperature: float = 1.0
     top_p: float = 0.95
     superbatch_size: int = field(
@@ -311,6 +312,14 @@ class SuperHFTrainer:
                     completion_lengths,
                 )
 
+                # Print the filtered completions (hack since wandb artifacts are screwed)
+                tqdm.write(f"📃 Superbatch {superbatch_index} - Filtered Completions:")
+                for filtered_completion in filtered_completions:
+                    # Don't print \n as newlines, print it as a literal string
+                    tqdm.write(
+                        filtered_completion.replace("\n", "\\n"), file=sys.stdout
+                    )
+
                 # Fine-tune the language model on the filtered completions
                 average_loss, average_kl_div = find_executable_batch_size(
                     self.finetune_language_model,
@@ -421,6 +430,7 @@ class SuperHFTrainer:
                     "lr": self.training_args.learning_rate,
                     "sbs": self.training_args.superbatch_size,
                     "pythia": model_size_or_name,
+                    "seed": self.training_args.seed,
                 }
                 param_value = param_name_to_value[self.training_args.sweep_param_name]
                 repo_name += f"-{self.training_args.sweep_param_name}-{param_value}"
@@ -455,7 +465,7 @@ class SuperHFTrainer:
                 # Create a new branch with the superbatch index as the name
                 hf_username = self.hf_api.whoami()["name"]
                 repo_id = hf_username + "/" + repo_name
-                branch = f"step-{prompt_index:04}"
+                branch = f"step-{prompt_index:05}"
                 try:
                     result = self.hf_api.create_branch(repo_id=repo_id, branch=branch)
                 except HfHubHTTPError:

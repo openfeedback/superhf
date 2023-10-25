@@ -1,19 +1,21 @@
-\begin{tabular}{|c|c|c|c|c|c|c|c|}
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|}
 \hline
- & LLaMA & Alpaca & SFT & RLHF & SuperHF & GPT-3.5 & GPT-4 \\
+ & \makecell{LLaMA\\\phantom{space}} & \makecell{FeedME\\\phantom{space}} & \makecell{Instruct\\\phantom{space}} & \makecell{RLHF\\(LLaMA)} & \makecell{RLHF\\(Instruct)} & \makecell{SuperHF\\(LLaMA)} & \makecell{SuperHF\\(Instruct)} & \makecell{Alpaca\\\phantom{space}} \\
 \hline
-LLaMA & - & 24.59\% & 35.42\% & 19.05\% & 19.44\% & 1.72\% & 2.08\% \\
+\makecell{LLaMA\\\phantom{space}} & - & \textbf{61.11\%} & 45.0\% & \textbf{68.42\%} & 43.48\% & 27.78\% & 30.0\% & \textbf{73.08\%} \\
 \hline
-Alpaca & \textbf{75.41\%} & - & \textbf{65.38\%} & \textbf{56.25\%} & \textbf{53.19\%} & 31.91\% & 24.53\% \\
+\makecell{FeedME\\\phantom{space}} & 38.89\% & - & 36.36\% & \textbf{59.26\%} & \textbf{71.43\%} & 50.0\% & \textbf{71.43\%} & 42.11\% \\
 \hline
-SFT & \textbf{64.58\%} & 34.62\% & - & 26.0\% & 23.4\% & 7.27\% & 3.39\% \\
+\makecell{Instruct\\\phantom{space}} & \textbf{55.0\%} & \textbf{63.64\%} & - & 42.86\% & \textbf{52.38\%} & \textbf{64.29\%} & 35.0\% & 47.83\% \\
 \hline
-RLHF & \textbf{80.95\%} & 43.75\% & \textbf{74.0\%} & - & 31.25\% & 17.78\% & 10.64\% \\
+\makecell{RLHF\\(LLaMA)} & 31.58\% & 40.74\% & \textbf{57.14\%} & - & \textbf{52.0\%} & \textbf{68.75\%} & 27.27\% & 36.36\% \\
 \hline
-SuperHF & \textbf{80.56\%} & 46.81\% & \textbf{76.6\%} & \textbf{68.75\%} & - & 29.27\% & 19.57\% \\
+\makecell{RLHF\\(Instruct)} & \textbf{56.52\%} & 28.57\% & 47.62\% & 48.0\% & - & \textbf{63.16\%} & \textbf{55.0\%} & 23.81\% \\
 \hline
-GPT-3.5 & \textbf{98.28\%} & \textbf{68.09\%} & \textbf{92.73\%} & \textbf{82.22\%} & \textbf{70.73\%} & - & 42.86\% \\
+\makecell{SuperHF\\(LLaMA)} & \textbf{72.22\%} & 50.0\% & 35.71\% & 31.25\% & 36.84\% & - & 50.0\% & 34.78\% \\
 \hline
-GPT-4 & \textbf{97.92\%} & \textbf{75.47\%} & \textbf{96.61\%} & \textbf{89.36\%} & \textbf{80.43\%} & \textbf{57.14\%} & - \\
+\makecell{SuperHF\\(Instruct)} & \textbf{70.0\%} & 28.57\% & \textbf{65.0\%} & \textbf{72.73\%} & 45.0\% & 50.0\% & - & \textbf{63.64\%} \\
+\hline
+\makecell{Alpaca\\\phantom{space}} & 26.92\% & \textbf{57.89\%} & \textbf{52.17\%} & \textbf{63.64\%} & \textbf{76.19\%} & \textbf{65.22\%} & 36.36\% & - \\
 \hline
 \end{tabular}

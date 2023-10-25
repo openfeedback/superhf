@@ -1,0 +1,17 @@
+program: experiments/superhf/shf_iterative_v1/run_shf_iterative.py
+method: bayes
+metric:
+  goal: minimize
+  name: average_kl_div.mean
+parameters:
+  learning_rate:
+    distribution: uniform
+    min: 1.5e-5
+    max: 3.0e-5
+  num_prompts:
+    value: 2500
+  sweep_param_name:
+    value: "lr"
+  hub_repo_id:
+    # Don't push
+    value: ""

@@ -26,7 +26,10 @@ TEST_SET_SIZE_PER_DATASET = 2300
 
 
 def get_superhf_prompts(
-    dataset_name: str, split: str = "train", load_whole_completion: bool = False
+    dataset_name: str,
+    split: str = "train",
+    max_length_chars: int = -1,
+    load_whole_completion: bool = False,
 ) -> list[str]:
     """
     Get a list of prompts from a dataset.
@@ -39,6 +42,7 @@ def get_superhf_prompts(
             - 'anthropic-helpful-base'
             - 'mock'
         split: The split of the dataset to load.
+        max_length_chars: Filter prompts longer than this many chars, or -1 for all prompts.
         load_whole_completion: Whether to load the whole completion or just the prompt.
 
     Returns:
@@ -123,6 +127,24 @@ def get_superhf_prompts(
                 row["chosen"].split("\n\nAssistant:")[0] + "\n\nAssistant:"
                 for row in dataset
             ]
+    elif dataset_name == "self_instruct":
+        assert (
+            not load_whole_completion
+        ), f"{dataset_name} not supported for chosen completions."
+        dataset = load_dataset(
+            "yizhongw/self_instruct",
+            # data_dir="self_instruct",
+            split="train",
+            keep_in_memory=False,
+        )
+        output = [
+            "\n\nHuman: " + row["prompt"].split("Output:")[0].strip() + "\n\nAssistant:"
+            for row in dataset
+        ]
+        if split == "train":
+            output = output[:-TEST_SET_SIZE_PER_DATASET]
+        elif split == "test":
+            output = output[-TEST_SET_SIZE_PER_DATASET:]
     elif dataset_name == "mock":
         output.extend(
             [
@@ -136,7 +158,41 @@ def get_superhf_prompts(
             + f"supported datasets: {SUPPORTED_DATASETS}"
         )
 
+    # Filter prompts longer than max_length_chars
+    if max_length_chars > 0:
+        old_length = len(output)
+        output = [prompt for prompt in output if len(prompt) <= max_length_chars]
+        print(
+            f"Filtered {old_length - len(output)} prompts longer than"
+            f" {max_length_chars} chars."
+        )
+
     return output
+
+
+def get_instruct_dataset(max_length_chars: int = -1) -> list[str]:
+    """Get a dataset for supervised instruction tuning."""
+    dataset = load_dataset("databricks/databricks-dolly-15k", split="train")
+
+    # Format into text examples
+    examples = [
+        (
+            (f'\n\nContext: {row["context"]}' if row["context"] else "")
+            + f'\n\nHuman: {row["instruction"]}\n\nAssistant: {row["response"]}'
+        )
+        for row in dataset
+    ]
+
+    # Filter prompts longer than max_length_chars
+    if max_length_chars > 0:
+        old_length = len(examples)
+        examples = [prompt for prompt in examples if len(prompt) <= max_length_chars]
+        print(
+            f"Filtered {old_length - len(examples)} prompts longer than"
+            f" {max_length_chars} chars."
+        )
+
+    return examples
 
 
 class ListDataset(IterableDataset[T]):

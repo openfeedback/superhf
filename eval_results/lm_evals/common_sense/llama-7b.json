@@ -52,7 +52,7 @@
     "model": "/juice5/scr5/nlp/llama_model/llama_hf_latest/llama-7b",
     "model_args": null,
     "num_fewshot": 0,
-    "batch_size": null,
+    "batch_size": 8,
     "device": null,
     "no_cache": true,
     "limit": null,

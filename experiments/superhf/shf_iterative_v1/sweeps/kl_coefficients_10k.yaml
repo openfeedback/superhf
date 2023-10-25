@@ -1,0 +1,39 @@
+program: experiments/superhf/shf_iterative_v1/run_shf_iterative.py
+method: grid
+metric:
+  goal: maximize
+  name: score_train_avg.mean
+parameters:
+  kl_coefficient:
+    values:
+      - 0.0
+      # - 0.01
+      - 0.025
+      - 0.05
+      - 0.1
+      - 0.15
+      - 0.2
+      - 0.225
+      - 0.25
+      # - 0.2625
+      - 0.275
+      # - 0.2875
+      - 0.3
+      - 0.375
+      - 0.35
+      - 0.4
+      - 0.45
+      - 0.5
+  # reward_model_val_name:
+  #   values:
+  #     - "/nlp/scr/fongsu/rm_combined/gptneo_1.3B_second_half"
+  hub_repo_id:
+    value: "shf-v4-llama-s4-10k"
+  push_to_hub_interval:
+    value: 999999
+  sweep_param_name:
+    value: "kl"
+  num_prompts:
+    value: 10000
+  seed:
+    value: 4

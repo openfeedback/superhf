@@ -70,3 +70,7 @@ artifacts
 # Slurm output files
 *.out
 **-job-*.out # test commment to push from cluster
+
+# alpaca_farm output
+mocking_output
+model-stuff

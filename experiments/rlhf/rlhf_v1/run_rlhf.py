@@ -14,6 +14,7 @@ Example usage:
         --notes "Testing RLHF with TRL" \
         --sweep_id xxxxx \
         --sweep_param_name kl \
+        --<overide any config params>=<value>
 """
 
 import os
@@ -40,7 +41,9 @@ from transformers import (
     PreTrainedTokenizerBase,
     PreTrainedModel,
 )
-from peft import LoraConfig, get_peft_model
+from peft import LoraConfig, get_peft_model, PeftConfig, PeftModel
+from huggingface_hub import HfApi
+from huggingface_hub.utils import HfHubHTTPError
 
 from datasets import Dataset
 
@@ -64,12 +67,12 @@ T = TypeVar("T")
 
 WANDB_ENTITY_NAME = "stanfordaialignment"
 WANDB_PROJECT_NAME = "rlhf-trl-v1"
-MAX_OOM_ALLOWED = 5
+MAX_OOM_ALLOWED = 16
 
 DEFAULT_PAD_TOKEN = "[PAD]"
 DEFAULT_EOS_TOKEN = "</s>"
-DEFAULT_BOS_TOKEN = "</s>"
-DEFAULT_UNK_TOKEN = "</s>"
+DEFAULT_BOS_TOKEN = "<s>"  # all these set acording to alpaca_farm
+DEFAULT_UNK_TOKEN = "<unk>"
 
 
 # We first define the configuration of the experiment, defining the model, the dataset,
@@ -100,6 +103,8 @@ class ScriptArguments:
     sweep_param_name: Optional[str] = field(
         default="", metadata={"help": "sweep parameter name"}
     )
+    # Extra arguments
+    extra_args: dict = field(default_factory=dict)
 
 
 def parse_args():
@@ -108,63 +113,55 @@ def parse_args():
     HfArgumentParser class from the transformers library.
     """
     parser = HfArgumentParser(ScriptArguments)
-    script_args = parser.parse_args_into_dataclasses()[0]
+    # pylint: disable=unbalanced-tuple-unpacking
+    script_args, unknown_args = parser.parse_args_into_dataclasses(
+        return_remaining_strings=True
+    )
+    script_args.extra_args = unknown_args
     return script_args
 
 
 def build_dataset(
-    dataset_names,
-    # tokenizer,
-    max_prompt_char_length=1024,
-    debug_max_prompts=0,
-    conversation_prompt="",
-    seed=66,
+    prompt_dataset_names,
+    num_prompts,
+    max_prompt_char_length,
+    seed,
 ):
     """
     Currentlty we don't use the tokenizer becauses the internal trainer
     for some reason throws away the tokenized exmples.
+
+    Args:
+        prompt_dataset_names: list of dataset names to use for prompts
+        num_prompts: number of prompts to use
+        max_prompt_char_length: max length of prompt in characters
+        seed: random seed
 
     Returns:
         a pytorch dataset that implements the __getitem__ and __len__ methods.
         PPO trainer converts this to a pytorch dataloader.
         torch.utils.data.Dataset
     """
+    # Configure seed
     set_seed(seed)
-    prompts: list[str] = []
-    for dataset in dataset_names:
-        prompts.extend(get_superhf_prompts(dataset))
 
+    # Get the prompt dataset
+    prompts: list[str] = []
+    num_datasets = len(prompt_dataset_names)
+    num_prompts_per_dataset = num_prompts // num_datasets if num_prompts > 0 else 0
+    for dataset_name in prompt_dataset_names:
+        new_prompts = get_superhf_prompts(
+            dataset_name, max_length_chars=max_prompt_char_length
+        )
+        total_loaded = len(new_prompts)
+        if num_prompts_per_dataset != 0:
+            new_prompts = new_prompts[:num_prompts_per_dataset]
+        total_filtered = len(new_prompts)
+        print(f"Loaded {total_filtered}/{total_loaded} prompts from {dataset_name}.")
+        prompts.extend(new_prompts)
     random.shuffle(prompts)
 
-    # Filter out prompts that are too long
-    old_prompt_count = len(prompts)
-    prompts = [
-        conversation_prompt + prompt
-        for prompt in prompts
-        if len(conversation_prompt + prompt) < max_prompt_char_length
-    ]
-    print(
-        f"Filtered {old_prompt_count - len(prompts)} prompts over "
-        f"{max_prompt_char_length} chars."
-    )
-
-    # Only load the first section of prompts
-    if debug_max_prompts != 0:
-        prompts = prompts[:debug_max_prompts]
-
-    print(f"Loaded {len(prompts)} prompts.")
-
-    def tokenize(sample):
-        dictionized_example = {}
-        # dictionized_example["input_ids"] = tokenizer.encode(sample)
-        dictionized_example["query"] = (
-            sample  # tokenizer.decode(dictionized_example["input_ids"])
-        )
-        return dictionized_example
-
-    prompts_2 = [tokenize(prompt) for prompt in prompts]
-    prompts_3 = {"query": [d["query"] for d in prompts_2]}
-    dataset = Dataset.from_dict(prompts_3)
+    dataset = Dataset.from_dict({"query": prompts})
     dataset.set_format(type="torch")
     return dataset
 
@@ -226,10 +223,59 @@ def load_reward_model(
     return reward_model_train, reward_model_pipe
 
 
+def load_language_model(language_model_name: str) -> PreTrainedModel:
+    """Load the language model."""
+    try:
+        peft_config = PeftConfig.from_pretrained(language_model_name)
+        base_model_path = peft_config.base_model_name_or_path
+    except ValueError:
+        # Probably isn't a PEFT model, so just load it from scratch
+        peft_config = None
+        base_model_path = language_model_name
+    language_model = AutoModelForCausalLM.from_pretrained(
+        base_model_path,
+        low_cpu_mem_usage=True,
+    )
+    if peft_config is not None:
+        # Already has pretrained adapter weights, load them
+        # pylint: disable=protected-access
+        assert (
+            peft_config.base_model_name_or_path == language_model.config._name_or_path
+        )
+        language_model = PeftModel.from_pretrained(
+            language_model,
+            language_model_name,
+        )
+
+    elif wandb.config.lora_r != 0 and wandb.config.lora_alpha != 0:
+        # Set up low-rank adapters (LoRA)
+        lora_config = LoraConfig(
+            r=wandb.config.lora_r,
+            lora_alpha=wandb.config.lora_alpha,
+            lora_dropout=wandb.config.lora_dropout,
+            target_modules=wandb.config.lora_target_modules,
+            task_type="CAUSAL_LM",
+            fan_in_fan_out=False,
+        )
+        language_model = get_peft_model(language_model, lora_config)
+        language_model.print_trainable_parameters()
+
+    print(f"Instantiated language model: {language_model_name}")
+    return language_model
+
+
 def get_configs():
     """
     Organizes all the configs into one place, and returns all of them.
     """
+    accelerator_kwargs = {}
+    if torch.backends.mps.is_available():
+        print(
+            "Detected mps. Forcing CPU instead because older macbook pros don't have"
+            " enough memmory for trainiing LLMs."
+        )
+        os.environ["ACCELERATE_USE_CPU"] = "1"
+        print("Set ACCELERATE_USE_CPU=1")
     ppo_config = PPOConfig(
         model_name=wandb.config.model_name,
         steps=20000,
@@ -252,35 +298,20 @@ def get_configs():
         remove_unused_columns=True,
         log_with=wandb.config.log_with,
         tracker_kwargs={},
-        accelerator_kwargs={},
+        accelerator_kwargs=accelerator_kwargs,
         tracker_project_name="trl",
         max_grad_norm=None,
-        seed=66,
+        seed=wandb.config.seed,
         optimize_cuda_cache=False,
+        whiten_rewards=wandb.config.whiten_rewards,
     )
 
     assert ppo_config.mini_batch_size <= ppo_config.batch_size
 
-    lora_config = None
-    if wandb.config.lora_r != 0 and wandb.config.lora_alpha != 0:
-        # Set up low-rank adapters (LoRA)
-        target_modules = (
-            wandb.config.lora_target_modules
-            if len(wandb.config.lora_target_modules) > 0
-            else None
-        )
-        lora_config = LoraConfig(
-            r=wandb.config.lora_r,
-            lora_alpha=wandb.config.lora_alpha,
-            target_modules=target_modules,  # handled automatically by peft
-            lora_dropout=wandb.config.lora_dropout,
-            task_type="CAUSAL_LM",
-            fan_in_fan_out=False,
-        )
-
     reward_model_kwargs = {
         "function_to_apply": "none",
         "batch_size": wandb.config.batch_size,
+        "penalize_bad_endings": wandb.config.penalize_bad_endings,
     }  # arguments for the reward pipeline.
 
     language_tokenizer = None
@@ -316,11 +347,28 @@ def get_configs():
     }
     # loop over extra_generation_args two at a time
     for i in range(len(extra_generation_args) // 2):
+        if extra_generation_args[i] == "pad_token_id":
+            if extra_generation_args[i + 1] == "eos_token_id":
+                generation_kwargs[extra_generation_args[i]] = (
+                    language_tokenizer.eos_token_id
+                )
+            elif extra_generation_args[i + 1] == "bos_token_id":
+                generation_kwargs[extra_generation_args[i]] = (
+                    language_tokenizer.bos_token_id
+                )
+            elif extra_generation_args[i + 1] == "unk_token_id":
+                generation_kwargs[extra_generation_args[i]] = (
+                    language_tokenizer.unk_token_id
+                )
+            elif extra_generation_args[i + 1] == "pad_token_id":
+                generation_kwargs[extra_generation_args[i]] = (
+                    language_tokenizer.pad_token_id
+                )
+            continue
         generation_kwargs[extra_generation_args[i]] = extra_generation_args[i + 1]
 
     return (
         ppo_config,
-        lora_config,
         reward_model_kwargs,
         language_tokenizer,
         generation_kwargs,
@@ -364,6 +412,107 @@ def score_completions(
     return scores
 
 
+def consider_pushing_to_hub(
+    script_args,
+    ppo_config,
+    hub_repo_id,
+    ppo_trainer,
+    hf_api,
+    epoch,
+    run_name,
+    save_every,
+    extra_push_to_hub,
+):
+    """
+    Considers pushing the model and tokenizer to the Hub.
+    Args:
+        script_args: The arguments to the script.
+        ppo_config: The PPO config.
+        hub_repo_id: The repo ID to push to.
+        ppo_trainer: The PPO trainer.
+        hf_api: The HuggingFace API.
+        epoch: The current epoch.
+        run_name: The name of the run.
+        save_every: How often to save.
+        extra_push_to_hub: Extra epochs to push to the Hub.
+    """
+    # pylint: disable=too-many-locals
+    should_push_to_hub = False
+    if len(hub_repo_id) == 0:
+        return
+    if (
+        epoch == len(ppo_trainer.dataloader) - 1
+        or (epoch % save_every == 0 and epoch != 0)
+        or epoch in extra_push_to_hub
+    ):
+        should_push_to_hub = True
+    if not should_push_to_hub:
+        return
+    tqdm.write(f"Pushing model and tokenizer to the Hub! Location: {hub_repo_id}")
+    repo_name = hub_repo_id
+    if script_args.sweep_param_name is not None and script_args.sweep_param_name != "":
+        assert (
+            script_args.sweep_param_name != "pythia"
+            or "pythia" in ppo_config.model_name
+        ), "Must use a pythia model to add a pythia model size to the repo name."
+        param_name_to_value = {
+            # get the actual params
+            "kl": ppo_config.init_kl_coef,
+            "lr": ppo_config.learning_rate,
+            "batch": ppo_config.batch_size * ppo_config.gradient_accumulation_steps,
+            "seed": ppo_config.seed,
+        }
+        if "pythia" == script_args.sweep_param_name:
+            param_name_to_value["pythia"] = (ppo_config.model_name.split("-")[1],)
+        # get the param value specified by the sweep
+        param_value = param_name_to_value[script_args.sweep_param_name]
+        repo_name += f"-{script_args.sweep_param_name}-{param_value}"
+
+    tqdm.write(
+        str(
+            ppo_trainer.model.push_to_hub(
+                repo_id=repo_name,
+                commit_message=f"Upload model from batch {epoch}, run {run_name}",
+            )
+        )
+    )
+    tqdm.write(
+        str(
+            ppo_trainer.tokenizer.push_to_hub(
+                repo_id=repo_name,
+                commit_message=f"Upload tokenizer from batch {epoch}, run {run_name}",
+            )
+        )
+    )
+
+    # Create a new branch with the superbatch index as the name
+    hf_username = hf_api.whoami()["name"]
+    repo_id = hf_username + "/" + repo_name
+    branch = f"step-{epoch:05}"
+    try:
+        result = hf_api.create_branch(repo_id=repo_id, branch=branch)
+    except HfHubHTTPError:
+        # Delete the branch first
+        hf_api.delete_branch(repo_id=repo_id, branch=branch)
+        result = hf_api.create_branch(repo_id=repo_id, branch=branch)
+    tqdm.write(str(result))
+
+
+def parse_type(value):
+    """
+    Parses a value to the appropriate type.
+    """
+    if value == "True":
+        value = True
+    elif value == "False":
+        value = False
+    elif "." in value and value.replace(".", "").isdigit():
+        value = float(value)
+    elif value.isdigit():
+        value = int(value)
+    return value
+
+
 def main(script_args: ScriptArguments):
     """
     Main function. Downloads the prompt dataset, reads the config file, and then
@@ -380,6 +529,22 @@ def main(script_args: ScriptArguments):
         save_code=True,
         config=script_args.config,
     )
+
+    # Process any extra arguments, converting values to appropriate types
+    extra_args_dict = {}
+    for arg in script_args.extra_args:
+        value: Any
+        key, value = arg.split("=")
+
+        if value.startswith("[") and value.endswith("]"):
+            value = value[1:-1].split(",")
+            value = [parse_type(v) for v in value]
+        else:
+            value = parse_type(value)
+        extra_args_dict[key] = value
+        if isinstance(value, List):
+            print(f"Value is a list for key {key}")
+    wandb.config.update(extra_args_dict, allow_val_change=True)
 
     # Enable tf32 training if supported
     if (
@@ -401,35 +566,47 @@ def main(script_args: ScriptArguments):
     offset_reward = wandb.config.offset_reward
     reward_model_name = wandb.config.reward_model_name
     test_reward_model_name = wandb.config.test_reward_model_name
-
+    conversation_prompt = wandb.config.conversation_prompt
+    try:
+        trim_generations_or_not = (
+            wandb.config.trim_generations_or_not
+        )  # decides whether to filter generations or not
+    except AttributeError:
+        print("Warning: trim_generations_or_not not set. Defaulting to True.")
+        trim_generations_or_not = True
     (
         ppo_config,
-        lora_config,
         reward_model_kwargs,
         language_tokenizer,
         generation_kwargs,
     ) = get_configs()
 
-    language_model = AutoModelForCausalLM.from_pretrained(ppo_config.model_name)
-    model_ref = None
-    if wandb.config.lora_r != 0 and wandb.config.lora_alpha != 0:
-        # Set up low-rank adapters (LoRA)
-        language_model = get_peft_model(language_model, lora_config)
-        language_model.print_trainable_parameters()
-    else:
-        # Copy the entire model in order to calculate the KL divergence
-        model_ref = AutoModelForCausalLMWithValueHead.from_pretrained(
-            ppo_config.model_name
+    hf_api = None
+    if wandb.config.hub_repo_id != "":
+        hf_api = HfApi()
+        assert hf_api.whoami(), (
+            "Must be logged in to the Hugging Face Hub to push models to the hub. "
+            "Run `huggingface-cli login` to log in."
         )
+
+    language_model = load_language_model(ppo_config.model_name)
+    # language_model = AutoModelForCausalLM.from_pretrained(ppo_config.model_name)
+    model_ref = None
+    if not hasattr(language_model, "disable_adapter"):
+        # Copy the entire model in order to calculate the KL divergence
+        # model_ref = AutoModelForCausalLMWithValueHead.from_pretrained(
+        #     ppo_config.model_name
+        # )
+        model_ref = load_language_model(ppo_config.model_name)
+        model_ref = AutoModelForCausalLMWithValueHead(model_ref)
     language_model = AutoModelForCausalLMWithValueHead.from_pretrained(language_model)
 
     # set seed before initializing value head for deterministic eval
     dataset = build_dataset(
-        wandb.config.dataset_names,
+        prompt_dataset_names=wandb.config.prompt_dataset_names,
+        num_prompts=wandb.config.num_prompts,
         max_prompt_char_length=wandb.config.max_prompt_char_length,
-        debug_max_prompts=wandb.config.debug_max_prompts,
-        conversation_prompt=wandb.config.conversation_prompt,
-        seed=ppo_config.seed,
+        seed=wandb.config.seed,
     )
 
     def collator(data):
@@ -475,6 +652,7 @@ def main(script_args: ScriptArguments):
     device = ppo_trainer.accelerator.device
     if ppo_trainer.accelerator.num_processes == 1:
         device = 0 if torch.cuda.is_available() else "cpu"  # to avoid a `pipeline` bug
+    print(f"Using device {device}.")
     # This pipeline is for the reward model
     reward_model_tokenizer = load_reward_tokenizer(reward_model_name)
     reward_model, reward_model_pipe = load_reward_model(
@@ -519,8 +697,11 @@ def main(script_args: ScriptArguments):
             tqdm.write(f"Epoch {epoch}")
             print_memory_utilization()
 
+            # prepends the conversatioin prompt before tokenizing
             query_tensors = [
-                language_tokenizer(q, return_tensors="pt")["input_ids"]
+                language_tokenizer(conversation_prompt + q, return_tensors="pt")[
+                    "input_ids"
+                ]
                 .squeeze()
                 .to(device)
                 for q in batch["query"]
@@ -534,9 +715,14 @@ def main(script_args: ScriptArguments):
                 # generation_kwargs["max_new_tokens"] = gen_len
                 response = ppo_trainer.generate(query, **generation_kwargs)
                 response_tensors.append(response.squeeze())
-            batch["response"] = trim_generations(
-                [language_tokenizer.decode(r.squeeze()) for r in response_tensors]
-            )
+            batch["response"] = [
+                language_tokenizer.decode(r.squeeze()) for r in response_tensors
+            ]
+            if trim_generations_or_not:
+                batch["response"] = trim_generations(batch["response"])
+            batch["response"] = [
+                separate_prompt_from_completion(r)[1] for r in batch["response"]
+            ]
             tqdm.write(
                 f"Finished generating responses. took {time.time() - start_time}"
             )
@@ -593,63 +779,17 @@ def main(script_args: ScriptArguments):
             )
             if oom_count > MAX_OOM_ALLOWED:
                 raise exc
-
-        if len(hub_repo_id) > 0 and (
-            epoch == len(ppo_trainer.dataloader) - 1
-            or (epoch % save_every == 0)
-            or epoch in extra_push_to_hub
-        ):
-            tqdm.write(
-                f"Pushing model and tokenizer to the Hub! Location: {hub_repo_id}"
-            )
-            repo_name = hub_repo_id
-            if (
-                script_args.sweep_param_name is not None
-                and script_args.sweep_param_name != ""
-            ):
-                assert (
-                    script_args.sweep_param_name != "pythia"
-                    or "pythia" in ppo_config.model_name
-                ), (
-                    "Must use a pythia model to add a pythia model size to the repo"
-                    " name."
-                )
-                param_name_to_value = {
-                    # get the actual params
-                    "kl": ppo_config.init_kl_coef,
-                    "lr": ppo_config.learning_rate,
-                    "batch": (
-                        ppo_config.batch_size * ppo_config.gradient_accumulation_steps
-                    ),
-                }
-                if "pythia" == script_args.sweep_param_name:
-                    param_name_to_value["pythia"] = (
-                        ppo_config.model_name.split("-")[1],
-                    )
-                # get the param value specified by the sweep
-                param_value = param_name_to_value[script_args.sweep_param_name]
-                repo_name += f"-{script_args.sweep_param_name}-{param_value}"
-
-            tqdm.write(
-                str(
-                    ppo_trainer.model.push_to_hub(
-                        repo_id=repo_name,
-                        commit_message=(
-                            f"Upload model from batch {epoch}, run {run_name}"
-                        ),
-                    )
-                )
-            )
-            tqdm.write(
-                str(
-                    ppo_trainer.tokenizer.push_to_hub(
-                        repo_id=repo_name,
-                        commit_message=(
-                            f"Upload tokenizer from batch {epoch}, run {run_name}"
-                        ),
-                    )
-                )
-            )
+        consider_pushing_to_hub(
+            script_args=script_args,
+            ppo_config=ppo_config,
+            hub_repo_id=hub_repo_id,
+            ppo_trainer=ppo_trainer,
+            hf_api=hf_api,
+            epoch=epoch,
+            run_name=run_name,
+            save_every=save_every,
+            extra_push_to_hub=extra_push_to_hub,
+        )
 
     # Explicit finish to avoid wandb hanging
     wandb.alert(
@@ -703,6 +843,9 @@ def trim_generations(raw_completions: list[str]) -> list[str]:
 if __name__ == "__main__":
     args = parse_args()
     if args.sweep_id != "":
+        COUNT = 1
+        if hasattr(args, "count"):
+            COUNT = args.count
         # Run sweeps
         # try:
         #     print(f"{args.sweep_id}")
@@ -716,7 +859,7 @@ if __name__ == "__main__":
             function=lambda: main(args),
             entity=WANDB_ENTITY_NAME,
             project=WANDB_PROJECT_NAME,
-            count=1,
+            count=COUNT,
         )
     else:
         main(args)

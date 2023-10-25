@@ -1,0 +1,18 @@
+method: grid
+metric:
+  goal: maximize
+  name: env/reward_mean
+parameters:
+  learning_rate:
+    values:
+      - 1.0e-5
+      - 1.0e-6
+      - 1.0e-4
+      - 1.0e-3
+  sweep_param_name:
+    values:
+      - lr
+  num_prompts:
+    values:
+      - 2048
+program: experiments/superhf/rlhf/rlhf_v1/run_rlhf.py

@@ -10,15 +10,17 @@ import seaborn as sns
 from chart_utils import (
     initialize_plot,
     save_plot,
+    model_type_to_palette_color,
+    model_type_to_hatch,
     MODEL_NAME_MAPPING,
     QUALITATIVE_MODEL_ORDER,
+    QUALITATIVE_MODEL_ORDER_MULTILINE,
 )
 
-QUALITATIVE_MODEL_ORDER = QUALITATIVE_MODEL_ORDER[:-2]
+# QUALITATIVE_MODEL_ORDER = QUALITATIVE_MODEL_ORDER[:-2]
 
-INPUT_FILE = "./eval_results/gpt4_qualitative/elo_scores.json"
+INPUT_FILE = "./eval_results/gpt4_qualitative/new_models/elo_scores.json"
 OUTPUT_FILE = "./charts/models/elo_scores.png"
-# OUTPUT_FILE = "./charts/models/elo_scores_all.png"
 
 
 def main() -> None:
@@ -42,7 +44,7 @@ def main() -> None:
     # Print out the average elo for each model
     for model_name in QUALITATIVE_MODEL_ORDER:
         model_scores = dataframe[dataframe["Model"] == model_name]["Elo"]
-        print(f"{model_name}: {model_scores.mean():.2f}")
+        print(f"{model_scores.mean():.2f}, # {model_name}")
 
     # Create the plot
     plt.rcParams["lines.markersize"] = 1
@@ -53,7 +55,18 @@ def main() -> None:
         capsize=0.1,
         errorbar="ci",
         order=QUALITATIVE_MODEL_ORDER,
-        # label="Pythia Base",
+        palette=[
+            model_type_to_palette_color(model_name)
+            for model_name in QUALITATIVE_MODEL_ORDER
+        ],
+        hatch=[
+            model_type_to_hatch(model_name) for model_name in QUALITATIVE_MODEL_ORDER
+        ],
+    )
+
+    # Add new line to bar x-axis labels
+    plt.xticks(
+        range(len(QUALITATIVE_MODEL_ORDER_MULTILINE)), QUALITATIVE_MODEL_ORDER_MULTILINE
     )
 
     # Horizontal line at 1500 for starting Elo
@@ -64,8 +77,9 @@ def main() -> None:
 
     # Set the y-axis limits
     # plt.ylim(1200, 1550)
-    plt.ylim(1300, 1630)
+    # plt.ylim(1300, 1630)
     # plt.ylim(1200, 1800)
+    plt.ylim(1425, 1550)
 
     # Set labels and title
     plt.xlabel("Model Type")

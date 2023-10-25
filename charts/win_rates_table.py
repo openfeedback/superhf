@@ -5,6 +5,7 @@ from typing import Any
 
 from chart_utils import create_file_dir_if_not_exists, MODEL_NAME_MAPPING
 
+INPUT_FILE = "./eval_results/gpt4_qualitative/new_models/win_rates.csv"
 OUTPUT_PATH = "./charts/qualitative/win_rates_table.tex"
 
 
@@ -13,9 +14,7 @@ def main() -> None:
 
     # Read the CSV file
     win_rates = {}
-    with open(
-        "eval_results/gpt4_qualitative/win_rates.csv", "r", encoding="utf-8"
-    ) as csvfile:
+    with open(INPUT_FILE, "r", encoding="utf-8") as csvfile:
         reader = csv.reader(csvfile)
         next(reader)  # Skip the header
         for row in reader:
@@ -24,9 +23,12 @@ def main() -> None:
                 win_rate
             )
 
-    # Create a 7x7 matrix
+    # Create an NxN matrix
     model_names = list(MODEL_NAME_MAPPING.values())
-    matrix: list[list[Any]] = [[0 for _ in range(7)] for _ in range(7)]
+    num_models = len(model_names)
+    matrix: list[list[Any]] = [
+        [0 for _ in range(num_models)] for _ in range(num_models)
+    ]
     for i, model_a in enumerate(model_names):
         for j, model_b in enumerate(model_names):
             if model_a == model_b:
@@ -36,11 +38,23 @@ def main() -> None:
                     (model_a, model_b), win_rates.get((model_b, model_a), "0")
                 )
                 matrix[i][j] = rf"{round(float(win_rate) * 100, 2)}\%"
+                print(f"'{model_a}' vs '{model_b}': {win_rate},")
+
+    # Add new lines
+    new_model_names = []
+    for model_name in list(MODEL_NAME_MAPPING.values()):
+        if " " in model_name:
+            model_name = "\\makecell{" + model_name.replace(" ", "\\\\") + "}"
+        else:
+            model_name = "\\makecell{" + model_name + "\\\\\\phantom{space}}"
+        new_model_names.append(model_name)
+    model_names = new_model_names
 
     # Write the matrix into a LaTeX file
     create_file_dir_if_not_exists(OUTPUT_PATH)
     with open(OUTPUT_PATH, "w", encoding="utf-8") as latexfile:
-        latexfile.write("\\begin{tabular}{|c|c|c|c|c|c|c|c|}\n")
+        # Make sure this is the right number of columns
+        latexfile.write("\\begin{tabular}{|c|c|c|c|c|c|c|c|c|}\n")
         latexfile.write("\\hline\n")
         latexfile.write(" & " + " & ".join(model_names) + " \\\\\n")
         latexfile.write("\\hline\n")

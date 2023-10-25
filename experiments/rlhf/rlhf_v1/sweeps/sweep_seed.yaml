@@ -1,0 +1,32 @@
+method: grid
+metric:
+  goal: maximize
+  name: env/reward_mean
+parameters:
+  seed:
+    values:
+      - 0
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+      - 7
+      - 8
+      - 9
+      - 10
+      - 11
+      - 12
+      - 13
+      - 14
+      - 15
+      - 16
+      - 17
+      - 18
+      - 19
+  num_prompts:
+    value: 2500
+  sweep_param_name:
+    value: "seed"
+program: experiments/superhf/rlhf/rlhf_v1/run_rlhf.py

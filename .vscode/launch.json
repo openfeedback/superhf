@@ -110,6 +110,7 @@
             "args": [
                 "--config",
                 "${workspaceFolder}/experiments//rlhf/rlhf_v1/configs/mock.yaml",
+                "--generation_kwargs=[pad_token_id,eos_token_id]"
             ],
             "justMyCode": false
         },
@@ -177,16 +178,18 @@
             "justMyCode": false
         },
         {
-            "name": "SFT on Prefs Debug",
+            "name": "FTP Debug",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/experiments/sft/sft_on_preferences.py",
+            "program": "${workspaceFolder}/experiments/sft/sft_ftp_and_instruct.py",
             "console": "integratedTerminal",
             "args": [
                 "--model_name",
                 "EleutherAI/pythia-70m-deduped",
                 "--num_examples",
-                "512",
+                "500",
+                "--data_type",
+                "ftp",
                 "--batch_size",
                 "8",
                 "--scheduler_warmup_steps",
@@ -195,10 +198,34 @@
                 "none",
                 "--lora_target_modules",
                 "query_key_value",
-                "--hub_repo_id",
-                "test-sft-on-preferences",
                 "--push_interval",
-                "64",
+                "256",
+            ],
+            "justMyCode": false,
+        },
+        {
+            "name": "SFT Debug",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/experiments/sft/sft_ftp_and_instruct.py",
+            "console": "integratedTerminal",
+            "args": [
+                "--model_name",
+                "EleutherAI/pythia-70m-deduped",
+                "--num_examples",
+                "500",
+                "--data_type",
+                "instruct",
+                "--batch_size",
+                "8",
+                "--scheduler_warmup_steps",
+                "1",
+                "--mixed_precision",
+                "none",
+                "--lora_target_modules",
+                "query_key_value",
+                "--push_interval",
+                "256",
             ],
             "justMyCode": false,
         },
@@ -222,5 +249,51 @@
             ],
             "justMyCode": false
         },
+        {
+            "name": "Alpaca PPO Mock",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/experiments/rlhf/alpaca_farm_ppo/rlhf_v2.py",
+            "console": "integratedTerminal",
+            "args": [
+                "--run_name",
+                "mock_1.0",
+                "--step_per_device_batch_size",
+                "1",
+                "--rollout_per_device_batch_size",
+                "8", // 32
+                "--per_device_eval_batch_size",
+                "1", // 32
+                "--output_dir",
+                "mocking_output",
+                "--reward_model_name_or_path",
+                "peterchatain/mock_llama",
+                "--policy_model_name_or_path",
+                "peterchatain/mock_llama",
+                "--init_value_with_reward",
+                "True",
+                "--rollout_batch_size",
+                "8", // 512
+                "--step_batch_size",
+                "1", //256
+                "--learning_rate",
+                "1e-5",
+                "--warmup_steps",
+                "5",
+                "--kl_coef",
+                "0.2",
+                "--total_epochs",
+                "1", // 10
+                "--flash_attn",
+                "False",
+                // "--prompt_dict_path",
+                // "./examples/prompts/v0_inputs_noinputs.json",
+                "--save_steps",
+                "99999999",
+                "--lora_r",
+                "4", // turns on lora adapters wtih default config
+            ],
+            "justMyCode": true
+        }
     ]
 }

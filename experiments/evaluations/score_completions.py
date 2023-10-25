@@ -33,7 +33,7 @@ from tqdm import tqdm
 import wandb
 
 from superhf.data import get_superhf_prompts
-from superhf.utils import print_memory_utilization
+from superhf.utils import print_memory_utilization, BestOfNWrapper
 from superhf.training import SuperHFTrainingArguments, SuperHFTrainer
 from superhf.filtering import CompletionFilterTopK
 from superhf.mocking import MockRewardModel
@@ -63,7 +63,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--config",
         type=str,
-        default=None,
+        default="./experiments/evaluations/configs/generate_completions_default.yaml",
         help="Path to the config file containing the completions to score",
     )
     parser.add_argument(
@@ -249,6 +249,12 @@ def generate_completions_from_lm(
         revision = language_model.split("@")[1]
     except IndexError:
         revision = None
+    reward_model_path = None
+    if "best_of_n" in language_model_path:
+        parts = language_model_path.split("_best_of_n_")
+        error_msg = "_best_of_n_ should be proceeded by LM path and followed by RM path"
+        assert len(parts) == 2, error_msg
+        language_model_path, reward_model_path = parts[0], parts[1]
     language_model, language_tokenizer = load_eval_model_and_tokenizer(
         model_path=language_model_path,
         prev_model=prev_language_model,
@@ -258,6 +264,18 @@ def generate_completions_from_lm(
         tokenizer_padding_side="left",
         torch_dtype=torch.bfloat16,  # kwargs
     )
+    if reward_model_path is not None:
+        reward_model, reward_tokenizer = load_eval_model_and_tokenizer(
+            model_path=reward_model_path,
+            model_type="reward",
+            torch_dtype=torch.bfloat16,
+        )
+        language_model = BestOfNWrapper(
+            language_model=language_model,
+            reward_model=reward_model,
+            language_tokenizer=language_tokenizer,
+            reward_tokenizer=reward_tokenizer,
+        )
     print_memory_utilization()
 
     training_args = SuperHFTrainingArguments(
@@ -322,13 +340,10 @@ def load_prompts_dictionary(args):
     # Get the prompt dataset
     completions_dict = {}
     for dataset_name in args.prompt_dataset_names:
-        prompts = get_superhf_prompts(dataset_name, split="test")
+        prompts = get_superhf_prompts(
+            dataset_name, split="test", max_length_chars=args.max_prompt_char_length
+        )
 
-        # Filter out prompts that are too long
-        old_prompt_count = len(prompts)
-        prompts = [
-            prompt for prompt in prompts if len(prompt) < args.max_prompt_char_length
-        ]
         try:
             max_prompts_per_dataset = args.max_prompts_per_dataset
         except AttributeError:
@@ -338,13 +353,11 @@ def load_prompts_dictionary(args):
                 prompts = random.sample(prompts, max_prompts_per_dataset)
             else:
                 prompts = prompts[:max_prompts_per_dataset]
-        print(
-            f"Filtered {old_prompt_count - len(prompts)} prompts over "
-            f"{args.max_prompt_char_length} chars from dataset {dataset_name}."
-            f"max_prompts_per_dataset={max_prompts_per_dataset}"
-        )
-        print(f"Loaded {len(prompts)} prompts for dataset {dataset_name}")
         completions_dict[dataset_name] = prompts
+    print(
+        f"Loaded {len(completions_dict)} datasets each of length"
+        f" {len(prompts)} ({len(completions_dict) * len(prompts)} total prompts)"
+    )
     return completions_dict
 
 
@@ -477,7 +490,14 @@ def generate_all_completions(
     prev_tokenizer = None
     for language_model_name in tqdm(language_model_names, desc="Language models"):
         #  it does, don't generate here
-        language_model_base_name = language_model_name.split("/")[-1]
+        if "best_of_n" in language_model_name:
+            parts = language_model_name.split("_best_of_n_")
+            assert len(parts) == 2, "Should be two parts LM_best_of_n_RM"
+            language_model_base_name = (
+                parts[0].split("/")[-1] + "_best_of_n_" + parts[1].split("/")[-1]
+            )
+        else:
+            language_model_base_name = language_model_name.split("/")[-1]
         if language_model_base_name in already_generated_completions:
             tqdm.write(
                 "Already generated completions for language model"
@@ -519,8 +539,11 @@ def score_all_completions(args, script_path_dir: str, test_completions_dir: str)
         trim_completions = args.trim_completions
     except AttributeError:
         trim_completions = False
+    reward_model_name = args.reward_model
+    if "_best_of_n_" in reward_model_name:
+        reward_model_name = reward_model_name.split("_best_of_n_")[-1]
     reward_model, reward_tokenizer = load_eval_model_and_tokenizer(
-        args.reward_model, model_type="reward", torch_dtype=torch_dtype_lm
+        reward_model_name, model_type="reward", torch_dtype=torch_dtype_lm
     )
     if not isinstance(reward_model, str):
         reward_model = accelerator.prepare(reward_model)

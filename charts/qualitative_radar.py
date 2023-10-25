@@ -10,6 +10,8 @@ import matplotlib.pyplot as plt
 from chart_utils import (
     initialize_plot,
     save_plot,
+    model_type_to_palette_color,
+    model_type_to_line_style,
     MODEL_NAME_MAPPING,
     QUALITATIVE_MODEL_ORDER,
 )
@@ -32,27 +34,31 @@ def load_data(file_path: str) -> pd.DataFrame:
 
 def main() -> None:
     """Main function."""
+
+    # pylint: disable=too-many-locals
+
     initialize_plot()
     plt.rcParams["lines.marker"] = ""
     plt.figure(figsize=(8, 8))
 
     # Load data
     named_files = [
-        ("Avoidance", "eval_results/gpt4_qualitative/avoidance.jsonl"),
-        ("Bias", "eval_results/gpt4_qualitative/bias.jsonl"),
-        ("Reward\nGaming", "eval_results/gpt4_qualitative/gaming.jsonl"),
-        ("Relevance", "eval_results/gpt4_qualitative/relevance.jsonl"),
+        ("Avoidance", "eval_results/gpt4_qualitative/new_models/avoidance.jsonl"),
+        ("Bias", "eval_results/gpt4_qualitative/new_models/bias.jsonl"),
+        ("Reward\nGaming", "eval_results/gpt4_qualitative/new_models/gaming.jsonl"),
+        ("Relevance", "eval_results/gpt4_qualitative/new_models/relevance.jsonl"),
     ]
     tabular_data: dict[str, Any] = {"group": QUALITATIVE_MODEL_ORDER}
-    # Manually add Elo scores
+    # Manually add Elo scores (from elo_scores.py)
     tabular_data["Elo Score"] = [
-        1220.91,  # LLaMA
-        1507.60,  # Alpaca
-        1311.50,  # SFT
-        1444.27,  # RLHF
-        1527.14,  # SuperHF
-        1711.37,  # GPT-3.5
-        1777.20,  # GPT-4
+        1503.60,  # LLaMA
+        1530.55,  # FeedME
+        1511.04,  # Instruct
+        1466.68,  # RLHF (LLaMA)
+        1469.05,  # RLHF (Instruct)
+        1465.81,  # SuperHF (LLaMA)
+        1533.65,  # SuperHF (Instruct)
+        1519.61,  # Alpaca
     ]
     for quality_name, file_path in named_files:
         data = load_data(file_path)
@@ -70,8 +76,8 @@ def main() -> None:
     dataframe = pd.DataFrame(tabular_data)
 
     if SHOW_LIMITED_MODELS:
-        # Drop all rows but Alpaca, RLHF, and SuperHF
-        dataframe = dataframe.iloc[[1, 3, 4]]
+        # Drop all rows but select few
+        dataframe = dataframe.iloc[[0, 4, 6, 7]]
 
     # Normalize each group to go from 0.1 (min) to 1 (max)
     qualities = ["Elo Score", "Avoidance", "Bias", "Reward\nGaming", "Relevance"]
@@ -105,6 +111,9 @@ def main() -> None:
     # Set y-axis limits
     plt.ylim(0, 1.0)
 
+    # Draw one axe per variable + add labels
+    plt.xticks(angles[:-1], categories)
+
     # Move x-axis labels away from the plot
     plt.tick_params(axis="x", pad=15)
 
@@ -116,16 +125,26 @@ def main() -> None:
             .values.flatten()
             .tolist()
         )
+        color = model_type_to_palette_color(model_name)
+        line_style = (
+            model_type_to_line_style(model_name) if not SHOW_LIMITED_MODELS else "-"
+        )
         values += values[:1]
-        line_style = "solid" if SHOW_LIMITED_MODELS else "dashed"
-        axis.plot(angles, values, linewidth=3, linestyle=line_style, label=model_name)
+        axis.plot(
+            angles,
+            values,
+            linewidth=3,
+            color=color,
+            linestyle=line_style,
+            label=model_name,
+        )
         if SHOW_LIMITED_MODELS:
             axis.fill(angles, values, alpha=0.15)
 
     # Add legend
-    plt.legend(loc="upper right", bbox_to_anchor=(0.1, 1))
+    plt.legend(loc="upper left", bbox_to_anchor=(-0.125, 1.075), framealpha=0.5)
     if SHOW_LIMITED_MODELS:
-        plt.legend()
+        plt.legend(loc="upper left", bbox_to_anchor=(-0.125, 1.0), framealpha=0.5)
 
     # Set the title of the plot
     plt.title("Normalized Qualitative Ratings using GPT-4")

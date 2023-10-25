@@ -21,7 +21,9 @@ from transformers import (
 )
 from peft import (
     LoraConfig,
+    PeftConfig,
     get_peft_model,
+    PeftModel,
 )
 import torch
 import yaml
@@ -41,7 +43,7 @@ from superhf.utils import set_seed, print_memory_utilization
 from reward_modelling.reward_model import RewardModel
 
 WANDB_ENTITY_NAME = "stanfordaialignment"
-WANDB_PROJECT_NAME = "superhf-v3"
+WANDB_PROJECT_NAME = "superhf-v4"
 
 
 def main(argparse_args: argparse.Namespace, extra_args: list[str]) -> None:
@@ -56,9 +58,6 @@ def main(argparse_args: argparse.Namespace, extra_args: list[str]) -> None:
 
     # Attempt to fix too many open files issue on SLURM
     torch.multiprocessing.set_sharing_strategy("file_system")
-
-    # Configure seed
-    set_seed(66)
 
     # Enable tf32 training if supported
     if torch.cuda.is_available() and torch.cuda.get_device_capability()[0] >= 8:
@@ -76,6 +75,9 @@ def main(argparse_args: argparse.Namespace, extra_args: list[str]) -> None:
     )
     assert run is not None
 
+    # Configure seed
+    set_seed(wandb.config.seed)
+
     # Process any extra arguments, converting values to appropriate types
     extra_args_dict = {}
     for arg in extra_args:
@@ -85,7 +87,7 @@ def main(argparse_args: argparse.Namespace, extra_args: list[str]) -> None:
             value = True
         elif value == "False":
             value = False
-        elif "." in value:
+        elif "." in value and value.replace(".", "").isdigit():
             value = float(value)
         elif value.isdigit():
             value = int(value)
@@ -94,27 +96,23 @@ def main(argparse_args: argparse.Namespace, extra_args: list[str]) -> None:
 
     # Get the prompt dataset
     prompts: list[str] = []
+    num_datasets = len(wandb.config.prompt_dataset_names)
+    num_prompts_per_dataset = (
+        wandb.config.num_prompts // num_datasets if wandb.config.num_prompts > 0 else 0
+    )
     for dataset_name in wandb.config.prompt_dataset_names:
-        prompts.extend(get_superhf_prompts(dataset_name))
+        new_prompts = get_superhf_prompts(
+            dataset_name, max_length_chars=wandb.config.max_prompt_char_length
+        )
+        total_loaded = len(new_prompts)
+        if num_prompts_per_dataset != 0:
+            new_prompts = new_prompts[:num_prompts_per_dataset]
+        total_filtered = len(new_prompts)
+        print(f"Loaded {total_filtered}/{total_loaded} prompts from {dataset_name}.")
+        prompts.extend(new_prompts)
     random.shuffle(prompts)
 
-    # Filter out prompts that are too long
-    old_prompt_count = len(prompts)
-    prompts = [
-        prompt
-        for prompt in prompts
-        if len(prompt) < wandb.config.max_prompt_char_length
-    ]
-    print(
-        f"Filtered {old_prompt_count - len(prompts)} prompts over "
-        f"{wandb.config.max_prompt_char_length} chars."
-    )
-
-    # Only load the first section of prompts
-    if wandb.config.num_prompts != 0:
-        prompts = prompts[: wandb.config.num_prompts]
-
-    print(f"Loaded {len(prompts)} prompts.")
+    print(f"Loaded {len(prompts)} total prompts.")
     print_memory_utilization()
     print("Instantiating models...")
 
@@ -174,6 +172,7 @@ def main(argparse_args: argparse.Namespace, extra_args: list[str]) -> None:
         else torch.bfloat16 if wandb.config.mixed_precision == "bf16" else torch.float32
     )
     training_args = SuperHFTrainingArguments(
+        seed=wandb.config.seed,
         temperature=wandb.config.temperature,
         top_p=wandb.config.top_p,
         superbatch_size=wandb.config.superbatch_size,
@@ -240,15 +239,33 @@ def main(argparse_args: argparse.Namespace, extra_args: list[str]) -> None:
 
 def load_language_model(language_model_name: str) -> PreTrainedModel:
     """Load the language model."""
+    try:
+        peft_config = PeftConfig.from_pretrained(language_model_name)
+        base_model_path = peft_config.base_model_name_or_path
+    except ValueError:
+        # Probably isn't a PEFT model, so just load it from scratch
+        peft_config = None
+        base_model_path = language_model_name
     language_model = (
         MockLanguageModel()
-        if language_model_name == "mock"
+        if base_model_path == "mock"
         else AutoModelForCausalLM.from_pretrained(
-            language_model_name,
+            base_model_path,
             low_cpu_mem_usage=True,
         )
     )
-    if wandb.config.lora_r != 0 and wandb.config.lora_alpha != 0:
+    if peft_config is not None:
+        # Already has pretrained adapter weights, load them
+        # pylint: disable=protected-access
+        assert (
+            peft_config.base_model_name_or_path == language_model.config._name_or_path
+        )
+        language_model = PeftModel.from_pretrained(
+            language_model,
+            language_model_name,
+        )
+
+    elif wandb.config.lora_r != 0 and wandb.config.lora_alpha != 0:
         # Set up low-rank adapters (LoRA)
         lora_config = LoraConfig(
             r=wandb.config.lora_r,

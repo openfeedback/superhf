@@ -16,25 +16,36 @@ DEFAULT_COLOR_PALETTE = "colorblind"
 
 MODEL_NAME_MAPPING = {
     "llama-7b.json": "LLaMA",
+    "llama-ftp-49516.json": "FeedME",
+    "llama-instruct-12379.json": "Instruct",
+    "rlhf-fixed-llama-v3-bs-16.json": "RLHF (LLaMA)",
+    "rlhf-fixed-llama-instruct-bs-16.json": "RLHF (Instruct)",
+    "shf-v4-llama-10000-kl-0.35.json": "SuperHF (LLaMA)",
+    "shf-v4-llama-instruct-10k-kl-0.35.json": "SuperHF (Instruct)",
     "alpaca_7b.json": "Alpaca",
-    "sft-on-preferences-v1.json": "FTP\n(Alpaca)",
-    "rlhf-v3-lr-5.0e-6-batch-16@gold-run.json": "RLHF\n(Alpaca)",
-    "shf-7b-default.json": "SuperHF\n(Alpaca)",
-    "gpt-3.5-turbo_2023-05-13_completions_output.json": "GPT-3.5",
-    "gpt-4_2023-05-13_completions_output.json": "GPT-4",
 }
 
 QUALITATIVE_MODEL_ORDER = [
     "LLaMA",
+    "FeedME",
+    "Instruct",
+    "RLHF (LLaMA)",
+    "RLHF (Instruct)",
+    "SuperHF (LLaMA)",
+    "SuperHF (Instruct)",
     "Alpaca",
-    "FTP\n(Alpaca)",
-    "RLHF\n(Alpaca)",
-    "SuperHF\n(Alpaca)",
-    "GPT-3.5",
-    "GPT-4",
 ]
 
-ALPACA_TEST_REWARD = -0.01
+
+def spaces_to_newlines(model_name_list: list[str]) -> list[str]:
+    """Replace spaces with newlines in a list of model names."""
+    return [model_name.replace(" ", "\n") for model_name in model_name_list]
+
+
+QUALITATIVE_MODEL_ORDER_MULTILINE = spaces_to_newlines(QUALITATIVE_MODEL_ORDER)
+
+LLAMA_TEST_REWARD = -0.51  # TODO get accurate reward
+ALPACA_TEST_REWARD = -0.01  # TODO redo with new data
 
 
 def bootstrapped_stdev(data: list[Any], num_samples: int = 1000) -> Any:
@@ -103,7 +114,7 @@ def get_test_scores(file_path: str) -> list[Any]:
     # Normalize scores (see experiments/evaluations/find_average_train_and_test_rm_scores.py)
     assert "train_scores" in file_path or "test_scores" in file_path
     if "train_scores" in file_path:
-        output = normalize_train_scores(scores)
+        output = normalize_train_scores(output)
     elif "test_scores" in file_path:
         output = [score - -2.22 for score in output]
 
@@ -131,6 +142,12 @@ def initialize_plot() -> None:
     sns.set_palette(DEFAULT_COLOR_PALETTE)
 
 
+def initialize_plot_bar() -> None:
+    """Set default plot styling for bar charts."""
+    initialize_plot()
+    plt.rcParams["lines.markersize"] = 1
+
+
 def set_plot_style() -> None:
     """Deprecated. Use initialize_plot() instead."""
     raise DeprecationWarning("Use initialize_plot() instead.")
@@ -147,13 +164,14 @@ def model_type_to_palette_color(model_type: str) -> Any:
     """Standardize our use of models types to palette colors."""
     model_type = model_type.lower()
     model_name_to_type = {
-        "ftp": "ftp_preferences",
+        "b-o-16": "best-of-n",
+        "ftp": "feedme",
         "rlhf": "rlhf",
         "superhf": "superhf",
         "shf": "superhf",
         "gpt-4": "gpt-3.5",
         "llama": "pretrained",
-        "alpaca": "instruct",
+        "alpaca": "alpaca",
     }
     for model_name, model_value in model_name_to_type.items():
         if model_name in model_type:
@@ -161,14 +179,35 @@ def model_type_to_palette_color(model_type: str) -> Any:
     all_model_types = [
         "pretrained",
         "instruct",
-        "ftp_preferences",
+        "feedme",
         "rlhf",
         "superhf",
         "gpt-3.5",
         "gpt-4",
+        "alpaca",
+        "COLOR_PLACEHOLDER",
+        "best-of-n",
     ]
     assert model_type in all_model_types
     return _get_color_from_palette(all_model_types.index(model_type))
+
+
+def model_type_to_hatch(
+    model_type: str, num_hatches: int = 3, num_dots: int = 2
+) -> Any:
+    """Standardize our hatching"""
+    if "Instruct" in model_type or "Alpaca" in model_type:
+        return "/" * num_hatches
+    if "FeedME" in model_type:
+        return "." * num_dots
+    return ""
+
+
+def model_type_to_line_style(model_type: str) -> Any:
+    """Standardize our hatching"""
+    if "Instruct" in model_type or "Alpaca" in model_type:
+        return "--"
+    return "-"
 
 
 def save_plot(file_path: str) -> None:

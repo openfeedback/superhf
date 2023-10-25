@@ -1,9 +1,18 @@
+# This file is used for debugging as well as demonstrating the required interface.
+# Required args have the tag @required in their description. Currently all are required until this is fixed.
 model_name:
-  desc: HuggingFace language model to use, or "mock" for testing
-  value: "EleutherAI/pythia-70m-deduped"
+  desc: HuggingFace language model to use, or "mock" for testing. @required.
+  value: "peterchatain/mock_llama"
 reward_model_name:
-  desc: HuggingFace reward model to use, or "mock" for testing
-  value: "mock" #  "OpenAssistant/reward-model-deberta-v3-base"
+  desc: HuggingFace reward model to use, or "mock" for testing. @required.
+  value: "mock" #  "OpenAssistant/reward-model-deberta-v3-b ase"
+test_reward_model_name:
+  desc: HuggingFace reward model to use for testing.
+  value: "mock"
+seed:
+  desc: The random seed to use. 66 was used originally
+  value: 66
+
 log_with:
   desc: "The logger to use"
   value: "wandb"
@@ -15,19 +24,25 @@ mini_batch_size:
   value: 2
 batch_size:
   desc: "The batch size" # default 256 in og code
-  value: 4
+  value: 8
 gradient_accumulation_steps:
   desc: "The number of gradient accumulation steps"
   value: 2
 max_new_tokens:
   desc: "The maximum number of new tokens to generate per prompt"
-  value: 32
+  value: 64
+generation_kwargs:
+  desc: Extra args to pass to generation. Format is arg_name followed by value
+  value: ['pad_token_id', 'eos_token_id']
+trim_generations_or_not:
+  desc: Decides whether to trim the generated responses to exclude simulated turns of conversation
+  value: false
 max_prompt_char_length:
   desc: "The maximum number of characters in a prompt"
   value: 1024
 lora_r:
   desc: The r dimension parameter for LoRA. Only takes effect if r and alpha are non-zero.
-  value: 1
+  value: 0 # 4
 lora_alpha:
   desc: The alpha parameter for LoRA. Only takes effect if r and alpha are non-zero.
   value: 32
@@ -36,22 +51,28 @@ lora_dropout:
   value: 0.05
 lora_target_modules:
   desc: The list of modules to apply LoRA to. See src/superhf/lora.py for available modules.
-  value: [] # None for mock# ["q_proj", "v_proj"]  # For LLaMa
-dataset_names:
-  desc: The list of datasets to use for prompts. See src/superhf/data.py for available datasets.
-  value: ["anthropic-red-team", "anthropic-helpful-base", "anthropic-harmless-base", "openai/webgpt_comparisons"]
-debug_max_prompts:
+  value: ["q_proj", "v_proj"]  # For LLaMa
+
+prompt_dataset_names:
+  desc: The list of datasets to use for prompts. See src/superhf/data.py for available datasets. @required.
+  value: ["anthropic-red-team", "anthropic-helpful-base", "anthropic-harmless-base", "openai/webgpt_comparisons", "self_instruct"]
+num_prompts:
   desc: "The maximum number of prompts to use for debugging. 0 to use all prompts."
-  value: 16
+  value: 32
 conversation_prompt:
   desc: A prompt to prepend to every prompt before generation to get the model more on distribution.
   value: "A human user sends a message, and a helpful and harmless AI assistant responds."
+
 save_every:
     desc: "Save the model every n epochs"
-    value: 2
+    value: 9999
+extra_push_to_hub:
+  desc: Extra intervals to push to hub
+  value: []
 hub_repo_id:
-    desc: "The ID of the HuggingFace Hub repo to save to. If empty, doesn't write to the Hub."
-    value: ""
+  desc: "The ID of the HuggingFace Hub repo to save to. If empty, doesn't write to the Hub."
+  value: "mock_test_save"
+
 scheduler_name:
   desc: Name of the scheduler to use for fine-tuning the language model.
   value: ""
@@ -63,16 +84,26 @@ init_kl_coef:
   value: 0.2
 clip_kl:
   desc: Whether to clip the KL-divergence to always be greater than zero.
-  value: false
+  value: true
 normalize_reward:
   desc: Whether to normalize the reward to have mean zero
-  value: true
+  value: false
 reward_mean:
   desc: The mean of the reward distribution, if we are normalizing it.
   value: 0.0
 offset_reward:
   desc: The offset of the reward distribution, to be added to all rewards.
   value: 2.0
+whiten_rewards:
+  desc: Whether to whiten the rewards on a per-batch basis by setting std to 1. Does not modify mean.
+  value: true # Default is false
+penalize_bad_endings:
+  desc: Whether to set the reward for generations that don't end in the proper ending token to
+  value: False
+penalty_reward_value:
+  desc: The reward value to use for penalizing bad endings.
+  value: -1.0
+
 top_p:
   desc: The top-p value for nucleus sampling
   value: 0.95

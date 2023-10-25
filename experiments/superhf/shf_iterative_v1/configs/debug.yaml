@@ -1,7 +1,8 @@
 language_model_name:
   desc: HuggingFace language model to use, or "mock" for testing
   # value: "theblackcat102/pythia-1b-deduped-sft"
-  value: "EleutherAI/pythia-70m-deduped"  # Faster
+  # value: "EleutherAI/pythia-70m-deduped"  # Faster
+  value: gmukobi/test-ftp-500
   # value: "facebook/opt-125m" # Closer to LLaMA
 reward_model_train_name:
   desc: HuggingFace reward model to use, or "mock" for testing
@@ -10,6 +11,9 @@ reward_model_val_name:
   desc: HuggingFace reward model to use, or "mock" for testing, or blank for no validation.
   value: "None"
   # value: "vincentmin/opt-125m-eli5-reward"
+seed:
+  desc: Random seed to use for reproducibility.
+  value: 66
 learning_rate:
   desc: Learning rate for fine-tuning the language model.
   value: 1.0e-1
@@ -39,7 +43,7 @@ num_prompts:
   value: 11
 prompt_accumulation_steps:
   desc: Number of prompts to generate, score, and filter before finetuning, or 0 for num_prompts.
-  value: 1
+  value: 2
 superbatch_size:
   desc: Number of completions to generate with the current policy before filtering and fine-tuning.
   value: 2
@@ -88,7 +92,7 @@ no_repeat_ngram_size:
   value: 0
 prompt_dataset_names:
   desc: The list of datasets to use for prompts. See src/superhf/data.py for available datasets.
-  value: ["anthropic-harmless-base"]
+  value: ["anthropic-helpful-base"]
 same_prompt_per_superbatch:
   desc: Whether to duplicate each prompt so the superbatch is variations on the same prompt.
   value: True
